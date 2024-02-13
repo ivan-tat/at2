@@ -339,7 +339,7 @@ begin
         temp := Copy(pstr(item),1,MenuLib2_mn_environment.edit_pos)+temp
       else
         temp := CutStr(temp);
-      Move(temp,pBYTE(data)[(item-1)*(len+1)],len+1);
+      Move(temp,pBYTE(mnu_data)[(item-1)*(len+1)],len+1);
     end;
 
   ShowCStr(MenuLib2_mn_environment.v_dest,x+1,y+idx2,

@@ -717,7 +717,7 @@ procedure trace_update_proc;
 begin
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTERN.INC:trace_update_proc';
+  _debug_str_ := 'REALTIME.INC:trace_update_proc';
 {$ENDIF}
   space_pressed := scankey(SC_SPACE);
   If (play_status = isPlaying) then

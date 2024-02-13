@@ -2099,7 +2099,8 @@ _jmp1:
         end
       else
         begin
-          ThinCursor;
+          If use_large_cursor then WideCursor
+          else ThinCursor;
           GotoXY(xstart+inst_hpos[vpos,hpos],ystart+inst_vpos[vpos]);
         end;
 

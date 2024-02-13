@@ -489,7 +489,7 @@ begin
   import_old_flags;
 end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 procedure import_single_old_instrument(old_songdata: pOLD_FIXED_SONGDATA;
                                        pos,instr: Byte);
 begin
@@ -500,7 +500,7 @@ begin
   songdata.instr_data[pos].fine_tune := old_songdata^.instr_data[instr].fine_tune;
   songdata.instr_data[pos].perc_voice := 0;
 end;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 
 function insert_command(cmd,cmd2: Word; patterns: Byte; chan: Byte; exceptions: tByteSet): Boolean;
 
@@ -620,12 +620,12 @@ var
   xlen: array[0..6] of Word;
 
 begin
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ILOADERS.INC:a2m_file_loader';
 {$ENDIF}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -633,11 +633,11 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -646,34 +646,36 @@ begin
   If NOT ((temp = SizeOf(header)) and (header.ident = id)) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := $7f;}
+{$IFDEF ADT2PLAY}
+  load_flag := $7f;
+{$ENDIF}
   If NOT (header.ffver in [1..FFVER_A2M]) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('UNKNOWN FiLE FORMAT VERSiON$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   If (play_status <> isStopped) then
     begin
       fade_out_playback(FALSE);
       stop_playing;
     end;
+{$ENDIF}
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
   init_old_songdata;
   If (header.ffver in [1..4]) then
     begin
@@ -683,11 +685,11 @@ begin
       If NOT ((temp = SizeOf(header2)) and (header2.ident = id)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -699,11 +701,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -712,11 +714,11 @@ begin
       If NOT (temp = header2.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -725,11 +727,11 @@ begin
       If NOT (temp = header2.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -741,11 +743,11 @@ begin
             If NOT (temp = xlen[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
             crc := Update32(buf1,temp,crc);
@@ -760,11 +762,11 @@ begin
       If (crc <> header2.crc32) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -779,11 +781,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -791,11 +793,11 @@ begin
       If NOT (temp = header2.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -813,11 +815,11 @@ begin
       If NOT (temp = header2.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -836,11 +838,11 @@ begin
             If NOT (temp = xlen[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
 
@@ -864,11 +866,11 @@ begin
       If NOT ((temp = SizeOf(header2)) and (header2.ident = id)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -885,11 +887,11 @@ begin
       If NOT (temp = header2.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -898,11 +900,11 @@ begin
       If NOT (temp = header2.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -914,11 +916,11 @@ begin
             If NOT (temp = xlen[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
             crc := Update32(buf1,temp,crc);
@@ -933,11 +935,11 @@ begin
       If (crc <> header2.crc32) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -952,11 +954,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -964,11 +966,11 @@ begin
       If NOT (temp = header2.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -983,11 +985,11 @@ begin
       If NOT (temp = header2.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1006,11 +1008,11 @@ begin
             If NOT (temp = xlen[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
 
@@ -1032,11 +1034,11 @@ begin
       If NOT (temp = header.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1045,11 +1047,11 @@ begin
       If NOT (temp = header.b1len[0]) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1061,11 +1063,11 @@ begin
             If NOT (temp = header.b1len[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
             crc := Update32(buf1,temp,crc);
@@ -1078,11 +1080,11 @@ begin
       If (crc <> header.crc32) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1093,11 +1095,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1105,11 +1107,11 @@ begin
       If NOT (temp = header.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1118,18 +1120,18 @@ begin
       If NOT (temp = header.b1len[0]) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
       If (header.ffver = 9) then
         import_old_flags;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       For temp := 1 to 255 do
         Insert(songdata.instr_names[temp][1]+
                'iNS_'+byte2hex(temp)+#247' ',
@@ -1140,7 +1142,7 @@ begin
           Insert(songdata.pattern_names[temp][1]+
                  'PAT_'+byte2hex(temp)+'  '#247' ',
                  songdata.pattern_names[temp],1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 
       APACK_decompress(buf1,pattdata^[0]);
       For temp2 := 1 to 15 do
@@ -1150,11 +1152,11 @@ begin
             If NOT (temp = header.b1len[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
 
@@ -1171,11 +1173,11 @@ begin
       If NOT (temp = header.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1184,11 +1186,11 @@ begin
       If NOT (temp = header.b1len[0]) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1200,11 +1202,11 @@ begin
             If NOT (temp = header.b1len[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
             crc := Update32(buf1,temp,crc);
@@ -1217,11 +1219,11 @@ begin
       If (crc <> header.crc32) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1232,11 +1234,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1244,34 +1246,34 @@ begin
       If NOT (temp = header.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       progress_num_steps := (header.patts-1) DIV 8 +2;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       LZH_decompress(buf1,songdata,header.b0len);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Inc(progress_step);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       BlockReadF(f,buf1,header.b1len[0],temp);
       If NOT (temp = header.b1len[0]) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       For temp := 1 to 255 do
         Insert(songdata.instr_names[temp][1]+
                'iNS_'+byte2hex(temp)+#247' ',
@@ -1281,12 +1283,12 @@ begin
         Insert(songdata.pattern_names[temp][1]+
                'PAT_'+byte2hex(temp)+'  '#247' ',
                songdata.pattern_names[temp],1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 
       LZH_decompress(buf1,pattdata^[0],header.b1len[0]);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Inc(progress_step);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       For temp2 := 1 to 15 do
         If ((header.patts-1) DIV 8 > PRED(temp2)) then
           begin
@@ -1294,20 +1296,20 @@ begin
             If NOT (temp = header.b1len[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
 
             If (temp2*8+8 <= max_patterns) then
               begin
                 LZH_decompress(buf1,pattdata^[temp2],header.b1len[temp2]);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Inc(progress_step);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
               end
             else limit_exceeded := TRUE;
           end;
@@ -1318,11 +1320,12 @@ begin
 
   CloseF(f);
   songdata_title := NameOnly(songdata_source);
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  Case header.ffver of
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>    1..4: load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>    else  load_flag := 2;
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  end;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFDEF ADT2PLAY}
+  Case header.ffver of
+    1..4: load_flag := 1;
+    else  load_flag := 2;
+  end;
+{$ELSE}
   temp := calc_max_speedup(songdata.tempo);
   If (songdata.macro_speedup > temp) then
      begin
@@ -1333,7 +1336,7 @@ begin
      end;
 
   load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 end;
 
 procedure a2t_file_loader;
@@ -1447,12 +1450,12 @@ var
   xlen: array[0..6] of Word;
 
 begin
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ILOADERS.INC:a2t_file_loader';
 {$ENDIF}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -1460,11 +1463,11 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -1473,23 +1476,25 @@ begin
   If NOT ((temp = SizeOf(header)) and (header.ident = id)) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := $7f;}
+{$IFDEF ADT2PLAY}
+  load_flag := $7f;
+{$ENDIF}
   If NOT (header.ffver in [1..FFVER_A2T]) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('UNKNOWN FiLE FORMAT VERSiON$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -1502,11 +1507,11 @@ begin
       If NOT ((temp = SizeOf(header2)) and (header2.ident = id)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1519,11 +1524,11 @@ begin
       If NOT (temp = header2.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1532,11 +1537,11 @@ begin
       If NOT (temp = header2.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1545,11 +1550,11 @@ begin
       If NOT (temp = header2.b2len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1561,11 +1566,11 @@ begin
             If NOT (temp = xlen[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
             crc := Update32(buf1,temp,crc);
@@ -1581,11 +1586,11 @@ begin
       If (crc <> header2.crc32) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1600,11 +1605,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1612,11 +1617,11 @@ begin
       If NOT (temp = header2.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1637,11 +1642,11 @@ begin
       If NOT (temp = header2.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1656,11 +1661,11 @@ begin
       If NOT (temp = header2.b2len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1680,11 +1685,11 @@ begin
             If NOT (temp = xlen[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
 
@@ -1709,11 +1714,11 @@ begin
       If NOT ((temp = SizeOf(header3)) and (header3.ident = id)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1730,11 +1735,11 @@ begin
       If NOT (temp = header3.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1743,11 +1748,11 @@ begin
       If NOT (temp = header3.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1756,11 +1761,11 @@ begin
       If NOT (temp = header3.b2len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1772,11 +1777,11 @@ begin
             If NOT (temp = xlen[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
             crc := Update32(buf1,temp,crc);
@@ -1792,11 +1797,11 @@ begin
       If (crc <> header3.crc32) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1811,11 +1816,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1823,11 +1828,11 @@ begin
       If NOT (temp = header3.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1846,11 +1851,11 @@ begin
       If NOT (temp = header3.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1865,11 +1870,11 @@ begin
       If NOT (temp = header3.b2len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1889,11 +1894,11 @@ begin
             If NOT (temp = xlen[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
 
@@ -1916,11 +1921,11 @@ begin
       If NOT ((temp = SizeOf(header4)) and (header4.ident = id)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1929,11 +1934,11 @@ begin
       If NOT (temp = header4.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1942,11 +1947,11 @@ begin
       If NOT (temp = header4.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1955,11 +1960,11 @@ begin
       If NOT (temp = header4.b2len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1968,11 +1973,11 @@ begin
       If NOT (temp = header4.b3len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1981,11 +1986,11 @@ begin
       If NOT (temp = header4.b4len[0]) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -1997,11 +2002,11 @@ begin
             If NOT (temp = header4.b4len[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
             crc := Update32(buf1,temp,crc);
@@ -2018,11 +2023,11 @@ begin
       If (crc <> header4.crc32) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2033,11 +2038,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2045,11 +2050,11 @@ begin
       If NOT (temp = header4.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2058,11 +2063,11 @@ begin
       If NOT (temp = header4.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2071,11 +2076,11 @@ begin
       If NOT (temp = header4.b2len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2084,11 +2089,11 @@ begin
       If NOT (temp = header4.b3len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2105,11 +2110,11 @@ begin
       If NOT (temp = header4.b4len[0]) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2121,11 +2126,11 @@ begin
             If NOT (temp = header4.b4len[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
 
@@ -2142,11 +2147,11 @@ begin
       If NOT ((temp = SizeOf(header5)) and (header5.ident = id)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2155,11 +2160,11 @@ begin
       If NOT (temp = header5.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2168,11 +2173,11 @@ begin
       If NOT (temp = header5.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2181,11 +2186,11 @@ begin
       If NOT (temp = header5.b2len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2194,11 +2199,11 @@ begin
       If NOT (temp = header5.b3len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2207,11 +2212,11 @@ begin
       If NOT (temp = header5.b4len[0]) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2223,11 +2228,11 @@ begin
             If NOT (temp = header5.b4len[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
             crc := Update32(buf1,temp,crc);
@@ -2244,11 +2249,11 @@ begin
       If (crc <> header5.crc32) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2259,11 +2264,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2271,11 +2276,11 @@ begin
       If NOT (temp = header5.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2284,11 +2289,11 @@ begin
       If NOT (temp = header5.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2297,11 +2302,11 @@ begin
       If NOT (temp = header5.b2len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2310,11 +2315,11 @@ begin
       If NOT (temp = header5.b3len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2332,11 +2337,11 @@ begin
       If NOT (temp = header5.b4len[0]) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2348,11 +2353,11 @@ begin
             If NOT (temp = header5.b4len[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
 
@@ -2369,11 +2374,11 @@ begin
       If NOT (temp = header.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2382,11 +2387,11 @@ begin
       If NOT (temp = header.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2395,11 +2400,11 @@ begin
       If NOT (temp = header.b2len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2408,11 +2413,11 @@ begin
       If NOT (temp = header.b3len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2421,11 +2426,11 @@ begin
       If NOT (temp = header.b4len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2434,11 +2439,11 @@ begin
       If NOT (temp = header.b5len[0]) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2450,11 +2455,11 @@ begin
             If NOT (temp = header.b5len[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
             crc := Update32(buf1,temp,crc);
@@ -2472,11 +2477,11 @@ begin
       If (crc <> header.crc32) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2487,11 +2492,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2499,11 +2504,11 @@ begin
       If NOT (temp = header.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2512,11 +2517,11 @@ begin
       If NOT (temp = header.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2525,11 +2530,11 @@ begin
       If NOT (temp = header.b2len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2538,11 +2543,11 @@ begin
       If NOT (temp = header.b3len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2551,11 +2556,11 @@ begin
       If NOT (temp = header.b4len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2573,11 +2578,11 @@ begin
       If NOT (temp = header.b5len[0]) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2589,11 +2594,11 @@ begin
             If NOT (temp = header.b5len[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
 
@@ -2610,11 +2615,11 @@ begin
       If NOT (temp = header.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2623,11 +2628,11 @@ begin
       If NOT (temp = header.b1len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2636,11 +2641,11 @@ begin
       If NOT (temp = header.b2len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2649,11 +2654,11 @@ begin
       If NOT (temp = header.b3len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2662,11 +2667,11 @@ begin
       If NOT (temp = header.b4len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2675,11 +2680,11 @@ begin
       If NOT (temp = header.b5len[0]) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2691,11 +2696,11 @@ begin
             If NOT (temp = header.b5len[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
             crc := Update32(buf1,temp,crc);
@@ -2713,11 +2718,11 @@ begin
       If (crc <> header.crc32) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2728,11 +2733,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2740,17 +2745,17 @@ begin
       If NOT (temp = header.b0len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       progress_num_steps := (header.patts-1) DIV 8 +6;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       temp := LZH_decompress(buf1,buf2,header.b0len);
       temp2 := 0;
       If (header.ffver = FFVER_A2T) then
@@ -2763,78 +2768,78 @@ begin
       Move(buf2[temp2],songdata.reserved_data,SizeOf(songdata.reserved_data));
       Inc(temp2,SizeOf(songdata.reserved_data));
       Move(buf2[temp2],songdata.instr_data,temp-temp2);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Inc(progress_step);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       If (header.b1len <> 0) then
         begin
           BlockReadF(f,buf1,header.b1len,temp);
           If NOT (temp = header.b1len) then
             begin
               CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
               Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                      'LOADiNG STOPPED$',
                      '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
               EXIT;
             end;
 
           LZH_decompress(buf1,songdata.instr_macros,header.b1len);
         end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Inc(progress_step);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       If (header.b2len <> 0) then
         begin
           BlockReadF(f,buf1,header.b2len,temp);
           If NOT (temp = header.b2len) then
             begin
               CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
               Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                      'LOADiNG STOPPED$',
                      '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
               EXIT;
             end;
 
           LZH_decompress(buf1,songdata.macro_table,header.b2len);
         end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Inc(progress_step);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       If (header.b3len <> 0) then
         begin
           BlockReadF(f,buf1,header.b3len,temp);
           If NOT (temp = header.b3len) then
             begin
               CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
               Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                      'LOADiNG STOPPED$',
                      '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
               EXIT;
             end;
 
           LZH_decompress(buf1,songdata.dis_fmreg_col,header.b3len);
         end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Inc(progress_step);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       BlockReadF(f,buf1,header.b4len,temp);
       If NOT (temp = header.b4len) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -2848,25 +2853,25 @@ begin
       Move(header.locks,songdata.lock_flags,SizeOf(songdata.lock_flags));
 
       LZH_decompress(buf1,songdata.pattern_order,header.b4len);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Inc(progress_step);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       BlockReadF(f,buf1,header.b5len[0],temp);
       If NOT (temp = header.b5len[0]) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
       LZH_decompress(buf1,pattdata^[0],header.b5len[0]);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Inc(progress_step);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       For temp2 := 1 to 15 do
         If ((header.patts-1) DIV 8 > PRED(temp2)) then
           begin
@@ -2874,20 +2879,20 @@ begin
             If NOT (temp = header.b5len[temp2]) then
               begin
                 CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
                 EXIT;
               end;
 
             If (temp2*8+8 <= max_patterns) then
               begin
                 LZH_decompress(buf1,pattdata^[temp2],header.b5len[temp2]);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
                 Inc(progress_step);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
               end
             else limit_exceeded := TRUE;
           end;
@@ -2898,11 +2903,12 @@ begin
 
   CloseF(f);
   songdata_title := NameOnly(songdata_source);
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  Case header.ffver of
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>    1..4: load_flag := 3;
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>    else  load_flag := 4;
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  end;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFDEF ADT2PLAY}
+  Case header.ffver of
+    1..4: load_flag := 3;
+    else  load_flag := 4;
+  end;
+{$ELSE}
   temp := calc_max_speedup(songdata.tempo);
   If (songdata.macro_speedup > temp) then
      begin
@@ -2913,10 +2919,10 @@ begin
      end;
 
   load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 procedure a2p_file_loader;
 
 type
@@ -3313,7 +3319,7 @@ begin
   CloseF(f);
   load_flag := 1;
 end;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 
 function dec2hex(dec: Byte): Byte;
 begin dec2hex := (dec DIV 10)*16 +(dec MOD 10); end;
@@ -3598,12 +3604,12 @@ begin
 end;
 
 begin
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ILOADERS.INC:amd_file_loader';
 {$ENDIF}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -3611,11 +3617,11 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' '+iCASE(ExtOnly(songdata_source))+' LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -3624,44 +3630,46 @@ begin
          ((header.ident = id_amd) or (header.ident = id_xms))) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' '+iCASE(ExtOnly(songdata_source))+' LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := $7f;}
+{$IFDEF ADT2PLAY}
+  load_flag := $7f;
+{$ENDIF}
   If NOT (header.versn in [$10,$11]) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('UNKNOWN FiLE FORMAT VERSiON$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' '+iCASE(ExtOnly(songdata_source))+' LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   If (play_status <> isStopped) then
     begin
       fade_out_playback(FALSE);
       stop_playing;
     end;
+{$ENDIF}
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
   FillChar(buf1,SizeOf(buf1),0);
   BlockReadF(f,buf1,SizeOf(buf1),temp);
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' '+iCASE(ExtOnly(songdata_source))+' LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -3673,11 +3681,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' '+iCASE(ExtOnly(songdata_source))+' LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
     end;
@@ -3728,11 +3736,12 @@ begin
 
   CloseF(f);
   songdata_title := NameOnly(songdata_source);
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  If (header.ident = id_amd) then load_flag := 5}
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  else load_flag := 6;}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFDEF ADT2PLAY}
+  If (header.ident = id_amd) then load_flag := 5
+  else load_flag := 6;
+{$ELSE}
   load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 end;
 
 procedure import_hsc_instrument(inst: Byte; var data); forward;
@@ -4188,12 +4197,12 @@ begin
 end;
 
 begin
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ILOADERS.INC:cff_file_loader';
 {$ENDIF}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -4201,11 +4210,11 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' CFF LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -4214,23 +4223,23 @@ begin
      (FileSize(f) > SizeOf(buf1)) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' CFF LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   If (play_status <> isStopped) then
     begin
       fade_out_playback(FALSE);
       stop_playing;
     end;
-
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := $7f;}
+{$ELSE}
+  load_flag := $7f;
+{$ENDIF}
   If (header.cflag = 1) then
     begin
       FillChar(buf1,SizeOf(buf1),0);
@@ -4239,11 +4248,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' CFF LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -4254,11 +4263,11 @@ begin
       offs := SensitiveScan(hash_buffer,0,temp,ascii_blab);
       If (offs <> _PRE_ASCII_BLAB_SIZE) then
         begin
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR DECOMPRESSiNG MODULE DATA$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' CFF LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -4272,11 +4281,11 @@ begin
       If NOT ((temp = SizeOf(headr2)) and (headr2.ascii = ascii_blab)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' CFF LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -4285,11 +4294,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' CFF LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
       CloseF(f);
@@ -4328,10 +4337,11 @@ begin
 
   import_cff_patterns(buf1,headr2.nopat);
   songdata_title := NameOnly(songdata_source);
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := 7;}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFDEF ADT2PLAY}
+  load_flag := 7;
+{$ELSE}
   load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 end;
 
 procedure import_standard_instrument(inst: Byte; var data);
@@ -4471,12 +4481,12 @@ begin
 end;
 
 begin
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ILOADERS.INC:dfm_file_loader';
 {$ENDIF}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -4484,11 +4494,11 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' DFM LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -4496,33 +4506,33 @@ begin
   If NOT ((temp = SizeOf(header)) and (header.ident = id)) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' DFM LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   If (play_status <> isStopped) then
     begin
       fade_out_playback(FALSE);
       stop_playing;
     end;
-
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := $7f;}
+{$ELSE}
+  load_flag := $7f;
+{$ENDIF}
   FillChar(buf1,SizeOf(buf1),0);
   BlockReadF(f,buf1,SizeOf(buf1),temp);
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' DFM LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -4571,11 +4581,11 @@ begin
     If (pattern > 127) then
       begin
         CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
         Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                'LOADiNG STOPPED$',
                '~O~KAY$',' DFM LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
         EXIT;
       end;
 
@@ -4589,11 +4599,11 @@ begin
           If (temp2 >= temp) then
             begin
               CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
               Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                      'LOADiNG STOPPED$',
                      '~O~KAY$',' DFM LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
               EXIT;
             end
           else Inc(temp2);
@@ -4611,10 +4621,11 @@ begin
   CloseF(f);
 
   songdata_title := NameOnly(songdata_source);
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := 8;}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFDEF ADT2PLAY}
+  load_flag := 8;
+{$ELSE}
   load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 end;
 
 type
@@ -4840,17 +4851,18 @@ var
   temp,temp2,temp3: Longint;
 
 begin
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ILOADERS.INC:hsc_file_loader';
 {$ENDIF}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  If (Lower(ExtOnly(songdata_source)) <> 'hsc') then}
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>    begin}
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>      load_flag := $7f;}
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>      EXIT;}
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>    end;}
+{$ELSE}
+  If (Lower(ExtOnly(songdata_source)) <> 'hsc') then
+    begin
+      load_flag := $7f;
+      EXIT;
+    end;
+{$ENDIF}
 
   {$i-}
   Assign(f,songdata_source);
@@ -4859,32 +4871,32 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' HSC LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   If (play_status <> isStopped) then
     begin
       fade_out_playback(FALSE);
       stop_playing;
     end;
+{$ENDIF}
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
   FillChar(hscbuf,SizeOf(hscbuf),0);
   BlockReadF(f,hscbuf,SizeOf(hscbuf),temp);
   If (temp < SizeOf(hscbuf.instr)+SizeOf(hscbuf.order)) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' HSC LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -4946,10 +4958,11 @@ begin
 
   CloseF(f);
   songdata_title := NameOnly(songdata_source);
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := 9;}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFDEF ADT2PLAY}
+  load_flag := 9;
+{$ELSE}
   load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 end;
 
 type
@@ -4984,12 +4997,12 @@ var
             data_size: Word;
           end;
 begin
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ILOADERS.INC:mtk_file_loader';
 {$ENDIF}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -4997,11 +5010,11 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' MTK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -5009,23 +5022,23 @@ begin
   If NOT ((temp = SizeOf(header)) and (header.id_string = id)) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' MTK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   If (play_status <> isStopped) then
     begin
       fade_out_playback(FALSE);
       stop_playing;
     end;
-
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := $7f;}
+{$ELSE}
+  load_flag := $7f;
+{$ENDIF}
   FillChar(buf1,SizeOf(buf1),0);
   BlockReadF(f,buf1,SizeOf(buf1),temp);
 
@@ -5034,11 +5047,11 @@ begin
   If (crc <> header.crc_16bit) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('CRC FAiLED - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' MTK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -5047,11 +5060,11 @@ begin
   If NOT (temp2 = header.data_size) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' MTK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -5106,10 +5119,11 @@ begin
 
   CloseF(f);
   songdata_title := NameOnly(songdata_source);
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := 10;}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFDEF ADT2PLAY}
+  load_flag := 10;
+{$ELSE}
   load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 end;
 
 procedure rad_file_loader;
@@ -5289,7 +5303,7 @@ begin
 end;
 {$ENDIF}
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 procedure list_rad_description(length: Word);
 
 var
@@ -5345,15 +5359,15 @@ begin
   move2screen;
   no_status_refresh := TRUE;
 end;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 
 begin
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ILOADERS.INC:rad_file_loader';
 {$ENDIF}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -5361,11 +5375,11 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' RAD LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -5373,44 +5387,44 @@ begin
   If NOT ((temp = SizeOf(header)) and (header.ident = id)) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' RAD LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
   If (header.rmver <> $10) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('UNKNOWN FiLE FORMAT VERSiON$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' RAD LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   If (play_status <> isStopped) then
     begin
       fade_out_playback(FALSE);
       stop_playing;
     end;
-
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := $7f;}
+{$ELSE}
+  load_flag := $7f;
+{$ENDIF}
   FillChar(buf1,SizeOf(buf1),0);
   BlockReadF(f,buf1,SizeOf(buf1),temp);
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' RAD LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -5423,11 +5437,11 @@ begin
       If (temp2 >= temp) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' RAD LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -5440,11 +5454,11 @@ begin
 {$ENDIF}
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   If mod_description and (temp2 <> 0) and NOT quick_cmd and
      NOT shift_pressed then
     list_rad_description(temp2+1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 
   init_songdata;
   load_flag := 0;
@@ -5524,10 +5538,11 @@ begin
 
   CloseF(f);
   songdata_title := NameOnly(songdata_source);
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := 11;}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFDEF ADT2PLAY}
+  load_flag := 11;
+{$ELSE}
   load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 end;
 
 const
@@ -6303,12 +6318,12 @@ end;
 *)
 
 begin
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ILOADERS.INC:s3m_file_loader';
 {$ENDIF}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -6316,11 +6331,11 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' S3M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -6328,43 +6343,45 @@ begin
   If NOT ((temp = SizeOf(header)) and (header.id = id_mod)) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' S3M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := $7f;}
+{$IFDEF ADT2PLAY}
+  load_flag := $7f;
+{$ENDIF}
   If (header.byte1a <> $1a) or (header.ftype <> $10) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('UNKNOWN FiLE FORMAT TYPE$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' S3M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   If (play_status <> isStopped) then
     begin
       fade_out_playback(FALSE);
       stop_playing;
     end;
+{$ENDIF}
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
   BlockReadF(f,order_list,header.ordnum,temp);
   If (IOresult <> 0) or (temp <> header.ordnum) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' S3M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -6372,11 +6389,11 @@ begin
   If (IOresult <> 0) or (temp <> header.insnum*2) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' S3M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -6384,11 +6401,11 @@ begin
   If (IOresult <> 0) or (temp <> header.patnum*2) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' S3M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -6410,11 +6427,11 @@ begin
   For temp := 32 downto 1 do
     If (header.chan_set[temp] <> 255) then BREAK;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   For temp2 := 1 to max(temp,18) do
     If (header.chan_set[temp2] OR $80 = header.chan_set[temp2]) then
       channel_flag[temp2] := FALSE;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 
   songdata.patt_len := 64;
   If adjust_tracks then songdata.nm_tracks := max(temp,18)
@@ -6434,11 +6451,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' S3M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -6446,11 +6463,11 @@ begin
       If (IOresult <> 0) or (temp2 <> SizeOf(insdata)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' S3M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -6468,11 +6485,11 @@ begin
           If (insdata.id <> id_ins_adl) and (insdata.id <> id_ins_smp) then
             begin
               CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
               Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                      'LOADiNG STOPPED$',
                      '~O~KAY$',' S3M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
               EXIT;
             end;
 
@@ -6491,11 +6508,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' S3M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -6503,11 +6520,11 @@ begin
       If (temp2 <> SizeOf(patlen)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' S3M LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -6567,10 +6584,11 @@ begin
   fix_s3m_commands(header.patnum);
   CloseF(f);
   songdata_title := NameOnly(songdata_source);
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := 12;}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFDEF ADT2PLAY}
+  load_flag := 12;
+{$ELSE}
   load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 end;
 
 procedure fix_fmk_commands(patterns: Byte);
@@ -6952,7 +6970,7 @@ var
   patlen,index: Word;
   dscbuf: array[0..PRED(20*24)] of Char;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 procedure list_fmk_description(rows: Byte);
 
 var
@@ -7006,7 +7024,7 @@ begin
   move2screen;
   no_status_refresh := TRUE;
 end;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 
 procedure import_fmk_event(pattern,line,channel,note,ins,vol,cmd,info: Byte);
 
@@ -7270,12 +7288,12 @@ begin
 end;
 
 begin
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ILOADERS.INC:fmk_file_loader';
 {$ENDIF}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -7283,11 +7301,11 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -7295,45 +7313,47 @@ begin
   If NOT ((temp = SizeOf(header)) and (header.id = id)) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := $7f;}
+{$IFDEF ADT2PLAY}
+  load_flag := $7f;
+{$ENDIF}
   If (header.bytef4 <> $f4) or NOT (header.ftype in [1,2]) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('UNKNOWN FiLE FORMAT TYPE$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   If (play_status <> isStopped) then
     begin
       fade_out_playback(FALSE);
       stop_playing;
     end;
+{$ENDIF}
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
   If (header.ftype = 2) then
     begin
       SeekF(f,SizeOf(header)-2);
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
     end;
@@ -7344,11 +7364,11 @@ begin
       If (IOresult <> 0) or (temp <> header.ordnum) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
     end;
@@ -7357,11 +7377,11 @@ begin
   If (IOresult <> 0) or (temp <> SizeOf(paraptr_msg)) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -7372,11 +7392,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -7384,11 +7404,11 @@ begin
       If (IOresult <> 0) or (temp <> SizeOf(desc_rows)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -7398,31 +7418,31 @@ begin
           If (IOresult <> 0) or (temp <> desc_rows*20) then
             begin
               CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
               Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                      'LOADiNG STOPPED$',
                      '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
               EXIT;
             end;
         end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
      If mod_description and (desc_rows <> 0) and NOT quick_cmd and
         NOT shift_pressed then
        list_fmk_description(desc_rows);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
     end;
 
   SeekF(f,fpos_bak);
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -7432,11 +7452,11 @@ begin
       If (IOresult <> 0) or (temp <> header.insnum*2) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
     end;
@@ -7447,11 +7467,11 @@ begin
       If (IOresult <> 0) or (temp <> header.patnum*4) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
     end;
@@ -7535,11 +7555,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -7547,11 +7567,11 @@ begin
       If (IOresult <> 0) or (temp2 <> SizeOf(insdata)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -7573,11 +7593,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -7586,11 +7606,11 @@ begin
       If (temp2 <> SizeOf(patlen)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -7649,10 +7669,11 @@ begin
   fix_fmk_commands(header.patnum);
   CloseF(f);
   songdata_title := NameOnly(songdata_source);
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := 13;}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFDEF ADT2PLAY}
+  load_flag := 13;
+{$ELSE}
   load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 end;
 
 procedure import_sat_instrument(inst: Byte; var data);
@@ -7789,12 +7810,12 @@ begin
 end;
 
 begin
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ILOADERS.INC:sat_file_loader';
 {$ENDIF}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -7802,11 +7823,11 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' SAT LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -7814,26 +7835,28 @@ begin
   If NOT ((temp = SizeOf(header)) and (header.ident = id)) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' SAT LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
   If NOT (header.vernm in [1,5,6]) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('UNKNOWN FiLE FORMAT VERSiON$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' SAT LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := $7f;}
+{$IFDEF ADT2PLAY}
+  load_flag := $7f;
+{$ENDIF}
   SATver := header.vernm;
   If (SATver in [5,6]) then
     begin
@@ -7841,11 +7864,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' SAT LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
 
@@ -7853,34 +7876,34 @@ begin
       If (temp <> SizeOf(headr2)) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' SAT LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   If (play_status <> isStopped) then
     begin
       fade_out_playback(FALSE);
       stop_playing;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
   temp5 := (FileSize(f)-temp) DIV (64*9*5);
   FillChar(buf1,SizeOf(buf1),0);
   BlockReadF(f,buf1,SizeOf(buf1)-5,temp);
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' SAT LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -7892,11 +7915,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' SAT LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
     end;
@@ -7909,11 +7932,11 @@ begin
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' SAT LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
     end;
@@ -8004,10 +8027,11 @@ begin
 
   CloseF(f);
   songdata_title := NameOnly(songdata_source);
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := 14;}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFDEF ADT2PLAY}
+  load_flag := 14;
+{$ELSE}
   load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 end;
 
 function _sal(op1,op2: Integer): Byte;
@@ -8203,12 +8227,12 @@ begin
 end;
 
 begin { sa2_file_loader }
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ILOADERS.INC:sa2_file_loader';
 {$ENDIF}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -8216,11 +8240,11 @@ begin { sa2_file_loader }
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' SA2 LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -8228,45 +8252,46 @@ begin { sa2_file_loader }
   If NOT ((temp = SizeOf(header)) and (header.ident = id)) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' SA2 LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
   If NOT (header.vernm in [8,9]) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('UNKNOWN FiLE FORMAT VERSiON$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' SA2 LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
   If (play_status <> isStopped) then
     begin
       fade_out_playback(FALSE);
       stop_playing;
     end;
 
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := $7f;}
+{$ELSE}
+  load_flag := $7f;
+{$ENDIF}
   If (header.vernm = 8) then
     begin
       SeekF(f,FilePos(f)-2);
       If (IOresult <> 0) then
         begin
           CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
           Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' SA2 LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
           EXIT;
         end;
     end;
@@ -8276,11 +8301,11 @@ begin { sa2_file_loader }
   If (IOresult <> 0) then
     begin
       CloseF(f);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFNDEF ADT2PLAY}
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' SA2 LOADER ',1);
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
       EXIT;
     end;
 
@@ -8348,8 +8373,9 @@ begin { sa2_file_loader }
 
   CloseF(f);
   songdata_title := NameOnly(songdata_source);
-{@ADT2PLAY_COMPILER_DIRECTIVE:INSERT>  load_flag := 15;}
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_BEGIN}
+{$IFDEF ADT2PLAY}
+  load_flag := 15;
+{$ELSE}
   load_flag := 1;
-{@ADT2PLAY_COMPILER_DIRECTIVE:SKIP_END}
+{$ENDIF}
 end;

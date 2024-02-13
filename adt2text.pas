@@ -19,10 +19,7 @@ unit AdT2text;
 {$PACKRECORDS 1}
 interface
 
-const
-{__AT2VER__}at2ver  = '2.4.24';
-{__AT2DAT__}at2date = '12-25-2018';
-{__AT2LNK__}at2link = '7:38pm';
+{$INCLUDE adtrack2.inc} { defines at2ver, at2date, at2link }
 
 const
 {$IFNDEF BETA}

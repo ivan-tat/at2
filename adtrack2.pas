@@ -536,7 +536,8 @@ begin { MAIN }
 
   If (command_typing <> 0) then GotoXY(08+pos4[pattern_hpos],11+PRED(MAX_PATTERN_ROWS DIV 2))
   else GotoXY(08+pos3[pattern_hpos],11+PRED(MAX_PATTERN_ROWS DIV 2));
-  ThinCursor;
+  If use_large_cursor then WideCursor
+  else ThinCursor;
 
   { initializing timer }
   init_timer_proc;
@@ -579,7 +580,10 @@ begin { MAIN }
   until (fkey = kESC) or (fkey = kF10) or _force_program_quit;
 
   { terminating program (phase:1) }
-  If NOT tracing then ThinCursor;
+  If NOT tracing then
+    If use_large_cursor then WideCursor
+    else ThinCursor;
+
   do_synchronize := FALSE;
 
 {$IFDEF GO32V2}

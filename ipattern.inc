@@ -1679,7 +1679,8 @@ _end:
 
   PATTERN_trace := fkey2;
   If (fkey2 = kF10) or _force_program_quit then EXIT;
-  ThinCursor;
+  If use_large_cursor then WideCursor
+  else ThinCursor;
   tracing := FALSE;
   If (play_status <> isStopped) then cancel_note_recorder;
 
@@ -2309,7 +2310,8 @@ begin
     else GotoXY(08+pos3[hpos],11+PRED(MAX_PATTERN_ROWS DIV 2));
 
     If tracing then fkey := PATTERN_trace
-    else ThinCursor;
+    else If use_large_cursor then WideCursor
+         else ThinCursor;
 
     nope := FALSE;
     If ctrl_pressed and alt_pressed then

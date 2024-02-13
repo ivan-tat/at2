@@ -285,6 +285,7 @@ _jmp1:
   mn_environment.ext_proc  := NIL;
   mn_setting.terminate_keys[3] := 0;
   mn_environment.hlight_chrs := 0;
+  page := pattern_list__page;
 
   Case mn_environment.keystroke of
     kF1: begin
@@ -378,6 +379,8 @@ _jmp1:
 
   mn_environment.ext_proc := NIL;
   mn_setting.terminate_keys[3] := 0;
+  page := pattern_list__page;
+  
   If (mn_environment.keystroke = kF1) then
     begin
       HELP('pattern_list');
@@ -554,7 +557,8 @@ begin { PATTERN_ORDER_edit }
     GotoXY(xstart+pos1[hpos]-1,03+vpos-1);
 
     If tracing then fkey := PATTERN_trace
-    else ThinCursor;
+    else If use_large_cursor then WideCursor
+         else ThinCursor;
 
     If ctrl_pressed and alt_pressed then
       begin

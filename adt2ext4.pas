@@ -2633,7 +2633,8 @@ _jmp1:
   move_to_screen_area[4] := ystart+24+window_area_inc_y;
 
   If (pos = 1) then GotoXY(xstart+17,ystart+4);
-  ThinCursor;
+  If use_large_cursor then WideCursor
+  else ThinCursor;
   centered_frame_vdest := screen_ptr;
 
   Move(is_setting.terminate_keys,old_keys,SizeOf(old_keys));
@@ -5360,7 +5361,8 @@ _end2:
             else _macro_preview_init(0,BYTE_NULL);
             macro_preview_indic_proc := NIL;
             _pip_dest := ptr_temp_screen;
-            ThinCursor;
+            If use_large_cursor then WideCursor
+            else ThinCursor;
           end;
 {$IFDEF GO32V2}
        keyboard_reset_buffer_alt;

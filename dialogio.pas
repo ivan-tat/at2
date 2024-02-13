@@ -456,7 +456,8 @@ begin
 
   If (Copy(keys,1,14) = '%string_input%') then
     begin
-      ThinCursor;
+      If use_large_cursor then WideCursor
+      else ThinCursor;
       str := InputStr(dl_environment.input_str,
                       xstart+2,ystart+num+1,ln,ln1,atr1,atr2);
       If is_environment.keystroke = kENTER then dl_environment.input_str := str;
@@ -855,7 +856,7 @@ begin
         temp := Copy(item_str,1,mn_environment.edit_pos)+temp
       else
         temp := CutStr(temp);
-      Move(temp,pBYTE(data)[(item-1)*(len+1)],len+1);
+      Move(temp,pBYTE(mnu_data)[(item-1)*(len+1)],len+1);
     end;
 
   mn_environment.do_refresh := TRUE;

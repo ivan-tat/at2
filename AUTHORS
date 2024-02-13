@@ -1,0 +1,60 @@
+Florian Jung (aka The Wind Fish, Windfisch)
+  https://windfis.ch/
+  https://windfis.ch/git/
+  https://github.com/Windfisch
+  flo <at> windfisch <dot> org
+
+Stanislav Baranec (aka subz3ro-altair)
+  https://github.com/subz3ro-altair
+  subz3ro <dot> altair <at> gmail <dot> com
+  subz3ro <dot> altai <at> gmail <dot> com
+
+Cecill Etheredge (aka ijsf)
+  https://ijsf.nl/
+  https://github.com/ijsf
+  code <at> ijsf <dot> nl
+
+Balogh, Károly (aka Charlie/iNQ), 1998-2001
+  http://scenergy.dfmk.hu/inquisition/ (not available: use Web Archive)
+  http://scenergy.dfmk.hu/inqcoders/ (not available: use Web Archive)
+  charlie <at> scenergy <dot> dfmk <dot> hu (most likely unavailable)
+  Contributed Inquisition's Timer Services unit "iss_tim.pas" (go32v2 only).
+  Original version: http://web.archive.org/web/20220407175144/http://scenergy.dfmk.hu/inqcoders/files/iss-tim.zip
+
+James A. Storer, Thomas Szymanski
+  Authors of "LZSS" (Lempel-Ziv-Storer-Szymanski) lossless data compression algorithm (1982).
+  See "LZSS_decompress" routine.
+
+Abraham Lempel, Jacob Ziv, Terry Welch
+  Authors of "LZW" (Lempel-Ziv-Welch) lossless data compression algorithm (1984).
+  See "LZW_decompress" routine.
+
+Haruhiko Okumura, Haruyasu Yoshizaki
+  Authors of "LZH" (Lempel-Ziv-Huffman) lossless data compression algorithm (1988).
+  See "LZH_compress", "LZH_compress_ultra", "LZH_decompress" routines.
+  Story: https://en.wikipedia.org/wiki/LHA_(file_format)
+
+Jørgen (Joergen) Ibsen
+  https://ibsensoftware.com/
+  Author of "aPack" lossless data compression algorithm (1998-2014).
+  See "APACK_decompress" routine.
+  Original library: https://ibsensoftware.com/products_aPLib.html
+
+Ed Ross
+  Author of "RDC" (Ross Data compression) algorithm.
+  See "RDC_decompress" routine.
+
+Philip G. Gage
+  Author of "SixPack" compression algorithm.
+  See "SIXPACK_decompress" routine.
+
+Alexey Khokholov (aka Nuke.YKT)
+  https://github.com/nukeykt
+  http://nukeykt.retrohost.net/
+  alexeytf2 <at> gmail <dot> com
+  Author of Nuked OPL3 (see https://github.com/nukeykt/Nuked-OPL3).
+
+Ivan Tatarinov
+  https://github.com/ivan-tat
+  https://gitlab.com/ivan-tat
+  ivan-tat <at> ya <dot> ru

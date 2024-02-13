@@ -800,6 +800,7 @@ const
   alt_ins_name:       Boolean = TRUE;
   adjust_tracks:      Boolean = TRUE;
   mark_lines:         Boolean = FALSE;
+  use_large_cursor:   Boolean = FALSE;
   accurate_conv:      Boolean = FALSE;
   fix_c_note_bug:     Boolean = TRUE;
   analyzer_bckg:      Byte    = $010;

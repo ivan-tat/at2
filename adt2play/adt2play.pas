@@ -21,8 +21,7 @@ uses
   A2player,A2fileIO,A2scrIO,
   StringIO,TxtScrIO;
 
-const
-  VERSION_STR = '0.46';
+{$INCLUDE adt2play.inc} { defines VERSION_STR }
 
 const
   modname: array[1..15] of String[39] = (

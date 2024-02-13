@@ -1,0 +1,9 @@
+Usage:
+  make [option ...] [TARGET]
+where:
+  option:
+    DEBUG=<Boolean>
+      <Boolean>: 0 | 1
+    BUILD=<BUILD>
+      <BUILD>: go32v2-i386
+  TARGET: usage | all | build-sdk | build-at2play-bin | clean-at2play-bin | clean | distclean

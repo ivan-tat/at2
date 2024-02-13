@@ -96,7 +96,7 @@ var
   is_environment: tINPUT_STR_ENVIRONMENT;
 
 function InputStr(s: String; x,y,ln,ln1: Byte; atr1,atr2: Byte): String;
-function SameName(str1,str2: String): Boolean;
+function SameName(mask,str: String): Boolean;
 function PathOnly(path: String): String;
 function NameOnly(path: String): String;
 function BaseNameOnly(path: String): String;
@@ -776,7 +776,7 @@ end;
 function InputStr(s: String; x,y,ln,ln1: Byte; atr1,atr2: Byte): String;
 
 var
-  appn,for1st,qflg,ins: Boolean;
+  appn,for1st,qflg,chflag,ins: Boolean;
   cloc,xloc,xint,attr: Byte;
   key: Word;
   s1,s2: String;
@@ -808,7 +808,13 @@ begin { InputStr }
   appn := NOT is_setting.append_enabled;
 
   Dec(x);
-  If ins then ThinCursor else WideCursor;
+  If ins then
+    If use_large_cursor then WideCursor
+    else ThinCursor
+  else
+    If use_large_cursor then ThinCursor
+    else WideCursor;
+
   s1 := s;
   If (BYTE(s1[0]) > ln1) then s1[0] := CHR(ln1);
 
@@ -852,31 +858,51 @@ begin { InputStr }
     GotoXY(x+xloc,y);
     If keypressed then key := getkey else GOTO _end;
     If LookupKey(key,is_setting.terminate_keys,50) then qflg := TRUE;
+    chflag := FALSE;
 
     If NOT qflg then
       Case key of
         kTAB: appn := TRUE;
 
         kCHplus,
-        kNPplus: If (is_setting.character_set = DEC_NUM_CHARSET) then
-                   If (Length(Num2str(SUCC(Str2num(s,10)),10)) <= ln1) and
-                      (SUCC(Str2num(s,10)) <= is_environment.max_num) then
-                     s := Num2str(SUCC(Str2num(s,10)),10)
-                   else
-                 else If (is_setting.character_set = HEX_NUM_CHARSET) then
-                        If (Length(Num2str(SUCC(Str2num(s,16)),16)) <= ln1) and
-                           (SUCC(Str2num(s,16)) <= is_environment.max_num) then
-                          s := Num2str(SUCC(Str2num(s,16)),16);
+        kNPplus: begin
+                   chflag := TRUE;
+                   If (is_setting.character_set = DEC_NUM_CHARSET) then
+                     If (Length(Num2str(SUCC(Str2num(s,10)),10)) <= ln1) and
+                        (SUCC(Str2num(s,10)) <= is_environment.max_num) then
+                       begin
+                         s := Num2str(SUCC(Str2num(s,10)),10);
+                         chflag := FALSE;
+                       end
+                     else
+                   else If (is_setting.character_set = HEX_NUM_CHARSET) then
+                          If (Length(Num2str(SUCC(Str2num(s,16)),16)) <= ln1) and
+                             (SUCC(Str2num(s,16)) <= is_environment.max_num) then
+                            begin
+                              s := Num2str(SUCC(Str2num(s,16)),16);
+                              chflag := FALSE;
+                            end;
+                 end;
         kCHmins,
-        kNPmins: If (is_setting.character_set = DEC_NUM_CHARSET) then
-                   If (Str2num(s,10) > 0) and
-                      (PRED(Str2num(s,10)) >= is_environment.min_num) then
-                     s := Num2str(PRED(Str2num(s,10)),10)
-                   else
-                 else If (is_setting.character_set = HEX_NUM_CHARSET) then
-                        If (Str2num(s,16) > 0) and
-                           (PRED(Str2num(s,16)) >= is_environment.min_num) then
-                          s := Num2str(PRED(Str2num(s,16)),16);
+        kNPmins: begin
+                   chflag := TRUE;
+                   If (is_setting.character_set = DEC_NUM_CHARSET) then
+                     If (Str2num(s,10) > 0) and
+                        (PRED(Str2num(s,10)) >= is_environment.min_num) then
+                       begin
+                         s := Num2str(PRED(Str2num(s,10)),10);
+                         chflag := FALSE;
+                       end
+                     else
+                   else If (is_setting.character_set = HEX_NUM_CHARSET) then
+                          If (Str2num(s,16) > 0) and
+                             (PRED(Str2num(s,16)) >= is_environment.min_num) then
+                            begin
+                              s := Num2str(PRED(Str2num(s,16)),16);
+                              chflag := FALSE;
+                            end;
+                end;
+
         kCtrlY: begin
                   appn := TRUE;
                   s := '';
@@ -980,7 +1006,12 @@ begin { InputStr }
         kINSERT: If is_setting.replace_enabled then
                    begin
                      ins := NOT ins;
-                     If ins then ThinCursor else WideCursor;
+                     If ins then
+                       If use_large_cursor then WideCursor
+                       else ThinCursor
+                     else
+                       If use_large_cursor then ThinCursor
+                       else WideCursor;
                    end;
 
         kHOME: begin
@@ -996,30 +1027,32 @@ begin { InputStr }
                 If (cloc < ln1) then xloc := cloc else xloc := ln1;
               end;
 
-        else If (CHR(LO(key)) in tCHARSET(is_setting.character_set)) then
-               begin
-                 If NOT appn then begin s := ''; cloc := 1; xloc := 1; end;
-                 appn := TRUE;
-                 If ins and (Length(CutStrR(s,cloc)) < ln) then
-                   begin
-                     If (Length(CutStrR(s,cloc)) < ln) then
-                       Insert(CHR(LO(key)),s,cloc)
-                     else s[cloc] := CHR(LO(key));
-                     s := FilterStr2(s,is_setting.valid_chars,'_');
-                     If (cloc < ln) then Inc(cloc);
-                     If (xloc < ln) and (xloc < ln1) then Inc(xloc)
-                   end
-                 else
-                   If (Length(s) < ln) or NOT ins then
-                     begin
-                       If (cloc > Length(s)) and (Length(s) < ln) then
-                         Inc(BYTE(s[0]));
-                       s[cloc] := CHR(LO(key));
-                       s := FilterStr2(s,is_setting.valid_chars,'_');
-                       If (cloc < ln) then Inc(cloc);
-                       If (xloc < ln) and (xloc < ln1) then Inc(xloc);
-                     end;
-               end;
+        else chflag := TRUE;
+      end;
+
+    If chflag and (CHR(LO(key)) in tCHARSET(is_setting.character_set)) then
+      begin
+        If NOT appn then begin s := ''; cloc := 1; xloc := 1; end;
+        appn := TRUE;
+        If ins and (Length(CutStrR(s,cloc)) < ln) then
+          begin
+            If (Length(CutStrR(s,cloc)) < ln) then
+              Insert(CHR(LO(key)),s,cloc)
+            else s[cloc] := CHR(LO(key));
+            s := FilterStr2(s,is_setting.valid_chars,'_');
+            If (cloc < ln) then Inc(cloc);
+            If (xloc < ln) and (xloc < ln1) then Inc(xloc)
+          end
+        else
+          If (Length(s) < ln) or NOT ins then
+            begin
+              If (cloc > Length(s)) and (Length(s) < ln) then
+                Inc(BYTE(s[0]));
+              s[cloc] := CHR(LO(key));
+              s := FilterStr2(s,is_setting.valid_chars,'_');
+              If (cloc < ln) then Inc(cloc);
+              If (xloc < ln) and (xloc < ln1) then Inc(xloc);
+            end;
       end;
 _end:
       is_environment.cur_str := s;
@@ -1040,133 +1073,12 @@ _end:
   InputStr := s;
 end;
 
-function SameName(str1,str2: String): Boolean;
-
-var
-  LastW: Word;
-  result: Boolean;
-
+function SameName(mask,str: String): Boolean;
 begin
-  asm
-        mov     [LastW],0
-        xor     eax,eax
-        xor     ecx,ecx
-        xor     ebx,ebx
-        lea     esi,[str1]
-        lea     edi,[str2]
-        xor     ah,ah
-        mov     al,[esi]
-        inc     esi
-        mov     cx,ax
-        mov     al,[edi]
-        inc     edi
-        mov     bx,ax
-        or      cx,cx
-        jnz     @@1
-        or      bx,bx
-        jz      @@13
-        jmp     @@14
-        xor     dh,dh
-@@1:    mov     al,[esi]
-        inc     esi
-        cmp     al,'*'
-        jne     @@2
-        dec     cx
-        jz      @@13
-        mov     dh,1
-        mov     LastW,cx
-        jmp     @@1
-@@2:    cmp     al,'?'
-        jnz     @@3
-        inc     edi
-        or      bx,bx
-        je      @@12
-        dec     bx
-        jmp     @@12
-@@3:    or      bx,bx
-        je      @@14
-        cmp     al,'['
-        jne     @@11
-        cmp     word ptr [esi],']?'
-        je      @@9
-        mov     ah,byte ptr [edi]
-        xor     dl,dl
-        cmp     byte ptr [esi],'!'
-        jnz     @@4
-        inc     esi
-        dec     cx
-        jz      @@14
-        inc     dx
-@@4:    mov     al,[esi]
-        inc     esi
-        dec     cx
-        jz      @@14
-        cmp     al,']'
-        je      @@7
-        cmp     ah,al
-        je      @@6
-        cmp     byte ptr [esi],'-'
-        jne     @@4
-        inc     esi
-        dec     cx
-        jz      @@14
-        cmp     ah,al
-        jae     @@5
-        inc     esi
-        dec     cx
-        jz      @@14
-        jmp     @@4
-@@5:    mov     al,[esi]
-        inc     esi
-        dec     cx
-        jz      @@14
-        cmp     ah,al
-        ja      @@4
-@@6:    or      dl,dl
-        jnz     @@14
-        inc     dx
-@@7:    or      dl,dl
-        jz      @@14
-@@8:    cmp     al,']'
-        je      @@10
-@@9:    mov     al,[esi]
-        inc     esi
-        cmp     al,']'
-        loopne  @@9
-        jne     @@14
-@@10:   dec     bx
-        inc     edi
-        jmp     @@12
-@@11:   cmp     [edi],al
-        jne     @@14
-        inc     edi
-        dec     bx
-@@12:   xor     dh,dh
-        dec     cx
-        jnz     @@1
-        or      bx,bx
-        jnz     @@14
-@@13:   mov     result,TRUE
-        jmp     @@16
-@@14:   or      dh,dh
-        jz      @@15
-        jecxz   @@15
-        or      bx,bx
-        jz      @@15
-        inc     edi
-        dec     bx
-        jz      @@15
-        mov     ax,LastW
-        sub     ax,cx
-        add     cx,ax
-        movsx   eax,ax
-        sub     esi,eax
-        dec     esi
-        jmp     @@1
-@@15:   mov     result,FALSE
-@@16:
-  end;
-  SameName := result;
+  If (Length(mask) > Length(str)) then
+    While (mask[Length(mask)] in ['*','?']) and (Length(mask) > Length(str)) do
+      Dec(mask[0]);
+  SameName := IsWild(str,mask,FALSE);
 end;
 
 var

@@ -1,0 +1,11 @@
+Usage:
+  make [option ...] [TARGET]
+where:
+  option:
+    DEBUG=<Boolean>
+      <Boolean>: 0 | 1
+    BUILD=<BUILD>
+      <BUILD>: native | go32v2-i386 | linux-i386 | linux-x86_64 | win32-i386 | win64-x86_64
+    PACKAGE=<PACKAGE>
+      <PACKAGE>: dos | linux | windows
+  TARGET: usage | all | build-sdk | build-sdl | clean-sdl | build-at2-bin | clean-at2-bin | release-at2-bin | clean-release-at2-bin | release | clean-release | clean | distclean

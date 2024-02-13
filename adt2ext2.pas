@@ -993,6 +993,9 @@ begin
   mark_lines :=
     check_boolean('mark_lines',mark_lines);
 
+  use_large_cursor :=
+    check_boolean('use_large_cursor',use_large_cursor);
+   
   fix_c_note_bug :=
     check_boolean('fix_c_note_bug',fix_c_note_bug);
 

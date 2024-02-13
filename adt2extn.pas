@@ -1869,7 +1869,9 @@ _jmp1:
 
   If NOT _force_program_quit then
     Repeat
-      If (pos in [1..22,27]) then ThinCursor
+      If (pos in [1..22,27]) then 
+        If use_large_cursor then WideCursor
+        else ThinCursor
       else HideCursor;
 
       Case pos of
@@ -4388,7 +4390,8 @@ _jmp1:
 
         5: begin
              GotoXY(xstart+27,ystart+10);
-             ThinCursor;
+             If use_large_cursor then WideCursor
+             else ThinCursor;
              is_environment.keystroke := getkey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
@@ -4427,7 +4430,8 @@ _jmp1:
 
         6: begin
              GotoXY(xstart+3,ystart+13);
-             ThinCursor;
+             If use_large_cursor then WideCursor
+             else ThinCursor;
              is_environment.keystroke := getkey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
@@ -4441,7 +4445,8 @@ _jmp1:
 
         7: begin
              GotoXY(xstart+3,ystart+14);
-             ThinCursor;
+             If use_large_cursor then WideCursor
+             else ThinCursor;
              is_environment.keystroke := getkey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
@@ -4456,7 +4461,8 @@ _jmp1:
 
         8: begin
              GotoXY(xstart+3,ystart+15);
-             ThinCursor;
+             If use_large_cursor then WideCursor
+             else ThinCursor;
              is_environment.keystroke := getkey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
@@ -4472,7 +4478,8 @@ _jmp1:
 
         9: begin
              GotoXY(xstart+3,ystart+18);
-             ThinCursor;
+             If use_large_cursor then WideCursor
+             else ThinCursor;
              is_environment.keystroke := getkey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
@@ -4487,7 +4494,8 @@ _jmp1:
 
        10: begin
              GotoXY(xstart+3,ystart+19);
-             ThinCursor;
+             If use_large_cursor then WideCursor
+             else ThinCursor;
              is_environment.keystroke := getkey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
@@ -4503,7 +4511,8 @@ _jmp1:
 
        11: begin
              GotoXY(xstart+19,ystart+18);
-             ThinCursor;
+             If use_large_cursor then WideCursor
+             else ThinCursor;
              is_environment.keystroke := getkey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
@@ -4519,7 +4528,8 @@ _jmp1:
 
        12: begin
              GotoXY(xstart+19,ystart+19);
-             ThinCursor;
+             If use_large_cursor then WideCursor
+             else ThinCursor;
              is_environment.keystroke := getkey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
@@ -4669,7 +4679,8 @@ _jmp1:
 
        15: begin
              GotoXY(xstart+3,ystart+24);
-             ThinCursor;
+             If use_large_cursor then WideCursor
+             else ThinCursor;
              is_environment.keystroke := getkey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
@@ -4711,7 +4722,8 @@ _jmp1:
 
        16: begin
              GotoXY(xstart+3,ystart+25);
-             ThinCursor;
+             If use_large_cursor then WideCursor
+             else ThinCursor;
              is_environment.keystroke := getkey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
@@ -4731,7 +4743,8 @@ _jmp1:
         RANGE_PAN_LO..RANGE_PAN_HI:
           begin
             GotoXY(xstart+51+(pos-RANGE_PAN_LO) MOD 3*3,ystart+6+(pos-RANGE_PAN_LO) DIV 3);
-            ThinCursor;
+            If use_large_cursor then WideCursor
+            else ThinCursor;
             is_environment.keystroke := getkey;
             _old_pos_pan := pos;
             _check_key_shortcuts;
@@ -4761,7 +4774,8 @@ _jmp1:
             If (pos_4op <> 0) and NOT (songdata.flag_4op OR (1 SHL PRED(pos-RANGE_4OP_LO+1)) = songdata.flag_4op) then
               pos_4op := 0;
             GotoXY(xstart+35+pos_4op*11,ystart+13+pos-RANGE_4OP_LO);
-            ThinCursor;
+            If use_large_cursor then WideCursor
+            else ThinCursor;
             is_environment.keystroke := getkey;
             _old_pos_4op := pos;
             _check_key_shortcuts;
@@ -4818,7 +4832,8 @@ _jmp1:
         RANGE_LCK_LO..RANGE_LCK_HI:
           begin
             GotoXY(xstart+64+(pos-RANGE_LCK_LO) MOD 4*4,ystart+6+(pos-RANGE_LCK_LO) DIV 4);
-            ThinCursor;
+            If use_large_cursor then WideCursor
+            else ThinCursor;
             is_environment.keystroke := getkey;
             _old_pos_lck := pos;
             _check_key_shortcuts;
@@ -5739,7 +5754,9 @@ _jmp1:
   If (Lower(ExtOnly(fname)) = 'sbi') then sbi_file_loader;
   If (Lower(ExtOnly(fname)) = 'sgi') then sgi_file_loader;
 
-//  ThinCursor;
+//  If use_large_cursor then WideCursor
+//  else ThinCursor;
+
   If (mpos = 1) then
     Case load_flag of
       0: If (old_songdata_source <> '') and
