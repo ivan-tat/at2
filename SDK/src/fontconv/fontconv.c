@@ -1009,7 +1009,7 @@ int pbm_import_from_file (const char *filename, struct pbm_t **pbm) {
     goto _err_format;
   a = strtol (s, &endptr, 10);
   if ((!errno) && endptr && (isblank (*endptr))
-  &&  (a > 0) && (a <= UINT_MAX)) {
+  &&  (a > 0) && (a <= INT_MAX)) {
     _pbm->width = a;
   } else {
     if (endptr)
@@ -1021,7 +1021,7 @@ int pbm_import_from_file (const char *filename, struct pbm_t **pbm) {
   s = endptr;
   a = strtol (s, &endptr, 10);
   if ((!errno) && (endptr == end)
-  &&  (a > 0) && (a <= UINT_MAX)) {
+  &&  (a > 0) && (a <= INT_MAX)) {
     _pbm->height = a;
   } else {
     if (endptr)

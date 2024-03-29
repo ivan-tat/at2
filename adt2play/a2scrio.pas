@@ -317,7 +317,7 @@ begin
   _debug_str_:= 'A2SCRIO.PAS:CWrite';
   If _picture_mode then EXIT;
   dosmemget($0b800,0,screen_ptr^,MAX_SCREEN_MEM_SIZE);
-  ShowC3Str(screen_ptr^,WhereX,WhereY,str,atr1,atr2,atr3);
+  ShowC3Str(screen_ptr,WhereX,WhereY,str,atr1,atr2,atr3);
   dosmemput($0b800,0,screen_ptr^,MAX_SCREEN_MEM_SIZE);
   GotoXY(1,WhereY);
 end;
@@ -326,7 +326,7 @@ procedure C3WriteLn(str: String; atr1,atr2,atr3: Byte);
 begin
   _debug_str_:= 'A2SCRIO.PAS:C3WriteLn';
   If _picture_mode then EXIT;
-  ShowC3Str(screen_ptr^,WhereX,WhereY,str,
+  ShowC3Str(screen_ptr,WhereX,WhereY,str,
             atr1,atr2,atr3);
   WriteLn;
 end;

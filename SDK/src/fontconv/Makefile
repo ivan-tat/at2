@@ -10,11 +10,17 @@ exec_prefix?=$(prefix)
 bindir?=$(exec_prefix)/bin
 
 ifeq ($(builddir),)
- builddir:=$(buildroot)/$(AT2SDK_BUILD_SUBDIR)
+ builddir:=$(buildroot)/$(AT2SDK_HOST_SUBDIR)
 endif
 
-CC?=gcc
-CFLAGS+=-std=c99 -Wall -Wextra -pedantic -O2
+# Setup GNU C compiler for host
+
+GCCH?=gcc
+GCCFLAGSH+=-std=c99 -Wall -Wextra -pedantic -O2
+
+ifeq ($(OS_HOST),Windows)
+ GCCFLAGSH+=-mconsole
+endif
 
 BIN=fontconv$(EH)
 
@@ -26,7 +32,7 @@ $(DESTDIR)$(bindir):
 	mkdir -p $@
 
 $(builddir)/$(BIN): fontconv.c Makefile | $(builddir)
-	$(CC) $(CFLAGS) -o $@ $<
+	$(GCCH) $(GCCFLAGSH) -o $@ $<
 
 .PHONY: install
 install: $(DESTDIR)$(bindir)/$(BIN)

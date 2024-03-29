@@ -83,9 +83,12 @@ Now:
 
 ### Compilers
 
+* [GNU Binutils](https://www.gnu.org/software/binutils/) ([package](https://pkgs.org/search/?q=binutils), [package for DOS target](https://pkgs.org/search/?q=binutils-djgpp)) - a collection of binary tools (linker, assembler and others)
 * [GNU Compiler Collection](https://www.gnu.org/software/gcc/) ([package](https://pkgs.org/search/?q=gcc))
 * [Free Pascal](https://www.freepascal.org/) ([package](https://pkgs.org/search/?q=fpc)) - an open source Object Pascal compiler supporting both Delphi and Turbo Pascal 7.0 dialects, as well as Mac Pascal dialects
 * [DJGPP](https://www.delorie.com/djgpp/) - DOS ports of many GNU development utilities
+* [GCC Cross-Compiler](https://wiki.osdev.org/GCC_Cross-Compiler) - creating a GCC cross-compiler for your own operating system
+* [Cross compiling](https://wiki.lazarus.freepascal.org/Cross_compiling)
 
 ### Libraries
 

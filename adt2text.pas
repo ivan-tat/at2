@@ -19,8 +19,6 @@ unit AdT2text;
 {$PACKRECORDS 1}
 interface
 
-{$INCLUDE adtrack2.inc} { defines at2ver, at2date, at2link }
-
 const
 {$IFNDEF BETA}
   _ADT2_TITLE_STRING_ = '/´DLiB TR/´CK3R ][';
@@ -32,6 +30,8 @@ const
 {$ELSE}
   _PLATFORM_STR_ = 'SDL';
 {$ENDIF}
+
+{$I adt2ver.inc} { Defines at2ver, at2date, at2link }
 
 const
 {$IFDEF GO32V2}

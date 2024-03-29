@@ -16,10 +16,7 @@
 program AdLib_Tracker_II;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
-{$IFDEF WINDOWS}
-{$APPTYPE GUI}
-{$R adtrack2.res}
-{$ENDIF}
+{$I adtrack2.inc}
 
 {$IFDEF GO32V2}
 

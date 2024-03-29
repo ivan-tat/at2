@@ -7,9 +7,11 @@ BUILD?=go32v2-i386
 
 include ../SDK/Common.mak
 
+FPCFLAGS+=-O2
+
 # Setup version
 
-ifeq ($(OS_TARGET),go32v2)
+ifeq ($(OS_TARGET),DJGPP)
  AT2PLAY_VERSION_FILE?=adt2play.dos
 else
  $(warning AT2PLAY_VERSION_FILE variable is not defined for target OS: $(OS_TARGET))
@@ -26,7 +28,7 @@ endif
 # Setup paths
 
 ifeq ($(builddir),)
- builddir:=$(buildroot)/$(FULL_TARGET)
+ builddir:=$(buildroot)/$(AT2SDK_TARGET_SUBDIR)
 endif
 buildlog:=$(builddir)/log
 
@@ -38,19 +40,18 @@ FPCFLAGS+=\
 
 AT2PLAY_BIN=adt2play$E
 
-# Setup target dependencies
-
-A=build-sdk
-
 $(info ---)
-$(info Goals:   $(MAKECMDGOALS))
-$(info Host:    $(OS_HOST)-$(CPU_HOST))
-$(info Build:   $(BUILD))
-$(info Source:  $(OS_SOURCE)-$(CPU_SOURCE))
-$(info Target:  $(OS_TARGET)-$(CPU_TARGET))
-$(info Version: $(AT2PLAY_VERSION))
-$(info Debug:   $(if $(findstring $(DEBUG),0),no,yes))
-$(info Binary:  $(AT2PLAY_BIN))
+$(info Goals:              $(MAKECMDGOALS))
+$(info Build:              $(BUILD))
+$(info Host:               $(OS_HOST) ($(CPU_HOST)))
+$(info Target:             $(OS_TARGET) ($(CPU_TARGET)))
+$(info GNU C Host:         $(GCC_OS_HOST) ($(GCC_CPU_HOST)))
+$(info GNU C Target:       $(GCC_OS_TARGET) ($(GCC_CPU_TARGET)))
+$(info Free Pascal Host:   $(FPC_OS_HOST) ($(FPC_CPU_HOST)))
+$(info Free Pascal Target: $(FPC_OS_TARGET) ($(FPC_CPU_TARGET)))
+$(info Program version:    $(AT2PLAY_VERSION))
+$(info Debug symbols:      $(if $(findstring $(DEBUG),0),no,yes))
+$(info Output binary:      $(AT2PLAY_BIN))
 $(info ---)
 $(info SDK prefix:      $(AT2SDK_PREFIX))
 $(info Build directory: $(builddir))
@@ -84,7 +85,55 @@ clean-at2play-version:
 $(builddir)/adt2play.inc: | $(builddir)
 	echo "const VERSION_STR = '$(AT2PLAY_VERSION)';" >$@
 
-$(builddir)/units/iss_tim.ppu: ../go32v2/iss_tim.pas Makefile | $(builddir)/units
+$(builddir)/font/play8.inc: ../font/play8.pbm Makefile | $(builddir)/font
+	fontconv -pbmtoinc -s pascal -o $@ $<
+
+$(builddir)/font/play16.inc: ../font/play16.pbm Makefile | $(builddir)/font
+	fontconv -pbmtoinc -s pascal -o $@ $<
+
+a2data_deps=\
+ a2data.pas\
+ $(builddir)/font/play8.inc\
+ $(builddir)/font/play16.inc
+
+a2depack_deps=\
+ a2depack.pas
+
+a2fileio_deps=\
+ a2fileio.pas\
+ ../iloaders.inc
+
+a2player_deps=\
+ a2player.pas\
+ typconst.inc
+
+a2scrio_deps=\
+ a2scrio.pas
+
+iss_tim_deps=\
+ ../go32v2/iss_tim.pas
+
+parserio_deps=\
+ parserio.pas
+
+stringio_deps=\
+ stringio.pas
+
+txtscrio_deps=\
+ txtscrio.pas\
+ ../txtscrio/i386/DupChar.pas\
+ ../txtscrio/i386/ShowC3Str.pas\
+ ../txtscrio/i386/ScreenMemCopy.pas
+
+$(builddir)/units/a2data.ppu: $(a2data_deps) Makefile | $(builddir)/units
+	$(FPC)\
+	 -FU$(builddir)/units\
+	 $(FPCFLAGS)\
+	 $<\
+	 -o$@\
+	 -vnh >$(buildlog)
+
+$(builddir)/units/iss_tim.ppu: $(iss_tim_deps) Makefile | $(builddir)/units
 	$(FPC)\
 	 -Ccpascal -Mtp\
 	 -FU$(builddir)/units\
@@ -93,42 +142,28 @@ $(builddir)/units/iss_tim.ppu: ../go32v2/iss_tim.pas Makefile | $(builddir)/unit
 	 -o$@\
 	 -vnh >$(buildlog)
 
-$(builddir)/font/play8.inc: ../font/play8.pbm Makefile | $(builddir)/font
-	fontconv -pbmtoinc -s pascal -o $@ $<
+# Setup target dependencies
 
-$(builddir)/font/play16.inc: ../font/play16.pbm Makefile | $(builddir)/font
-	fontconv -pbmtoinc -s pascal -o $@ $<
+adt2play_deps=build-sdk
 
-$(builddir)/units/a2data.ppu: a2data.pas\
- $(builddir)/font/play8.inc\
- $(builddir)/font/play16.inc\
- Makefile | $(builddir)/units
-	$(FPC)\
-	 -FU$(builddir)/units\
-	 $(FPCFLAGS)\
-	 $<\
-	 -o$@\
-	 -vnh >$(buildlog)
+adt2play_deps+=\
+ adt2play.pas\
+ $(builddir)/adt2play.inc\
+ $(a2depack_deps)\
+ $(a2fileio_deps)\
+ $(a2player_deps)\
+ $(a2scrio_deps)\
+ $(parserio_deps)\
+ $(stringio_deps)\
+ $(txtscrio_deps)\
+ $(builddir)/units/a2data.ppu
 
-# Add platform-specific source code dependencies
-ifeq ($(OS_TARGET),go32v2)
- A+=\
+ifeq ($(FPC_OS_TARGET),go32v2)
+ adt2play_deps+=\
   $(builddir)/units/iss_tim.ppu
 endif
 
-$(builddir)/$(AT2PLAY_BIN): $A\
- $(builddir)/units/a2data.ppu\
- $(builddir)/adt2play.inc\
- ../iloaders.inc\
- adt2play.pas\
- a2depack.pas\
- a2fileio.pas\
- a2player.pas\
- a2scrio.pas\
- parserio.pas\
- stringio.pas\
- txtscrio.pas\
- typconst.inc\
+$(builddir)/$(AT2PLAY_BIN): $(adt2play_deps)\
  Makefile | $(builddir) $(builddir)/units
 	$(FPC) -dADT2PLAY\
 	 -Ccpascal -Mtp -Rintel\
