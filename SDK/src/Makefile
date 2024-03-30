@@ -8,10 +8,33 @@ include ../Common.mak
 prefix?=/usr/local
 
 TARGETS=\
+ bintoinc\
  fontconv
 
 .PHONY: all
 all: install
+
+# bintoinc
+
+.PHONY: build-bintoinc
+build-bintoinc: | bintoinc
+	$(MAKE) -w -C $| prefix=$(prefix)
+
+.PHONY: install-bintoinc
+install-bintoinc: | bintoinc
+	$(MAKE) -w -C $| prefix=$(prefix) install
+
+.PHONY: uninstall-bintoinc
+uninstall-bintoinc: | bintoinc
+	$(MAKE) -w -C $| prefix=$(prefix) uninstall
+
+.PHONY: clean-bintoinc
+clean-bintoinc: | bintoinc
+	$(MAKE) -w -C $| prefix=$(prefix) clean
+
+.PHONY: distclean-bintoinc
+distclean-bintoinc: | bintoinc
+	$(MAKE) -w -C $| prefix=$(prefix) distclean
 
 # fontconv
 

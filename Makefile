@@ -141,6 +141,9 @@ $(builddir)/adtrack2.inc: | $(builddir)
 	 echo "{\$$ENDIF}";\
 	 } >$@
 
+$(builddir)/adtrack2-icon.inc: adtrack2.bmp Makefile | $(builddir)
+	bintoinc -s pascal -o $@ $<
+
 $(builddir)/adtrack2.res: adtrack2.rc Makefile | $(builddir)
 	$(WINDRES) -i $< -o $@
 
@@ -196,6 +199,11 @@ adt2data_deps=\
  adt2data.pas\
  $(builddir)/font/track16.inc\
  $(builddir)/font/vga16.inc
+
+ifneq ($(OS_TARGET),DJGPP)
+ adt2data_deps+=\
+  $(builddir)/adtrack2-icon.inc
+endif
 
 adt2ext2_deps=\
  adt2ext2.pas\
@@ -362,7 +370,9 @@ clean-at2-bin: clean-log clean-at2-version
 	 $(builddir)/txtscrio/*\
 	 $(builddir)/units/*\
 	 $(builddir)/adtrack2.inc\
+	 $(builddir)/adtrack2-icon.inc\
 	 $(builddir)/adtrack2.res\
+	 $(builddir)/*.o\
 	 $(builddir)/$(AT2_BIN)
 
 #-----------------------------------------------------------------------------
