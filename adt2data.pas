@@ -16,25 +16,14 @@
 unit AdT2data;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$L adt2data.o}
 interface
 
-const
-  font8x16: array[0..4095] of Byte = (
-{$I font/track16.inc}
-);
-
-const
-  vga_font8x16: array[0..4095] of Byte = (
-{$I font/vga16.inc}
-);
-
+var
+  font8x16: array[0..4095] of Byte; cvar; external;
+  vga_font8x16: array[0..4095] of Byte; cvar; external;
 {$IFNDEF GO32V2}
-
-const
-  adt2_icon_bitmap: array[0..3125] of Byte = (
-{$I adtrack2-icon.inc}
-);
-
+  adt2_icon_bitmap: array[0..3125] of Byte; cvar; external;
 {$ENDIF}
 
 implementation

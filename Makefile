@@ -141,24 +141,41 @@ $(builddir)/adtrack2.inc: | $(builddir)
 	 echo "{\$$ENDIF}";\
 	 } >$@
 
-$(builddir)/adtrack2-icon.inc: adtrack2.bmp Makefile | $(builddir)
-	bintoinc -s pascal -o $@ $<
-
 $(builddir)/adtrack2.res: adtrack2.rc Makefile | $(builddir)
 	$(WINDRES) -i $< -o $@
 
-$(builddir)/common.o: common.c\
- common.h\
- defines.h\
- pascal.h\
- Makefile | $(builddir)
-	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
-
 $(builddir)/font/track16.inc: font/track16.pbm Makefile | $(builddir)/font
-	fontconv -pbmtoinc -s pascal -o $@ $<
+	fontconv -pbmtoinc -s c -o $@ $<
 
 $(builddir)/font/vga16.inc: font/vga16.pbm Makefile | $(builddir)/font
-	fontconv -pbmtoinc -s pascal -o $@ $<
+	fontconv -pbmtoinc -s c -o $@ $<
+
+$(builddir)/adtrack2-icon.inc: adtrack2.bmp Makefile | $(builddir)
+	bintoinc -s c -o $@ $<
+
+adt2data_deps=\
+ adt2data.c\
+ adt2data.h\
+ defines.h\
+ $(builddir)/font/track16.inc\
+ $(builddir)/font/vga16.inc
+
+ifneq ($(OS_TARGET),DJGPP)
+ adt2data_deps+=\
+  $(builddir)/adtrack2-icon.inc
+endif
+
+$(builddir)/adt2data.o: $(adt2data_deps) Makefile | $(builddir)
+	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. -I$(builddir) >>$(buildlog)
+
+common_deps=\
+ common.c\
+ common.h\
+ defines.h\
+ pascal.h
+
+$(builddir)/common.o: $(common_deps) Makefile | $(builddir)
+	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
 
 $(builddir)/pascal/string.o: pascal/string.c\
  pascal.h\
@@ -195,15 +212,31 @@ $(builddir)/txtscrio/txtscrio.o: txtscrio.c\
  Makefile | $(builddir)/txtscrio
 	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
 
-adt2data_deps=\
- adt2data.pas\
- $(builddir)/font/track16.inc\
- $(builddir)/font/vga16.inc
+# Ported Pascal to C units
 
-ifneq ($(OS_TARGET),DJGPP)
- adt2data_deps+=\
-  $(builddir)/adtrack2-icon.inc
-endif
+$(builddir)/units/adt2data.ppu: adt2data.pas\
+ $(builddir)/adt2data.o\
+ Makefile | $(builddir) $(builddir)/units
+	$(FPC)\
+	 -FU$(builddir)/units\
+	 -FE$(builddir)\
+	 $(FPCFLAGS)\
+	 $<\
+	 -o$@\
+	 -vnh >>$(buildlog)
+
+$(builddir)/units/common.ppu: common.pas\
+ $(builddir)/common.o\
+ Makefile | $(builddir) $(builddir)/units
+	$(FPC)\
+	 -FU$(builddir)/units\
+	 -FE$(builddir)\
+	 $(FPCFLAGS)\
+	 $<\
+	 -o$@\
+	 -vnh >>$(buildlog)
+
+# Pascal units and target executable
 
 adt2ext2_deps=\
  adt2ext2.pas\
@@ -264,10 +297,6 @@ endif
 adt2vesa_deps=\
  go32v2/adt2vesa.pas
 
-common_deps=\
- common.pas\
- $(builddir)/common.o
-
 depackio_deps=\
  depackio.pas
 
@@ -311,7 +340,6 @@ endif
 adtrack2_deps+=\
  adtrack2.pas\
  $(builddir)/adtrack2.inc\
- $(adt2data_deps)\
  $(adt2ext2_deps)\
  $(adt2ext3_deps)\
  $(adt2ext4_deps)\
@@ -323,7 +351,6 @@ adtrack2_deps+=\
  $(adt2sys_deps)\
  $(adt2text_deps)\
  $(adt2unit_deps)\
- $(common_deps)\
  $(depackio_deps)\
  $(dialogio_deps)\
  $(menulib1_deps)\
@@ -331,7 +358,9 @@ adtrack2_deps+=\
  $(parserio_deps)\
  $(pascal_deps)\
  $(stringio_deps)\
- $(txtscrio_deps)
+ $(txtscrio_deps)\
+ $(builddir)/units/adt2data.ppu\
+ $(builddir)/units/common.ppu
 
 # Add platform-specific source code dependencies
 ifeq ($(FPC_OS_TARGET),go32v2)
