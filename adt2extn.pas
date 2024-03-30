@@ -106,8 +106,22 @@ uses
   SDL_Timer,
 {$ENDIF}
   StrUtils,
-  AdT2opl3,AdT2sys,AdT2keyb,AdT2unit,AdT2ext2,AdT2ext3,AdT2ext4,AdT2ext5,AdT2text,AdT2pack,
-  StringIO,DialogIO,ParserIO,TxtScrIO,MenuLib1,MenuLib2;
+  AdT2opl3,
+  AdT2sys,
+  AdT2keyb,
+  AdT2unit,
+  AdT2ext2,
+  AdT2ext3,
+  AdT2ext4,
+  AdT2ext5,
+  AdT2text,
+  AdT2pack,
+  StringIO,
+  DialogIO,
+  ParserIO,
+  TxtScrIO,
+  MenuLib1,
+  MenuLib2;
 
 function _patts_marked: Byte;
 
@@ -1869,7 +1883,7 @@ _jmp1:
 
   If NOT _force_program_quit then
     Repeat
-      If (pos in [1..22,27]) then 
+      If (pos in [1..22,27]) then
         If use_large_cursor then WideCursor
         else ThinCursor
       else HideCursor;

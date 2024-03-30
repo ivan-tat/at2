@@ -14,3 +14,8 @@ void *memmove (void *dest, const void *src, size_t n) {
   Pascal_Move (src, dest, n);
   return dest;
 }
+
+void *memset (void *s, int c, size_t n) {
+  Pascal_FillChar (s, n, c);
+  return s;
+}

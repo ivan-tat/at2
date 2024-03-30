@@ -144,6 +144,13 @@ $(builddir)/adtrack2.inc: | $(builddir)
 $(builddir)/adtrack2.res: adtrack2.rc Makefile | $(builddir)
 	$(WINDRES) -i $< -o $@
 
+$(builddir)/common.o: common.c\
+ common.h\
+ defines.h\
+ pascal.h\
+ Makefile | $(builddir)
+	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
+
 $(builddir)/font/track16.inc: font/track16.pbm Makefile | $(builddir)/font
 	fontconv -pbmtoinc -s pascal -o $@ $<
 
@@ -249,6 +256,10 @@ endif
 adt2vesa_deps=\
  go32v2/adt2vesa.pas
 
+common_deps=\
+ common.pas\
+ $(builddir)/common.o
+
 depackio_deps=\
  depackio.pas
 
@@ -304,6 +315,7 @@ adtrack2_deps+=\
  $(adt2sys_deps)\
  $(adt2text_deps)\
  $(adt2unit_deps)\
+ $(common_deps)\
  $(depackio_deps)\
  $(dialogio_deps)\
  $(menulib1_deps)\

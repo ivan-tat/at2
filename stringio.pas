@@ -109,7 +109,9 @@ implementation
 uses
   DOS,
   StrUtils,
-  AdT2unit,AdT2sys,AdT2keyb,
+  AdT2unit,
+  AdT2sys,
+  AdT2keyb,
   TxtScrIO;
 
 function byte2hex(value: Byte): String;

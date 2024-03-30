@@ -71,8 +71,11 @@ implementation
 
 uses
   GO32,
-  A2data,A2player,A2fileIO,
-  StringIO,TxtScrIO;
+  A2data,
+  A2player,
+  A2fileIO,
+  StringIO,
+  TxtScrIO;
 
 const
   _ptr_font8x8: Pointer = @font8x8;

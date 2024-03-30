@@ -17,9 +17,13 @@ program AdT2_Player;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
 uses
-  DOS,GO32,
-  A2player,A2fileIO,A2scrIO,
-  StringIO,TxtScrIO;
+  DOS,
+  GO32,
+  A2player,
+  A2fileIO,
+  A2scrIO,
+  StringIO,
+  TxtScrIO;
 
 {$INCLUDE adt2play.inc} { defines VERSION_STR }
 

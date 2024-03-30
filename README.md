@@ -64,6 +64,8 @@ Now:
 * Many extra and unneeded files were removed.
 * Compilation is no longer dependent on unknown binary executables.
 
+See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pascal code to C.
+
 ## References
 
 * [Adlib Tracker 2](http://www.adlibtracker.net) - official website

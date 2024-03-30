@@ -48,8 +48,21 @@ uses
   SDL_Timer,
 {$ENDIF}
   DOS,
-  AdT2opl3,AdT2sys,AdT2keyb,AdT2unit,AdT2extn,AdT2ext2,AdT2ext3,AdT2ext4,AdT2text,AdT2pack,
-  StringIO,DialogIO,ParserIO,TxtScrIO,DepackIO;
+  AdT2opl3,
+  AdT2sys,
+  AdT2keyb,
+  AdT2unit,
+  AdT2extn,
+  AdT2ext2,
+  AdT2ext3,
+  AdT2ext4,
+  AdT2text,
+  AdT2pack,
+  StringIO,
+  DialogIO,
+  ParserIO,
+  TxtScrIO,
+  DepackIO;
 
 procedure a2b_lister_external_proc; forward;
 procedure a2w_lister_external_proc_callback; forward;

@@ -2,7 +2,14 @@
 // SPDX-FileCopyrightText: 2024 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-procedure memcpy; cdecl; external;
-procedure memmove; cdecl; external;
+unit common;
 
-procedure memset; cdecl; external;
+{$L common.o}
+
+interface
+
+procedure memsetw; cdecl; external;
+
+implementation
+
+end.

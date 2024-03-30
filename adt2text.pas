@@ -1308,8 +1308,14 @@ implementation
 
 uses
   StrUtils,
-  AdT2unit,AdT2sys,AdT2keyb,AdT2data,
-  TxtScrIO,StringIO,DialogIO,ParserIO;
+  AdT2unit,
+  AdT2sys,
+  AdT2keyb,
+  AdT2data,
+  TxtScrIO,
+  StringIO,
+  DialogIO,
+  ParserIO;
 
 const
   key_comment_B =

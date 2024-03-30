@@ -133,7 +133,9 @@ const
 implementation
 
 uses
-  DOS,GO32,ISS_TIM,
+  DOS,
+  GO32,
+  ISS_TIM,
   A2fileIO;
 
 const

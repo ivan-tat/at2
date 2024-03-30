@@ -226,9 +226,15 @@ end;
 {$ELSE}
 
 uses
-  MATH,SysUtils,
-  AdT2unit,AdT2sys,TxtScrIO,StringIO,
-  SDL_Types,SDL_Audio,OPL3EMU;
+  MATH,
+  SysUtils,
+  AdT2unit,
+  AdT2sys,
+  TxtScrIO,
+  StringIO,
+  SDL_Types,
+  SDL_Audio,
+  OPL3EMU;
 
 const
   opl3_sample_buffer_ptr: Pointer = NIL;

@@ -20,8 +20,14 @@ interface
 
 uses
   DOS,
-  AdT2unit,AdT2sys,AdT2keyb,AdT2ext2,
-  DialogIO,TxtScrIO,StringIO,ParserIO;
+  AdT2unit,
+  AdT2sys,
+  AdT2keyb,
+  AdT2ext2,
+  DialogIO,
+  TxtScrIO,
+  StringIO,
+  ParserIO;
 
 const
   MenuLib2_mn_setting: Record

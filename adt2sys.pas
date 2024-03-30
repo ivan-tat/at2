@@ -128,13 +128,24 @@ implementation
 
 uses
 {$IFDEF GO32V2}
-  DOS,GO32,AdT2vesa,
+  DOS,
+  GO32,
+  AdT2vesa,
 {$ELSE}
-  DOS,SDL,SDL_Video,SDL_Timer,SDL__rwops,
+  DOS,
+  SDL,
+  SDL_Video,
+  SDL_Timer,
+  SDL__rwops,
   AdT2opl3,
 {$ENDIF}
-  AdT2unit,AdT2text,AdT2keyb,AdT2data,
-  TxtScrIO,StringIO,ParserIO;
+  AdT2unit,
+  AdT2text,
+  AdT2keyb,
+  AdT2data,
+  TxtScrIO,
+  StringIO,
+  ParserIO;
 
 {$IFNDEF GO32V2}
 var

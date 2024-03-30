@@ -76,8 +76,19 @@ uses
   SDL_Timer,
 {$ENDIF}
   StrUtils,
-  AdT2opl3,AdT2unit,AdT2sys,AdT2extn,AdT2ext4,AdT2ext5,AdT2text,AdT2pack,AdT2keyb,
-  TxtScrIO,StringIO,DialogIO,ParserIO;
+  AdT2opl3,
+  AdT2unit,
+  AdT2sys,
+  AdT2extn,
+  AdT2ext4,
+  AdT2ext5,
+  AdT2text,
+  AdT2pack,
+  AdT2keyb,
+  TxtScrIO,
+  StringIO,
+  DialogIO,
+  ParserIO;
 
 var
   old_pattern_patt,old_pattern_page,
@@ -995,7 +1006,7 @@ begin
 
   use_large_cursor :=
     check_boolean('use_large_cursor',use_large_cursor);
-   
+
   fix_c_note_bug :=
     check_boolean('fix_c_note_bug',fix_c_note_bug);
 

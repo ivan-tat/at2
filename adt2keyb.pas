@@ -67,10 +67,17 @@ uses
 {$IFDEF GO32V2}
   GO32,
 {$ELSE}
-  SDL_Types,SDL_Timer,SDL_Events,SDL_Keyboard,
+  SDL_Types,
+  SDL_Timer,
+  SDL_Events,
+  SDL_Keyboard,
 {$ENDIF}
-  AdT2unit,AdT2sys,AdT2ext2,
-  TxtScrIO,DialogIO,ParserIO;
+  AdT2unit,
+  AdT2sys,
+  AdT2ext2,
+  TxtScrIO,
+  DialogIO,
+  ParserIO;
 
 var
 {$IFDEF GO32V2}

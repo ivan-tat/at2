@@ -18,12 +18,40 @@ program AdLib_Tracker_II;
 {$PACKRECORDS 1}
 {$I adtrack2.inc}
 
-{$IFDEF GO32V2}
-
 uses
-  CRT,GO32,
-  AdT2opl3,AdT2unit,AdT2sys,AdT2extn,AdT2ext2,AdT2text,AdT2keyb,AdT2data,AdT2vesa,
-  TxtScrIO,StringIO,DialogIO,ParserIO,MenuLib1,MenuLib2;
+{$IFDEF GO32V2}
+  CRT,
+  GO32,
+  common,
+  AdT2vesa,
+  AdT2opl3,
+  AdT2unit,
+  AdT2sys,
+  AdT2extn,
+  AdT2ext2,
+  AdT2text,
+  AdT2keyb,
+{$ELSE}
+  SDL_Timer,
+  common,
+  AdT2sys,
+  AdT2keyb,
+  AdT2opl3,
+  AdT2unit,
+  AdT2extn,
+  AdT2ext2,
+  AdT2ext3,
+  AdT2text,
+{$ENDIF}
+  AdT2data,
+  TxtScrIO,
+  StringIO,
+  DialogIO,
+  ParserIO,
+  MenuLib1,
+  MenuLib2;
+
+{$IFDEF GO32V2}
 
 const
   scan_addresses: array[1..7] of Word = ($388,$210,$220,$230,$240,$250,$260);
@@ -132,11 +160,6 @@ begin
 end;
 
 {$ELSE}
-
-uses
-  SDL_Timer,
-  AdT2sys,AdT2keyb,AdT2opl3,AdT2unit,AdT2extn,AdT2ext2,AdT2ext3,AdT2text,AdT2data,
-  StringIO,DialogIO,ParserIO,TxtScrIO,MenuLib1,MenuLib2;
 
 var
   temp: Longint;

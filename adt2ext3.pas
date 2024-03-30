@@ -48,8 +48,21 @@ implementation
 
 uses
   DOS,
-  AdT2opl3,AdT2sys,AdT2keyb,AdT2unit,AdT2extn,AdT2ext2,AdT2ext4,AdT2ext5,AdT2text,AdT2pack,
-  StringIO,DialogIO,ParserIO,TxtScrIO,DepackIO;
+  AdT2opl3,
+  AdT2sys,
+  AdT2keyb,
+  AdT2unit,
+  AdT2extn,
+  AdT2ext2,
+  AdT2ext4,
+  AdT2ext5,
+  AdT2text,
+  AdT2pack,
+  StringIO,
+  DialogIO,
+  ParserIO,
+  TxtScrIO,
+  DepackIO;
 
 {$i iloadins.inc}
 {$i iloaders.inc}

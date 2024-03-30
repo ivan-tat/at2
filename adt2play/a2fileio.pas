@@ -66,8 +66,10 @@ implementation
 
 uses
   DOS,
-  A2player,A2depack,
-  StringIO,ParserIO;
+  A2player,
+  A2depack,
+  StringIO,
+  ParserIO;
 
 {$i iloaders.inc}
 

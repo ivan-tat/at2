@@ -25,7 +25,9 @@ function LZH_decompress(var source,dest; size: Dword): Dword;
 implementation
 
 uses
-  AdT2sys,AdT2extn,AdT2unit;
+  AdT2sys,
+  AdT2extn,
+  AdT2unit;
 
 const
   { DEFAULT COMPRESSION: buffer 4k, dictionary 8kb }

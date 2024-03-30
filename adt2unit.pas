@@ -428,12 +428,24 @@ implementation
 
 uses
 {$IFDEF GO32V2}
-  CRT,DOS,GO32,ISS_Tim,
+  CRT,
+  DOS,
+  GO32,
+  ISS_Tim,
 {$ELSE}
-  DOS,SDL_Types,SDL_Timer,
+  DOS,
+  SDL_Types,
+  SDL_Timer,
 {$ENDIF}
-  AdT2opl3,AdT2sys,AdT2extn,AdT2ext2,AdT2keyb,
-  TxtScrIO,StringIO,DialogIO,ParserIO;
+  AdT2opl3,
+  AdT2sys,
+  AdT2extn,
+  AdT2ext2,
+  AdT2keyb,
+  TxtScrIO,
+  StringIO,
+  DialogIO,
+  ParserIO;
 
 {$IFDEF GO32V2}
 

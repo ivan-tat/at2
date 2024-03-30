@@ -19,6 +19,9 @@ typedef Shortstring String;
 #define Length(s) ((s)[0])
 #define GetString(s) (&(s)[1])
 
+extern void Pascal_FillChar (void *x, ssize_t count, uint8_t value);
+extern void Pascal_FillWord (void *x, ssize_t count, uint16_t value);
+
 extern void Pascal_Move (const void *src, void *dest, ssize_t n);
 
 // C

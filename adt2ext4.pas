@@ -45,8 +45,21 @@ uses
 {$ELSE}
   DOS,
 {$ENDIF}
-  AdT2opl3,AdT2sys,AdT2keyb,AdT2unit,AdT2extn,AdT2ext2,AdT2ext3,AdT2ext5,AdT2text,AdT2pack,
-  StringIO,DialogIO,ParserIO,TxtScrIO,DepackIO;
+  AdT2opl3,
+  AdT2sys,
+  AdT2keyb,
+  AdT2unit,
+  AdT2extn,
+  AdT2ext2,
+  AdT2ext3,
+  AdT2ext5,
+  AdT2text,
+  AdT2pack,
+  StringIO,
+  DialogIO,
+  ParserIO,
+  TxtScrIO,
+  DepackIO;
 
 const
   _pip_xloc: Byte = 1;

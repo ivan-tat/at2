@@ -259,11 +259,15 @@ implementation
 
 uses
 {$IFDEF GO32V2}
-  CRT,GO32,
+  CRT,
+  GO32,
 {$ENDIF}
   pascal,
-  AdT2unit,AdT2sys,AdT2ext2,
-  DialogIO,ParserIO;
+  AdT2unit,
+  AdT2sys,
+  AdT2ext2,
+  DialogIO,
+  ParserIO;
 
 //show_str
 //show_cstr

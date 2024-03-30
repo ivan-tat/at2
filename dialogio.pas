@@ -27,8 +27,13 @@ uses
   WINDOWS,
 {$ENDIF}
   StrUtils,
-  AdT2unit,AdT2sys,AdT2keyb,AdT2text,
-  TxtScrIO,StringIO,ParserIO;
+  AdT2unit,
+  AdT2sys,
+  AdT2keyb,
+  AdT2text,
+  TxtScrIO,
+  StringIO,
+  ParserIO;
 
 type
   tDIALOG_SETTING = Record
