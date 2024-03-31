@@ -13,7 +13,7 @@ uint8_t C3StrLen (const String *str) {
   len = 0;
 
   n = Length (str);
-  s = GetString (str);
+  s = GetStr (str);
   while (n) {
     if ((*s != '~') && (*s != '`')) // color switch marks
       len++;

@@ -17,7 +17,7 @@ void ShowVStr (tSCREEN_MEM *dest, uint8_t x, uint8_t y, const String *str,
     uint16_t *p; // output screen address
     uint_least16_t a; // prepared attribute
 
-    s = GetString (str);
+    s = GetStr (str);
     p = (uint16_t *) (((char *) dest) + absolute_pos);
     a = attr << 8;
     do {

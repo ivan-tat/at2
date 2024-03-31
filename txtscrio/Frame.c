@@ -72,7 +72,7 @@ void Frame (tSCREEN_MEM *dest, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2,
     x = ((uint16_t) x + 1) >> 1;
     PosChar (x1+x, y1); // set `absolute_pos'
     p = ((char *) dest) + absolute_pos;
-    s = GetString (title);
+    s = GetStr (title);
     a = attr2 << 8;
     do {
       *((uint16_t *) p) = *s | a;

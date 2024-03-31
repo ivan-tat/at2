@@ -15,7 +15,7 @@ void ShowC4Str (tSCREEN_MEM *dest, uint8_t x, uint8_t y, const String *str,
     uint16_t *p; // output screen address
     uint_least16_t a1, a2, a3, a4; // prepared attributes
 
-    s = GetString (str);
+    s = GetStr (str);
     PosChar (x, y); // set `absolute_pos'
     p = (uint16_t *) (((char *) dest) + absolute_pos);
     a1 = attr1 << 8;

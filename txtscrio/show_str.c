@@ -28,7 +28,7 @@ void show_str (uint8_t xpos, uint8_t ypos, const String *str, uint8_t attr) {
     uint_least8_t i; // index for a new character to show (1 based)
     uint_least8_t x, y; // character's screen coordinates
 
-    s = GetString (str);
+    s = GetStr (str);
     a = attr << 8;
     x = xpos;
     y = ypos;
