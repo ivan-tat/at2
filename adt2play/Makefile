@@ -7,7 +7,7 @@ BUILD?=go32v2-i386
 
 include ../SDK/Common.mak
 
-FPCFLAGS+=-O2
+FPCFLAGS+=-dADT2PLAY -O2
 
 # Setup version
 
@@ -111,7 +111,7 @@ a2scrio_deps=\
  a2scrio.pas
 
 iss_tim_deps=\
- ../go32v2/iss_tim.pas
+ ../go32/iss_tim.pas
 
 parserio_deps=\
  parserio.pas
@@ -123,7 +123,24 @@ txtscrio_deps=\
  txtscrio.pas\
  ../txtscrio/i386/DupChar.pas\
  ../txtscrio/i386/ShowC3Str.pas\
- ../txtscrio/i386/ScreenMemCopy.pas
+ ../txtscrio/i386/ScreenMemCopy.pas\
+ ../txtscrio/go32/pas/GetPalette.pas\
+ ../txtscrio/go32/pas/GetRGBitem.pas\
+ ../txtscrio/go32/pas/iVGA.pas\
+ ../txtscrio/go32/pas/SetPalette.pas\
+ ../txtscrio/go32/pas/SetRGBitem.pas\
+ ../txtscrio/go32/pas/VgaFade.pas\
+ ../txtscrio/go32/pas/WaitRetrace.pas\
+ ../txtscrio/pas/GetCursor.pas\
+ ../txtscrio/pas/GetCursorShape.pas\
+ ../txtscrio/pas/GotoXY.pas\
+ ../txtscrio/pas/HideCursor.pas\
+ ../txtscrio/pas/SetCursor.pas\
+ ../txtscrio/pas/SetCursorShape.pas\
+ ../txtscrio/pas/ThinCursor.pas\
+ ../txtscrio/pas/WhereX.pas\
+ ../txtscrio/pas/WhereY.pas\
+ ../txtscrio/pas/WideCursor.pas
 
 $(builddir)/units/a2data.ppu: $(a2data_deps) Makefile | $(builddir)/units
 	$(FPC)\
@@ -165,7 +182,7 @@ endif
 
 $(builddir)/$(AT2PLAY_BIN): $(adt2play_deps)\
  Makefile | $(builddir) $(builddir)/units
-	$(FPC) -dADT2PLAY\
+	$(FPC)\
 	 -Ccpascal -Mtp -Rintel\
 	 -FU$(builddir)/units\
 	 -FE$(builddir)\

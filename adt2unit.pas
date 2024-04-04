@@ -16,9 +16,14 @@
 unit AdT2unit;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$MODESWITCH CVAR}
+{$L adt2unit.o}
 interface
 
 {$IFDEF GO32V2}
+var
+  ___ADT2UNIT_DATA_START___: Byte; cvar; external;
+  ___ADT2UNIT_DATA_END___: Byte; cvar; external;
 const
   ___UNIT_DATA_START___: Dword = 0;
 {$ENDIF}
@@ -219,9 +224,13 @@ var
   temp_instrument_dis_fmreg_col: tDIS_FMREG_COL;
   temp_instrument_dis_fmreg_col2: tDIS_FMREG_COL;
   temp_ins_type: Byte;
-  pattord_page,pattord_hpos,pattord_vpos: Byte;
-  instrum_page: Byte;
-  pattern_patt,pattern_page,pattern_hpos: Byte;
+  pattord_page: Byte; cvar; external;
+  pattord_hpos: Byte; cvar; external;
+  pattord_vpos: Byte; cvar; external;
+  instrum_page: Byte; cvar; external;
+  pattern_patt: Byte; cvar; external;
+  pattern_page: Byte; cvar; external;
+  pattern_hpos: Byte; cvar; external;
   limit_exceeded: Boolean;
   load_flag,load_flag_alt: Byte;
   reset_chan: array[1..20] of Boolean;
@@ -336,8 +345,8 @@ procedure set_ins_data(ins,chan: Byte);
 procedure init_timer_proc;
 procedure done_timer_proc;
 procedure realtime_gfx_poll_proc;
-procedure decay_bars_refresh;
-procedure status_refresh;
+procedure decay_bars_refresh; cdecl;
+procedure status_refresh; cdecl;
 procedure trace_update_proc;
 
 function  hscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
@@ -372,8 +381,8 @@ procedure load_instrument(var data; chan: Byte);
 procedure output_note(note,ins,chan: Byte;
                       restart_macro,restart_adsr: Boolean);
 
-function  min(value: Longint; minimum: Longint): Longint;
-function  max(value: Longint; maximum: Longint): Longint;
+function  min(value: Longint; minimum: Longint): Longint; cdecl; external;
+function  max(value: Longint; maximum: Longint): Longint; cdecl; external;
 function  asciiz_string(str: String): String;
 procedure TimerSetup(Hz: Longint);
 
@@ -437,6 +446,7 @@ uses
   SDL_Types,
   SDL_Timer,
 {$ENDIF}
+  pascal,
   AdT2opl3,
   AdT2sys,
   AdT2extn,
@@ -738,17 +748,8 @@ begin
   is_data_empty := result;
 end;
 
-function min(value: Longint; minimum: Longint): Longint;
-begin
-  If (value > minimum) then min := value
-  else min := minimum;
-end;
-
-function max(value: Longint; maximum: Longint): Longint;
-begin
-  If (value < maximum) then max := value
-  else max := maximum;
-end;
+//min
+//max
 
 function asciiz_string(str: String): String;
 begin
@@ -6228,6 +6229,7 @@ var
 procedure new_exit_proc;
 begin
   Unlock_Data(___UNIT_DATA_START___,DWORD(Addr(___UNIT_DATA_END___))-DWORD(Addr(___UNIT_DATA_START___)));
+  Unlock_Data(___ADT2UNIT_DATA_START___,DWORD(@___ADT2UNIT_DATA_END___)-DWORD(@___ADT2UNIT_DATA_START___));
   Unlock_Data(___IRQ_DATA_START___,DWORD(Addr(___IRQ_DATA_END___))-DWORD(Addr(___IRQ_DATA_START___)));
   Unlock_Code(@___IRQ_CODE_START___,DWORD(@___IRQ_CODE_END___)-DWORD(@___IRQ_CODE_START___));
   ExitProc := @old_exit_proc;
@@ -6235,6 +6237,7 @@ end;
 
 begin
   Lock_Data(___UNIT_DATA_START___,DWORD(Addr(___UNIT_DATA_END___))-DWORD(Addr(___UNIT_DATA_START___)));
+  Lock_Data(___ADT2UNIT_DATA_START___,DWORD(@___ADT2UNIT_DATA_END___)-DWORD(@___ADT2UNIT_DATA_START___));
   Lock_Data(___IRQ_DATA_START___,DWORD(Addr(___IRQ_DATA_END___))-DWORD(Addr(___IRQ_DATA_START___)));
   Lock_Code(@___IRQ_CODE_START___,DWORD(@___IRQ_CODE_END___)-DWORD(@___IRQ_CODE_START___));
   @old_exit_proc := ExitProc;

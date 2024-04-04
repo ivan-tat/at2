@@ -380,7 +380,7 @@ _jmp1:
   mn_environment.ext_proc := NIL;
   mn_setting.terminate_keys[3] := 0;
   page := pattern_list__page;
-  
+
   If (mn_environment.keystroke = kF1) then
     begin
       HELP('pattern_list');
@@ -391,7 +391,8 @@ _jmp1:
   else PATTERN_LIST_alt := BYTE_NULL;
 end;
 
-procedure PATTERN_ORDER_page_refresh(page: Byte);
+procedure PATTERN_ORDER_page_refresh(page: Byte); cdecl;
+public name PUBLIC_PREFIX + 'PATTERN_ORDER_page_refresh';
 
 var
   attr: Word;

@@ -16,6 +16,8 @@
 unit DialogIO;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$MODESWITCH CVAR}
+{$L dialogio.o}
 interface
 
 uses
@@ -211,7 +213,7 @@ const
                       $0000,$0000,$0000,$0000,$0000));
 var
   dl_environment: tDIALOG_ENVIRONMENT;
-  mn_environment: tMENU_ENVIRONMENT;
+  mn_environment: tMENU_ENVIRONMENT; cvar; external;
   fs_environment: tFSELECT_ENVIRONMENT;
 
 function Dialog(text,keys,title: String; spos: Byte): Byte;

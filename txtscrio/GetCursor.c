@@ -5,5 +5,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 int32_t GetCursor (void) {
+#if GO32
+  return (VBIOS_get_cursor_pos (DispPg) << 16) + GetCursorShape ();
+#else // !GO32
   return 0;
+#endif // !GO32
 }

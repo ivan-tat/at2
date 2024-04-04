@@ -153,64 +153,268 @@ $(builddir)/font/vga16.inc: font/vga16.pbm Makefile | $(builddir)/font
 $(builddir)/adtrack2-icon.inc: adtrack2.bmp Makefile | $(builddir)
 	bintoinc -s c -o $@ $<
 
-adt2data_deps=\
- adt2data.c\
- adt2data.h\
- defines.h\
+# adt2data.h
+adt2data_h_deps=adt2data.h\
+ $(defines_h_deps)
+
+# adt2data.c
+adt2data_c_deps=adt2data.c $(adt2data_h_deps)\
+ $(defines_h_deps)\
  $(builddir)/font/track16.inc\
  $(builddir)/font/vga16.inc
 
 ifneq ($(OS_TARGET),DJGPP)
- adt2data_deps+=\
+ adt2data_c_deps+=\
   $(builddir)/adtrack2-icon.inc
 endif
 
-$(builddir)/adt2data.o: $(adt2data_deps) Makefile | $(builddir)
+$(builddir)/adt2data.o: $(adt2data_c_deps)\
+ Makefile | $(builddir)
 	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. -I$(builddir) >>$(buildlog)
 
-common_deps=\
- common.c\
- common.h\
- defines.h\
- pascal.h
+# adt2ext2.h
+adt2ext2_h_deps=adt2ext2.h\
+ $(ipattern_h_deps)\
+ $(ipattord_h_deps)
 
-$(builddir)/common.o: $(common_deps) Makefile | $(builddir)
+# adt2sys.h
+adt2sys_h_deps=adt2sys.h\
+ $(defines_h_deps)\
+ $(pascal_h_deps)
+
+# adt2sys.c
+adt2sys_c_deps=adt2sys.c $(adt2sys_h_deps)\
+ $(defines_h_deps)
+
+$(builddir)/adt2sys.o: $(adt2sys_c_deps)\
+ Makefile | $(builddir)
 	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
 
-$(builddir)/pascal/string.o: pascal/string.c\
- pascal.h\
- pascal/string.h\
+# adt2unit.h
+adt2unit_h_deps=adt2unit.h\
+ $(defines_h_deps)\
+ $(pascal_h_deps)\
+ $(realtime_h_deps)\
+ $(typcons1_h_deps)\
+ $(typcons2_h_deps)
+
+# adt2unit.c
+adt2unit_c_deps=adt2unit.c $(adt2unit_h_deps)\
+ adt2unit/min.c\
+ adt2unit/max.c\
+ $(realtime_c_deps)
+ $(typcons1_c_deps)
+ $(typcons2_c_deps)
+
+$(builddir)/adt2unit.o: $(adt2unit_c_deps)\
+ Makefile | $(builddir)
+	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
+
+# common.h
+common_h_deps=common.h
+
+# common.c
+common_c_deps=common.c $(common_h_deps)\
+ $(defines_h_deps)\
+ $(pascal_h_deps)
+
+$(builddir)/common.o: $(common_c_deps)\
+ Makefile | $(builddir)
+	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
+
+# defines.h
+defines_h_deps=defines.h
+
+# dialogio.h
+dialogio_h_deps=dialogio.h\
+ $(pascal_h_deps)\
+ $(txtscrio_h_deps)
+
+# dialogio.c
+dialogio_c_deps=dialogio.c $(dialogio_h_deps)
+
+$(builddir)/dialogio.o: $(dialogio_c_deps)\
+ Makefile | $(builddir)
+	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
+
+# go32/VBIOS.h
+go32_VBIOS_h_deps=go32/VBIOS.h\
+ go32/VBIOS_get_cursor_pos.c\
+ go32/VBIOS_get_video_mode.c\
+ go32/VBIOS_is_VGA.c\
+ go32/VBIOS_load_ROM_font_8x14.c\
+ go32/VBIOS_load_ROM_font_8x16.c\
+ go32/VBIOS_load_ROM_font_8x8.c\
+ go32/VBIOS_set_cursor_pos.c\
+ go32/VBIOS_set_screen_refresh.c\
+ go32/VBIOS_set_video_mode.c
+
+# go32/VESA.h
+go32_VESA_h_deps=go32/VESA.h\
+ go32/VESA_set_video_mode.c
+
+# go32/VGA.h
+go32_VGA_h_deps=go32/VGA.h
+
+# ipattern.h
+ipattern_h_deps=ipattern.h
+
+# ipattord.h
+ipattord_h_deps=ipattord.h
+
+# pascal.h
+pascal_h_deps=pascal.h
+
+# pascal/dos.h
+pascal_dos_h_deps=pascal/dos.h\
+ $(pascal_h_deps)
+
+# pascal/dos.c
+pascal_dos_c_deps=pascal/dos.c $(pascal_dos_h_deps)
+
+$(builddir)/pascal/dos.o: $(pascal_dos_c_deps)\
+ Makefile | $(builddir)
+	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
+
+# pascal/farptr.h
+pascal_farptr_h_deps=pascal/farptr.h
+
+# pascal/go32.h
+pascal_go32_h_deps=pascal/go32.h
+
+# pascal/go32.c
+pascal_go32_c_deps=pascal/go32.c $(pascal_go32_h_deps)\
+ $(pascal_h_deps)
+
+$(builddir)/pascal/go32.o: $(pascal_go32_c_deps)\
  Makefile | $(builddir)/pascal
 	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
 
-$(builddir)/txtscrio/txtscrio.o: txtscrio.c\
- defines.h\
- pascal.h\
- txtscrio.h\
- txtscrio/show_str.c\
- txtscrio/show_vstr.c\
- txtscrio/show_cstr.c\
- txtscrio/show_vcstr.c\
- txtscrio/show_cstr_alt.c\
- txtscrio/DupChar.c\
- txtscrio/ShowStr.c\
- txtscrio/ShowVStr.c\
- txtscrio/ShowCStr.c\
- txtscrio/ShowVCStr.c\
- txtscrio/ShowCStr2.c\
- txtscrio/ShowVCStr2.c\
- txtscrio/ShowC3Str.c\
- txtscrio/ShowVC3Str.c\
- txtscrio/ShowC4Str.c\
- txtscrio/CStrLen.c\
- txtscrio/CStr2Len.c\
+# pascal/pc.h
+pascal_pc_h_deps=pascal/pc.h
+
+# pascal/pc.c
+pascal_pc_c_deps=pascal/pc.c $(pascal_pc_h_deps)
+
+$(builddir)/pascal/pc.o: $(pascal_pc_c_deps)\
+ Makefile | $(builddir)/pascal
+	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
+
+# pascal/string.h
+pascal_string_h_deps=pascal/string.h
+
+# pascal/string.c
+pascal_string_c_deps=pascal/string.c $(pascal_string_h_deps)\
+ $(pascal_h_deps)
+
+$(builddir)/pascal/string.o: $(pascal_string_c_deps)\
+ Makefile | $(builddir)/pascal
+	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
+
+# realtime.h
+realtime_h_deps=realtime.h
+
+# realtime.c
+realtime_c_deps=realtime.c
+
+# txtscrio.h
+txtscrio_h_deps=txtscrio.h\
+ $(defines_h_deps)\
+ $(pascal_h_deps)
+
+# txtscrio.c
+txtscrio_c_deps=txtscrio.c $(txtscrio_h_deps)\
+ $(adt2ext2_h_deps)\
+ $(adt2sys_h_deps)\
+ $(adt2unit_h_deps)\
+ $(common_h_deps)\
+ $(dialogio_h_deps)\
+ $(defines_h_deps)\
+ $(go32_VBIOS_h_deps)\
+ $(go32_VESA_h_deps)\
+ $(go32_VGA_h_deps)\
+ $(pascal_h_deps)\
+ $(pascal_dos_h_deps)\
+ $(pascal_farptr_h_deps)\
+ $(pascal_go32_h_deps)\
+ $(pascal_pc_h_deps)\
+ $(pascal_string_h_deps)\
  txtscrio/C3StrLen.c\
+ txtscrio/CStr2Len.c\
+ txtscrio/CStrLen.c\
+ txtscrio/DupChar.c\
  txtscrio/Frame.c\
  txtscrio/GetCursor.c\
- txtscrio/ScreenMemCopy.c\
+ txtscrio/GetCursorShape.c\
+ txtscrio/go32/GetPalette.c\
+ txtscrio/go32/GetRGBitem.c\
+ txtscrio/go32/get_VESA_emulated_mode_idx.c\
+ txtscrio/go32/initialize.c\
+ txtscrio/go32/is_VESA_emulated_mode.c\
+ txtscrio/go32/iVGA.c\
+ txtscrio/go32/LoadVgaRegisters.c\
+ txtscrio/go32/out_reg.c\
+ txtscrio/go32/RefreshDisable.c\
+ txtscrio/go32/RefreshEnable.c\
+ txtscrio/go32/ResetMode.c\
+ txtscrio/go32/set_custom_svga_txtmode.c\
+ txtscrio/go32/SetCustomVideoMode.c\
+ txtscrio/go32/SetPalette.c\
+ txtscrio/go32/SetRGBitem.c\
+ txtscrio/go32/SetSize.c\
+ txtscrio/go32/set_svga_txtmode_100x38.c\
+ txtscrio/go32/set_svga_txtmode_128x48.c\
+ txtscrio/go32/set_svga_txtmode.c\
+ txtscrio/go32/SetTextDisp.c\
+ txtscrio/go32/set_vga_txtmode_80x25.c\
+ txtscrio/go32/Split2Static.c\
+ txtscrio/go32/SplitScr.c\
+ txtscrio/go32/VgaFade.c\
+ txtscrio/go32/WaitRetrace.c\
+ txtscrio/GotoXY.c\
+ txtscrio/HideCursor.c\
+ txtscrio/is_default_screen_mode.c\
+ txtscrio/is_scrollable_screen_mode.c\
+ txtscrio/move2screen.c\
  txtscrio/move2screen_alt.c\
+ txtscrio/ScreenMemCopy.c\
+ txtscrio/SetCursor.c\
+ txtscrio/SetCursorShape.c\
+ txtscrio/ShowC3Str.c\
+ txtscrio/ShowC4Str.c\
+ txtscrio/ShowCStr2.c\
+ txtscrio/show_cstr_alt.c\
+ txtscrio/show_cstr.c\
+ txtscrio/ShowCStr.c\
+ txtscrio/show_str.c\
+ txtscrio/ShowStr.c\
+ txtscrio/ShowVC3Str.c\
+ txtscrio/ShowVCStr2.c\
+ txtscrio/show_vcstr.c\
+ txtscrio/ShowVCStr.c\
+ txtscrio/show_vstr.c\
+ txtscrio/ShowVStr.c\
+ txtscrio/ThinCursor.c\
+ txtscrio/TxtScrIO_Init.c\
+ txtscrio/WhereX.c\
+ txtscrio/WhereY.c\
+ txtscrio/WideCursor.c
+
+$(builddir)/txtscrio/txtscrio.o: $(txtscrio_c_deps)\
  Makefile | $(builddir)/txtscrio
 	$(GCC) $(GCCFLAGS) -c -o $@ $< -I. >>$(buildlog)
+
+# typcons1.h
+typcons1_h_deps=typcons1.h
+
+# typcons1.c
+typcons1_c_deps=typcons1.c
+
+# typcons2.h
+typcons2_h_deps=typcons2.h
+
+# typcons2.c
+typcons2_c_deps=typcons2.c
 
 # Ported Pascal to C units
 
@@ -269,7 +473,8 @@ adt2pack_deps=\
  adt2pack.pas
 
 adt2sys_deps=\
- adt2sys.pas
+ adt2sys.pas\
+ $(builddir)/adt2sys.o
 
 ifeq ($(FPC_OS_TARGET),go32v2)
  adt2sys_deps+=\
@@ -287,7 +492,8 @@ adt2unit_deps=\
  adt2unit.pas\
  realtime.inc\
  typcons1.inc\
- typcons2.inc
+ typcons2.inc\
+ $(builddir)/adt2unit.o
 
 ifeq ($(FPC_OS_TARGET),go32v2)
  adt2unit_deps+=\
@@ -295,16 +501,17 @@ ifeq ($(FPC_OS_TARGET),go32v2)
 endif
 
 adt2vesa_deps=\
- go32v2/adt2vesa.pas
+ go32/adt2vesa.pas
 
 depackio_deps=\
  depackio.pas
 
 dialogio_deps=\
- dialogio.pas
+ dialogio.pas\
+ $(builddir)/dialogio.o
 
 iss_tim_deps=\
- go32v2/iss_tim.pas
+ go32/iss_tim.pas
 
 menulib1_deps=\
  menulib1.pas
@@ -322,6 +529,16 @@ pascal_deps=\
  pascal.pas\
  pascal/string.pas\
  $(builddir)/pascal/string.o
+
+ifeq ($(FPC_OS_TARGET),go32v2)
+ pascal_deps+=\
+  pascal/dos.pas\
+  pascal/go32.pas\
+  pascal/pc.pas\
+  $(builddir)/pascal/dos.o\
+  $(builddir)/pascal/go32.o\
+  $(builddir)/pascal/pc.o
+endif
 
 stringio_deps=\
  stringio.pas
@@ -379,7 +596,7 @@ $(builddir)/$(AT2_BIN): $(adtrack2_deps)\
  Makefile | $(builddir) $(builddir)/units
 	$(FPC)\
 	 -Ccpascal -Mtp -Rintel\
-	 -Fugo32v2\
+	 -Fugo32\
 	 -Fu$(builddir)/SDL\
 	 -FU$(builddir)/units\
 	 -FE$(builddir)\

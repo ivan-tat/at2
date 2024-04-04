@@ -39,11 +39,11 @@ procedure INSTRUMENT_test(instr,instr2,chan: Byte; fkey: Word;
 procedure INSTRUMENT_CONTROL_page_refresh(page: Byte);
 procedure INSTRUMENT_CONTROL_edit;
 
-procedure PATTERN_ORDER_page_refresh(page: Byte);
+procedure PATTERN_ORDER_page_refresh(page: Byte); cdecl;
 procedure PATTERN_ORDER_edit(var page,hpos,vpos: Byte);
 
 procedure PATTERN_tabs_refresh;
-procedure PATTERN_page_refresh(page: Byte);
+procedure PATTERN_page_refresh(page: Byte); cdecl;
 procedure STATUS_LINE_refresh;
 
 procedure PATTERN_position_preview(pattern,line,channel,mode: Byte);
@@ -75,6 +75,7 @@ uses
 {$ELSE}
   SDL_Timer,
 {$ENDIF}
+  pascal,
   StrUtils,
   AdT2opl3,
   AdT2unit,

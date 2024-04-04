@@ -55,4 +55,8 @@
 #define __x86_64 0
 #endif
 
+#ifndef ADT2PLAY
+#define ADT2PLAY 0
+#endif
+
 #endif // !defined(DEFINES_H)

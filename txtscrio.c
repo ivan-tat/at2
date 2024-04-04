@@ -9,9 +9,32 @@
 #include <stddef.h>
 #if USE_FPC
 #include "pascal.h"
+#if GO32
+#include "pascal/farptr.h"
+#include "pascal/go32.h"
+#include "pascal/pc.h"
+#endif // GO32
+#include "pascal/dos.h"
+#include "pascal/string.h"
 #else // !USE_FPC
-#include <string.h> // memcpy, memmove
+#if GO32
+#include <farptr.h>
+#include <go32.h>
+#include <pc.h>
+#endif // GO32
+#include <dos.h>
+#include <string.h>
 #endif // !USE_FPC
+#if GO32
+#include "go32/VBIOS.h"
+#include "go32/VESA.h"
+#include "go32/VGA.h"
+#endif // GO32
+#include "adt2ext2.h"
+#include "adt2sys.h"
+#include "adt2unit.h"
+#include "dialogio.h"
+#include "common.h"
 #include "txtscrio.h"
 
 // HINT: (FPC) S-: Stack checking (off)
@@ -22,8 +45,8 @@
 // HINT: (FPC) X+: Extended syntax (ON)
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 
-uint16_t SCREEN_RES_x = 720;
-uint16_t SCREEN_RES_y = 480;
+uint16_t SCREEN_RES_X = 720;
+uint16_t SCREEN_RES_Y = 480;
 uint8_t  MAX_COLUMNS = 90;
 uint8_t  MAX_ROWS = 40;
 uint8_t  MAX_TRACKS = 5;
@@ -66,8 +89,8 @@ uint8_t MaxLn = 0;
 uint8_t MaxCol = 0;
 uint8_t hard_maxcol = 0;
 uint8_t hard_maxln = 0;
-uint8_t work_maxcol = 0;
-uint8_t work_maxln = 0;
+uint8_t work_MaxCol = 0;
+uint8_t work_MaxLn = 0;
 uint8_t scr_font_width = 0;
 uint8_t scr_font_height = 0;
 
@@ -75,24 +98,13 @@ uint8_t area_x1 = 0;
 uint8_t area_y1 = 0;
 uint8_t area_x2 = 0;
 uint8_t area_y2 = 0;
-uint8_t scroll_pos0 = ~0;
-uint8_t scroll_pos1 = ~0;
-uint8_t scroll_pos2 = ~0;
-uint8_t scroll_pos3 = ~0;
-uint8_t scroll_pos4 = ~0;
+uint8_t scroll_pos0 = UINT8_NULL;
+uint8_t scroll_pos1 = UINT8_NULL;
+uint8_t scroll_pos2 = UINT8_NULL;
+uint8_t scroll_pos3 = UINT8_NULL;
+uint8_t scroll_pos4 = UINT8_NULL;
 
 int32_t cursor_backup;
-
-tFRAME_SETTING fr_setting = {
-  .shadow_enabled = true,
-  .wide_range_type = false,
-  .zooming_enabled = false,
-  .update_area = true
-};
-
-uint16_t v_seg = 0xB800;
-uint16_t v_ofs = 0;
-uint8_t  v_mode = 3;
 
 #include "txtscrio/show_str.c"
 #include "txtscrio/show_cstr.c"
@@ -118,15 +130,106 @@ static uint16_t absolute_pos;
 #include "txtscrio/CStr2Len.c"
 #include "txtscrio/C3StrLen.c"
 
+#include "txtscrio/ScreenMemCopy.c"
+#include "txtscrio/move2screen.c"
+#include "txtscrio/move2screen_alt.c"
+#include "txtscrio/TxtScrIO_Init.c"
+#include "txtscrio/is_default_screen_mode.c"
+#if GO32
+#include "txtscrio/go32/is_VESA_emulated_mode.c"
+#include "txtscrio/go32/get_VESA_emulated_mode_idx.c"
+#endif // GO32
+#include "txtscrio/is_scrollable_screen_mode.c"
+
+tFRAME_SETTING fr_setting = {
+  .shadow_enabled = true,
+  .wide_range_type = false,
+  .zooming_enabled = false,
+  .update_area = true
+};
+
 #include "txtscrio/Frame.c"
+
+#include "txtscrio/WhereX.c"
+#include "txtscrio/WhereY.c"
+#include "txtscrio/GotoXY.c"
+#include "txtscrio/GetCursor.c"
+#include "txtscrio/SetCursor.c"
+#include "txtscrio/ThinCursor.c"
+#include "txtscrio/WideCursor.c"
+#include "txtscrio/HideCursor.c"
+#include "txtscrio/GetCursorShape.c"
+#include "txtscrio/SetCursorShape.c"
+
+uint16_t v_seg = 0xB800;
+uint16_t v_ofs = 0;
+uint8_t  v_mode = 3;
 
 #if GO32
 
-#else // !GO32
+uint8_t DispPg;
 
-#include "txtscrio/GetCursor.c"
+#include "txtscrio/go32/iVGA.c"
+#include "txtscrio/go32/initialize.c"
+#include "txtscrio/go32/ResetMode.c"
+#include "txtscrio/go32/SetCustomVideoMode.c"
+#include "txtscrio/go32/GetRGBitem.c"
+#include "txtscrio/go32/SetRGBitem.c"
+#include "txtscrio/go32/WaitRetrace.c"
+#include "txtscrio/go32/GetPalette.c"
+#include "txtscrio/go32/SetPalette.c"
 
-#endif // !GO32
+uint8_t fade_speed = 63;
 
-#include "txtscrio/ScreenMemCopy.c"
-#include "txtscrio/move2screen_alt.c"
+#include "txtscrio/go32/VgaFade.c"
+#include "txtscrio/go32/RefreshEnable.c"
+#include "txtscrio/go32/RefreshDisable.c"
+#include "txtscrio/go32/Split2Static.c"
+#include "txtscrio/go32/SplitScr.c"
+#include "txtscrio/go32/SetSize.c"
+#include "txtscrio/go32/SetTextDisp.c"
+
+#include "txtscrio/go32/set_vga_txtmode_80x25.c"
+#include "txtscrio/go32/set_svga_txtmode.c"
+#include "txtscrio/go32/set_svga_txtmode_100x38.c"
+#include "txtscrio/go32/set_svga_txtmode_128x48.c"
+
+uint8_t svga_txtmode_cols = 100;
+uint8_t svga_txtmode_rows = 37;
+VGA_REG_DATA svga_txtmode_regs = {
+  { .port = VGA_MISC_WRITE_PORT, .idx = 0x00, .val = 0x6B }, // Miscellaneous output
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x00, .val = 0x70 }, // Horizontal total
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x01, .val = 0x63 }, // Horizontal display enable end
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x02, .val = 0x64 }, // Horizontal blank start
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x03, .val = 0x82 }, // Horizontal blank end
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x04, .val = 0x65 }, // Horizontal retrace start
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x05, .val = 0x82 }, // Horizontal retrace end
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x06, .val = 0x70 }, // Vertical total
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x07, .val = 0xF0 }, // Overflow register
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x08, .val = 0x00 }, // Preset row scan
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x09, .val = 0x4F }, // Maximum scan line/char height
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x10, .val = 0x5B }, // Vertical retrace start
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x11, .val = 0x8C }, // Vertical retrace end
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x12, .val = 0x4F }, // Vertical display enable end
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x13, .val = 0x3C }, // Offset/logical width
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x14, .val = 0x00 }, // Underline location
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x15, .val = 0x58 }, // Vertical blank start
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x16, .val = 0x70 }, // Vertical blank end
+  { .port = VGA_CRTC_ADDR_PORT, .idx = 0x17, .val = 0xA3 }, // Mode control
+  { .port = VGA_SEQ_ADDR_PORT, .idx = 0x01, .val = 0x01 }, // Clock mode register
+  { .port = VGA_SEQ_ADDR_PORT, .idx = 0x03, .val = 0x00 }, // Character generator select
+  { .port = VGA_SEQ_ADDR_PORT, .idx = 0x04, .val = 0x00 }, // Memory mode register
+  { .port = VGA_GRAPH_ADDR_PORT, .idx = 0x05, .val = 0x10 }, // Mode register
+  { .port = VGA_GRAPH_ADDR_PORT, .idx = 0x06, .val = 0x0E }, // Miscellaneous register
+  { .port = VGA_ATTR_WRITE_PORT, .idx = 0x10, .val = 0x02 }, // Mode control
+  { .port = VGA_ATTR_WRITE_PORT, .idx = 0x11, .val = 0x00 }, // Screen border color
+  { .port = VGA_ATTR_WRITE_PORT, .idx = 0x12, .val = 0x0F }, // Color plane enable
+  { .port = VGA_ATTR_WRITE_PORT, .idx = 0x13, .val = 0x00 }, // Horizontal panning
+  { .port = VGA_ATTR_WRITE_PORT, .idx = 0x14, .val = 0x00 } // Color select
+};
+
+#include "txtscrio/go32/out_reg.c"
+#include "txtscrio/go32/LoadVgaRegisters.c"
+#include "txtscrio/go32/set_custom_svga_txtmode.c"
+
+#endif // GO32

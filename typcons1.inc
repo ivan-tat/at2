@@ -739,8 +739,10 @@ const
   a2b_default_path:   String  = '';
   a2w_default_path:   String  = '';
 {$IFDEF GO32V2}
-  screen_mode:        Byte    = 0;
-  comp_text_mode:     Byte    = 0;
+var
+  screen_mode:        Byte; cvar; external;
+  comp_text_mode:     Byte; cvar; external;
+const
   fps_down_factor:    Byte    = 0;
   mouse_hspeed:       Word    = 50;
   mouse_vspeed:       Word    = 50;
@@ -782,7 +784,9 @@ const
   cycle_pattern:      Boolean = TRUE;
   keep_track_pos:     Boolean = FALSE;
   remember_ins_pos:   Boolean = TRUE;
-  command_typing:     Byte    = 1;
+var
+  command_typing:     Byte; cvar; external;
+const
   backspace_dir:      Byte    = 1;
   mark_line:          Byte    = 4;
   scroll_bars:        Boolean = TRUE;

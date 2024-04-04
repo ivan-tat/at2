@@ -174,7 +174,8 @@ begin
   last_hpos := max(_pattedit_lastpos,songdata.nm_tracks*(_pattedit_lastpos DIV MAX_TRACKS));
 end;
 
-procedure PATTERN_page_refresh(page: Byte);
+procedure PATTERN_page_refresh(page: Byte); cdecl;
+public name PUBLIC_PREFIX + 'PATTERN_page_refresh';
 
 var
   attr: Word;

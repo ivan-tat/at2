@@ -54,7 +54,8 @@ begin
                analyzer_bckg+attr SHR 4);
 end;
 
-procedure decay_bars_refresh;
+procedure decay_bars_refresh; cdecl;
+public name PUBLIC_PREFIX + 'decay_bars_refresh';
 
 var
   chan,temp: Byte;
@@ -165,7 +166,8 @@ begin
   _vol_bar_str := result;
 end;
 
-procedure status_refresh;
+procedure status_refresh; cdecl;
+public name PUBLIC_PREFIX + 'status_refresh';
 
 var
   temps: String;

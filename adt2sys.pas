@@ -16,78 +16,68 @@
 unit AdT2sys;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$MODESWITCH CVAR}
+{$L adt2sys.o}
 interface
 
-const
-  virtual_screen__first_row: Longint = 0;
-  virtual_cur_shape: Word = 0;
-  virtual_cur_pos: Word = 0;
-  slide_ticks: Longint = 0;
-  reset_slide_ticks: Boolean = FALSE;
+var
+  virtual_screen__first_row: Longint; cvar; external;
+  virtual_cur_shape: Word; cvar; external;
+  virtual_cur_pos: Word; cvar; external;
+  slide_ticks: Longint; cvar; external;
+  reset_slide_ticks: Boolean; cvar; external;
 {$IFDEF GO32V2}
-  gfx_ticks: Longint = 0;
-  reset_gfx_ticks: Boolean = FALSE;
-  scroll_ticks: Real = 0;
-  mouse_active: Boolean = FALSE;
+  gfx_ticks: Longint; cvar; external;
+  reset_gfx_ticks: Boolean; cvar; external;
+  scroll_ticks: Single; cvar; external;
+  mouse_active: Boolean; cvar; external;
 {$ENDIF}
 {$IFNDEF GO32V2}
-  _WAVREC_blink_flag: Boolean = FALSE;
-  _WAVREC_blink_ticks: Longint = 0;
+  _WAVREC_blink_flag: Boolean; cvar; external;
+  _WAVREC_blink_ticks: Longint; cvar; external;
 {$ENDIF}
-  _NRECM_blink_flag: Boolean = FALSE;
-  _NRECM_blink_ticks: Longint = 0;
-  _IRQ_freq_shift_reset_flag: Boolean = FALSE;
-  _IRQFREQ_update_event: Boolean = FALSE;
-  _IRQFREQ_blink_flag: Boolean = FALSE;
-  _IRQFREQ_blink_ticks: Longint = 0;
-  blink_flag: Boolean = FALSE;
-  blink_ticks: Longint = 0;
-  cursor_sync: Boolean = FALSE;
-  _show_bpm_realtime_proc: procedure = NIL;
+  _NRECM_blink_flag: Boolean; cvar; external;
+  _NRECM_blink_ticks: Longint; cvar; external;
+  _IRQ_freq_shift_reset_flag: Boolean; cvar; external;
+  _IRQFREQ_update_event: Boolean; cvar; external;
+  _IRQFREQ_blink_flag: Boolean; cvar; external;
+  _IRQFREQ_blink_ticks: Longint; cvar; external;
+  blink_flag: Boolean; cvar; external;
+  blink_ticks: Longint; cvar; external;
+  cursor_sync: Boolean; cvar; external;
+  _show_bpm_realtime_proc: procedure; cvar; external;
 {$IFDEF GO32V2}
-  _draw_screen_without_vsync: Boolean = FALSE;
-  _draw_screen_without_delay: Boolean = FALSE;
+  _draw_screen_without_vsync: Boolean; cvar; external;
+  _draw_screen_without_delay: Boolean; cvar; external;
 {$ELSE}
-  _draw_screen_without_delay: Boolean = FALSE;
-  _update_sdl_screen: Boolean = FALSE;
-  _name_scrl_shift_ctr: Shortint = 1;
-  _name_scrl_shift: Byte = 0;
-  _name_scrl_pending_frames: Longint = 0;
+  _draw_screen_without_delay: Boolean; cvar; external;
+  _update_sdl_screen: Boolean; cvar; external;
+  _name_scrl_shift_ctr: Shortint; cvar; external;
+  _name_scrl_shift: Byte; cvar; external;
+  _name_scrl_pending_frames: Longint; cvar; external;
 {$ENDIF}
-  _cursor_blink_factor: Longint = 13;
-  _cursor_blink_pending_frames: Longint = 0;
-  _realtime_gfx_no_update: Boolean = FALSE;
+  _cursor_blink_factor: Longint; cvar; external;
+  _cursor_blink_pending_frames: Longint; cvar; external;
+  _realtime_gfx_no_update: Boolean; cvar; external;
 {$IFDEF GO32V2}
-  _screen_refresh_pending_frames: Longint = 0;
+  _screen_refresh_pending_frames: Longint; cvar; external;
   _custom_svga_cfg: array[1..31] of Record
                                       flag: Boolean;
                                       value: Longint;
-                                    end
-    = ((flag: FALSE; value: -1),(flag: FALSE; value: -1),(flag: FALSE; value: -1),
-       (flag: FALSE; value: -1),(flag: FALSE; value: -1),(flag: FALSE; value: -1),
-       (flag: FALSE; value: -1),(flag: FALSE; value: -1),(flag: FALSE; value: -1),
-       (flag: FALSE; value: -1),(flag: FALSE; value: -1),(flag: FALSE; value: -1),
-       (flag: FALSE; value: -1),(flag: FALSE; value: -1),(flag: FALSE; value: -1),
-       (flag: FALSE; value: -1),(flag: FALSE; value: -1),(flag: FALSE; value: -1),
-       (flag: FALSE; value: -1),(flag: FALSE; value: -1),(flag: FALSE; value: -1),
-       (flag: FALSE; value: -1),(flag: FALSE; value: -1),(flag: FALSE; value: -1),
-       (flag: FALSE; value: -1),(flag: FALSE; value: -1),(flag: FALSE; value: -1),
-       (flag: FALSE; value: -1),(flag: FALSE; value: -1),(flag: FALSE; value: -1),
-       (flag: FALSE; value: -1));
-
+                                    end; cvar; external;
 {$ENDIF}
 
-const
-  _debug_: Boolean = FALSE;
-  _last_debug_str_: String = '';
-  _debug_str_: String = '';
+var
+  _debug_: Boolean; cvar; external;
+  _last_debug_str_: String; cvar; external;
+  _debug_str_: String; cvar; external;
 
-const
-  _force_program_quit: Boolean = FALSE;
-  _traceprc_last_order: Byte = 0;
-  _traceprc_last_pattern: Byte = 0;
-  _traceprc_last_line: Byte = 0;
-  _pattedit_lastpos: Byte = 0;
+var
+  _force_program_quit: Boolean; cvar; external;
+  _traceprc_last_order: Byte; cvar; external;
+  _traceprc_last_pattern: Byte; cvar; external;
+  _traceprc_last_line: Byte; cvar; external;
+  _pattedit_lastpos: Byte; cvar; external;
 
 procedure sys_init;
 procedure sys_done;
@@ -95,8 +85,8 @@ procedure draw_screen;
 
 {$IFNDEF GO32V2}
 
-const
-  _FrameBuffer: Pointer = NIL;
+var
+  _FrameBuffer: Pointer; cvar; external;
 
 procedure vid_Init;
 procedure vid_Deinit;
@@ -107,7 +97,7 @@ procedure vid_FadeOut;
 {$ELSE}
 
 var
-  _FrameBuffer_mirror: array[0..PRED(1024*768)] of Byte;
+  _FrameBuffer_mirror: array[0..PRED(1024*768)] of Byte; cvar; external;
 
 {$ENDIF}
 

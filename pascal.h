@@ -10,8 +10,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-// Pascal
-
 typedef unsigned char Shortstring;
 
 typedef Shortstring String;
@@ -25,8 +23,19 @@ extern void Pascal_FillWord (void *x, ssize_t count, uint16_t value);
 
 extern void Pascal_Move (const void *src, void *dest, ssize_t n);
 
-// C
+extern size_t Pascal_strlen (const char *s);
 
-#include "pascal/string.h"
+extern void Pascal_Delay (uint16_t ms);
+
+#if GO32
+
+extern uint16_t Pascal_dosmemselector (void);
+
+extern void Pascal_dosmemget (uint16_t seg, uint16_t ofs, void *data,
+                              uint32_t count);
+extern void Pascal_dosmemput (uint16_t seg, uint16_t ofs, const void *data,
+                              uint32_t count);
+
+#endif // GO32
 
 #endif // !defined(PASCAL_H)

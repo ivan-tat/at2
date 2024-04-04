@@ -131,6 +131,12 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 
 * [Code page 437](https://en.wikipedia.org/wiki/Code_page_437)
 
+### Hardware
+
+* [VGA Hardware](https://wiki.osdev.org/VGA_Hardware)
+* [VGA Signal Timing](http://tinyvga.com/vga-timing)
+* [Hardware Level VGA and SVGA Video Programming Information](http://www.osdever.net/FreeVGA/vga/vga.htm)
+
 ### Recommendations
 
 * [Semantic Versioning](https://semver.org/)

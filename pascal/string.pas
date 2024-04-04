@@ -6,3 +6,8 @@ procedure memcpy; cdecl; external;
 procedure memmove; cdecl; external;
 
 procedure memset; cdecl; external;
+
+procedure strlen; cdecl; external;
+
+procedure StrToString; cdecl; external;
+procedure CopyString; cdecl; external;

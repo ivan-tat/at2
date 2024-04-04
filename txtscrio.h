@@ -1,4 +1,4 @@
-//  This file is part of Adlib Tracker II (AT2).
+// This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
@@ -17,11 +17,10 @@
 #include "pascal.h"
 #endif
 
-// HINT: (FPC 2.6.4+GO32V2) always define external variables as public (bug)
 // HINT: (FPC) $PACKRECORDS 1: Alignment of record elements (1)
 
-extern uint16_t SCREEN_RES_x;
-extern uint16_t SCREEN_RES_y;
+extern uint16_t SCREEN_RES_X;
+extern uint16_t SCREEN_RES_Y;
 extern uint8_t  MAX_COLUMNS;
 extern uint8_t  MAX_ROWS;
 extern uint8_t  MAX_TRACKS;
@@ -67,8 +66,8 @@ extern uint8_t MaxLn;
 extern uint8_t MaxCol;
 extern uint8_t hard_maxcol;
 extern uint8_t hard_maxln;
-extern uint8_t work_maxcol;
-extern uint8_t work_maxln;
+extern uint8_t work_MaxCol;
+extern uint8_t work_MaxLn;
 extern uint8_t scr_font_width;
 extern uint8_t scr_font_height;
 
@@ -102,21 +101,6 @@ extern int32_t cursor_backup;
 #define White    0x0F
 #define Blink    0x80
 
-#pragma pack(push, 1)
-typedef struct {
-  bool shadow_enabled;
-  bool wide_range_type;
-  bool zooming_enabled;
-  bool update_area;
-} tFRAME_SETTING;
-#pragma pack(pop)
-
-extern tFRAME_SETTING fr_setting;
-
-extern uint16_t v_seg;
-extern uint16_t v_ofs;
-extern uint8_t  v_mode;
-
 void show_str (uint8_t xpos, uint8_t ypos, const String *str, uint8_t attr);
 void show_cstr (uint8_t xpos, uint8_t ypos, const String *str, uint8_t attr1,
                 uint8_t attr2);
@@ -149,13 +133,111 @@ uint8_t CStrLen (const String *str);
 uint8_t CStr2Len (const String *str);
 uint8_t C3StrLen (const String *str);
 
+void ScreenMemCopy (tSCREEN_MEM *src, tSCREEN_MEM *dest);
+//move2screen
+void move2screen_alt (void);
+void TxtScrIO_Init (void);
+bool is_default_screen_mode (void);
+#if GO32
+bool is_VESA_emulated_mode (void);
+uint8_t get_VESA_emulated_mode_idx (void);
+#endif // GO32
+bool is_scrollable_screen_mode (void);
+
+#pragma pack(push, 1)
+typedef struct {
+  bool shadow_enabled;
+  bool wide_range_type;
+  bool zooming_enabled;
+  bool update_area;
+} tFRAME_SETTING;
+#pragma pack(pop)
+
+extern tFRAME_SETTING fr_setting;
+
 void Frame (tSCREEN_MEM *dest, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2,
             uint8_t attr1, const String *title, uint8_t attr2,
             const String *border);
 
+uint8_t WhereX (void);
+uint8_t WhereY (void);
+void GotoXY (uint8_t x, uint8_t y);
 int32_t GetCursor (void);
+void SetCursor (int32_t cursor);
+void ThinCursor (void);
+void WideCursor (void);
+void HideCursor (void);
+uint16_t GetCursorShape (void);
+void SetCursorShape (uint16_t shape);
 
-void ScreenMemCopy (tSCREEN_MEM *src, tSCREEN_MEM *dest);
-void move2screen_alt (void);
+extern uint16_t v_seg;
+extern uint16_t v_ofs;
+extern uint8_t  v_mode;
+
+#if GO32
+
+extern uint8_t DispPg;
+
+typedef uint8_t tCUSTOM_VIDEO_MODE; // 0..52
+
+bool iVGA (void);
+void initialize (void);
+void ResetMode (void);
+void SetCustomVideoMode (tCUSTOM_VIDEO_MODE vmode);
+void GetRGBitem (uint8_t color, uint8_t *red, uint8_t *green, uint8_t *blue);
+void SetRGBitem (uint8_t color, uint8_t red, uint8_t green, uint8_t blue);
+void WaitRetrace (void);
+void GetPalette (void *pal, uint8_t first, uint8_t last);
+void SetPalette (void *pal, uint8_t first, uint8_t last);
+
+typedef enum {
+  fadeFirst,
+  fadeOut,
+  fadeIn
+} tFADE;
+
+typedef enum {
+  fast,
+  delayed
+} tDELAY;
+
+#pragma pack(push, 1)
+typedef struct {
+  tFADE action;
+  struct {
+    uint8_t r, g, b;
+  } pal0[256], pal1[256]; // HINT: (FPC) start index 0
+} tFADE_BUF;
+#pragma pack(pop)
+
+extern uint8_t fade_speed;
+
+void VgaFade (tFADE_BUF *data, tFADE fade, tDELAY dly);
+void RefreshEnable (void);
+void RefreshDisable (void);
+void Split2Static (void);
+void SplitScr (uint16_t line);
+void SetSize (uint16_t columns, uint16_t lines);
+void SetTextDisp (uint16_t x, uint16_t y);
+void set_vga_txtmode_80x25 (void);
+void set_svga_txtmode_100x38 (void);
+void set_svga_txtmode_128x48 (void);
+void set_custom_svga_txtmode (void);
+
+#pragma pack(push, 1)
+typedef struct {
+  uint16_t port;
+  uint8_t idx;
+  uint8_t val;
+} VGA_REGISTER;
+#pragma pack(pop)
+
+typedef VGA_REGISTER VGA_REG_DATA[29]; // HINT: (FPC) start index 1
+
+extern uint8_t svga_txtmode_cols;
+extern uint8_t svga_txtmode_rows;
+extern VGA_REG_DATA svga_txtmode_regs;
+
+#endif // GO32
 
 #endif // !defined(TXTSCRIO_H)
