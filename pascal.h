@@ -7,6 +7,7 @@
 #ifndef PASCAL_H
 #define PASCAL_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <sys/types.h>
 
@@ -30,11 +31,17 @@ extern void Pascal_Delay (uint16_t ms);
 #if GO32
 
 extern uint16_t Pascal_dosmemselector (void);
+extern uint16_t *Pascal_int31error_ptr (void);
 
 extern void Pascal_dosmemget (uint16_t seg, uint16_t ofs, void *data,
                               uint32_t count);
 extern void Pascal_dosmemput (uint16_t seg, uint16_t ofs, const void *data,
                               uint32_t count);
+
+extern int32_t Pascal_global_dos_alloc (int32_t bytes);
+extern bool Pascal_global_dos_free (uint16_t selector);
+
+extern bool Pascal_realintr (uint16_t intnr, void *regs);
 
 #endif // GO32
 

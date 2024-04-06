@@ -1,0 +1,8 @@
+Usage:
+  make [TARGET]
+where:
+  TARGET: all | clean | distclean
+
+Following environment variables may be used:
+  FPC
+  FPCFLAGS

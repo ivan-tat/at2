@@ -17,8 +17,10 @@ unit TxtScrIO;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
 {$MODESWITCH CVAR}
-{$L txtscrio/txtscrio.o}
+{$L txtscrio.o}
 interface
+
+{$I txtscrio/pas/colors.pas}
 
 var
   SCREEN_RES_X: Word; cvar; external;
@@ -89,17 +91,6 @@ var
   scroll_pos4: Byte; cvar; external;
 
   cursor_backup: Longint; cvar; external;
-
-const
-  Black   = $00;  DGray    = $08;
-  Blue    = $01;  LBlue    = $09;
-  Green   = $02;  LGreen   = $0a;
-  Cyan    = $03;  LCyan    = $0b;
-  Red     = $04;  LRed     = $0c;
-  Magenta = $05;  LMagenta = $0d;
-  Brown   = $06;  Yellow   = $0e;
-  LGray   = $07;  White    = $0f;
-  Blink   = $80;
 
 procedure ShowStr(dest: tSCREEN_MEM_PTR; x,y: Byte; str: String; attr: Byte); cdecl; external;
 procedure ShowVStr(dest: tSCREEN_MEM_PTR; x,y: Byte; str: String; attr: Byte); cdecl; external;
@@ -178,19 +169,7 @@ procedure WaitRetrace; cdecl; external;
 procedure GetPalette(var pal; first,last: Word); cdecl; external;
 procedure SetPalette(var pal; first,last: Word); cdecl; external;
 
-type
-  tFADE  = (first,fadeOut,fadeIn);
-  tDELAY = (fast,delayed);
-
-type
-  tFADE_BUF = Record
-                action: tFADE;
-                pal0: array[0..255] of Record r,g,b: Byte end;
-                pal1: array[0..255] of Record r,g,b: Byte end;
-              end;
-
-var
-  fade_speed: Byte; cvar; external;
+{$I txtscrio/go32/pas/fade.pas}
 
 procedure VgaFade(var data: tFADE_BUF; fade: tFADE; delay: tDELAY); cdecl; external;
 procedure RefreshEnable; cdecl; external;

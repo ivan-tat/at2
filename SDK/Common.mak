@@ -10,7 +10,6 @@
 # AT2SDK_TARGET_SUBDIR  Sub-directory name for target files (SDK or local)
 # AT2SDK_PREFIX         Full SDK path for host files
 # AT2SDK_ENVSET         Flag if env. var. "PATH" is already updated
-# buildroot             Full path for build root (local)
 # OS_HOST               Host OS (internal usage)
 # CPU_HOST              Host CPU (internal usage)
 # OS_TARGET             Target OS (internal usage)
@@ -43,8 +42,6 @@ INSTALL_PROGRAM?=$(INSTALL) -m 755
 INSTALL_DATA?=$(INSTALL) -m 644
 
 MAKECMDGOALS?=all
-
-buildroot:=$(realpath .)/build
 
 AT2SDK:=$(patsubst %/,%,$(realpath $(dir $(lastword $(MAKEFILE_LIST)))))
 
@@ -255,7 +252,13 @@ ifeq ($(GCC),)
   ifeq ($(OS_TARGET),DJGPP)
    GCC=i386-pc-msdosdjgpp-gcc
   else ifeq ($(OS_TARGET),Windows)
-   GCC=i686-w64-mingw32-gcc
+   ifeq ($(CPU_TARGET),i386)
+    GCC=i686-w64-mingw32-gcc
+   else ifeq ($(CPU_TARGET),x86_64)
+    GCC=x86_64-w64-mingw32-gcc
+   else
+    $(error No GCC defined for target CPU: $(CPU_TARGET))
+   endif
   endif
  endif
 endif

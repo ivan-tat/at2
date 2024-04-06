@@ -447,13 +447,15 @@ void SetCustomVideoMode (tCUSTOM_VIDEO_MODE vmode) {
   outportb (VGA_ATTR_WRITE_PORT, 32);
 
   // 0..4 - BIOS variables
-  _farnspokeb (0x44A, p[0]); // screen width in text columns
+  _farnspokew (0x44A, p[0]); // screen width in text columns
   _farnspokeb (0x484, p[1]); // EGA text rows - 1
-  _farnspokeb (0x485, p[2]); // EGA bytes per character (scan lines per char.)
+  _farnspokew (0x485, p[2]); // EGA bytes per character (scan lines per char.)
   _farnspokeb (0x44C, p[3]); // length in bytes of video area (LSB)
   _farnspokeb (0x44D, p[4]); // length in bytes of video area (MSB)
 
-  for (i = 0; i < 17; i++)
+  // 0x44E (2 bytes) - offset from video segment of active video memory page
+  // 0x450 (16 bytes) - cursor locations for 8 video pages
+  for (i = 0; i <= 17; i++)
     _farnspokeb (0x44E + i, 0);
 
   _farnspokeb (0x460, p[20]); // cursor shape (end scan line)
@@ -466,13 +468,13 @@ void SetCustomVideoMode (tCUSTOM_VIDEO_MODE vmode) {
 
   switch (p[2]) {
   case 8:
-    VBIOS_load_ROM_font_8x8 (0);
+    VBIOS_load_ROM_font_8x8 (0, 0);
     break;
   case 14:
-    VBIOS_load_ROM_font_8x14 (0);
+    VBIOS_load_ROM_font_8x14 (0, 0);
     break;
   case 16:
-    VBIOS_load_ROM_font_8x16 (0);
+    VBIOS_load_ROM_font_8x16 (0, 0);
     break;
   default:
     break;

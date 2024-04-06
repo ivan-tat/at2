@@ -3,16 +3,23 @@
 # SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-BUILD?=go32v2-i386
+# $(srcdir) is root directory, $(srcdir1) is current directory
+srcdir1:=$(patsubst %/,%,$(realpath $(dir $(lastword $(MAKEFILE_LIST)))))
+srcdir:=$(patsubst %/,%,$(realpath $(srcdir1)/..))
+builddir:=$(patsubst %/,%,$(realpath .))
 
-include ../SDK/Common.mak
+ifeq ($(srcdir1),$(builddir))
+ $(error Do not run "make" from sources' directory: use build directory instead)
+endif
 
-FPCFLAGS+=-dADT2PLAY -O2
+include $(srcdir)/SDK/Common.mak
+
+buildlog=log
 
 # Setup version
 
 ifeq ($(OS_TARGET),DJGPP)
- AT2PLAY_VERSION_FILE?=adt2play.dos
+ AT2PLAY_VERSION_FILE?=$(srcdir1)/adt2play.dos
 else
  $(warning AT2PLAY_VERSION_FILE variable is not defined for target OS: $(OS_TARGET))
 endif
@@ -25,19 +32,45 @@ ifeq ($(AT2PLAY_VERSION),)
  endif
 endif
 
-# Setup paths
+# Setup GCC
 
-ifeq ($(builddir),)
- builddir:=$(buildroot)/$(AT2SDK_TARGET_SUBDIR)
-endif
-buildlog:=$(builddir)/log
+# The reason for `gnu99' instead of `c99' is to use `ssize_t' when compiling
+# in DJGPP environment
+GCCFLAGS+=-std=gnu99 -Wall -Wextra -pedantic
 
-FPCFLAGS+=\
- -Fi..\
- -Fi$(builddir)
+GCCFLAGS+=-O2
 
-# Setup target
+GCCFLAGS+=-DADT2PLAY=1
 
+GCCFLAGS_DIRS+=-I$(srcdir1) -I$(srcdir) -I.
+
+# Setup FPC
+
+FPCFLAGS+=-O2
+
+FPCFLAGS+=-dADT2PLAY
+
+FPCFLAGS_DIRS+=-Fi$(srcdir1) -Fi$(srcdir) -Fi.
+
+# Setup files
+
+SRCS=\
+ common.c\
+ pascal/dos.c\
+ pascal/dpmi.c\
+ pascal/go32.c\
+ pascal/pc.c\
+ pascal/string.c
+
+SRCS1=\
+ a2data.c\
+ txtscrio.c
+
+DEPS=$(patsubst %.c,_deps_/%.d,$(SRCS) $(SRCS1))
+
+OBJS=$(SRCS:.c=.o) $(SRCS1:.c=.o)
+
+AT2PLAY_PAS_SRC=adt2play.pas
 AT2PLAY_BIN=adt2play$E
 
 $(info ---)
@@ -59,16 +92,41 @@ $(info Build log:       $(buildlog))
 $(info ---)
 
 .PHONY: all
-all: clean-at2play-version build-at2play-bin
+all: clean-log clean-at2play-version build-at2play-bin
 
-.PHONY: usage
-usage:
-	@fmt Makefile.txt
-
-$(builddir) \
-$(builddir)/font \
-$(builddir)/units:
+font \
+picture \
+units:
 	mkdir -p $@
+
+#-----------------------------------------------------------------------------
+
+.PHONY: clean-log
+clean-log:
+	rm -f $(buildlog)
+
+#-----------------------------------------------------------------------------
+
+# $1=path/file.c (relative to $2), $2=directory
+# Keep last line empty: it is needed in $(call ...) expansion
+define make_c_dep =
+_deps_/$(1:.c=.d): $2/$1
+	@if [ \( -n "$$(@D)" \) -a \! -e "$$(@D)" ]; then mkdir -p $$(@D); fi
+	@echo "  DEPCC  $1"; \
+	$$(GCC) $$(GCCFLAGS) $$(GCCFLAGS_DIRS)\
+	 -MM -MG -MT $$@ -MT $(1:.c=.o) -MF $$@ $$<
+
+endef
+
+$(foreach f,$(SRCS),$(eval $(call make_c_dep,$f,$(srcdir))))
+$(foreach f,$(SRCS1),$(eval $(call make_c_dep,$f,$(srcdir1))))
+
+.PHONY: build-deps
+build-deps: $(DEPS)
+
+.PHONY: clean-deps
+clean-deps:
+	rm -rf _deps_
 
 #-----------------------------------------------------------------------------
 
@@ -80,133 +138,185 @@ build-sdk: | $(AT2SDK)
 
 .PHONY: clean-at2play-version
 clean-at2play-version:
-	rm -f $(builddir)/adt2play.inc
+	rm -f adt2play.inc
 
-$(builddir)/adt2play.inc: | $(builddir)
+adt2play.inc:
 	echo "const VERSION_STR = '$(AT2PLAY_VERSION)';" >$@
 
-$(builddir)/font/play8.inc: ../font/play8.pbm Makefile | $(builddir)/font
-	fontconv -pbmtoinc -s pascal -o $@ $<
+font/play8.inc: $(srcdir)/font/play8.pbm\
+ $(srcdir1)/Makefile | font
+	fontconv -pbmtoinc -s c -o $@ $<
 
-$(builddir)/font/play16.inc: ../font/play16.pbm Makefile | $(builddir)/font
-	fontconv -pbmtoinc -s pascal -o $@ $<
+font/play16.inc: $(srcdir)/font/play16.pbm\
+ $(srcdir1)/Makefile | font
+	fontconv -pbmtoinc -s c -o $@ $<
 
-a2data_deps=\
- a2data.pas\
- $(builddir)/font/play8.inc\
- $(builddir)/font/play16.inc
+picture/palette.inc: $(srcdir1)/picture/picture.pal\
+ $(srcdir1)/Makefile | picture
+	bintoinc -s c -o $@ $<
 
-a2depack_deps=\
- a2depack.pas
+picture/bitmap.inc: $(srcdir1)/picture/picture.raw\
+ $(srcdir1)/Makefile | picture
+	bintoinc -s c -o $@ $<
 
-a2fileio_deps=\
- a2fileio.pas\
- ../iloaders.inc
+# Object files
 
-a2player_deps=\
- a2player.pas\
- typconst.inc
+# $1=path/file.c (relative to $2), $2=directory
+# Keep last line empty: it is needed in $(call ...) expansion
+define make_c_obj =
+$(1:.c=.o): $2/$1
+	@if [ \( -n "$$(@D)" \) -a \! -e "$$(@D)" ]; then mkdir -p $$(@D); fi
+	@echo "  CC     $1"; \
+	$$(GCC) $$(GCCFLAGS) $$(GCCFLAGS_DIRS) -c $$< -o $$@ >>$$(buildlog)
 
-a2scrio_deps=\
- a2scrio.pas
+endef
 
-iss_tim_deps=\
- ../go32/iss_tim.pas
+$(foreach f,$(SRCS),$(eval $(call make_c_obj,$f,$(srcdir))))
+$(foreach f,$(SRCS1),$(eval $(call make_c_obj,$f,$(srcdir1))))
 
-parserio_deps=\
- parserio.pas
+# Pascal units with known dependencies
 
-stringio_deps=\
- stringio.pas
+units/a2data.ppu: $(srcdir1)/a2data.pas a2data.o $(srcdir1)/Makefile | units
+	@echo "  PC     $(patsubst $(srcdir1)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
 
-txtscrio_deps=\
- txtscrio.pas\
- ../txtscrio/i386/DupChar.pas\
- ../txtscrio/i386/ShowC3Str.pas\
- ../txtscrio/i386/ScreenMemCopy.pas\
- ../txtscrio/go32/pas/GetPalette.pas\
- ../txtscrio/go32/pas/GetRGBitem.pas\
- ../txtscrio/go32/pas/iVGA.pas\
- ../txtscrio/go32/pas/SetPalette.pas\
- ../txtscrio/go32/pas/SetRGBitem.pas\
- ../txtscrio/go32/pas/VgaFade.pas\
- ../txtscrio/go32/pas/WaitRetrace.pas\
- ../txtscrio/pas/GetCursor.pas\
- ../txtscrio/pas/GetCursorShape.pas\
- ../txtscrio/pas/GotoXY.pas\
- ../txtscrio/pas/HideCursor.pas\
- ../txtscrio/pas/SetCursor.pas\
- ../txtscrio/pas/SetCursorShape.pas\
- ../txtscrio/pas/ThinCursor.pas\
- ../txtscrio/pas/WhereX.pas\
- ../txtscrio/pas/WhereY.pas\
- ../txtscrio/pas/WideCursor.pas
+units/common.ppu: $(srcdir)/common.pas common.o $(srcdir1)/Makefile | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
 
-$(builddir)/units/a2data.ppu: $(a2data_deps) Makefile | $(builddir)/units
-	$(FPC)\
-	 -FU$(builddir)/units\
-	 $(FPCFLAGS)\
-	 $<\
-	 -o$@\
-	 -vnh >$(buildlog)
+units/iss_tim.ppu: $(srcdir)/go32/iss_tim.pas $(srcdir1)/Makefile | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS) -Ccpascal -Mtp $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
 
-$(builddir)/units/iss_tim.ppu: $(iss_tim_deps) Makefile | $(builddir)/units
-	$(FPC)\
-	 -Ccpascal -Mtp\
-	 -FU$(builddir)/units\
-	 $(FPCFLAGS)\
-	 $<\
-	 -o$@\
-	 -vnh >$(buildlog)
+pascal_ppu_deps=\
+ $(srcdir)/pascal.pas\
+ $(srcdir)/pascal/string.pas\
+ pascal/string.o
+
+ifeq ($(FPC_OS_TARGET),go32v2)
+ pascal_ppu_deps+=\
+  $(srcdir)/pascal/dos.pas\
+  $(srcdir)/pascal/dpmi.pas\
+  $(srcdir)/pascal/go32.pas\
+  $(srcdir)/pascal/pc.pas\
+  pascal/dos.o\
+  pascal/dpmi.o\
+  pascal/go32.o\
+  pascal/pc.o
+endif
+
+units/pascal.ppu: $(pascal_ppu_deps) $(srcdir1)/Makefile | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
+# Pascal units with complex dependencies and target executable
+
+a2depack_ppu_deps=\
+ $(srcdir1)/a2depack.pas
+
+a2fileio_ppu_deps=\
+ $(srcdir1)/a2fileio.pas\
+ $(srcdir)/iloaders.inc
+
+a2player_ppu_deps=\
+ $(srcdir1)/a2player.pas\
+ $(srcdir1)/typconst.inc
+
+a2scrio_ppu_deps=\
+ $(srcdir1)/a2scrio.pas
+
+parserio_ppu_deps=\
+ $(srcdir1)/parserio.pas
+
+stringio_ppu_deps=\
+ $(srcdir1)/stringio.pas
+
+txtscrio_ppu_deps=\
+ $(srcdir1)/txtscrio.pas\
+ $(srcdir)/txtscrio/i386/DupChar.pas\
+ $(srcdir)/txtscrio/i386/ShowC3Str.pas\
+ $(srcdir)/txtscrio/i386/ScreenMemCopy.pas\
+ $(srcdir)/txtscrio/go32/pas/fade.pas\
+ $(srcdir)/txtscrio/go32/pas/GetPalette.pas\
+ $(srcdir)/txtscrio/go32/pas/GetRGBitem.pas\
+ $(srcdir)/txtscrio/go32/pas/GetVideoState.pas\
+ $(srcdir)/txtscrio/go32/pas/initialize.pas\
+ $(srcdir)/txtscrio/go32/pas/iVGA.pas\
+ $(srcdir)/txtscrio/go32/pas/SetPalette.pas\
+ $(srcdir)/txtscrio/go32/pas/SetRGBitem.pas\
+ $(srcdir)/txtscrio/go32/pas/SetVideoState.pas\
+ $(srcdir)/txtscrio/go32/pas/VgaFade.pas\
+ $(srcdir)/txtscrio/go32/pas/WaitRetrace.pas\
+ $(srcdir)/txtscrio/pas/colors.pas\
+ $(srcdir)/txtscrio/pas/GetCursor.pas\
+ $(srcdir)/txtscrio/pas/GetCursorShape.pas\
+ $(srcdir)/txtscrio/pas/GotoXY.pas\
+ $(srcdir)/txtscrio/pas/HideCursor.pas\
+ $(srcdir)/txtscrio/pas/SetCursor.pas\
+ $(srcdir)/txtscrio/pas/SetCursorShape.pas\
+ $(srcdir)/txtscrio/pas/ThinCursor.pas\
+ $(srcdir)/txtscrio/pas/WhereX.pas\
+ $(srcdir)/txtscrio/pas/WhereY.pas\
+ $(srcdir)/txtscrio/pas/WideCursor.pas\
+ txtscrio.o
 
 # Setup target dependencies
 
-adt2play_deps=build-sdk
+adt2play_bin_deps=build-sdk build-deps
 
-adt2play_deps+=\
- adt2play.pas\
- $(builddir)/adt2play.inc\
- $(a2depack_deps)\
- $(a2fileio_deps)\
- $(a2player_deps)\
- $(a2scrio_deps)\
- $(parserio_deps)\
- $(stringio_deps)\
- $(txtscrio_deps)\
- $(builddir)/units/a2data.ppu
+adt2play_bin_deps+=\
+ $(srcdir1)/$(AT2PLAY_PAS_SRC)\
+ adt2play.inc\
+ $(a2depack_ppu_deps)\
+ $(a2fileio_ppu_deps)\
+ $(a2player_ppu_deps)\
+ $(a2scrio_ppu_deps)\
+ $(parserio_ppu_deps)\
+ $(stringio_ppu_deps)\
+ $(txtscrio_ppu_deps)\
+ units/a2data.ppu\
+ units/common.ppu\
+ units/pascal.ppu
 
 ifeq ($(FPC_OS_TARGET),go32v2)
- adt2play_deps+=\
-  $(builddir)/units/iss_tim.ppu
+ adt2play_bin_deps+=\
+  units/iss_tim.ppu
 endif
 
-$(builddir)/$(AT2PLAY_BIN): $(adt2play_deps)\
- Makefile | $(builddir) $(builddir)/units
-	$(FPC)\
-	 -Ccpascal -Mtp -Rintel\
-	 -FU$(builddir)/units\
-	 -FE$(builddir)\
-	 $(FPCFLAGS)\
-	 adt2play.pas\
-	 -o$@\
-	 -vnh >$(buildlog)
+$(AT2PLAY_BIN): $(adt2play_bin_deps) $(srcdir1)/Makefile | units
+	@echo "  PC     $(AT2PLAY_PAS_SRC)"; \
+	$(FPC) $(FPCFLAGS) -Ccpascal -Mtp -Rintel\
+	 $(FPCFLAGS_DIRS) -FUunits -FE.\
+	 $(srcdir1)/$(AT2PLAY_PAS_SRC) -o$@ -vnh >$(buildlog)
 
 .PHONY: build-at2play-bin
-build-at2play-bin: $(builddir)/$(AT2PLAY_BIN)
+build-at2play-bin: $(AT2PLAY_BIN)
 
 .PHONY: clean-at2play-bin
 clean-at2play-bin: clean-at2play-version
 	rm -f\
 	 $(buildlog)\
-	 $(builddir)/font/*\
-	 $(builddir)/units/*\
-	 $(builddir)/$(AT2PLAY_BIN)
+	 font/*\
+	 picture/*\
+	 units/*\
+	 $(OBJS)\
+	 $(AT2PLAY_BIN)
 
 #-----------------------------------------------------------------------------
 
 .PHONY: clean
-clean: clean-at2play-bin
+clean: clean-deps clean-at2play-bin
 
 .PHONY: distclean
-distclean:
-	rm -rf $(builddir)
+distclean: clean
+
+#-----------------------------------------------------------------------------
+
+_CleanDepsGoals=clean-deps clean distclean
+ifeq ($(foreach t,$(MAKECMDGOALS),$(findstring $t,$(_CleanDepsGoals))),)
+ -include $(DEPS)
+endif

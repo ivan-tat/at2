@@ -77,7 +77,7 @@ static void set_svga_txtmode (uint16_t mode, uint8_t cols, uint8_t rows) {
   MaxCol = cols;
   MaxLn  = rows;
 
-  _farnspokeb (0x44A, MaxCol); // screen width in text columns
+  _farnspokew (0x44A, MaxCol); // screen width in text columns
   _farnspokeb (0x484, MaxLn - 1); // EGA text rows - 1
 
 #if !USE_FPC

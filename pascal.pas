@@ -6,12 +6,18 @@ unit Pascal;
 
 {$IFDEF GO32V2}
 {$L pascal/dos.o}
+{$L pascal/dpmi.o}
 {$L pascal/go32.o}
 {$L pascal/pc.o}
 {$ENDIF}
 {$L pascal/string.o}
 
 interface
+
+{$IFDEF GO32V2}
+uses
+  go32;
+{$ENDIF}
 
 const
   PUBLIC_PREFIX = {$IF DEFINED(GO32V2) OR DEFINED(WINDOWS)} '_' {$ELSE} '' {$ENDIF};
@@ -28,22 +34,25 @@ procedure Pascal_Delay (ms: Word); cdecl;
 {$IFDEF GO32V2}
 
 function Pascal_dosmemselector: Word; cdecl;
+function Pascal_int31error_ptr: Pointer; cdecl;
 procedure Pascal_dosmemget (seg: Word; ofs: Word; var data; count: Longint); cdecl;
 procedure Pascal_dosmemput (seg: Word; ofs: Word; var data; count: Longint); cdecl;
+function Pascal_global_dos_alloc (bytes: Longint): Longint; cdecl;
+function Pascal_global_dos_free (selector: Word): Boolean; cdecl;
+function Pascal_realintr (intnr: Word; var regs: trealregs): Boolean; cdecl;
+
+{$I pascal/dos.pas}
+{$I pascal/dpmi.pas}
+{$I pascal/go32.pas}
+{$I pascal/pc.pas}
 
 {$ENDIF}
 
-{$I pascal/dos.pas}
-{$I pascal/go32.pas}
-{$I pascal/pc.pas}
 {$I pascal/string.pas}
 
 implementation
 
 uses
-{$IFDEF GO32V2}
-  go32,
-{$ENDIF}
   crt,
   strings;
 
@@ -85,6 +94,12 @@ begin
   Pascal_dosmemselector := go32.dosmemselector;
 end;
 
+function Pascal_int31error_ptr: Pointer; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_int31error_ptr';
+begin
+  Pascal_int31error_ptr := @go32.int31error;
+end;
+
 procedure Pascal_dosmemget (seg: Word; ofs: Word; var data; count: Longint); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_dosmemget';
 begin
@@ -95,6 +110,24 @@ procedure Pascal_dosmemput (seg: Word; ofs: Word; var data; count: Longint); cde
 public name PUBLIC_PREFIX + 'Pascal_dosmemput';
 begin
   go32.dosmemput (seg, ofs, data, count);
+end;
+
+function Pascal_global_dos_alloc (bytes: Longint): Longint; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_global_dos_alloc';
+begin
+  Pascal_global_dos_alloc := go32.global_dos_alloc (bytes);
+end;
+
+function Pascal_global_dos_free (selector: Word): Boolean; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_global_dos_free';
+begin
+  Pascal_global_dos_free := go32.global_dos_free (selector);
+end;
+
+function Pascal_realintr (intnr: Word; var regs: trealregs): Boolean; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_realintr';
+begin
+  Pascal_realintr := go32.realintr (intnr, regs);
 end;
 
 {$ENDIF}

@@ -3,11 +3,17 @@
 # SPDX-FileCopyrightText: 2024 Ivan Tatarinov
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-builddir?=build
-FPC?=fpc
-FPCFLAGS?=-Ccpascal -Mtp
+srcdir:=$(patsubst %/,%,$(realpath $(dir $(lastword $(MAKEFILE_LIST)))))
+builddir:=$(patsubst %/,%,$(realpath .))
 
-UNITS=\
+ifeq ($(srcdir),$(builddir))
+ $(error Do not run "make" from sources' directory: use build directory instead)
+endif
+
+FPC?=fpc
+FPCFLAGS+=-Fi$(srcdir) -Fu. -FU.
+
+UNITS_SRCS=\
  sdl.pp\
  sdl__rwops.pp\
  sdl_audio.pp\
@@ -22,89 +28,54 @@ UNITS=\
  stdio.pp
 
 .PHONY: all
-all: $(foreach u,$(UNITS),$(addprefix $(builddir)/,$(u:.pp=.ppu)))
+all: $(UNITS_SRCS:.pp=.ppu)
 
-.PHONY: usage
-usage:
-	@echo "Usage:";\
-	 echo "  make [option ...] [TARGET]";\
-	 echo "where:";\
-	 echo "  options:";\
-	 echo "    builddir=<DIR>";\
-	 echo "    FPC=<FPC>";\
-	 echo "    FPCFLAGS=<FPCFLAGS>";\
-	 echo "  TARGET: usage | all | clean | distclean"
+sdl.ppu: $(srcdir)/sdl.pp\
+ sdl_types.ppu
 
-$(builddir):
-	mkdir -p $@
+sdl__rwops.ppu: $(srcdir)/sdl__rwops.pp\
+ sdl_types.ppu\
+ stdio.ppu
 
-buildunit=$(FPC) $(FPCFLAGS) -FU$(builddir) -Fu$(builddir) $<
+sdl_audio.ppu: $(srcdir)/sdl_audio.pp\
+ sdl_types.ppu\
+ sdl__rwops.ppu
 
-$(builddir)/sdl.ppu: sdl.pp\
- $(builddir)/sdl_types.ppu\
- | $(builddir)
-	$(call buildunit)
+sdl_cdrom.ppu: $(srcdir)/sdl_cdrom.pp\
+ sdl_types.ppu
 
-$(builddir)/sdl__rwops.ppu: sdl__rwops.pp\
- $(builddir)/sdl_types.ppu\
- $(builddir)/stdio.ppu\
- | $(builddir)
-	$(call buildunit)
+sdl_events.ppu: $(srcdir)/sdl_events.pp\
+ sdl_types.ppu\
+ sdl_syswm.ppu\
+ sdl_keyboard.ppu
 
-$(builddir)/sdl_audio.ppu: sdl_audio.pp\
- $(builddir)/sdl_types.ppu\
- $(builddir)/sdl__rwops.ppu\
- | $(builddir)
-	$(call buildunit)
+sdl_keyboard.ppu: $(srcdir)/sdl_keyboard.pp\
+ sdl_types.ppu
 
-$(builddir)/sdl_cdrom.ppu: sdl_cdrom.pp\
- $(builddir)/sdl_types.ppu\
- | $(builddir)
-	$(call buildunit)
+sdl_mouse.ppu: $(srcdir)/sdl_mouse.pp\
+ sdl_types.ppu\
+ sdl_video.ppu
 
-$(builddir)/sdl_events.ppu: sdl_events.pp\
- $(builddir)/sdl_types.ppu\
- $(builddir)/sdl_syswm.ppu\
- $(builddir)/sdl_keyboard.ppu\
- | $(builddir)
-	$(call buildunit)
+sdl_syswm.ppu: $(srcdir)/sdl_syswm.pp
 
-$(builddir)/sdl_keyboard.ppu: sdl_keyboard.pp\
- $(builddir)/sdl_types.ppu\
- | $(builddir)
-	$(call buildunit)
+sdl_timer.ppu: $(srcdir)/sdl_timer.pp\
+ sdl_types.ppu
 
-$(builddir)/sdl_mouse.ppu: sdl_mouse.pp\
- $(builddir)/sdl_types.ppu\
- $(builddir)/sdl_video.ppu\
- | $(builddir)
-	$(call buildunit)
+sdl_types.ppu: $(srcdir)/sdl_types.pp
 
-$(builddir)/sdl_syswm.ppu: sdl_syswm.pp | $(builddir)
-	$(call buildunit)
+sdl_video.ppu: $(srcdir)/sdl_video.pp\
+ sdl_types.ppu\
+ sdl__rwops.ppu
 
-$(builddir)/sdl_timer.ppu: sdl_timer.pp\
- $(builddir)/sdl_types.ppu\
- | $(builddir)
-	$(call buildunit)
+stdio.ppu: $(srcdir)/stdio.pp
 
-$(builddir)/sdl_types.ppu: sdl_types.pp | $(builddir)
-	$(call buildunit)
-
-$(builddir)/sdl_video.ppu: sdl_video.pp\
- $(builddir)/sdl_types.ppu\
- $(builddir)/sdl__rwops.ppu\
- | $(builddir)
-	$(call buildunit)
-
-$(builddir)/stdio.ppu: stdio.pp | $(builddir)
-	$(call buildunit)
+%.ppu: $(srcdir)/%.pp
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS) $< > /dev/null
 
 .PHONY: clean
 clean:
-	rm -f $(foreach u,$(UNITS),$(addprefix $(builddir)/,$(u:.pp=.ppu)))
-	rm -f $(foreach u,$(UNITS),$(addprefix $(builddir)/,$(u:.pp=.o)))
+	rm -f $(UNITS_SRCS:.pp=.ppu) $(UNITS_SRCS:.pp=.o) *.a
 
 .PHONY: distclean
-distclean:
-	rm -rf $(builddir)
+distclean: clean

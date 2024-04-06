@@ -51,15 +51,14 @@ Now:
 * Fixed binding with SDL library on 64-bit platforms.
 * To build `adtrack2` under DOS (also true for `adt2play`):
   + Install DJGPP environment and Free Pascal compiler in DOSBox-X with LFN support or on a real hardware.
-  + Type `make`.
-* To build `adtrack2` under Windows (using i386 compiler for now):
+  + Run `./Make-DOS.sh`.
+* To build `adtrack2` under Windows (works for i386 target for now):
   + Install Cygwin/MSYS2/MinGW, Free Pascal compiler.
-  + Type `make`.
-* To build `adtrack2` under GNU/Linux (using i386 compiler for now):
+  + Run `./Make-Windows-i386.sh` or `./Make-Windows-x86_64.sh`.
+* To build `adtrack2` under GNU/Linux (works for i386 target for now):
   + Install Free Pascal compiler and SDL library.
-  + Type `make`.
-* To cross-compile `adtrack2` under any of the above OSes:
-  + Type `make BUILD=<...>`.
+  + Run `./Make-Linux-i386.sh` or `./Make-Linux-x86_64.sh`.
+* These scripts can also be run in any supported OS for cross-compilation. See [docs/build.md](docs/build.md) for details.
 * The compiled object files have been moved to the target directory and are no longer annoying lying around everywhere.
 * Many extra and unneeded files were removed.
 * Compilation is no longer dependent on unknown binary executables.
@@ -136,6 +135,14 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 * [VGA Hardware](https://wiki.osdev.org/VGA_Hardware)
 * [VGA Signal Timing](http://tinyvga.com/vga-timing)
 * [Hardware Level VGA and SVGA Video Programming Information](http://www.osdever.net/FreeVGA/vga/vga.htm)
+
+### Documentation
+
+* [TECH Help!](http://www.techhelpmanual.com/) - The Electronic Technical Reference Manual
+* [BIOS Data Area (BDA)](https://stanislavs.org/helppc/bios_data_area.html) - x86 PC memory map
+* [DOS Protected Mode Interface](https://en.wikipedia.org/wiki/DOS_Protected_Mode_Interface)
+* [DPMI version 0.9 specification (text format)](https://web.archive.org/web/20120425162013/http://homer.rice.edu/~sandmann/cwsdpmi/dpmispec.txt)
+* [DPMI version 0.9 specification (HTML format)](https://web.archive.org/web/20160521221856/http://www.tenberry.com/dpmi/index.html)
 
 ### Recommendations
 

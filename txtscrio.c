@@ -179,7 +179,7 @@ uint8_t DispPg;
 #include "txtscrio/go32/GetPalette.c"
 #include "txtscrio/go32/SetPalette.c"
 
-uint8_t fade_speed = 63;
+#include "txtscrio/go32/fade.c"
 
 #include "txtscrio/go32/VgaFade.c"
 #include "txtscrio/go32/RefreshEnable.c"

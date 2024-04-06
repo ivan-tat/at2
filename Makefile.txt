@@ -5,7 +5,36 @@ where:
     DEBUG=<Boolean>
       <Boolean>: 0 | 1
     BUILD=<BUILD>
-      <BUILD>: native | go32v2-i386 | linux-i386 | linux-x86_64 | win32-i386 | win64-x86_64
+      <BUILD>:
+        native
+        | go32v2-i386
+        | linux-i386
+        | linux-x86_64
+        | win32-i386
+        | win64-x86_64
     PACKAGE=<PACKAGE>
-      <PACKAGE>: dos | linux | windows
-  TARGET: usage | all | build-sdk | build-sdl | clean-sdl | build-at2-bin | clean-at2-bin | release-at2-bin | clean-release-at2-bin | release | clean-release | clean | distclean
+      <PACKAGE>:
+        dos
+        | linux
+        | windows
+  TARGET:
+    all
+    | build-deps | clean-deps
+    | build-sdk
+    | build-sdl | clean-sdl
+    | build-at2-bin | clean-at2-bin
+    | release-at2-bin | clean-release-at2-bin
+    | release | clean-release
+    | clean | distclean
+
+Following environment variables may be used:
+  GCC
+  GCCFLAGS
+  GCCFLAGS_DIRS
+  FPC
+  FPCFLAGS
+  FPCFLAGS_DIRS
+  FPCFLAGS_AT2_BIN
+  RELEASE_BIN
+  AT2_VERSION_FILE
+  AT2_VERSION

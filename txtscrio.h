@@ -19,6 +19,8 @@
 
 // HINT: (FPC) $PACKRECORDS 1: Alignment of record elements (1)
 
+#include "txtscrio/colors.h"
+
 extern uint16_t SCREEN_RES_X;
 extern uint16_t SCREEN_RES_Y;
 extern uint8_t  MAX_COLUMNS;
@@ -32,7 +34,7 @@ extern uint8_t  INSEDIT_yshift;
 extern uint8_t  PATTORD_xshift;
 extern uint8_t  GOTOXY_xshift;
 
-#define MAX_SCREEN_MEM_SIZE 180 * 60 * 2
+#define MAX_SCREEN_MEM_SIZE (180 * 60 * 2)
 extern int32_t SCREEN_MEM_SIZE;
 
 typedef uint8_t tSCREEN_MEM[MAX_SCREEN_MEM_SIZE]; // HINT: (FPC) start index 0
@@ -82,24 +84,6 @@ extern uint8_t scroll_pos3;
 extern uint8_t scroll_pos4;
 
 extern int32_t cursor_backup;
-
-#define Black    0x00
-#define Blue     0x01
-#define Green    0x02
-#define Cyan     0x03
-#define Red      0x04
-#define Magenta  0x05
-#define Brown    0x06
-#define LGray    0x07
-#define DGray    0x08
-#define LBlue    0x09
-#define LGreen   0x0A
-#define LCyan    0x0B
-#define LRed     0x0C
-#define LMagenta 0x0D
-#define Yellow   0x0E
-#define White    0x0F
-#define Blink    0x80
 
 void show_str (uint8_t xpos, uint8_t ypos, const String *str, uint8_t attr);
 void show_cstr (uint8_t xpos, uint8_t ypos, const String *str, uint8_t attr1,
@@ -190,27 +174,7 @@ void WaitRetrace (void);
 void GetPalette (void *pal, uint8_t first, uint8_t last);
 void SetPalette (void *pal, uint8_t first, uint8_t last);
 
-typedef enum {
-  fadeFirst,
-  fadeOut,
-  fadeIn
-} tFADE;
-
-typedef enum {
-  fast,
-  delayed
-} tDELAY;
-
-#pragma pack(push, 1)
-typedef struct {
-  tFADE action;
-  struct {
-    uint8_t r, g, b;
-  } pal0[256], pal1[256]; // HINT: (FPC) start index 0
-} tFADE_BUF;
-#pragma pack(pop)
-
-extern uint8_t fade_speed;
+#include "txtscrio/go32/fade.h"
 
 void VgaFade (tFADE_BUF *data, tFADE fade, tDELAY dly);
 void RefreshEnable (void);

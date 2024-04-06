@@ -16,8 +16,13 @@ begin
 
   MaxCol := MEM[SEG0040:$4a];
   MaxLn := SUCC(MEM[SEG0040:$84]);
-  work_MaxLn  := MaxLn;
+{$IFNDEF ADT2PLAY}
   work_MaxCol := MaxCol;
+  work_MaxLn := MaxLn;
+{$ENDIF}
+
   FillWord(screen_ptr^,MAX_SCREEN_MEM_SIZE DIV 2,$0700);
+{$IFNDEF ADT2PLAY}
   dosmemput(v_seg,v_ofs,screen_ptr^,MAX_SCREEN_MEM_SIZE);
+{$ENDIF}
 end;

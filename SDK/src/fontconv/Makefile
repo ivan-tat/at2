@@ -10,7 +10,7 @@ exec_prefix?=$(prefix)
 bindir?=$(exec_prefix)/bin
 
 ifeq ($(builddir),)
- builddir:=$(buildroot)/$(AT2SDK_HOST_SUBDIR)
+ builddir:=$(realpath .)/build/$(AT2SDK_HOST_SUBDIR)
 endif
 
 # Setup GNU C compiler for host
