@@ -19,7 +19,7 @@ void outportsb (uint16_t port, const uint8_t  *buf, size_t len) {
     "cld\n\t"
     "rep outsb %%ds:(%%esi),(%%dx)"
     :
-    : "d" (port), "D" (buf), "c" (len)
+    : "d" (port), "S" (buf), "c" (len)
     : "cc", "memory"
   );
 }

@@ -165,9 +165,9 @@ procedure ResetMode; cdecl; external;
 procedure SetCustomVideoMode(vmode: tCUSTOM_VIDEO_MODE); cdecl; external;
 procedure GetRGBitem(color: Byte; var red,green,blue: Byte); cdecl; external;
 procedure SetRGBitem(color: Byte; red,green,blue: Byte); cdecl; external;
-procedure WaitRetrace; cdecl; external;
 procedure GetPalette(var pal; first,last: Word); cdecl; external;
 procedure SetPalette(var pal; first,last: Word); cdecl; external;
+procedure WaitRetrace; cdecl; external;
 
 {$I txtscrio/go32/pas/fade.pas}
 

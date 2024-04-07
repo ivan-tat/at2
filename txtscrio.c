@@ -85,8 +85,8 @@ void  (*move_to_screen_routine) () = NULL;
 
 uint8_t program_screen_mode = 0;
 
-uint8_t MaxLn = 0;
 uint8_t MaxCol = 0;
+uint8_t MaxLn = 0;
 uint8_t hard_maxcol = 0;
 uint8_t hard_maxln = 0;
 uint8_t work_MaxCol = 0;
@@ -114,6 +114,7 @@ int32_t cursor_backup;
 
 static uint16_t absolute_pos;
 
+#include "txtscrio/PosChar.c"
 #include "txtscrio/DupChar.c"
 
 #include "txtscrio/ShowStr.c"
@@ -175,9 +176,9 @@ uint8_t DispPg;
 #include "txtscrio/go32/SetCustomVideoMode.c"
 #include "txtscrio/go32/GetRGBitem.c"
 #include "txtscrio/go32/SetRGBitem.c"
-#include "txtscrio/go32/WaitRetrace.c"
 #include "txtscrio/go32/GetPalette.c"
 #include "txtscrio/go32/SetPalette.c"
+#include "txtscrio/go32/WaitRetrace.c"
 
 #include "txtscrio/go32/fade.c"
 

@@ -77,8 +77,11 @@ $(info Build directory: $(builddir))
 $(info Build log:       $(buildlog))
 $(info ---)
 
+# Separate "make" call is needed to fix wrong dependency resolving by "make"
+# when it deletes the `adt2play.inc' file but doesn't create it afterwards.
 .PHONY: all
-all: clean-log clean-at2play-version build-at2play-bin
+all: clean-log clean-at2play-version
+	$(MAKE) -w -f $(srcdir1)/Makefile build-at2play-bin
 
 font \
 picture \
@@ -228,31 +231,10 @@ stringio_ppu_deps=\
 
 txtscrio_ppu_deps=\
  $(srcdir1)/txtscrio.pas\
- $(srcdir)/txtscrio/i386/DupChar.pas\
- $(srcdir)/txtscrio/i386/ShowC3Str.pas\
- $(srcdir)/txtscrio/i386/ScreenMemCopy.pas\
  $(srcdir)/txtscrio/go32/pas/fade.pas\
- $(srcdir)/txtscrio/go32/pas/GetPalette.pas\
- $(srcdir)/txtscrio/go32/pas/GetRGBitem.pas\
  $(srcdir)/txtscrio/go32/pas/GetVideoState.pas\
- $(srcdir)/txtscrio/go32/pas/initialize.pas\
- $(srcdir)/txtscrio/go32/pas/iVGA.pas\
- $(srcdir)/txtscrio/go32/pas/SetPalette.pas\
- $(srcdir)/txtscrio/go32/pas/SetRGBitem.pas\
  $(srcdir)/txtscrio/go32/pas/SetVideoState.pas\
- $(srcdir)/txtscrio/go32/pas/VgaFade.pas\
- $(srcdir)/txtscrio/go32/pas/WaitRetrace.pas\
  $(srcdir)/txtscrio/pas/colors.pas\
- $(srcdir)/txtscrio/pas/GetCursor.pas\
- $(srcdir)/txtscrio/pas/GetCursorShape.pas\
- $(srcdir)/txtscrio/pas/GotoXY.pas\
- $(srcdir)/txtscrio/pas/HideCursor.pas\
- $(srcdir)/txtscrio/pas/SetCursor.pas\
- $(srcdir)/txtscrio/pas/SetCursorShape.pas\
- $(srcdir)/txtscrio/pas/ThinCursor.pas\
- $(srcdir)/txtscrio/pas/WhereX.pas\
- $(srcdir)/txtscrio/pas/WhereY.pas\
- $(srcdir)/txtscrio/pas/WideCursor.pas\
  txtscrio.o
 
 # Setup target dependencies

@@ -64,8 +64,8 @@ extern void  (*move_to_screen_routine) ();
 
 extern uint8_t program_screen_mode;
 
-extern uint8_t MaxLn;
 extern uint8_t MaxCol;
+extern uint8_t MaxLn;
 extern uint8_t hard_maxcol;
 extern uint8_t hard_maxln;
 extern uint8_t work_MaxCol;
@@ -118,7 +118,7 @@ uint8_t CStr2Len (const String *str);
 uint8_t C3StrLen (const String *str);
 
 void ScreenMemCopy (tSCREEN_MEM *src, tSCREEN_MEM *dest);
-//move2screen
+void move2screen (void);
 void move2screen_alt (void);
 void TxtScrIO_Init (void);
 bool is_default_screen_mode (void);

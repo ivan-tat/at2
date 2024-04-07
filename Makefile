@@ -327,6 +327,7 @@ stringio_ppu_deps=\
 
 txtscrio_ppu_deps=\
  $(srcdir)/txtscrio.pas\
+ $(srcdir)/txtscrio/go32/pas/fade.pas\
  $(srcdir)/txtscrio/pas/colors.pas\
  txtscrio.o
 

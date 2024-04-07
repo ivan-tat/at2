@@ -5,8 +5,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void GotoXY (uint8_t x, uint8_t y) {
-  virtual_cur_pos = x | (y << 8);
 #if GO32
+#if ADT2PLAY
+  VBIOS_set_cursor_pos (DispPg, x - 1, y - 1);
+#else // !ADT2PLAY
+  virtual_cur_pos = x | (y << 8);
+
   VBIOS_set_cursor_pos (DispPg, x + GOTOXY_xshift - 1, y - 1);
-#endif // GO32
+#endif // !ADT2PLAY
+#else // !GO32
+  virtual_cur_pos = x | (y << 8);
+#endif // !GO32
 }

@@ -11,7 +11,7 @@ static __inline__ void VBIOS_load_ROM_font_8x8 (uint8_t font, bool enable) {
   __asm__ __volatile__ (
     "int $0x10"
     :
-    : "a" (a), [font] "b" (font)
+    : "a" (a), "b" (font)
     : "cc", "memory"
   );
 }
