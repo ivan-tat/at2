@@ -5,7 +5,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 static __inline__ uint16_t VBIOS_get_cursor_pos (uint8_t page) {
-  uint16_t d;
+  uint16_t rd;
 
   __asm__ __volatile__ (
     "mov $3,%%ah\n\t"
@@ -13,10 +13,10 @@ static __inline__ uint16_t VBIOS_get_cursor_pos (uint8_t page) {
     "int $0x10"
     // CH,CL = start,end scan line
     // DH,DL = row,column
-    : "=d" (d)
+    : "=d" (rd)
     : [page] "qQmi" (page)
     : "ah", "bh", "cx", "cc", "memory"
   );
 
-  return d;
+  return rd;
 }

@@ -5,17 +5,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 static __inline__ void VBIOS_get_video_mode (uint8_t *mode, uint8_t *page) {
-  uint8_t a;
-  uint16_t b;
+  uint8_t ra;
+  uint16_t rb;
 
   __asm__ __volatile__ (
     "mov $0x0F,%%ah\n\t"
     "int $0x10"
-    : "=a" (a), "=b" (b)
+    : "=a" (ra), "=b" (rb)
     :
     : "cc", "memory"
   );
 
-  *mode = a & 0x7F;
-  *page = b >> 8;
+  *mode = ra & 0x7F;
+  *page = rb >> 8;
 }

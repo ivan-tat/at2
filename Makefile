@@ -44,13 +44,9 @@ endif
 # in DJGPP environment
 GCCFLAGS+=-std=gnu99 -Wall -Wextra -pedantic
 
-GCCFLAGS+=-O2
-
 GCCFLAGS_DIRS+=-I$(srcdir) -I.
 
 # Setup FPC
-
-FPCFLAGS+=-O2
 
 FPCFLAGS_DIRS+=-Fi$(srcdir) -Fi. -Fuunits
 
@@ -119,7 +115,7 @@ define make_c_dep =
 _deps_/$(1:.c=.d): $2/$1
 	@if [ \( -n "$$(@D)" \) -a \! -e "$$(@D)" ]; then mkdir -p $$(@D); fi
 	@echo "  DEPCC  $1"; \
-	$$(GCC) $$(GCCFLAGS) $$(GCCFLAGS_DIRS)\
+	$$(GCC) $$(GCCFLAGS_CPU) $$(GCCFLAGS) $$(GCCFLAGS_DIRS)\
 	 -MM -MG -MT $$@ -MT $(1:.c=.o) -MF $$@ $$<
 
 endef
@@ -144,7 +140,7 @@ build-sdk: | $(AT2SDK)
 .PHONY: build-sdl
 build-sdl: | $(srcdir)/SDL/Makefile
 	@mkdir -p SDL
-	FPCFLAGS='$(FPCFLAGS) -Ccpascal -Mtp' \
+	FPCFLAGS='$(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp' \
 	$(MAKE) -w -C SDL -f $|
 
 .PHONY: clean-sdl
@@ -191,7 +187,8 @@ define make_c_obj =
 $(1:.c=.o): $2/$1
 	@if [ \( -n "$$(@D)" \) -a \! -e "$$(@D)" ]; then mkdir -p $$(@D); fi
 	@echo "  CC     $1"; \
-	$$(GCC) $$(GCCFLAGS) $$(GCCFLAGS_DIRS) -c $$< -o $$@ >>$$(buildlog)
+	$$(GCC) $$(GCCFLAGS_CPU) $$(GCCFLAGS) $$(GCCFLAGS_DIRS)\
+	 -c $$< -o $$@ >>$$(buildlog)
 
 endef
 
@@ -201,22 +198,26 @@ $(foreach f,$(SRCS),$(eval $(call make_c_obj,$f,$(srcdir))))
 
 units/adt2data.ppu: $(srcdir)/adt2data.pas adt2data.o $(srcdir)/Makefile | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
+	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 units/adt2vesa.ppu: $(srcdir)/go32/adt2vesa.pas $(srcdir)/Makefile | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS) -Ccpascal -Mtp $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp\
+	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 units/common.ppu: $(srcdir)/common.pas common.o $(srcdir)/Makefile | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
+	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 units/iss_tim.ppu: $(srcdir)/go32/iss_tim.pas $(srcdir)/Makefile | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS) -Ccpascal -Mtp $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp\
+	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 pascal_ppu_deps=\
@@ -238,7 +239,8 @@ endif
 
 units/pascal.ppu: $(pascal_ppu_deps) $(srcdir)/Makefile | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
+	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 # Pascal units with complex dependencies and target executable
@@ -381,7 +383,7 @@ endif
 
 $(AT2_BIN): $(adtrack2_bin_deps) $(srcdir)/Makefile | units
 	@echo "  PC     $(AT2_PAS_SRC)"; \
-	$(FPC) $(FPCFLAGS) -Ccpascal -Mtp -Rintel\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp -Rintel\
 	 $(FPCFLAGS_DIRS) -FUunits -FE.\
 	 $(FPCFLAGS_AT2_BIN)\
 	 $(srcdir)/$(AT2_PAS_SRC) -o$@ -vnh >>$(buildlog)

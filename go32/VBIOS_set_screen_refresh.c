@@ -5,23 +5,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 static __inline__ void VBIOS_set_screen_refresh (bool on) {
-  if (on) {
-    __asm__ __volatile__ (
-      "mov $0x1200,%%ax\n\t"
-      "mov $0x36,%%bl\n\t"
-      "int $0x10\n\t"
-      :
-      :
-      : "ax", "bl", "cc", "memory"
-    );
-  } else {
-    __asm__ __volatile__ (
-      "mov $0x1201,%%ax\n\t"
-      "mov $0x36,%%bl\n\t"
-      "int $0x10\n\t"
-      :
-      :
-      : "ax", "bl", "cc", "memory"
-    );
-  }
+  uint16_t a = on ? 0x1200 : 0x1201;
+  uint8_t b = 0x36;
+
+  __asm__ __volatile__ (
+    "int $0x10"
+    :
+    : "a" (a), "b" (b)
+    : "cc", "memory"
+  );
 }

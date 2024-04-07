@@ -5,35 +5,31 @@
 #include "pascal/dos.h"
 
 int custom_enable (void) {
-  int a;
+  uint32_t ra;
 
   __asm__ __volatile__ (
     "pushf\n\t"
     "sti\n\t"
-    "pop %%eax\n\t"
-    "shr $9,%%eax\n\t"
-    "and $1,%%eax"
-    : "=a" (a)
+    "pop %%eax"
+    : "=a" (ra)
     :
     : "cc", "memory"
   );
 
-  return a;
+  return (ra >> 9) & 1;
 }
 
 int custom_disable (void) {
-  int a;
+  uint32_t ra;
 
   __asm__ __volatile__ (
     "pushf\n\t"
     "cli\n\t"
-    "pop %%eax\n\t"
-    "shr $9,%%eax\n\t"
-    "and $1,%%eax"
-    : "=a" (a)
+    "pop %%eax"
+    : "=a" (ra)
     :
     : "cc", "memory"
   );
 
-  return a;
+  return (ra >> 9) & 1;
 }

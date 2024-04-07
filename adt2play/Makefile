@@ -28,15 +28,11 @@ endif
 # in DJGPP environment
 GCCFLAGS+=-std=gnu99 -Wall -Wextra -pedantic
 
-GCCFLAGS+=-O2
-
 GCCFLAGS+=-DADT2PLAY=1
 
 GCCFLAGS_DIRS+=-I$(srcdir1) -I$(srcdir) -I.
 
 # Setup FPC
-
-FPCFLAGS+=-O2
 
 FPCFLAGS+=-dADT2PLAY
 
@@ -103,7 +99,7 @@ define make_c_dep =
 _deps_/$(1:.c=.d): $2/$1
 	@if [ \( -n "$$(@D)" \) -a \! -e "$$(@D)" ]; then mkdir -p $$(@D); fi
 	@echo "  DEPCC  $1"; \
-	$$(GCC) $$(GCCFLAGS) $$(GCCFLAGS_DIRS)\
+	$$(GCC) $$(GCCFLAGS_CPU) $$(GCCFLAGS) $$(GCCFLAGS_DIRS)\
 	 -MM -MG -MT $$@ -MT $(1:.c=.o) -MF $$@ $$<
 
 endef
@@ -157,7 +153,8 @@ define make_c_obj =
 $(1:.c=.o): $2/$1
 	@if [ \( -n "$$(@D)" \) -a \! -e "$$(@D)" ]; then mkdir -p $$(@D); fi
 	@echo "  CC     $1"; \
-	$$(GCC) $$(GCCFLAGS) $$(GCCFLAGS_DIRS) -c $$< -o $$@ >>$$(buildlog)
+	$$(GCC) $$(GCCFLAGS_CPU) $$(GCCFLAGS) $$(GCCFLAGS_DIRS)\
+	 -c $$< -o $$@ >>$$(buildlog)
 
 endef
 
@@ -168,17 +165,20 @@ $(foreach f,$(SRCS1),$(eval $(call make_c_obj,$f,$(srcdir1))))
 
 units/a2data.ppu: $(srcdir1)/a2data.pas a2data.o $(srcdir1)/Makefile | units
 	@echo "  PC     $(patsubst $(srcdir1)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
+	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 units/common.ppu: $(srcdir)/common.pas common.o $(srcdir1)/Makefile | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
+	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 units/iss_tim.ppu: $(srcdir)/go32/iss_tim.pas $(srcdir1)/Makefile | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS) -Ccpascal -Mtp $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp\
+	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 pascal_ppu_deps=\
@@ -200,7 +200,8 @@ endif
 
 units/pascal.ppu: $(pascal_ppu_deps) $(srcdir1)/Makefile | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
+	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 # Pascal units with complex dependencies and target executable
@@ -279,7 +280,7 @@ endif
 
 $(AT2PLAY_BIN): $(adt2play_bin_deps) $(srcdir1)/Makefile | units
 	@echo "  PC     $(AT2PLAY_PAS_SRC)"; \
-	$(FPC) $(FPCFLAGS) -Ccpascal -Mtp -Rintel\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp -Rintel\
 	 $(FPCFLAGS_DIRS) -FUunits -FE.\
 	 $(srcdir1)/$(AT2PLAY_PAS_SRC) -o$@ -vnh >$(buildlog)
 

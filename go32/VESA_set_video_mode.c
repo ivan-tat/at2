@@ -5,12 +5,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 static __inline__ void VESA_set_video_mode (uint16_t mode) {
+  uint16_t a = 0x4F02;
+
   __asm__ __volatile__ (
-    "mov $0x4F02,%%ax\n\t"
-    "mov %[mode],%%bx\n\t"
     "int $0x10"
     :
-    : [mode] "g" (mode)
-    : "ax", "bx", "cc", "memory"
+    : "a" (a), "b" (mode)
+    : "cc", "memory"
   );
 }

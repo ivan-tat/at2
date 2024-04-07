@@ -24,13 +24,16 @@
 # DATEPROG              `date' program
 # WINDRES               Windows resources compiler for target
 # GCC                   GNU C compiler (GCC) for target
-# GCCFLAGS              Flags for GCC
+# GCCFLAGS_CPU          Flags for GCC (only target CPU options)
+# GCCFLAGS              Flags for GCC (all other options)
 # GCC_OS_HOST           Host OS for GCC (used in filenames and paths)
 # GCC_CPU_HOST          Host CPU for GCC (option `-march=')
 # GCC_OS_TARGET         Target OS for GCC (used in filenames and paths)
 # GCC_CPU_TARGET        Target CPU for GCC (option `-march=')
 # FPC                   Free Pascal compiler (FPC) for target
-# FPCFLAGS              Flags for FPC
+# FPCFLAGS_CPU          Flags for FPC (only target CPU options)
+# FPCFLAGS_DIRS         Flags for FPC (only directory options)
+# FPCFLAGS              Flags for FPC (all other options)
 # FPC_OS_HOST           Host OS for FPC (option `-T')
 # FPC_CPU_HOST          Host CPU for FPC (option `-P')
 # FPC_OS_TARGET         Target OS for FPC (option `-T')
@@ -263,15 +266,16 @@ ifeq ($(GCC),)
  endif
 endif
 GCC?=gcc
-ifneq ($(GCC_CPU_TARGET),unknown)
- GCCFLAGS+=-march=$(GCC_CPU_TARGET)
+ifeq ($(GCCFLAGS_CPU),)
+ ifneq ($(GCC_CPU_TARGET),unknown)
+  GCCFLAGS_CPU=-march=$(GCC_CPU_TARGET)
+ endif
+ ifneq ($(findstring $(GCC_CPU_TARGET),i386 i486 i586 i686),)
+  GCCFLAGS_CPU+=-m32
+ else ifeq ($(GCC_CPU_TARGET),x86-64)
+  GCCFLAGS_CPU+=-m64
+ endif
 endif
-ifneq ($(findstring $(GCC_CPU_TARGET),i386 i486 i586 i686),)
- GCCFLAGS+=-m32
-else ifeq ($(GCC_CPU_TARGET),x86-64)
- GCCFLAGS+=-m64
-endif
-
 
 GCCFLAGS+=-DUSE_FPC=1\
  -fno-exceptions\
@@ -292,11 +296,9 @@ FPCVERSION:=$(shell $(FPC) -iV)
 ifneq ($(FPC_OS_TARGET),unknown)
  FPCFLAGS+=-T$(FPC_OS_TARGET)
 endif
-
-ifneq ($(FPC_CPU_TARGET),unknown)
- FPCFLAGS+=-P$(FPC_CPU_TARGET)
- ifeq ($(FPC_CPU_TARGET),i386)
-  FPCFLAGS+=-OpPENTIUM2
+ifeq ($(FPCFLAGS_CPU),)
+ ifneq ($(FPC_CPU_TARGET),unknown)
+  FPCFLAGS_CPU=-P$(FPC_CPU_TARGET)
  endif
 endif
 
@@ -306,7 +308,7 @@ endif
 
 ifeq ($(OS_HOST),Linux)
  $(info Added paths for units: /usr/lib/$(FILE_CPU_HOST)-$(GCC_OS_HOST)/fpc/$(FPCVERSION)/units/$(FPC_CPU_TARGET)-$(FPC_OS_TARGET))
- FPCFLAGS+=\
+ FPCFLAGS_DIRS+=\
   -Fu/usr/lib/$(FILE_CPU_HOST)-$(GCC_OS_HOST)/fpc/$(FPCVERSION)/units/$(FPC_CPU_TARGET)-$(FPC_OS_TARGET)\
   -Fu/usr/lib/$(FILE_CPU_HOST)-$(GCC_OS_HOST)/fpc/$(FPCVERSION)/units/$(FPC_CPU_TARGET)-$(FPC_OS_TARGET)/*\
   -Fu/usr/lib/$(FILE_CPU_HOST)-$(GCC_OS_HOST)/fpc/$(FPCVERSION)/units/$(FPC_CPU_TARGET)-$(FPC_OS_TARGET)/rtl
@@ -314,7 +316,7 @@ ifeq ($(OS_HOST),Linux)
   ifneq ($(CPU_HOST),$(CPU_TARGET))
    ifeq ($(FPC_CPU_TARGET),i386)
     $(info Added paths for libraries: /usr/lib/$(FILE_CPU_TARGET)-$(GCC_OS_TARGET))
-    FPCFLAGS+=-Fl/usr/lib/$(FILE_CPU_TARGET)-$(GCC_OS_TARGET)
+    FPCFLAGS_DIRS+=-Fl/usr/lib/$(FILE_CPU_TARGET)-$(GCC_OS_TARGET)
    endif
   endif
  endif

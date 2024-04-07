@@ -31,10 +31,12 @@ where:
 
 Following environment variables may be used:
   GCC
-  GCCFLAGS
+  GCCFLAGS_CPU
   GCCFLAGS_DIRS
+  GCCFLAGS
   FPC
-  FPCFLAGS
+  FPCFLAGS_CPU
   FPCFLAGS_DIRS
+  FPCFLAGS
   FPCFLAGS_AT2_BIN
   RELEASE_BIN

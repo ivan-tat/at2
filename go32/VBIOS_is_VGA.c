@@ -5,15 +5,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 static __inline__ bool VBIOS_is_VGA (void) {
-  uint8_t a, b;
+  uint16_t a = 0x1A00;
+  uint8_t ra, rb;
 
   __asm__ __volatile__ (
-    "mov $0x1A00,%%ax\n\t"
     "int $0x10"
-    : "=a" (a), "=b" (b)
-    :
+    : "=a" (ra), "=b" (rb)
+    : "a" (a)
     : "cc", "memory"
   );
 
-  return ((a == 0x1A) && (b >= 7) && (b < 0xFF));
+  return ((ra == 0x1A) && (rb >= 7) && (rb < 0xFF));
 }

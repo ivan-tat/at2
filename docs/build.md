@@ -18,11 +18,25 @@ and make it executable (run `chmod +x Build.sh`)
 ```bash
 #!/bin/sh -e
 export PATH=$HOME/.local/opt/cross-fpc/bin:$PATH
-export FPCFLAGS=@$HOME/.local/opt/cross-fpc/fpc.cfg
+export GCCFLAGS="-O2"
+export FPCFLAGS="@$HOME/.local/opt/cross-fpc/fpc.cfg -O2"
 MAKEFLAGS="-j $(nproc)"
 ```
 
 You should prepare appropriate environment for cross-compilation in this case.
+
+For custom optimizations you should provide appropriate options for GCC and FPC.
+
+Example options for Pentium 2 CPU (setting these variables will prevent automatic selection of target CPU options in makefiles):
+
+```bash
+export GCCFLAGS_CPU="-march=pentium2 -m32"
+export FPCFLAGS_CPU="-Pi386 -OpPENTIUM2"
+```
+
+For GCC use `gcc --help=target` and `gcc --help=optimizers` to check all supported options.
+
+For FPC use `fpc -i` to check all supported options.
 
 ### 3. Build the project
 

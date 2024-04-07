@@ -5,14 +5,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 static __inline__ void VBIOS_set_video_mode (uint8_t mode, uint8_t page) {
+  uint16_t a = mode; // MSB = 0 (set video mode)
+
   __asm__ __volatile__ (
-    "xor %%eax,%%eax\n\t"
-    "mov %[mode],%%al\n\t"
     "mov %[page],%%bh\n\t"
     "int $0x10"
     :
-    : [mode] "qQmi,mi" (mode),
-      [page] "mi,qQmi" (page)
-    : "eax", "bh", "cc", "memory"
+    : "a" (a), [page] "qQmi" (page)
+    : "bh", "cc", "memory"
   );
 }
