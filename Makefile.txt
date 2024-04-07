@@ -12,6 +12,8 @@ where:
         | linux-x86_64
         | win32-i386
         | win64-x86_64
+    AT2_VERSION=<VERSION>
+      <VERSION>: string without spaces
     PACKAGE=<PACKAGE>
       <PACKAGE>:
         dos
@@ -36,5 +38,3 @@ Following environment variables may be used:
   FPCFLAGS_DIRS
   FPCFLAGS_AT2_BIN
   RELEASE_BIN
-  AT2_VERSION_FILE
-  AT2_VERSION

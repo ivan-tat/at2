@@ -16,20 +16,10 @@ include $(srcdir)/SDK/Common.mak
 
 buildlog=log
 
-# Setup version
-
-ifeq ($(OS_TARGET),DJGPP)
- AT2PLAY_VERSION_FILE?=$(srcdir1)/adt2play.dos
-else
- $(warning AT2PLAY_VERSION_FILE variable is not defined for target OS: $(OS_TARGET))
-endif
+# Check version
 
 ifeq ($(AT2PLAY_VERSION),)
- ifneq ($(AT2PLAY_VERSION_FILE),)
-  AT2PLAY_VERSION=$(shell cat $(AT2PLAY_VERSION_FILE))
- else
-  $(error AT2PLAY_VERSION variable is not set)
- endif
+ $(error AT2PLAY_VERSION variable is not set)
 endif
 
 # Setup GCC

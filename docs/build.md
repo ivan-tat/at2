@@ -8,7 +8,7 @@
 #!/bin/sh -e
 . ./Build.conf
 mkdir -p build
-make $MAKEFLAGS -w -C build -f ../Makefile $*
+make $MAKEFLAGS -w -C build -f ../Makefile AT2_VERSION=1.0.0-release $*
 ```
 
 and make it executable (run `chmod +x Build.sh`)

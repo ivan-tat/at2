@@ -14,34 +14,27 @@ include $(srcdir)/SDK/Common.mak
 
 buildlog=log
 
-# Check package
+# Check version
+
+ifeq ($(AT2_VERSION),)
+ $(error AT2_VERSION variable is not set)
+endif
+
+# Check or setup default package
 
 ifneq ($(PACKAGE),)
  ifeq ($(findstring $(PACKAGE),dos linux windows),)
   $(error Unknown package "$(PACKAGE)")
  endif
-endif
-
-# Setup version and package
-
-ifeq ($(OS_TARGET),DJGPP)
- AT2_VERSION_FILE?=$(srcdir)/adtrack2.dos
- PACKAGE?=dos
-else ifeq ($(OS_TARGET),Linux)
- AT2_VERSION_FILE?=$(srcdir)/adtrack2.linux
- PACKAGE?=linux
-else ifeq ($(OS_TARGET),Windows)
- AT2_VERSION_FILE?=$(srcdir)/adtrack2.windows
- PACKAGE?=windows
 else
- $(warning AT2_VERSION_FILE variable is not defined for target OS: $(OS_TARGET))
-endif
-
-ifeq ($(AT2_VERSION),)
- ifneq ($(AT2_VERSION_FILE),)
-  AT2_VERSION=$(shell cat $(AT2_VERSION_FILE))
+ ifeq ($(OS_TARGET),DJGPP)
+  PACKAGE=dos
+ else ifeq ($(OS_TARGET),Linux)
+  PACKAGE=linux
+ else ifeq ($(OS_TARGET),Windows)
+  PACKAGE=windows
  else
-  $(error AT2_VERSION variable is not set)
+  $(warning No package is defined for target OS: $(OS_TARGET))
  endif
 endif
 

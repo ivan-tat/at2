@@ -7,6 +7,8 @@ where:
     BUILD=<BUILD>
       <BUILD>:
         go32v2-i386
+    AT2PLAY_VERSION=<VERSION>
+      <VERSION>: string without spaces
   TARGET:
     all
     | build-deps | clean-deps
@@ -21,5 +23,3 @@ Following environment variables may be used:
   FPC
   FPCFLAGS
   FPCFLAGS_DIRS
-  AT2PLAY_VERSION_FILE
-  AT2PLAY_VERSION
