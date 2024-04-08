@@ -146,14 +146,13 @@ procedure HideCursor; cdecl; external;
 function  GetCursorShape: Word; cdecl; external;
 procedure SetCursorShape(shape: Word); cdecl; external;
 
+{$IFDEF GO32V2}
+
 var
   v_seg:  Word; cvar; external;
   v_ofs:  Word; cvar; external;
   v_mode: Byte; cvar; external;
 
-{$IFDEF GO32V2}
-
-var
   DispPg: Byte; cvar; external;
 
 type

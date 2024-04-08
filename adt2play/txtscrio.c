@@ -10,6 +10,7 @@
 #if USE_FPC
 #include "pascal.h"
 #if GO32
+#include "pascal/dpmi.h"
 #include "pascal/farptr.h"
 #include "pascal/go32.h"
 #include "pascal/pc.h"
@@ -18,6 +19,7 @@
 #include "pascal/string.h"
 #else // !USE_FPC
 #if GO32
+#include <dpmi.h>
 #include <farptr.h>
 #include <go32.h>
 #include <pc.h>
@@ -68,6 +70,8 @@ static uint16_t absolute_pos;
 #include "txtscrio/GetCursorShape.c"
 #include "txtscrio/SetCursorShape.c"
 
+#if GO32
+
 uint16_t v_seg = 0xB800;
 uint16_t v_ofs = 0;
 uint8_t  v_mode = 3;
@@ -85,3 +89,8 @@ uint8_t DispPg;
 #include "txtscrio/go32/fade.c"
 
 #include "txtscrio/go32/VgaFade.c"
+
+#include "txtscrio/go32/GetVideoState.c"
+#include "txtscrio/go32/SetVideoState.c"
+
+#endif // GO32

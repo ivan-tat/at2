@@ -2,10 +2,13 @@
 
 | Pascal | C | Transitional C header | C header |
 | --- | --- | --- | --- |
+| `var s: String;` | `String s[255+1];` | `"pascal.h"` | - |
+| `const s: String[78] = 'Text';` | `String s[78+1] = "\x04" "Text";` | `"pascal.h"` | - |
 | `len := Length(s);` | `len = Length(s);` | `"pascal.h"` | - |
 | `s[0] := Chr(len);` | `SetLength(s, len);` | `"pascal.h"` | - |
 | `p := @s[1];` | `p = GetStr(s);` | `"pascal.h"` | - |
 | `s := 'Text';` | `StrToString(s, "Text", 255);` | `"pascal.h"` | - |
+| `s := StrPas(p);` | `StrToString(s, p, 255);` | `"pascal.h"` | - |
 | `t := s;` | `CopyString(t, s, 255);` | `"pascal.h"` | - |
 | `Move(src, dest, count);` | `memmove(dest, src, count);` | `"pascal/string.h"` | `<string.h>` |
 | `FillChar(buf, count, b);` | `memset(buf, b, count);` | `"pascal/string.h"` | `<string.h>` |
@@ -74,7 +77,7 @@ And you should always take care of what you do with `FS` register across functio
 **Unit**: go32
 
 ```Pascal
-function global_dos_alloc (bytes: Longint): Longint;
+function global_dos_alloc(bytes: Longint): Longint;
 ```
 
 **Return values**:

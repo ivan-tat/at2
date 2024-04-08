@@ -207,6 +207,24 @@ units/pascal.ppu: $(pascal_ppu_deps) $(srcdir1)/Makefile | units
 	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
+txtscrio_ppu_deps=\
+ $(srcdir1)/txtscrio.pas\
+ $(srcdir)/txtscrio/pas/colors.pas\
+ txtscrio.o\
+ units/common.ppu\
+ units/pascal.ppu
+
+ifeq ($(FPC_OS_TARGET),go32v2)
+ txtscrio_ppu_deps+=\
+  $(srcdir)/txtscrio/go32/pas/fade.pas
+endif
+
+units/txtscrio.ppu: $(txtscrio_ppu_deps) $(srcdir1)/Makefile | units
+	@echo "  PC     $(patsubst $(srcdir1)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
+	 $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
 # Pascal units with complex dependencies and target executable
 
 a2depack_ppu_deps=\
@@ -229,14 +247,6 @@ parserio_ppu_deps=\
 stringio_ppu_deps=\
  $(srcdir1)/stringio.pas
 
-txtscrio_ppu_deps=\
- $(srcdir1)/txtscrio.pas\
- $(srcdir)/txtscrio/go32/pas/fade.pas\
- $(srcdir)/txtscrio/go32/pas/GetVideoState.pas\
- $(srcdir)/txtscrio/go32/pas/SetVideoState.pas\
- $(srcdir)/txtscrio/pas/colors.pas\
- txtscrio.o
-
 # Setup target dependencies
 
 adt2play_bin_deps=build-sdk build-deps
@@ -250,10 +260,10 @@ adt2play_bin_deps+=\
  $(a2scrio_ppu_deps)\
  $(parserio_ppu_deps)\
  $(stringio_ppu_deps)\
- $(txtscrio_ppu_deps)\
  units/a2data.ppu\
  units/common.ppu\
- units/pascal.ppu
+ units/pascal.ppu\
+ units/txtscrio.ppu
 
 ifeq ($(FPC_OS_TARGET),go32v2)
  adt2play_bin_deps+=\

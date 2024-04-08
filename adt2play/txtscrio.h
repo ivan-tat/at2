@@ -34,17 +34,6 @@ extern uint8_t MaxLn;
 
 extern int32_t cursor_backup;
 
-#pragma pack(push, 1)
-typedef struct {
-  int32_t cursor;
-  uint8_t font;
-  uint8_t MaxLn, MaxCol, v_mode, DispPg;
-  uint16_t v_seg, v_ofs;
-  tSCREEN_MEM screen;
-  uint8_t data[4096]; // HINT: (FPC) start index 0
-} tVIDEO_STATE;
-#pragma pack(pop)
-
 void ShowC3Str (tSCREEN_MEM *dest, uint8_t x, uint8_t y, const String *str,
                 uint8_t attr1, uint8_t attr2, uint8_t attr3);
 
@@ -58,6 +47,8 @@ void WideCursor (void);
 void HideCursor (void);
 uint16_t GetCursorShape (void);
 void SetCursorShape (uint16_t shape);
+
+#if GO32
 
 extern uint16_t v_seg;
 extern uint16_t v_ofs;
@@ -76,5 +67,21 @@ void SetPalette (void *pal, uint8_t first, uint8_t last);
 #include "txtscrio/go32/fade.h"
 
 void VgaFade (tFADE_BUF *data, tFADE fade, tDELAY dly);
+
+#pragma pack(push, 1)
+typedef struct {
+  int32_t cursor;
+  uint8_t font;
+  uint8_t MaxLn, MaxCol, v_mode, DispPg;
+  uint16_t v_seg, v_ofs;
+  tSCREEN_MEM screen;
+  uint8_t data[4096];
+} tVIDEO_STATE;
+#pragma pack(pop)
+
+void GetVideoState (tVIDEO_STATE *data);
+void SetVideoState (tVIDEO_STATE *data, bool restore_screen);
+
+#endif // GO32
 
 #endif // !defined(TXTSCRIO_H)

@@ -16,7 +16,6 @@
 unit TxtScrIO;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
-{$MODESWITCH CVAR}
 {$L txtscrio.o}
 interface
 
@@ -54,6 +53,8 @@ procedure HideCursor; cdecl; external;
 function  GetCursorShape: Word; cdecl; external;
 procedure SetCursorShape(shape: Word); cdecl; external;
 
+{$IFDEF GO32V2}
+
 var
   v_seg:  Word; cvar; external;
   v_ofs:  Word; cvar; external;
@@ -83,24 +84,19 @@ type
                    data: array[0..PRED(4096)] of Byte;
                  end;
 
-procedure GetVideoState(var data: tVIDEO_STATE);
-procedure SetVideoState(var data: tVIDEO_STATE; restore_screen: Boolean);
+procedure GetVideoState(var data: tVIDEO_STATE); cdecl; external;
+procedure SetVideoState(var data: tVIDEO_STATE; restore_screen: Boolean); cdecl; external;
+
+{$ENDIF}
 
 implementation
 
 uses
+{$IFDEF GO32V2}
   GO32,
+{$ENDIF}
   pascal,
   common;
-
-var
-  regs: tRealRegs;
-  dos_sel,dos_seg: Word;
-  dos_mem_adr: Dword;
-  bios_data_backup: array[0..167] of Byte;
-
-{$I txtscrio/go32/pas/GetVideoState.pas}
-{$I txtscrio/go32/pas/SetVideoState.pas}
 
 begin
   initialize;

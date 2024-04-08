@@ -162,11 +162,11 @@ tFRAME_SETTING fr_setting = {
 #include "txtscrio/GetCursorShape.c"
 #include "txtscrio/SetCursorShape.c"
 
+#if GO32
+
 uint16_t v_seg = 0xB800;
 uint16_t v_ofs = 0;
 uint8_t  v_mode = 3;
-
-#if GO32
 
 uint8_t DispPg;
 

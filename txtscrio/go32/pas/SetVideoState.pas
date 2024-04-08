@@ -1,6 +1,6 @@
 // This file is part of Adlib Tracker II (AT2).
 //
-// Saved from `adt2play.pas'.
+// Saved from `adt2play/txtscrio.pas'.
 //
 // SPDX-FileType: SOURCE
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors

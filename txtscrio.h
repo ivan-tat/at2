@@ -154,11 +154,11 @@ void HideCursor (void);
 uint16_t GetCursorShape (void);
 void SetCursorShape (uint16_t shape);
 
+#if GO32
+
 extern uint16_t v_seg;
 extern uint16_t v_ofs;
 extern uint8_t  v_mode;
-
-#if GO32
 
 extern uint8_t DispPg;
 
