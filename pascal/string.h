@@ -26,4 +26,8 @@ String *StrToString (String *dest, const char *src, uint8_t n);
 // n=1..255
 String *CopyString (String *dest, const String *src, uint8_t n);
 
+// FPC_SHORTSTR_APPEND_SHORTSTR
+// n=1..255
+String *AppendString (String *dest, const String *src, uint8_t n);
+
 #endif // !defined(STRING_H)

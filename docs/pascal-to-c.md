@@ -10,6 +10,7 @@
 | `s := 'Text';` | `StrToString(s, "Text", 255);` | `"pascal.h"` | - |
 | `s := StrPas(p);` | `StrToString(s, p, 255);` | `"pascal.h"` | - |
 | `t := s;` | `CopyString(t, s, 255);` | `"pascal.h"` | - |
+| `t := t + s;` | `AppendString(t, s, 255);` | `"pascal.h"` | - |
 | `Move(src, dest, count);` | `memmove(dest, src, count);` | `"pascal/string.h"` | `<string.h>` |
 | `FillChar(buf, count, b);` | `memset(buf, b, count);` | `"pascal/string.h"` | `<string.h>` |
 | `FillWord(buf, count, w);` | `memsetw(buf, w, count);` | `"common.h"` | `"common.h"` |

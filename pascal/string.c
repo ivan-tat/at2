@@ -53,3 +53,20 @@ String *CopyString (String *dest, const String *src, uint8_t n) {
 
   return dest;
 }
+
+String *AppendString (String *dest, const String *src, uint8_t n) {
+  int_least16_t l1, l2;
+
+  l1 = Length (dest);
+  l2 = Length (src);
+
+  if (l1 + l2 > n)
+    l2 = n - l1;
+
+  if (l2 > 0)
+    Pascal_Move (GetStr (src), GetStr (dest) + l1, l2);
+
+  SetLength (dest, l1 + l2);
+
+  return dest;
+}
