@@ -44,3 +44,13 @@ int32_t __dpmi_simulate_real_mode_interrupt (int32_t vec, __dpmi_regs *regs) {
     return -1;
   }
 }
+
+int32_t __dpmi_physical_address_mapping (__dpmi_meminfo *info) {
+  int32_t addr = Pascal_get_linear_addr (info->address, info->size);
+
+  if (!__dpmi_error) {
+    info->address = addr;
+    return 0;
+  } else
+    return -1;
+}

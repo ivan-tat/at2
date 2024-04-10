@@ -16,6 +16,19 @@
 | `FillWord(buf, count, w);` | `memsetw(buf, w, count);` | `"common.h"` | `"common.h"` |
 | `Delay(msec);` | `delay(msec);` | `"pascal/dos.h"` | `<dos.h>` |
 
+## Floating point math
+
+| Pascal | C | Transitional C header | C header |
+| --- | --- | --- | --- |
+| `F := Int(F);` | `F = truncf(F);` | `"pascal/math.h"` | `<math.h>` |
+| `D := Int(D);` | `D = trunc(D);` | `"pascal/math.h"` | `<math.h>` |
+| `q := Trunc(F);` | `q = (int64_t)truncf(F);` | `"pascal/math.h"` | `<math.h>` |
+| `q := Trunc(D);` | `q = (int64_t)trunc(D);` | `"pascal/math.h"` | `<math.h>` |
+| `F := Frac(F);` | `F = F-truncf(F);` | `"pascal/math.h"` | `<math.h>` |
+| `D := Frac(D);` | `D = D-trunc(D);` | `"pascal/math.h"` | `<math.h>` |
+| `q := Round(F);` | `q = (int64_t)F;` | `"pascal/math.h"` | `<math.h>` |
+| `q := Round(D);` | `q = (int64_t)D;` | `"pascal/math.h"` | `<math.h>` |
+
 ## Interrupts
 
 | Pascal | C | Transitional C header | C header |
@@ -83,9 +96,11 @@ function global_dos_alloc(bytes: Longint): Longint;
 
 **Return values**:
 
-* On success: *selector* + *segment* * 65536.
-* On error: `0`.
-  * `int31error` is set to DOS error code.
+* On success:
+  * Returns *selector* + *segment* * `65536`.
+* On error:
+  * Returns `0`.
+  * `int31error` is set to DPMI error code.
 
 ### C
 
@@ -99,11 +114,13 @@ int32_t __dpmi_allocate_dos_memory(int32_t paras, int32_t *ret);
 
 **Return values**:
 
-* On success: *segment*.
-  * `*ret` is set to *selector*.
-* On error: `-1`.
-  * `*ret` is set to a size of largest available block in paragraphs.
-  * `__dpmi_error` is set to DOS error code.
+* On success:
+  * Returns initial real mode *segment* of allocated block.
+  * `*ret` is set to *selector* for allocated block.
+* On error:
+  * Returns `-1`.
+  * `*ret` is set to a *size* of largest available block in paragraphs.
+  * `__dpmi_error` is set to DPMI error code.
 
 ## DPMI function 0101h: Free DOS Memory Block
 
@@ -117,9 +134,11 @@ function global_dos_free(selector: Word): Boolean;
 
 **Return values**:
 
-* On success: `true`.
-* On error: `false`.
-  * DOS error code is ignored.
+* On success:
+  * Returns `true`.
+* On error:
+  * Returns `false`.
+  * DPMI error code is ignored.
 
 ### C
 
@@ -133,9 +152,11 @@ int32_t __dpmi_free_dos_memory(int32_t selector);
 
 **Return values**:
 
-* On success: `0`.
-* On error: `-1`.
-  * `__dpmi_error` is set to DOS error code.
+* On success:
+  * Returns `0`.
+* On error:
+  * Returns `-1`.
+  * `__dpmi_error` is set to DPMI error code.
 
 ## DPMI function 0300h: Simulate Real Mode Interrupt
 
@@ -149,9 +170,11 @@ function realintr(n: Word; var regs: trealregs): Boolean;
 
 **Return values**:
 
-* On success: `true`.
-* On error: `false`.
-  * DOS error code is ignored.
+* On success:
+  * Returns `true`.
+* On error:
+  * Returns `false`.
+  * DPMI error code is ignored.
 
 ### C
 
@@ -165,14 +188,16 @@ int32_t __dpmi_simulate_real_mode_interrupt(int32_t n, __dpmi_regs *regs);
 
 **Return values**:
 
-* On success: `0`.
-* On error: `-1`.
-  * `__dpmi_error` is set to DOS error code.
+* On success:
+  * Returns `0`.
+* On error:
+  * Returns `-1`.
+  * `__dpmi_error` is set to DPMI error code.
 
 ### Input values
 
 * Parameter `n`:
-  * Bits 7..0 is interrupt number (0..255).
+  * Bits 7..0 are interrupt number (0..255).
   * If bit 8 is 1 - resets the interrupt controller and A20 line.
   * Other bits must be 0.
 
@@ -231,6 +256,52 @@ int32_t __dpmi_simulate_real_mode_interrupt(int32_t n, __dpmi_regs *regs);
 | :--- | :---: | :---: |
 | Zeroes input `Res`, `SP`, `SS` | yes | no |
 | Preserves `FS` | yes | no |
+
+----
+
+## DPMI function 0800h: Physical Address Mapping
+
+### Pascal
+
+**Unit**: go32
+
+```Pascal
+function get_linear_addr(phys_addr: Longint; size: Longint): Longint;
+```
+
+**Return values**:
+
+* On success:
+  + Returns *linear address* that can be used to access the physical memory.
+  + `int31error` is set to `0`.
+* On error:
+  + Return value is undefined.
+  + `int31error` is set to DPMI error code.
+
+### C
+
+| Transitional C header | C header |
+| --- | --- |
+| `"pascal/dpmi.h"` | `<dpmi.h>` |
+
+```C
+int32_t __dpmi_physical_address_mapping(__dpmi_meminfo *info);
+```
+
+**Input values**:
+
+* `info->handle` is ignored.
+* `info->size` is a *size* of region to map in bytes.
+* `info->address` is a *physical address* of memory.
+
+**Return values**:
+
+* On success:
+  * Returns `0`.
+  * `info->address` is set to *linear address* that can be used to access the physical memory.
+* On error:
+  * Returns `-1`.
+  * `__dpmi_error` is set to DPMI error code.
 
 ## Issues
 

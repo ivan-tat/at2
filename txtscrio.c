@@ -26,8 +26,8 @@
 #include <string.h>
 #endif // !USE_FPC
 #if GO32
+#include "go32/adt2vesa.h"
 #include "go32/VBIOS.h"
-#include "go32/VESA.h"
 #include "go32/VGA.h"
 #endif // GO32
 #include "adt2ext2.h"

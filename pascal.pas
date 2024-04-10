@@ -31,6 +31,10 @@ function Pascal_strlen (const s: PChar): SizeInt; cdecl;
 
 procedure Pascal_Delay (ms: Word); cdecl;
 
+// FPC_TRUNC_REAL
+function Pascal_Trunc_Single (x: Single): Single; cdecl;
+function Pascal_Trunc_Double (x: Double): Double; cdecl;
+
 {$IFDEF GO32V2}
 
 function Pascal_dosmemselector: Word; cdecl;
@@ -40,6 +44,7 @@ procedure Pascal_dosmemput (seg: Word; ofs: Word; var data; count: Longint); cde
 function Pascal_global_dos_alloc (bytes: Longint): Longint; cdecl;
 function Pascal_global_dos_free (selector: Word): Boolean; cdecl;
 function Pascal_realintr (intnr: Word; var regs: trealregs): Boolean; cdecl;
+function Pascal_get_linear_addr(phys_addr: Longint; size: Longint): Longint; cdecl;
 
 {$I pascal/dos.pas}
 {$I pascal/dpmi.pas}
@@ -86,6 +91,18 @@ begin
   crt.Delay (ms);
 end;
 
+function Pascal_Trunc_Single (x: Single): Single; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Trunc_Single';
+begin
+  Pascal_Trunc_Single := Trunc (x);
+end;
+
+function Pascal_Trunc_Double (x: Double): Double; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Trunc_Double';
+begin
+  Pascal_Trunc_Double := Trunc (x);
+end;
+
 {$IFDEF GO32V2}
 
 function Pascal_dosmemselector: Word; cdecl;
@@ -128,6 +145,12 @@ function Pascal_realintr (intnr: Word; var regs: trealregs): Boolean; cdecl;
 public name PUBLIC_PREFIX + 'Pascal_realintr';
 begin
   Pascal_realintr := go32.realintr (intnr, regs);
+end;
+
+function Pascal_get_linear_addr(phys_addr: Longint; size: Longint): Longint; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_get_linear_addr';
+begin
+  Pascal_get_linear_addr := go32.get_linear_addr (phys_addr, size);
 end;
 
 {$ENDIF}

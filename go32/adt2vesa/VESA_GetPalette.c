@@ -4,13 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#pragma once
-
-#ifndef VESA_H
-#define VESA_H
-
-#include <stdint.h>
-
-#include "go32/VESA_set_video_mode.c"
-
-#endif // !defined(VESA_H)
+void VESA_GetPalette (void *Palette) {
+  outportb (VGA_DAC_ADDR_READ_PORT, 0);
+  inportsb (VGA_DAC_DATA_PORT, (uint8_t *) Palette, 256 * 3);
+}

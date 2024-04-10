@@ -143,6 +143,11 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 * [DOS Protected Mode Interface](https://en.wikipedia.org/wiki/DOS_Protected_Mode_Interface)
 * [DPMI version 0.9 specification (text format)](https://web.archive.org/web/20120425162013/http://homer.rice.edu/~sandmann/cwsdpmi/dpmispec.txt)
 * [DPMI version 0.9 specification (HTML format)](https://web.archive.org/web/20160521221856/http://www.tenberry.com/dpmi/index.html)
+* [VESA BIOS Extensions](https://en.wikipedia.org/wiki/VESA_BIOS_Extensions)
+* [VESA Super VGA BIOS Extension 1.0](https://web.archive.org/web/20131211151957/http://www.gemixtes.de/super-vga-bios-extension-standard-vs891001/) - Standard # VS891001, 1 October 1989
+* [VESA BIOS Extension 1.2 (text)](https://web.archive.org/web/20090114055246/http://docs.ruudkoot.nl/vesasp12.txt)
+* [VESA BIOS Extension 2.0 (text)](https://web.archive.org/web/20081211174813/http://docs.ruudkoot.nl/vbe20.txt)
+* [VESA BIOS Extension 3.0 (PDF)](http://www.petesqbsite.com/sections/tutorials/tuts/vbe3.pdf)
 
 ### Recommendations
 

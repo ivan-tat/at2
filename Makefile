@@ -58,6 +58,7 @@ SRCS=\
  adt2unit.c\
  common.c\
  dialogio.c\
+ go32/adt2vesa.c\
  pascal/dos.c\
  pascal/dpmi.c\
  pascal/go32.c\
@@ -202,7 +203,12 @@ units/adt2data.ppu: $(srcdir)/adt2data.pas adt2data.o $(srcdir)/Makefile | units
 	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
-units/adt2vesa.ppu: $(srcdir)/go32/adt2vesa.pas $(srcdir)/Makefile | units
+adt2vesa_ppu_deps=\
+ $(srcdir)/go32/adt2vesa.pas\
+ $(srcdir)/go32/adt2vesa/pas/VESA_SetMode.pas\
+ go32/adt2vesa.o
+
+units/adt2vesa.ppu: $(adt2vesa_ppu_deps) $(srcdir)/Makefile | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp\
 	 $(FPCFLAGS_DIRS) -FUunits\

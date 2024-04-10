@@ -28,6 +28,9 @@ extern size_t Pascal_strlen (const char *s);
 
 extern void Pascal_Delay (uint16_t ms);
 
+extern float Pascal_Trunc_Single (float x);
+extern double Pascal_Trunc_Double (double x);
+
 #if GO32
 
 extern uint16_t Pascal_dosmemselector (void);
@@ -42,6 +45,8 @@ extern int32_t Pascal_global_dos_alloc (int32_t bytes);
 extern bool Pascal_global_dos_free (uint16_t selector);
 
 extern bool Pascal_realintr (uint16_t intnr, void *regs);
+
+extern int32_t Pascal_get_linear_addr (int32_t phys_addr, int32_t size);
 
 #endif // GO32
 

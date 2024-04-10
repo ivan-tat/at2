@@ -11,6 +11,7 @@
 
 #include "pascal.h"
 
+#pragma pack(push, 1)
 typedef union {
   struct {
     uint32_t edi;
@@ -52,6 +53,15 @@ typedef union {
     uint8_t al, ah, eax_b2, eax_b3;
   } h;
 } __dpmi_regs;
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+typedef struct {
+  uint32_t handle;
+  uint32_t size; /* or count */
+  uint32_t address;
+} __dpmi_meminfo;
+#pragma pack(pop)
 
 #define __dpmi_error (*Pascal_int31error_ptr ())
 
@@ -59,5 +69,7 @@ int32_t __dpmi_allocate_dos_memory (int32_t paras, int32_t *ret);
 int32_t __dpmi_free_dos_memory (int32_t selector);
 
 int32_t __dpmi_simulate_real_mode_interrupt (int32_t vec, __dpmi_regs *regs);
+
+int32_t __dpmi_physical_address_mapping (__dpmi_meminfo *info);
 
 #endif // !defined(DPMI_H)
