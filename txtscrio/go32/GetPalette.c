@@ -5,7 +5,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void GetPalette (void *pal, uint8_t first, uint8_t last) {
-  outportb (VGA_DAC_ADDR_READ_PORT, first);
-  inportsb (VGA_DAC_DATA_PORT, ((uint8_t *) pal) + first * 3,
-            (last - first + 1) * 3);
+  VGA_GetPalette (first, last - first + 1, ((uint8_t *) pal) + first * 3);
 }

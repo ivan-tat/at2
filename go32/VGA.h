@@ -28,5 +28,11 @@
 #define VGA_CRTC_DATA_PORT      0x3D5 // CRT Controller Data Register
 
 void VGA_WaitRetrace (void);
+void VGA_GetPaletteEntry (uint8_t index, uint8_t *red, uint8_t *green,
+                          uint8_t *blue);
+void VGA_GetPalette (uint8_t index, uint16_t count, void *palette);
+void VGA_SetPaletteEntry (uint8_t red, uint8_t green, uint8_t blue,
+                          uint8_t index);
+void VGA_SetPalette (const void *palette, uint16_t count, uint8_t index);
 
 #endif // !defined(VGA_H)

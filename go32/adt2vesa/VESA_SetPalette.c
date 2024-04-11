@@ -5,8 +5,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void VESA_SetPalette (const void *Palette) {
-  while (!(inportb (VGA_STATUS_1_PORT) & 8)) { };
-
-  outportb (VGA_DAC_ADDR_WRITE_PORT, 0);
-  outportsb (VGA_DAC_DATA_PORT, (uint8_t *) Palette, 256 * 3);
+  VGA_SetPalette (Palette, 256, 0);
 }

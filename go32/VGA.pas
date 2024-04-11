@@ -11,6 +11,10 @@ unit VGA;
 interface
 
 procedure VGA_WaitRetrace; cdecl; external;
+procedure VGA_GetPaletteEntry; cdecl; external;
+procedure VGA_GetPalette; cdecl; external;
+procedure VGA_SetPaletteEntry; cdecl; external;
+procedure VGA_SetPalette; cdecl; external;
 
 implementation
 

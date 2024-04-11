@@ -12,3 +12,7 @@
 #include "go32/VGA.h"
 
 #include "go32/VGA/VGA_WaitRetrace.c"
+#include "go32/VGA/VGA_GetPaletteEntry.c"
+#include "go32/VGA/VGA_GetPalette.c"
+#include "go32/VGA/VGA_SetPaletteEntry.c"
+#include "go32/VGA/VGA_SetPalette.c"

@@ -4,6 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-void GetRGBitem (uint8_t color, uint8_t *red, uint8_t *green, uint8_t *blue) {
-  VGA_GetPaletteEntry (color, red, green, blue);
+void VGA_GetPalette (uint8_t index, uint16_t count, void *palette) {
+  outportb (VGA_DAC_ADDR_READ_PORT, index);
+  inportsb (VGA_DAC_DATA_PORT, palette, count * 3);
 }
