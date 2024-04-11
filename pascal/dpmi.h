@@ -63,7 +63,14 @@ typedef struct {
 } __dpmi_meminfo;
 #pragma pack(pop)
 
-#define __dpmi_error (*Pascal_int31error_ptr ())
+extern uint16_t *__dpmi_error_ptr;
+#define __dpmi_error (*__dpmi_error_ptr)
+
+int32_t __dpmi_allocate_ldt_descriptors (int32_t count);
+int32_t __dpmi_free_ldt_descriptor (int32_t selector);
+int32_t __dpmi_get_selector_increment_value (void);
+int32_t __dpmi_set_segment_base_address (int32_t selector, uint32_t address);
+int32_t __dpmi_set_segment_limit (int32_t selector, uint32_t limit);
 
 int32_t __dpmi_allocate_dos_memory (int32_t paras, int32_t *ret);
 int32_t __dpmi_free_dos_memory (int32_t selector);

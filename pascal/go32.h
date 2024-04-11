@@ -11,7 +11,8 @@
 
 #include <stdint.h>
 
-#define _dos_ds Pascal_dosmemselector ()
+extern uint16_t *_dos_ds_ptr;
+#define _dos_ds (*_dos_ds_ptr)
 
 void custom_dosmemget (uint32_t ofs, size_t size, void *buf);
 void custom_dosmemput (const void *buf, size_t size, uint32_t ofs);

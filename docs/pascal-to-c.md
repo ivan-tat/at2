@@ -2,6 +2,8 @@
 
 | Pascal | C | Transitional C header | C header |
 | --- | --- | --- | --- |
+| `ExitProc := @NewExit;` | `atexit(NewExit);` | `"pascal/stdlib.h"` | `<stdlib.h>` |
+| `Halt(err);` | `exit(err);` | `"pascal/stdlib.h"` | `<stdlib.h>` |
 | `var s: String;` | `String s[255+1];` | `"pascal.h"` | - |
 | `const s: String[78] = 'Text';` | `String s[78+1] = "\x04" "Text";` | `"pascal.h"` | - |
 | `len := Length(s);` | `len = Length(s);` | `"pascal.h"` | - |
@@ -83,6 +85,186 @@ _farsetsel(orig_fs); // restore original FS register
 
 This is not needed when linking with FPC: `FS` register is already set to `_dos_ds`.
 And you should always take care of what you do with `FS` register across function calls.
+
+## DPMI function 0000h: Allocate LDT Descriptors
+
+### Pascal
+
+**Unit**: go32
+
+```Pascal
+function allocate_ldt_descriptors(count: Word): Word;
+```
+
+**Return values**:
+
+* On success:
+  * Returns *base selector*.
+* On error:
+  * Returns DPMI error code.
+  * DPMI error is ignored and not handled properly.
+
+### C
+
+| Transitional C header | C header |
+| --- | --- |
+| `"pascal/dpmi.h"` | `<dpmi.h>` |
+
+```C
+int32_t __dpmi_allocate_ldt_descriptors(int32_t count);
+```
+
+**Return values**:
+
+* On success:
+  * Returns *base selector*.
+* On error:
+  * Returns `-1`.
+  * `__dpmi_error` is set to DPMI error code.
+
+## DPMI function 0001h: Free LDT Descriptor
+
+### Pascal
+
+**Unit**: go32
+
+```Pascal
+function free_ldt_descriptor(selector: Word): Boolean;
+```
+
+**Return values**:
+
+* On success:
+  * Returns `true`.
+* On error:
+  * Returns `false`.
+  * `int31error` is set to DPMI error code.
+
+### C
+
+| Transitional C header | C header |
+| --- | --- |
+| `"pascal/dpmi.h"` | `<dpmi.h>` |
+
+```C
+int32_t __dpmi_free_ldt_descriptor(int32_t selector);
+```
+
+**Return values**:
+
+* On success:
+  * Returns `0`.
+* On error:
+  * Returns `-1`.
+  * `__dpmi_error` is set to DPMI error code.
+
+## DPMI function 0003h: Get Next Selector Increment Value
+
+### Pascal
+
+**Unit**: go32
+
+```Pascal
+function get_next_selector_increment_value: Word;
+```
+
+**Return values**:
+
+* On success:
+  * Returns value to add to get to next selector.
+* On error:
+  * Returns DPMI error code.
+  * DPMI error is ignored and not handled properly.
+
+### C
+
+| Transitional C header | C header |
+| --- | --- |
+| `"pascal/dpmi.h"` | `<dpmi.h>` |
+
+```C
+int32_t __dpmi_get_selector_increment_value(void);
+```
+
+**Return values**:
+
+* On success:
+  * Returns value to add to get to next selector.
+* On error:
+  * Returns `-1`.
+  * `__dpmi_error` is set to DPMI error code.
+
+## DPMI function 0007h: Set Segment Base Address
+
+### Pascal
+
+**Unit**: go32
+
+```Pascal
+function set_segment_base_address(selector: Word; address: Longint): Boolean;
+```
+
+**Return values**:
+
+* On success:
+  * Returns `true`.
+* On error:
+  * Returns `false`.
+  * `int31error` is set to DPMI error code.
+
+### C
+
+| Transitional C header | C header |
+| --- | --- |
+| `"pascal/dpmi.h"` | `<dpmi.h>` |
+
+```C
+int32_t __dpmi_set_segment_base_address(int32_t selector, uint32_t address);
+```
+
+**Return values**:
+
+* On success:
+  * Returns `0`.
+* On error:
+  * Returns `-1`.
+  * `__dpmi_error` is set to DPMI error code.
+
+## DPMI function 0008h: Set Segment Limit
+
+### Pascal
+
+**Unit**: go32
+
+```Pascal
+function Pascal_set_segment_limit(selector: Word; limit: Longint): Boolean;
+```
+
+**Return values**:
+
+* On success:
+  * Returns `true`.
+* On error:
+  * Returns `false`.
+  * `int31error` is set to DPMI error code.
+
+### C
+
+| Transitional C header | C header |
+| --- | --- |
+| `"pascal/dpmi.h"` | `<dpmi.h>` |
+
+```C
+int32_t __dpmi_set_segment_limit(int32_t selector, uint32_t limit);
+```
+
+**Return values**:
+
+* On success:
+  * Returns `0`.
+* On error:
+  * Returns `-1`.
+  * `__dpmi_error` is set to DPMI error code.
 
 ## DPMI function 0100h: Allocate DOS Memory Block
 
@@ -256,8 +438,6 @@ int32_t __dpmi_simulate_real_mode_interrupt(int32_t n, __dpmi_regs *regs);
 | :--- | :---: | :---: |
 | Zeroes input `Res`, `SP`, `SS` | yes | no |
 | Preserves `FS` | yes | no |
-
-----
 
 ## DPMI function 0800h: Physical Address Mapping
 

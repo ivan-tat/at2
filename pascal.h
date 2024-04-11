@@ -19,6 +19,8 @@ typedef Shortstring String;
 #define SetLength(s, l) (s)[0] = (l)
 #define GetStr(s) (&(s)[1])
 
+extern void Pascal_Halt (int32_t errnum);
+
 extern void Pascal_FillChar (void *x, ssize_t count, uint8_t value);
 extern void Pascal_FillWord (void *x, ssize_t count, uint16_t value);
 
@@ -33,13 +35,14 @@ extern double Pascal_Trunc_Double (double x);
 
 #if GO32
 
-extern uint16_t Pascal_dosmemselector (void);
-extern uint16_t *Pascal_int31error_ptr (void);
+extern uint16_t Pascal_allocate_ldt_descriptors (uint16_t count);
+extern bool Pascal_free_ldt_descriptor (uint16_t selector);
+extern uint16_t Pascal_get_next_selector_increment_value (void);
+extern bool Pascal_set_segment_base_address (uint16_t selector, int32_t address);
+extern bool Pascal_set_segment_limit (uint16_t selector, int32_t limit);
 
-extern void Pascal_dosmemget (uint16_t seg, uint16_t ofs, void *data,
-                              uint32_t count);
-extern void Pascal_dosmemput (uint16_t seg, uint16_t ofs, const void *data,
-                              uint32_t count);
+extern void Pascal_dosmemget (uint16_t seg, uint16_t ofs, void *data, uint32_t count);
+extern void Pascal_dosmemput (uint16_t seg, uint16_t ofs, const void *data, uint32_t count);
 
 extern int32_t Pascal_global_dos_alloc (int32_t bytes);
 extern bool Pascal_global_dos_free (uint16_t selector);

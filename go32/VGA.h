@@ -9,6 +9,8 @@
 #ifndef VGA_H
 #define VGA_H
 
+#include <stdint.h>
+
 #define VGA_ATTR_WRITE_PORT     0x3C0 // Attribute Address/Data Register (write)
 #define VGA_ATTR_READ_PORT      0x3C1 // Attribute Data Register (read)
 #define VGA_STATUS_0_PORT       0x3C2 // Input Status #0 Register
@@ -34,5 +36,6 @@ void VGA_GetPalette (uint8_t index, uint16_t count, void *palette);
 void VGA_SetPaletteEntry (uint8_t red, uint8_t green, uint8_t blue,
                           uint8_t index);
 void VGA_SetPalette (const void *palette, uint16_t count, uint8_t index);
+void VGA_SplitScreen (uint16_t line);
 
 #endif // !defined(VGA_H)

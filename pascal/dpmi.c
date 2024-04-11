@@ -5,6 +5,28 @@
 #include "pascal.h"
 #include "pascal/dpmi.h"
 
+uint16_t *__dpmi_error_ptr;
+
+int32_t __dpmi_allocate_ldt_descriptors (int32_t count) {
+  return Pascal_allocate_ldt_descriptors (count); // HINT: (FPC) DPMI error is ignored
+}
+
+int32_t __dpmi_free_ldt_descriptor (int32_t selector) {
+  return Pascal_free_ldt_descriptor (selector) ? 0 : -1;
+}
+
+int32_t __dpmi_get_selector_increment_value (void) {
+  return Pascal_get_next_selector_increment_value ();
+}
+
+int32_t __dpmi_set_segment_base_address (int32_t selector, uint32_t address) {
+  return Pascal_set_segment_base_address (selector, address) ? 0 : -1;
+}
+
+int32_t __dpmi_set_segment_limit (int32_t selector, uint32_t limit) {
+  return Pascal_set_segment_limit (selector, limit) ? 0 : -1;
+}
+
 int32_t __dpmi_allocate_dos_memory (int32_t paras, int32_t *ret) {
   int32_t value = Pascal_global_dos_alloc ((paras & 0xFFFF) * 16);
 

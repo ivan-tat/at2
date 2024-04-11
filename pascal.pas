@@ -10,6 +10,7 @@ unit Pascal;
 {$L pascal/go32.o}
 {$L pascal/pc.o}
 {$ENDIF}
+{$L pascal/stdlib.o}
 {$L pascal/string.o}
 
 interface
@@ -21,6 +22,8 @@ uses
 
 const
   PUBLIC_PREFIX = {$IF DEFINED(GO32V2) OR DEFINED(WINDOWS)} '_' {$ELSE} '' {$ENDIF};
+
+procedure Pascal_Halt (errnum: Longint); cdecl;
 
 procedure Pascal_FillChar (var x; count: SizeInt; value: Byte); cdecl;
 procedure Pascal_FillWord (var x; count: SizeInt; value: Word); cdecl;
@@ -37,8 +40,11 @@ function Pascal_Trunc_Double (x: Double): Double; cdecl;
 
 {$IFDEF GO32V2}
 
-function Pascal_dosmemselector: Word; cdecl;
-function Pascal_int31error_ptr: Pointer; cdecl;
+function Pascal_allocate_ldt_descriptors (count: Word): Word; cdecl;
+function Pascal_free_ldt_descriptor (selector: Word): Boolean; cdecl;
+function Pascal_get_next_selector_increment_value: Word; cdecl;
+function Pascal_set_segment_base_address (selector: Word; address: Longint): Boolean; cdecl;
+function Pascal_set_segment_limit (selector: Word; limit: Longint): Boolean; cdecl;
 procedure Pascal_dosmemget (seg: Word; ofs: Word; var data; count: Longint); cdecl;
 procedure Pascal_dosmemput (seg: Word; ofs: Word; var data; count: Longint); cdecl;
 function Pascal_global_dos_alloc (bytes: Longint): Longint; cdecl;
@@ -53,6 +59,7 @@ function Pascal_get_linear_addr(phys_addr: Longint; size: Longint): Longint; cde
 
 {$ENDIF}
 
+{$I pascal/stdlib.pas}
 {$I pascal/string.pas}
 
 implementation
@@ -60,6 +67,12 @@ implementation
 uses
   crt,
   strings;
+
+procedure Pascal_Halt (errnum: Longint); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Halt';
+begin
+  Halt (errnum);
+end;
 
 procedure Pascal_FillChar (var x; count: SizeInt; value: Byte); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_FillChar';
@@ -105,16 +118,34 @@ end;
 
 {$IFDEF GO32V2}
 
-function Pascal_dosmemselector: Word; cdecl;
-public name PUBLIC_PREFIX + 'Pascal_dosmemselector';
+function Pascal_allocate_ldt_descriptors (count: Word): Word; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_allocate_ldt_descriptors';
 begin
-  Pascal_dosmemselector := go32.dosmemselector;
+  Pascal_allocate_ldt_descriptors := go32.allocate_ldt_descriptors(count);
 end;
 
-function Pascal_int31error_ptr: Pointer; cdecl;
-public name PUBLIC_PREFIX + 'Pascal_int31error_ptr';
+function Pascal_free_ldt_descriptor (selector: Word): Boolean; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_free_ldt_descriptor';
 begin
-  Pascal_int31error_ptr := @go32.int31error;
+  Pascal_free_ldt_descriptor := go32.free_ldt_descriptor (selector);
+end;
+
+function Pascal_get_next_selector_increment_value: Word; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_get_next_selector_increment_value';
+begin
+  Pascal_get_next_selector_increment_value := go32.get_next_selector_increment_value;
+end;
+
+function Pascal_set_segment_base_address (selector: Word; address: Longint): Boolean; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_set_segment_base_address';
+begin
+  Pascal_set_segment_base_address := go32.set_segment_base_address (selector, address);
+end;
+
+function Pascal_set_segment_limit (selector: Word; limit: Longint): Boolean; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_set_segment_limit';
+begin
+  Pascal_set_segment_limit := go32.set_segment_limit (selector, limit);
 end;
 
 procedure Pascal_dosmemget (seg: Word; ofs: Word; var data; count: Longint); cdecl;
@@ -155,4 +186,21 @@ end;
 
 {$ENDIF}
 
+var
+  OldExitProc: Pointer;
+
+procedure OnExit;
+begin
+  done_stdlib;
+  ExitProc := OldExitProc;
+end;
+
+begin
+{$IFDEF GO32V2}
+  __dpmi_error_ptr := @go32.int31error;
+  _dos_ds_ptr := @go32.dosmemselector;
+{$ENDIF}
+  OldExitProc := ExitProc;
+  ExitProc := @OnExit;
+  init_stdlib;
 end.

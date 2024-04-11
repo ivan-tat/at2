@@ -8,7 +8,9 @@
 
 #if USE_FPC
 #include "pascal/pc.h"
-#endif // USE_FPC
+#else // !USE_FPC
+#include <pc.h>
+#endif // !USE_FPC
 #include "go32/VGA.h"
 
 #include "go32/VGA/VGA_WaitRetrace.c"
@@ -16,3 +18,4 @@
 #include "go32/VGA/VGA_GetPalette.c"
 #include "go32/VGA/VGA_SetPaletteEntry.c"
 #include "go32/VGA/VGA_SetPalette.c"
+#include "go32/VGA/VGA_SplitScreen.c"

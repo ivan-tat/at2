@@ -64,6 +64,7 @@ SRCS=\
  pascal/dpmi.c\
  pascal/go32.c\
  pascal/pc.c\
+ pascal/stdlib.c\
  pascal/string.c\
  txtscrio.c
 
@@ -229,7 +230,9 @@ units/iss_tim.ppu: $(srcdir)/go32/iss_tim.pas $(srcdir)/Makefile | units
 
 pascal_ppu_deps=\
  $(srcdir)/pascal.pas\
+ $(srcdir)/pascal/stdlib.pas\
  $(srcdir)/pascal/string.pas\
+ pascal/stdlib.o\
  pascal/string.o
 
 ifeq ($(FPC_OS_TARGET),go32v2)
