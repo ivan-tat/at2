@@ -42,6 +42,7 @@ FPCFLAGS_DIRS+=-Fi$(srcdir1) -Fi$(srcdir) -Fi.
 
 SRCS=\
  common.c\
+ go32/VGA.c\
  pascal/dos.c\
  pascal/dpmi.c\
  pascal/go32.c\
@@ -212,7 +213,8 @@ txtscrio_ppu_deps=\
  $(srcdir)/txtscrio/pas/colors.pas\
  txtscrio.o\
  units/common.ppu\
- units/pascal.ppu
+ units/pascal.ppu\
+ units/VGA.ppu
 
 ifeq ($(FPC_OS_TARGET),go32v2)
  txtscrio_ppu_deps+=\
@@ -221,6 +223,16 @@ endif
 
 units/txtscrio.ppu: $(txtscrio_ppu_deps) $(srcdir1)/Makefile | units
 	@echo "  PC     $(patsubst $(srcdir1)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
+	 $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
+VGA_ppu_deps=\
+ $(srcdir)/go32/VGA.pas\
+ go32/VGA.o
+
+units/VGA.ppu: $(VGA_ppu_deps) $(srcdir)/Makefile | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
 	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)

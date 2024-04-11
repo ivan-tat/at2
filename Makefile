@@ -59,6 +59,7 @@ SRCS=\
  common.c\
  dialogio.c\
  go32/adt2vesa.c\
+ go32/VGA.c\
  pascal/dos.c\
  pascal/dpmi.c\
  pascal/go32.c\
@@ -249,6 +250,16 @@ units/pascal.ppu: $(pascal_ppu_deps) $(srcdir)/Makefile | units
 	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
+VGA_ppu_deps=\
+ $(srcdir)/go32/VGA.pas\
+ go32/VGA.o
+
+units/VGA.ppu: $(VGA_ppu_deps) $(srcdir)/Makefile | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
+	 $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
 # Pascal units with complex dependencies and target executable
 
 adt2ext2_ppu_deps=\
@@ -335,7 +346,8 @@ txtscrio_ppu_deps=\
  $(srcdir)/txtscrio.pas\
  $(srcdir)/txtscrio/go32/pas/fade.pas\
  $(srcdir)/txtscrio/pas/colors.pas\
- txtscrio.o
+ txtscrio.o\
+ units/VGA.ppu
 
 ifeq ($(FPC_OS_TARGET),go32v2)
  txtscrio_ppu_deps+=\

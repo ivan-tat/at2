@@ -204,6 +204,7 @@ uses
 {$IFDEF GO32V2}
   CRT,
   GO32,
+  VGA,
 {$ENDIF}
   pascal,
   AdT2unit,

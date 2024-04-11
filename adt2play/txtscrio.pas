@@ -94,6 +94,7 @@ implementation
 uses
 {$IFDEF GO32V2}
   GO32,
+  VGA,
 {$ENDIF}
   pascal,
   common;

@@ -27,4 +27,6 @@
 #define VGA_CRTC_ADDR_PORT      0x3D4 // CRT Controller Address Register
 #define VGA_CRTC_DATA_PORT      0x3D5 // CRT Controller Data Register
 
+void VGA_WaitRetrace (void);
+
 #endif // !defined(VGA_H)
