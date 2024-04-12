@@ -16,6 +16,17 @@ int custom_atexit (void (*function) (void)) {
     return -1;
 }
 
+void custom_free (void *ptr) {
+  Pascal_FreeMem (ptr);
+}
+
+void *custom_realloc (void *ptr, size_t size) {
+  void *p = ptr;
+
+  Pascal_ReAllocMem (&p, size);
+  return p;
+}
+
 void init_stdlib (void) {
 }
 

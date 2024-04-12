@@ -38,6 +38,10 @@ procedure Pascal_Delay (ms: Word); cdecl;
 function Pascal_Trunc_Single (x: Single): Single; cdecl;
 function Pascal_Trunc_Double (x: Double): Double; cdecl;
 
+function Pascal_AllocMem (size: PtrUInt): Pointer; cdecl;
+function Pascal_FreeMem (p: Pointer): PtrUInt; cdecl;
+function Pascal_ReAllocMem (var p: pointer; size: PtrUInt): Pointer; cdecl;
+
 {$IFDEF GO32V2}
 
 function Pascal_allocate_ldt_descriptors (count: Word): Word; cdecl;
@@ -114,6 +118,24 @@ function Pascal_Trunc_Double (x: Double): Double; cdecl;
 public name PUBLIC_PREFIX + 'Pascal_Trunc_Double';
 begin
   Pascal_Trunc_Double := Trunc (x);
+end;
+
+function Pascal_AllocMem (size: PtrUInt): Pointer; cdecl
+public name PUBLIC_PREFIX + 'Pascal_AllocMem';
+begin
+  Pascal_AllocMem := system.AllocMem (size);
+end;
+
+function Pascal_FreeMem (p: Pointer): PtrUInt; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_FreeMem';
+begin
+  Pascal_FreeMem := system.FreeMem (p);
+end;
+
+function Pascal_ReAllocMem (var p: pointer; size: PtrUInt): Pointer; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_ReAllocMem';
+begin
+  Pascal_ReAllocMem := system.ReAllocMem (p, size);
 end;
 
 {$IFDEF GO32V2}

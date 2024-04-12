@@ -33,6 +33,10 @@ extern void Pascal_Delay (uint16_t ms);
 extern float Pascal_Trunc_Single (float x);
 extern double Pascal_Trunc_Double (double x);
 
+extern void *Pascal_AllocMem (size_t size);
+extern size_t Pascal_FreeMem (void *p);
+extern void *Pascal_ReAllocMem (void **p, size_t size);
+
 #if GO32
 
 extern uint16_t Pascal_allocate_ldt_descriptors (uint16_t count);
