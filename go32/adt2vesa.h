@@ -103,7 +103,9 @@ void VESA_Init (void);
 // Returns 0 on success, -1 on error.
 int VESA_GetModeInfo (uint16_t Mode, uint32_t DOSAddr);
 
-//int16_t VESA_SetMode (uint16_t Mode);
+// Returns 0 on success, -1 on error.
+int VESA_SetMode (uint16_t Mode);
+
 void VESA_GetPalette (void *Palette);
 void VESA_SetPalette (const void *Palette);
 void VESA_InitStepFade (const tPaletteArray StartPalette,

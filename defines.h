@@ -59,4 +59,10 @@
 #define ADT2PLAY 0
 #endif
 
+#ifdef __GNUC__
+#define __FALLTHROUGH__ __attribute__((fallthrough));
+#else /* !defined(__GNUC__) */
+#define __FALLTHROUGH__
+#endif /* !defined(__GNUC__) */
+
 #endif // !defined(DEFINES_H)

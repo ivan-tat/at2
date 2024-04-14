@@ -10,6 +10,7 @@ unit Pascal;
 {$L pascal/go32.o}
 {$L pascal/pc.o}
 {$ENDIF}
+{$L pascal/stdio.o}
 {$L pascal/stdlib.o}
 {$L pascal/string.o}
 
@@ -22,6 +23,10 @@ uses
 
 const
   PUBLIC_PREFIX = {$IF DEFINED(GO32V2) OR DEFINED(WINDOWS)} '_' {$ELSE} '' {$ENDIF};
+
+var
+  Pascal_Output: Pointer; cvar;
+  Pascal_InOutRes_ptr: ^Word; cvar;
 
 procedure Pascal_Halt (errnum: Longint); cdecl;
 
@@ -41,6 +46,10 @@ function Pascal_Trunc_Double (x: Double): Double; cdecl;
 function Pascal_AllocMem (size: PtrUInt): Pointer; cdecl;
 function Pascal_FreeMem (p: Pointer): PtrUInt; cdecl;
 function Pascal_ReAllocMem (var p: pointer; size: PtrUInt): Pointer; cdecl;
+
+procedure Pascal_Write_PChar (var t: Text; str: PChar); cdecl;
+procedure Pascal_Write_String (var t: Text; str: String); cdecl;
+procedure Pascal_Flush (var t: Text); cdecl;
 
 {$IFDEF GO32V2}
 
@@ -63,6 +72,7 @@ function Pascal_get_linear_addr(phys_addr: Longint; size: Longint): Longint; cde
 
 {$ENDIF}
 
+{$I pascal/stdio.pas}
 {$I pascal/stdlib.pas}
 {$I pascal/string.pas}
 
@@ -136,6 +146,30 @@ function Pascal_ReAllocMem (var p: pointer; size: PtrUInt): Pointer; cdecl;
 public name PUBLIC_PREFIX + 'Pascal_ReAllocMem';
 begin
   Pascal_ReAllocMem := system.ReAllocMem (p, size);
+end;
+
+procedure Pascal_Write_PChar (var t: Text; str: PChar); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Write_PChar';
+begin
+  {$PUSH} {$I-}
+  system.Write (t, str);
+  {$POP}
+end;
+
+procedure Pascal_Write_String (var t: Text; str: String); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Write_String';
+begin
+  {$PUSH} {$I-}
+  system.Write (t, str);
+  {$POP}
+end;
+
+procedure Pascal_Flush (var t: Text); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Flush';
+begin
+  {$PUSH} {$I-}
+  system.Flush (t);
+  {$POP}
 end;
 
 {$IFDEF GO32V2}
@@ -213,6 +247,7 @@ var
 
 procedure OnExit;
 begin
+  done_stdio;
   done_stdlib;
   ExitProc := OldExitProc;
 end;
@@ -222,7 +257,10 @@ begin
   __dpmi_error_ptr := @go32.int31error;
   _dos_ds_ptr := @go32.dosmemselector;
 {$ENDIF}
+  Pascal_Output := @system.Output;
+  Pascal_InOutRes_ptr := @system.InOutRes;
   OldExitProc := ExitProc;
   ExitProc := @OnExit;
   init_stdlib;
+  init_stdio;
 end.

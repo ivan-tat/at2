@@ -16,7 +16,6 @@
 unit Adt2VESA;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
-{$MODESWITCH CVAR}
 {$L go32/adt2vesa.o}
 interface
 
@@ -67,7 +66,7 @@ var
 
 procedure VESA_Init; cdecl; external;
 function  VESA_GetModeInfo(Mode: Word; DOSAddr: Longword): Longint; cdecl; external;
-function  VESA_SetMode(Mode: Word): Integer;
+function  VESA_SetMode(Mode: Word): Longint; cdecl; external;
 procedure VESA_GetPalette(var Palette); cdecl; external;
 procedure VESA_SetPalette(var Palette); cdecl; external;
 procedure VESA_InitStepFade(var StartPalette,EndPalette; Speed: Single); cdecl; external;
@@ -78,7 +77,5 @@ implementation
 
 uses
   GO32;
-
-{$I go32/adt2vesa/pas/VESA_SetMode.pas}
 
 end.

@@ -4,7 +4,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # $(srcdir) is root directory, $(srcdir1) is current directory
-srcdir1:=$(patsubst %/,%,$(realpath $(dir $(lastword $(MAKEFILE_LIST)))))
+makefile:=$(realpath $(lastword $(MAKEFILE_LIST)))
+srcdir1:=$(patsubst %/,%,$(dir $(makefile)))
 srcdir:=$(patsubst %/,%,$(realpath $(srcdir1)/..))
 builddir:=$(patsubst %/,%,$(realpath .))
 
@@ -47,6 +48,7 @@ SRCS=\
  pascal/dpmi.c\
  pascal/go32.c\
  pascal/pc.c\
+ pascal/stdio.c\
  pascal/stdlib.c\
  pascal/string.c
 
@@ -83,7 +85,7 @@ $(info ---)
 # when it deletes the `adt2play.inc' file but doesn't create it afterwards.
 .PHONY: all
 all: clean-log clean-at2play-version
-	$(MAKE) -w -f $(srcdir1)/Makefile build-at2play-bin
+	$(MAKE) -w -f $(makefile) build-at2play-bin
 
 font \
 picture \
@@ -134,20 +136,16 @@ clean-at2play-version:
 adt2play.inc:
 	echo "const VERSION_STR = '$(AT2PLAY_VERSION)';" >$@
 
-font/play8.inc: $(srcdir)/font/play8.pbm\
- $(srcdir1)/Makefile | font
+font/play8.inc: $(srcdir)/font/play8.pbm $(makefile) | font
 	fontconv -pbmtoinc -s c -o $@ $<
 
-font/play16.inc: $(srcdir)/font/play16.pbm\
- $(srcdir1)/Makefile | font
+font/play16.inc: $(srcdir)/font/play16.pbm $(makefile) | font
 	fontconv -pbmtoinc -s c -o $@ $<
 
-picture/palette.inc: $(srcdir1)/picture/picture.pal\
- $(srcdir1)/Makefile | picture
+picture/palette.inc: $(srcdir1)/picture/picture.pal $(makefile) | picture
 	bintoinc -s c -o $@ $<
 
-picture/bitmap.inc: $(srcdir1)/picture/picture.raw\
- $(srcdir1)/Makefile | picture
+picture/bitmap.inc: $(srcdir1)/picture/picture.raw $(makefile) | picture
 	bintoinc -s c -o $@ $<
 
 # Object files
@@ -168,19 +166,19 @@ $(foreach f,$(SRCS1),$(eval $(call make_c_obj,$f,$(srcdir1))))
 
 # Pascal units with known dependencies
 
-units/a2data.ppu: $(srcdir1)/a2data.pas a2data.o $(srcdir1)/Makefile | units
+units/a2data.ppu: $(srcdir1)/a2data.pas a2data.o $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir1)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
 	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
-units/common.ppu: $(srcdir)/common.pas common.o $(srcdir1)/Makefile | units
+units/common.ppu: $(srcdir)/common.pas common.o $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
 	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
-units/iss_tim.ppu: $(srcdir)/go32/iss_tim.pas $(srcdir1)/Makefile | units
+units/iss_tim.ppu: $(srcdir)/go32/iss_tim.pas $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp\
 	 $(FPCFLAGS_DIRS) -FUunits\
@@ -188,8 +186,10 @@ units/iss_tim.ppu: $(srcdir)/go32/iss_tim.pas $(srcdir1)/Makefile | units
 
 pascal_ppu_deps=\
  $(srcdir)/pascal.pas\
+ $(srcdir)/pascal/stdio.pas\
  $(srcdir)/pascal/stdlib.pas\
  $(srcdir)/pascal/string.pas\
+ pascal/stdio.o\
  pascal/stdlib.o\
  pascal/string.o
 
@@ -205,7 +205,7 @@ ifeq ($(FPC_OS_TARGET),go32v2)
   pascal/pc.o
 endif
 
-units/pascal.ppu: $(pascal_ppu_deps) $(srcdir1)/Makefile | units
+units/pascal.ppu: $(pascal_ppu_deps) $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
 	 $(FPCFLAGS_DIRS) -FUunits\
@@ -224,7 +224,7 @@ ifeq ($(FPC_OS_TARGET),go32v2)
   $(srcdir)/txtscrio/go32/pas/fade.pas
 endif
 
-units/txtscrio.ppu: $(txtscrio_ppu_deps) $(srcdir1)/Makefile | units
+units/txtscrio.ppu: $(txtscrio_ppu_deps) $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir1)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
 	 $(FPCFLAGS_DIRS) -FUunits\
@@ -285,7 +285,7 @@ ifeq ($(FPC_OS_TARGET),go32v2)
   units/iss_tim.ppu
 endif
 
-$(AT2PLAY_BIN): $(adt2play_bin_deps) $(srcdir1)/Makefile | units
+$(AT2PLAY_BIN): $(adt2play_bin_deps) $(makefile) | units
 	@echo "  PC     $(AT2PLAY_PAS_SRC)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp -Rintel\
 	 $(FPCFLAGS_DIRS) -FUunits -FE.\

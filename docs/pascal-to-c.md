@@ -19,6 +19,8 @@
 | `FillChar(buf, count, b);` | `memset(buf, b, count);` | `"pascal/string.h"` | `<string.h>` |
 | `FillWord(buf, count, w);` | `memsetw(buf, w, count);` | `"common.h"` | `"common.h"` |
 | `Delay(msec);` | `delay(msec);` | `"pascal/dos.h"` | `<dos.h>` |
+| `Write(...);` | `printf(...);` | `"pascal/stdio.h"` | `<stdio.h>` |
+| `WriteLn(...);` | `printf(...);` | `"pascal/stdio.h"` | `<stdio.h>` |
 
 ## Floating point math
 

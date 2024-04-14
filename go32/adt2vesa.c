@@ -11,12 +11,14 @@
 #include "pascal/go32.h"
 #include "pascal/math.h"
 #include "pascal/pc.h"
+#include "pascal/stdio.h"
 #include "pascal/string.h"
 #else // !USE_FPC
 #include "<dpmi.h>"
 #include "<go32.h>"
 #include "<math.h>"
 #include "<pc.h>"
+#include "<stdio.h>"
 #include "<string.h>"
 #endif // !USE_FPC
 #include "common.h"
@@ -125,7 +127,7 @@ static tModeInfoBlock ModeInfoBlock;
 
 #include "go32/adt2vesa/VESA_Init.c"
 #include "go32/adt2vesa/VESA_GetModeInfo.c"
-//#include "go32/adt2vesa/VESA_SetMode.c"
+#include "go32/adt2vesa/VESA_SetMode.c"
 #include "go32/adt2vesa/VESA_GetPalette.c"
 #include "go32/adt2vesa/VESA_SetPalette.c"
 #include "go32/adt2vesa/VESA_InitStepFade.c"

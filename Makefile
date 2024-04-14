@@ -3,7 +3,8 @@
 # SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-srcdir:=$(patsubst %/,%,$(realpath $(dir $(lastword $(MAKEFILE_LIST)))))
+makefile:=$(realpath $(lastword $(MAKEFILE_LIST)))
+srcdir:=$(patsubst %/,%,$(dir $(makefile)))
 builddir:=$(patsubst %/,%,$(realpath .))
 
 ifeq ($(srcdir),$(builddir))
@@ -64,6 +65,7 @@ SRCS=\
  pascal/dpmi.c\
  pascal/go32.c\
  pascal/pc.c\
+ pascal/stdio.c\
  pascal/stdlib.c\
  pascal/string.c\
  txtscrio.c
@@ -170,16 +172,16 @@ adtrack2.inc:
 	 echo "{\$$ENDIF}";\
 	 } >$@
 
-adtrack2.res: $(srcdir)/adtrack2.rc $(srcdir)/Makefile
+adtrack2.res: $(srcdir)/adtrack2.rc $(makefile)
 	$(WINDRES) -i $< -o $@
 
-font/track16.inc: $(srcdir)/font/track16.pbm $(srcdir)/Makefile | font
+font/track16.inc: $(srcdir)/font/track16.pbm $(makefile) | font
 	fontconv -pbmtoinc -s c -o $@ $<
 
-font/vga16.inc: $(srcdir)/font/vga16.pbm $(srcdir)/Makefile | font
+font/vga16.inc: $(srcdir)/font/vga16.pbm $(makefile) | font
 	fontconv -pbmtoinc -s c -o $@ $<
 
-adtrack2-icon.inc: $(srcdir)/adtrack2.bmp $(srcdir)/Makefile
+adtrack2-icon.inc: $(srcdir)/adtrack2.bmp $(makefile)
 	bintoinc -s c -o $@ $<
 
 # Object files
@@ -199,7 +201,7 @@ $(foreach f,$(SRCS),$(eval $(call make_c_obj,$f,$(srcdir))))
 
 # Pascal units with known dependencies
 
-units/adt2data.ppu: $(srcdir)/adt2data.pas adt2data.o $(srcdir)/Makefile | units
+units/adt2data.ppu: $(srcdir)/adt2data.pas adt2data.o $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
 	 $(FPCFLAGS_DIRS) -FUunits\
@@ -207,22 +209,21 @@ units/adt2data.ppu: $(srcdir)/adt2data.pas adt2data.o $(srcdir)/Makefile | units
 
 adt2vesa_ppu_deps=\
  $(srcdir)/go32/adt2vesa.pas\
- $(srcdir)/go32/adt2vesa/pas/VESA_SetMode.pas\
  go32/adt2vesa.o
 
-units/adt2vesa.ppu: $(adt2vesa_ppu_deps) $(srcdir)/Makefile | units
-	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp\
-	 $(FPCFLAGS_DIRS) -FUunits\
-	 $< -o$@ -vnh >>$(buildlog)
-
-units/common.ppu: $(srcdir)/common.pas common.o $(srcdir)/Makefile | units
+units/adt2vesa.ppu: $(adt2vesa_ppu_deps) $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
 	 $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
-units/iss_tim.ppu: $(srcdir)/go32/iss_tim.pas $(srcdir)/Makefile | units
+units/common.ppu: $(srcdir)/common.pas common.o $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
+	 $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
+units/iss_tim.ppu: $(srcdir)/go32/iss_tim.pas $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp\
 	 $(FPCFLAGS_DIRS) -FUunits\
@@ -230,8 +231,10 @@ units/iss_tim.ppu: $(srcdir)/go32/iss_tim.pas $(srcdir)/Makefile | units
 
 pascal_ppu_deps=\
  $(srcdir)/pascal.pas\
+ $(srcdir)/pascal/stdio.pas\
  $(srcdir)/pascal/stdlib.pas\
  $(srcdir)/pascal/string.pas\
+ pascal/stdio.o\
  pascal/stdlib.o\
  pascal/string.o
 
@@ -247,7 +250,7 @@ ifeq ($(FPC_OS_TARGET),go32v2)
   pascal/pc.o
 endif
 
-units/pascal.ppu: $(pascal_ppu_deps) $(srcdir)/Makefile | units
+units/pascal.ppu: $(pascal_ppu_deps) $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
 	 $(FPCFLAGS_DIRS) -FUunits\
@@ -257,7 +260,7 @@ VGA_ppu_deps=\
  $(srcdir)/go32/VGA.pas\
  go32/VGA.o
 
-units/VGA.ppu: $(VGA_ppu_deps) $(srcdir)/Makefile | units
+units/VGA.ppu: $(VGA_ppu_deps) $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
 	 $(FPCFLAGS_DIRS) -FUunits\
@@ -403,7 +406,7 @@ ifeq ($(OS_TARGET),Windows)
  FPCFLAGS_AT2_BIN+=-WC
 endif
 
-$(AT2_BIN): $(adtrack2_bin_deps) $(srcdir)/Makefile | units
+$(AT2_BIN): $(adtrack2_bin_deps) $(makefile) | units
 	@echo "  PC     $(AT2_PAS_SRC)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp -Rintel\
 	 $(FPCFLAGS_DIRS) -FUunits -FE.\

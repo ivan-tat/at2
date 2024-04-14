@@ -9,6 +9,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stddef.h>
 #include <sys/types.h>
 
 typedef unsigned char Shortstring;
@@ -18,6 +19,11 @@ typedef Shortstring String;
 #define Length(s) ((s)[0])
 #define SetLength(s, l) (s)[0] = (l)
 #define GetStr(s) (&(s)[1])
+
+extern void *Pascal_Output;
+
+extern uint16_t *Pascal_InOutRes_ptr;
+#define Pascal_InOutRes (*Pascal_InOutRes_ptr)
 
 extern void Pascal_Halt (int32_t errnum);
 
@@ -36,6 +42,10 @@ extern double Pascal_Trunc_Double (double x);
 extern void *Pascal_AllocMem (size_t size);
 extern size_t Pascal_FreeMem (void *p);
 extern void *Pascal_ReAllocMem (void **p, size_t size);
+
+extern void Pascal_Write_PChar (void *text, const char *str);
+extern void Pascal_Write_String (void *text, const String *str);
+extern void Pascal_Flush (void *text);
 
 #if GO32
 
