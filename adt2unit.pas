@@ -440,6 +440,7 @@ uses
   CRT,
   DOS,
   GO32,
+  PIT,
   ISS_Tim,
 {$ELSE}
   DOS,
@@ -4741,24 +4742,6 @@ const
 
 procedure ___IRQ_CODE_END___; begin end;
 
-procedure DisableTimerIRQ;
-begin
-  asm
-        in      al,21h
-        or      al,1
-        out     21h,al
-  end;
-end;
-
-procedure EnableTimerIRQ;
-begin
-  asm
-        in      al,21h
-        and     al,0feh
-        out     21h,al
-  end;
-end;
-
 const
   timer_poll_proc_ptr: Pointer = NIL;
 
@@ -4766,23 +4749,23 @@ procedure TimerSetup(Hz: Longint);
 begin
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ADT2UNIT.PAS:TimerSetup';
-  If (Hz < 19) then Hz := 19;
-  If (Hz > 1193180) then Hz := 1193180;
-  DisableTimerIRQ;
+  If (Hz < PIT_FREQ_MIN) then Hz := PIT_FREQ_MIN;
+  If (Hz > PIT_FREQ_MAX) then Hz := PIT_FREQ_MAX;
+  ISS_DisableTimerIRQ;
   If (timer_poll_proc_ptr <> NIL) then ISS_StopTimer(timer_poll_proc_ptr);
   timer_poll_proc_ptr := @timer_poll_proc;
   ISS_StartTimer(timer_poll_proc_ptr,ISS_TimerSpeed DIV Hz);
-  EnableTimerIRQ;
+  ISS_EnableTimerIRQ;
 end;
 
 procedure TimerDone;
 begin
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ADT2UNIT.PAS:TimerDone';
-  DisableTimerIRQ;
+  ISS_DisableTimerIRQ;
   If (timer_poll_proc_ptr <> NIL) then ISS_StopTimer(timer_poll_proc_ptr);
   timer_poll_proc_ptr := NIL;
-  EnableTimerIRQ;
+  ISS_EnableTimerIRQ;
 end;
 
 procedure TimerInstallHandler(handler: Pointer);

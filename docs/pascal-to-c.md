@@ -40,9 +40,11 @@
 | Pascal | C | Transitional C header | C header |
 | --- | --- | --- | --- |
 | `enable;` | `enable();` | `"pascal/dos.h"` | `<dos.h>` |
-| `asm sti end;` | `enable();` | `"pascal/dos.h"` | `<dos.h>` |
+| `asm sti end;` | `__asm__ ("sti");` | - | - |
 | `disable;` | `disable();` | `"pascal/dos.h"` | `<dos.h>` |
-| `asm cli end;` | `disable();` | `"pascal/dos.h"` | `<dos.h>` |
+| `asm cli end;` | `__asm__ ("cli");` | - | - |
+| `get_pm_interrupt(n, p);` | `__dpmi_get_protected_mode_interrupt_vector(n, &p);` | `"pascal/dpmi.h"` | `<dpmi.h>` |
+| `set_pm_interrupt(n, p);` | `__dpmi_set_protected_mode_interrupt_vector(n, &p);` | `"pascal/dpmi.h"` | `<dpmi.h>` |
 
 ## Port I/O
 
@@ -57,12 +59,15 @@
 | `asm out dx,eax end;` | `outportl(port, l);` | `"pascal/pc.h"` | `<pc.h>` |
 | `asm rep outsb end;` | `outportsb(port, buf, len);` | `"pascal/pc.h"` | `<pc.h>` |
 
-## DOS memory
+## DPMI and DOS memory
 
 | Pascal | C | Transitional C header | C header |
 | --- | --- | --- | --- |
 | `int31error` | `__dpmi_error` | `"pascal/dpmi.h"` | `<dpmi.h>` |
-| `dosmemselector` | `_dos_ds` | `"pascal/go32.h"` | `<go32.h>` |
+| `__v2prt0_ds_alias` | `__djgpp_ds_alias` | `"pascal/sys/exceptn.h"` | `<sys/exceptn.h>` |
+| `w := get_cs;` | `w = _go32_my_cs();` | `"pascal/go32.h"` | `<go32.h>` |
+| `w := get_ds;` | `w = _go32_my_ds();` | `"pascal/go32.h"` | `<go32.h>` |
+| `w := dosmemselector;` | `w = _dos_ds;` | `"pascal/go32.h"` | `<go32.h>` |
 | `dosmemget(seg, ofs, data, size);` | `dosmemget(seg*16+ofs, size, data);` | `"pascal/go32.h"` | `<go32.h>` |
 | `dosmemput(seg, ofs, data, size);` | `dosmemput(data, size, seg*16+ofs);` | `"pascal/go32.h"` | `<go32.h>` |
 | `b := mem[seg:ofs];` | `b = _farnspeekb(seg*16+ofs);` | `"pascal/farptr.h"` | `<farptr.h>` |
@@ -71,6 +76,10 @@
 | `mem[seg:ofs] := b;` | `_farnspokeb(seg*16+ofs, b);` | `"pascal/farptr.h"` | `<farptr.h>` |
 | `memw[seg:ofs] := w;` | `_farnspokew(seg*16+ofs, w);` | `"pascal/farptr.h"` | `<farptr.h>` |
 | `meml[seg:ofs] := l;` | `_farnspokel(seg*16+ofs, l);` | `"pascal/farptr.h"` | `<farptr.h>` |
+| `lock_data(x, s);` | `_go32_dpmi_lock_data(&x, s);` | `"pascal/dpmi.h"` | `<dpmi.h>` |
+| `lock_code(@x, s);` | `_go32_dpmi_lock_code((void *)(uintptr_t)x, s);` | `"pascal/dpmi.h"` | `<dpmi.h>` |
+| `unlock_data(x, s);` | `_go32_dpmi_unlock_data(&x, s);` | `"go32/dpmi.h"` | `"go32/dpmi.h"` |
+| `unlock_code(@x, s);` | `_go32_dpmi_unlock_code((void *)(uintptr_t)x, s);` | `"go32/dpmi.h"` | `"go32/dpmi.h"` |
 
 Before accessing DOS memory with `_farns*` routines:
 

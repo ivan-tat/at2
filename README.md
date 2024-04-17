@@ -132,6 +132,9 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 
 ### Hardware
 
+* [Programmable interrupt controller](https://en.wikipedia.org/wiki/Programmable_interrupt_controller)
+* [x86 Assembly/Programmable Interval Timer](https://en.wikibooks.org/wiki/X86_Assembly/Programmable_Interval_Timer)
+* [Programmable Interval Timer](https://wiki.osdev.org/Programmable_Interval_Timer)
 * [VGA Hardware](https://wiki.osdev.org/VGA_Hardware)
 * [VGA Signal Timing](http://tinyvga.com/vga-timing)
 * [Hardware Level VGA and SVGA Video Programming Information](http://www.osdever.net/FreeVGA/vga/vga.htm)

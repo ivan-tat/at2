@@ -53,6 +53,10 @@ procedure Pascal_Flush (var t: Text); cdecl;
 
 {$IFDEF GO32V2}
 
+var
+  __v2prt0_ds_alias: Word; cvar; external;
+  Pascal_dosmemselector: Word; cvar;
+
 function Pascal_allocate_ldt_descriptors (count: Word): Word; cdecl;
 function Pascal_free_ldt_descriptor (selector: Word): Boolean; cdecl;
 function Pascal_get_next_selector_increment_value: Word; cdecl;
@@ -62,8 +66,14 @@ procedure Pascal_dosmemget (seg: Word; ofs: Word; var data; count: Longint); cde
 procedure Pascal_dosmemput (seg: Word; ofs: Word; var data; count: Longint); cdecl;
 function Pascal_global_dos_alloc (bytes: Longint): Longint; cdecl;
 function Pascal_global_dos_free (selector: Word): Boolean; cdecl;
+function Pascal_get_pm_interrupt (vector: Byte; var intaddr: TSegInfo): Boolean; cdecl;
+function Pascal_set_pm_interrupt (vector: Byte; var intaddr: TSegInfo): Boolean; cdecl;
 function Pascal_realintr (intnr: Word; var regs: trealregs): Boolean; cdecl;
-function Pascal_get_linear_addr(phys_addr: Longint; size: Longint): Longint; cdecl;
+function Pascal_get_linear_addr (phys_addr: Longint; size: Longint): Longint; cdecl;
+function Pascal_lock_data (var data; size: Longint): Boolean; cdecl;
+function Pascal_lock_code (functionaddr: Pointer; size: Longint): Boolean; cdecl;
+function Pascal_unlock_data (var data; size: Longint): Boolean; cdecl;
+function Pascal_unlock_code (functionaddr: Pointer; size: Longint): Boolean; cdecl;
 
 {$I pascal/dos.pas}
 {$I pascal/dpmi.pas}
@@ -228,16 +238,52 @@ begin
   Pascal_global_dos_free := go32.global_dos_free (selector);
 end;
 
+function Pascal_get_pm_interrupt (vector: Byte; var intaddr: TSegInfo): Boolean; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_get_pm_interrupt';
+begin
+  Pascal_get_pm_interrupt := go32.get_pm_interrupt (vector, intaddr);
+end;
+
+function Pascal_set_pm_interrupt (vector: Byte; var intaddr: TSegInfo): Boolean; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_set_pm_interrupt';
+begin
+  Pascal_set_pm_interrupt := go32.set_pm_interrupt (vector, intaddr);
+end;
+
 function Pascal_realintr (intnr: Word; var regs: trealregs): Boolean; cdecl;
 public name PUBLIC_PREFIX + 'Pascal_realintr';
 begin
   Pascal_realintr := go32.realintr (intnr, regs);
 end;
 
-function Pascal_get_linear_addr(phys_addr: Longint; size: Longint): Longint; cdecl;
+function Pascal_get_linear_addr (phys_addr: Longint; size: Longint): Longint; cdecl;
 public name PUBLIC_PREFIX + 'Pascal_get_linear_addr';
 begin
   Pascal_get_linear_addr := go32.get_linear_addr (phys_addr, size);
+end;
+
+function Pascal_lock_data (var data; size: Longint): Boolean; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_lock_data';
+begin
+  Pascal_lock_data := go32.lock_data (data, size);
+end;
+
+function Pascal_lock_code (functionaddr: Pointer; size: Longint): Boolean; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_lock_code';
+begin
+  Pascal_lock_code := go32.lock_code (functionaddr, size);
+end;
+
+function Pascal_unlock_data (var data; size: Longint): Boolean; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_unlock_data';
+begin
+  Pascal_unlock_data := go32.unlock_data (data, size);
+end;
+
+function Pascal_unlock_code (functionaddr: Pointer; size: Longint): Boolean; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_unlock_code';
+begin
+  Pascal_unlock_code := go32.unlock_code (functionaddr, size);
 end;
 
 {$ENDIF}
@@ -255,7 +301,7 @@ end;
 begin
 {$IFDEF GO32V2}
   __dpmi_error_ptr := @go32.int31error;
-  _dos_ds_ptr := @go32.dosmemselector;
+  Pascal_dosmemselector := go32.dosmemselector;
 {$ENDIF}
   Pascal_Output := @system.Output;
   Pascal_InOutRes_ptr := @system.InOutRes;

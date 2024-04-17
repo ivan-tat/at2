@@ -43,6 +43,8 @@ FPCFLAGS_DIRS+=-Fi$(srcdir1) -Fi$(srcdir) -Fi.
 
 SRCS=\
  common.c\
+ go32/dpmi.c\
+ go32/iss_tim.c\
  go32/VGA.c\
  pascal/dos.c\
  pascal/dpmi.c\
@@ -158,6 +160,10 @@ $(1:.c=.o): $2/$1
 	@echo "  CC     $1"; \
 	$$(GCC) $$(GCCFLAGS_CPU) $$(GCCFLAGS) $$(GCCFLAGS_DIRS)\
 	 -c $$< -o $$@ >>$$(buildlog)
+ifneq ($(DEBUG),0)
+	@$$(GCC) $$(GCCFLAGS_CPU) $$(GCCFLAGS) $$(GCCFLAGS_DIRS)\
+	 -S $$< -o $$(@:.o=.s) >>$$(buildlog)
+endif
 
 endef
 
@@ -168,20 +174,34 @@ $(foreach f,$(SRCS1),$(eval $(call make_c_obj,$f,$(srcdir1))))
 
 units/a2data.ppu: $(srcdir1)/a2data.pas a2data.o $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir1)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
-	 $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 units/common.ppu: $(srcdir)/common.pas common.o $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
-	 $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
-units/iss_tim.ppu: $(srcdir)/go32/iss_tim.pas $(makefile) | units
+dpmi_ppu_deps=\
+ $(srcdir)/go32/dpmi.pas\
+ go32/dpmi.o\
+ units/pascal.ppu
+
+units/dpmi.ppu: $(dpmi_ppu_deps) $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp\
-	 $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
+iss_tim_ppu_deps=\
+ $(srcdir)/go32/iss_tim.pas\
+ go32/iss_tim.o\
+ units/dpmi.ppu\
+ units/pascal.ppu\
+ units/PIT.ppu
+
+units/iss_tim.ppu: $(iss_tim_ppu_deps) $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 pascal_ppu_deps=\
@@ -207,8 +227,16 @@ endif
 
 units/pascal.ppu: $(pascal_ppu_deps) $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
-	 $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
+PIT_ppu_deps=\
+ $(srcdir)/go32/PIT.pas\
+ $(srcdir)/go32/PIT/pas/PIT_consts.inc
+
+units/PIT.ppu: $(PIT_ppu_deps) $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 txtscrio_ppu_deps=\
@@ -216,18 +244,17 @@ txtscrio_ppu_deps=\
  $(srcdir)/txtscrio/pas/colors.pas\
  txtscrio.o\
  units/common.ppu\
- units/pascal.ppu\
- units/VGA.ppu
+ units/pascal.ppu
 
 ifeq ($(FPC_OS_TARGET),go32v2)
  txtscrio_ppu_deps+=\
-  $(srcdir)/txtscrio/go32/pas/fade.pas
+  $(srcdir)/txtscrio/go32/pas/fade.pas\
+  units/VGA.ppu
 endif
 
 units/txtscrio.ppu: $(txtscrio_ppu_deps) $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir1)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
-	 $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 VGA_ppu_deps=\
@@ -236,8 +263,7 @@ VGA_ppu_deps=\
 
 units/VGA.ppu: $(VGA_ppu_deps) $(srcdir)/Makefile | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
-	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS)\
-	 $(FPCFLAGS_DIRS) -FUunits\
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
 # Pascal units with complex dependencies and target executable
@@ -247,10 +273,12 @@ a2depack_ppu_deps=\
 
 a2fileio_ppu_deps=\
  $(srcdir1)/a2fileio.pas\
+ $(srcdir)/go32/PIT/pas/PIT_consts.inc\
  $(srcdir)/iloaders.inc
 
 a2player_ppu_deps=\
  $(srcdir1)/a2player.pas\
+ $(srcdir)/go32/PIT/pas/PIT_consts.inc\
  $(srcdir1)/typconst.inc
 
 a2scrio_ppu_deps=\
@@ -282,7 +310,8 @@ adt2play_bin_deps+=\
 
 ifeq ($(FPC_OS_TARGET),go32v2)
  adt2play_bin_deps+=\
-  units/iss_tim.ppu
+  units/iss_tim.ppu\
+  units/PIT.ppu
 endif
 
 $(AT2PLAY_BIN): $(adt2play_bin_deps) $(makefile) | units

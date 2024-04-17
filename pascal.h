@@ -20,6 +20,9 @@ typedef Shortstring String;
 #define SetLength(s, l) (s)[0] = (l)
 #define GetStr(s) (&(s)[1])
 
+extern uint16_t __v2prt0_ds_alias;
+extern uint16_t Pascal_dosmemselector;
+
 extern void *Pascal_Output;
 
 extern uint16_t *Pascal_InOutRes_ptr;
@@ -61,9 +64,17 @@ extern void Pascal_dosmemput (uint16_t seg, uint16_t ofs, const void *data, uint
 extern int32_t Pascal_global_dos_alloc (int32_t bytes);
 extern bool Pascal_global_dos_free (uint16_t selector);
 
+extern bool Pascal_get_pm_interrupt (uint8_t vector, void *intaddr);
+extern bool Pascal_set_pm_interrupt (uint8_t vector, const void *intaddr);
+
 extern bool Pascal_realintr (uint16_t intnr, void *regs);
 
 extern int32_t Pascal_get_linear_addr (int32_t phys_addr, int32_t size);
+
+extern bool Pascal_lock_data (const void *data, int32_t size);
+extern bool Pascal_lock_code (const void *functionaddr, int32_t size);
+extern bool Pascal_unlock_data (const void *data, int32_t size);
+extern bool Pascal_unlock_code (const void *functionaddr, int32_t size);
 
 #endif // GO32
 

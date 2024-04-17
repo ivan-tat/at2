@@ -60,6 +60,7 @@
 #endif
 
 #ifdef __GNUC__
+#define __NAKED __attribute__((naked))
 #define __FALLTHROUGH__ __attribute__((fallthrough));
 #else /* !defined(__GNUC__) */
 #define __FALLTHROUGH__

@@ -64,6 +64,7 @@ uses
   TxtScrIO,
   DepackIO;
 
+{$I go32/PIT/pas/PIT_consts.inc}
 {$i iloadins.inc}
 {$i iloaders.inc}
 

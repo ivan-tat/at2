@@ -71,6 +71,7 @@ uses
   StringIO,
   ParserIO;
 
+{$I go32/PIT/pas/PIT_consts.inc}
 {$i iloaders.inc}
 
 procedure ResetF(var f: File);

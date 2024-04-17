@@ -58,6 +58,14 @@ int32_t __dpmi_free_dos_memory (int32_t selector) {
   }
 }
 
+int32_t __dpmi_get_protected_mode_interrupt_vector (int32_t vector, __dpmi_paddr *address) {
+  return Pascal_get_pm_interrupt (vector, address) ? 0 : -1;
+}
+
+int32_t __dpmi_set_protected_mode_interrupt_vector (int32_t vector, __dpmi_paddr *address) {
+  return Pascal_set_pm_interrupt (vector, address) ? 0 : -1;
+}
+
 int32_t __dpmi_simulate_real_mode_interrupt (int32_t vec, __dpmi_regs *regs) {
   if (Pascal_realintr (vec, regs))
     return 0;
@@ -75,4 +83,12 @@ int32_t __dpmi_physical_address_mapping (__dpmi_meminfo *info) {
     return 0;
   } else
     return -1;
+}
+
+int32_t _go32_dpmi_lock_data (void *lockaddr, uint32_t locksize) {
+  return Pascal_lock_data (lockaddr, locksize) ? 0 : -1;
+}
+
+int32_t _go32_dpmi_lock_code (void *lockaddr, uint32_t locksize) {
+  return Pascal_lock_code (lockaddr, locksize) ? 0 : -1;
 }

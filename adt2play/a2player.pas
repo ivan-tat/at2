@@ -108,8 +108,6 @@ procedure timer_poll_proc;
 procedure opl2out_proc(reg,data: Word);
 procedure opl3out_proc(reg,data: Word);
 procedure opl3exp_proc(data: Word);
-procedure DisableTimerIRQ_proc;
-procedure EnableTimerIRQ_proc;
 function  calc_following_order(order: Byte): Integer;
 function  is_4op_chan(chan: Byte): Boolean;
 function  min(value: Longint; minimum: Longint): Longint;
@@ -124,8 +122,6 @@ const
   opl2out: tOPLOUT_proc = opl2out_proc;
   opl3out: tOPLOUT_proc = opl3out_proc;
   opl3exp: tOPLEXP_proc = opl3exp_proc;
-  DisableTimerIRQ: procedure = DisableTimerIRQ_proc;
-  EnableTimerIRQ: procedure = EnableTimerIRQ_proc;
 
 const
   ___UNIT_DATA_END___: Dword = 0;
@@ -137,6 +133,8 @@ uses
   GO32,
   ISS_TIM,
   A2fileIO;
+
+{$I go32/PIT/pas/PIT_consts.inc}
 
 const
   ___IRQ_DATA_START___: Dword = 0;
@@ -4300,43 +4298,25 @@ const
 
 procedure ___IRQ_CODE_END___; begin end;
 
-procedure DisableTimerIRQ_proc;
-begin
-  asm
-        in      al,21h
-        or      al,1
-        out     21h,al
-  end;
-end;
-
-procedure EnableTimerIRQ_proc;
-begin
-  asm
-        in      al,21h
-        and     al,0feh
-        out     21h,al
-  end;
-end;
-
 procedure TimerSetup(Hz: Longint);
 begin
   _debug_str_ := 'A2PLAYER.PAS:TimerSetup';
-  If (Hz < 19) then Hz := 19;
-  If (Hz > 1193180) then Hz := 1193180;
-  DisableTimerIRQ;
+  If (Hz < PIT_FREQ_MIN) then Hz := PIT_FREQ_MIN;
+  If (Hz > PIT_FREQ_MAX) then Hz := PIT_FREQ_MAX;
+  ISS_DisableTimerIRQ;
   If (timer_poll_proc_ptr <> NIL) then ISS_StopTimer(timer_poll_proc_ptr);
   timer_poll_proc_ptr := @timer_poll_proc;
   ISS_StartTimer(timer_poll_proc_ptr,ISS_TimerSpeed DIV Hz);
-  EnableTimerIRQ;
+  ISS_EnableTimerIRQ;
 end;
 
 procedure TimerDone;
 begin
   _debug_str_ := 'A2PLAYER.PAS:TimerDone';
-  DisableTimerIRQ;
+  ISS_DisableTimerIRQ;
   If (timer_poll_proc_ptr <> NIL) then ISS_StopTimer(timer_poll_proc_ptr);
   timer_poll_proc_ptr := NIL;
-  EnableTimerIRQ;
+  ISS_EnableTimerIRQ;
 end;
 
 procedure init_timer_proc;

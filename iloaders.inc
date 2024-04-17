@@ -3814,7 +3814,7 @@ begin
              If NOT (temp1 > 21) then temp1 := 125;
              temp4 := 1412926 DIV LONGINT(temp1 SHR 1);
              chunk.effect := 1;
-             While (1193180 DIV chunk.effect > temp4) and
+             While (PIT_FREQ_MAX DIV chunk.effect > temp4) and
                    (chunk.effect < 255) do
                Inc(chunk.effect);
            end;
