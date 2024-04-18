@@ -4,6 +4,15 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include "defines.h"
+#if GO32
+#if USE_FPC
+#include "pascal/stdlib.h"
+#else // !USE_FPC
+#include "<stdlib.h>"
+#endif // !USE_FPC
+#include "go32/adt2dpmi.h"
+#endif // GO32
 #include "adt2unit.h"
 
 // HINT: (FPC) S-: Stack checking (off)
@@ -35,5 +44,25 @@ uint8_t pattern_hpos;
 #include "adt2unit/max.c"
 
 #if GO32
+
 uint8_t ___ADT2UNIT_DATA_END___ = 0;
+
+static void lock_adt2unit (bool lock) {
+  LOCK_DECL (lock, v, f);
+
+  v (&___ADT2UNIT_DATA_START___, (ptrdiff_t) &___ADT2UNIT_DATA_END___
+                                 - (ptrdiff_t) &___ADT2UNIT_DATA_START___);
+}
+
+static void done_adt2unit (void);
+
+void init_adt2unit (void) {
+  lock_adt2unit (true);
+  atexit (done_adt2unit);
+}
+
+static void done_adt2unit (void) {
+  lock_adt2unit (false);
+}
+
 #endif // GO32

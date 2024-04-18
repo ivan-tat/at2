@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "pascal/stdio.h"
+#include "pascal/stdlib.h"
 #include "pascal/string.h"
 
 // Stream flags
@@ -59,9 +60,9 @@ static void _stream_init (FILE *self, unsigned sf) {
 #define _F_UPPERCASE (1 << 4)
 #define _F_NEGATE    (1 << 7)
 
-// 2^63   =  9 223 372 036 854 775 808 (19 characters)
-// 2^64-1 = 18 446 744 073 709 551 615 (20 characters)
-#define MAX_LEN 20
+// -2^63   =  -9 223 372 036 854 775 808 (20 characters)
+// +2^64-1 = +18 446 744 073 709 551 615 (21 characters)
+#define MAX_LEN 21
 
 static bool _stream_write_udecimal (FILE *self,
   const long long unsigned value, const unsigned f, const unsigned w) {
@@ -746,11 +747,14 @@ int custom_fflush (FILE *stream) {
 
 //=************************************************************************=//
 
+static void done_stdio (void);
+
 void init_stdio (void) {
   _file_stream_init (&_stdout_file,
                      _SF_S_STAT | _SF_O_STAT | _SF_T_TEXT | _SF_SYNC,
                      _stdout_buf, sizeof (_stdout_buf), Pascal_Output);
+  atexit (done_stdio);
 }
 
-void done_stdio (void) {
+static void done_stdio (void) {
 }

@@ -14,4 +14,3 @@ procedure custom_vsprintf; cdecl; external;
 procedure custom_snprintf; cdecl; external;
 procedure custom_vsnprintf; cdecl; external;
 procedure init_stdio; cdecl; external;
-procedure done_stdio; cdecl; external;

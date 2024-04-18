@@ -433,6 +433,8 @@ const
   ___UNIT_DATA_END___: Dword = 0;
 {$ENDIF}
 
+procedure init_adt2unit; cdecl; external;
+
 implementation
 
 uses
@@ -6212,15 +6214,14 @@ var
 procedure new_exit_proc;
 begin
   Unlock_Data(___UNIT_DATA_START___,DWORD(Addr(___UNIT_DATA_END___))-DWORD(Addr(___UNIT_DATA_START___)));
-  Unlock_Data(___ADT2UNIT_DATA_START___,DWORD(@___ADT2UNIT_DATA_END___)-DWORD(@___ADT2UNIT_DATA_START___));
   Unlock_Data(___IRQ_DATA_START___,DWORD(Addr(___IRQ_DATA_END___))-DWORD(Addr(___IRQ_DATA_START___)));
   Unlock_Code(@___IRQ_CODE_START___,DWORD(@___IRQ_CODE_END___)-DWORD(@___IRQ_CODE_START___));
   ExitProc := @old_exit_proc;
 end;
 
 begin
+  init_adt2unit;
   Lock_Data(___UNIT_DATA_START___,DWORD(Addr(___UNIT_DATA_END___))-DWORD(Addr(___UNIT_DATA_START___)));
-  Lock_Data(___ADT2UNIT_DATA_START___,DWORD(@___ADT2UNIT_DATA_END___)-DWORD(@___ADT2UNIT_DATA_START___));
   Lock_Data(___IRQ_DATA_START___,DWORD(Addr(___IRQ_DATA_END___))-DWORD(Addr(___IRQ_DATA_START___)));
   Lock_Code(@___IRQ_CODE_START___,DWORD(@___IRQ_CODE_END___)-DWORD(@___IRQ_CODE_START___));
   @old_exit_proc := ExitProc;

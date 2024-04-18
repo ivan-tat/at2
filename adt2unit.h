@@ -34,4 +34,8 @@ extern uint8_t pattern_hpos;
 int32_t min (int32_t value, int32_t minimum);
 int32_t max (int32_t value, int32_t maximum);
 
+#if GO32
+void init_adt2unit (void);
+#endif // GO32
+
 #endif // !defined(ADT2UNIT_H)

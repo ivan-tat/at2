@@ -99,6 +99,8 @@
 # define __ALIGNED_(x)
 #endif // GCC_VERSION < 3000
 
+#define __UNUSED GCC_ATTRIBUTE((unused))
+
 // Common function attributes
 
 #if GCC_VERSION >= 5000
@@ -141,6 +143,7 @@
 
 #define __ALIGNED
 #define __ALIGNED_(x)
+#define __UNUSED
 #define __NO_REORDER
 #define __NORETURN
 #define __NAKED

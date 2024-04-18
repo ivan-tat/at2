@@ -43,8 +43,8 @@
   LOCK_CODE (x, (uintptr_t) f, (ptrdiff_t) f##_end - (ptrdiff_t) f)
 
 #define LOCK_DECL(lock, v, f)                                                \
-  int32_t (*v) (void *lockaddr, uint32_t locksize);                          \
-  int32_t (*f) (void *lockaddr, uint32_t locksize);                          \
+  int32_t (*v) (void *lockaddr, uint32_t locksize) __UNUSED;                 \
+  int32_t (*f) (void *lockaddr, uint32_t locksize) __UNUSED;                 \
                                                                              \
   if (lock) {                                                                \
     v = LOCK_DATA_PROC;                                                      \

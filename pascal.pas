@@ -293,8 +293,7 @@ var
 
 procedure OnExit;
 begin
-  done_stdio;
-  done_stdlib;
+  done_stdlib; // Shuts down all C code
   ExitProc := OldExitProc;
 end;
 
@@ -307,6 +306,7 @@ begin
   Pascal_InOutRes_ptr := @system.InOutRes;
   OldExitProc := ExitProc;
   ExitProc := @OnExit;
+  // `stdlib' must be first (controls proper exit in C via `atexit' routine)
   init_stdlib;
   init_stdio;
 end.
