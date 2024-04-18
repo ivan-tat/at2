@@ -8,8 +8,8 @@ void SetTextDisp (uint16_t x, uint16_t y) {
   uint_least8_t maxcol_val;
   uint_least16_t t;
 
-  while (inportb (VGA_STATUS_1_PORT) & 1) { }
-  while (!(inportb (VGA_STATUS_1_PORT) & 1)) { }
+  VGA_wait_while_display_disabled (true);
+  VGA_wait_while_display_disabled (false);
 
   if (program_screen_mode != 4 && program_screen_mode != 5)
     maxcol_val = MaxCol;

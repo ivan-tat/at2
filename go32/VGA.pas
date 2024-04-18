@@ -10,7 +10,7 @@ unit VGA;
 
 interface
 
-procedure VGA_WaitRetrace; cdecl; external;
+procedure VGA_WaitVerticalRetrace; cdecl; external;
 procedure VGA_GetCursorShape; cdecl; external;
 procedure VGA_SetCursorShape; cdecl; external;
 procedure VGA_GetPaletteEntry; cdecl; external;

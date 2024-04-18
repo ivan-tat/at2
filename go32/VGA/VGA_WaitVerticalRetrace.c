@@ -4,7 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-void VGA_WaitRetrace (void) {
-  while (inportb (VGA_STATUS_1_PORT) & 8) { };
-  while (!(inportb (VGA_STATUS_1_PORT) & 8)) { };
+void VGA_WaitVerticalRetrace (void) {
+  VGA_wait_while_vertical_retrace (true);
+  VGA_wait_while_vertical_retrace (false);
 }

@@ -5,5 +5,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void WaitRetrace (void) {
-  VGA_WaitRetrace ();
+  VGA_WaitVerticalRetrace ();
 }

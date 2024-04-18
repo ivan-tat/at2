@@ -30,7 +30,10 @@
 #define VGA_CRTC_ADDR_PORT      0x3D4 // CRT Controller Address Register
 #define VGA_CRTC_DATA_PORT      0x3D5 // CRT Controller Data Register
 
-void VGA_WaitRetrace (void);
+#include "go32/VGA/VGA_wait_while_vertical_retrace.c"
+#include "go32/VGA/VGA_wait_while_display_disabled.c"
+
+void VGA_WaitVerticalRetrace (void);
 
 uint16_t VGA_GetCursorShape (void);
 void VGA_SetCursorShape (uint16_t shape);
