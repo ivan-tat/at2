@@ -6,8 +6,8 @@
 
 #pragma once
 
-#ifndef DPMI_H
-#define DPMI_H
+#ifndef PASCAL_DPMI_H
+#define PASCAL_DPMI_H
 
 #include "pascal.h"
 
@@ -90,4 +90,4 @@ int32_t __dpmi_physical_address_mapping (__dpmi_meminfo *info);
 int32_t _go32_dpmi_lock_data (void *lockaddr, uint32_t locksize);
 int32_t _go32_dpmi_lock_code (void *lockaddr, uint32_t locksize);
 
-#endif // !defined(DPMI_H)
+#endif // !defined(PASCAL_DPMI_H)

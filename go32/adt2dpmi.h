@@ -25,10 +25,8 @@
 #endif // !USE_FPC
 #include "go32/dpmi.h"
 
-#ifdef __GNUC__
-#define __LOCK_FUNC     __attribute__((no_reorder))
-#define __END_LOCK_FUNC __attribute__((no_reorder,aligned(1),naked))
-#endif // defined(__GNUC__)
+#define __LOCK_FUNC     __NO_REORDER
+#define __END_LOCK_FUNC __NO_REORDER __ALIGNED_(1) __NAKED_RELAXED
 
 #define END_OF_FUNCTION(f)        __END_LOCK_FUNC void f##_end (void) { }
 #define END_OF_STATIC_FUNCTION(f) static END_OF_FUNCTION (f)

@@ -273,7 +273,7 @@ static bool _stream_vprintf (FILE *self, const char *format, va_list ap) {
             readnext = true;
             break;
           }
-          __FALLTHROUGH__
+          __FALLTHROUGH
         case '1':
         case '2':
         case '3':

@@ -6,13 +6,13 @@
 
 #if USE_FPC
 #include "pascal.h"
-#endif
+#endif // USE_FPC
 #include "common.h"
 
 void *memsetw (void *s, int c, size_t n) {
 #if USE_FPC
   Pascal_FillWord (s, n, c);
-#else
+#else // !USE_FPC
   uint16_t *p = s;
 
   while (n) {
@@ -20,7 +20,7 @@ void *memsetw (void *s, int c, size_t n) {
     p++;
     n--;
   }
-#endif
+#endif // !USE_FPC
 
   return s;
 }

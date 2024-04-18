@@ -6,8 +6,8 @@
 
 #pragma once
 
-#ifndef VGA_H
-#define VGA_H
+#ifndef GO32_VGA_H
+#define GO32_VGA_H
 
 #include <stdint.h>
 
@@ -38,4 +38,4 @@ void VGA_SetPaletteEntry (uint8_t red, uint8_t green, uint8_t blue,
 void VGA_SetPalette (const void *palette, uint16_t count, uint8_t index);
 void VGA_SplitScreen (uint16_t line);
 
-#endif // !defined(VGA_H)
+#endif // !defined(GO32_VGA_H)

@@ -6,8 +6,8 @@
 
 #pragma once
 
-#ifndef GO32_H
-#define GO32_H
+#ifndef PASCAL_GO32_H
+#define PASCAL_GO32_H
 
 #include <stdint.h>
 
@@ -43,4 +43,4 @@ void custom_dosmemput (const void *buf, size_t size, uint32_t ofs);
 #define dosmemget custom_dosmemget
 #define dosmemput custom_dosmemput
 
-#endif // !defined(GO32_H)
+#endif // !defined(PASCAL_GO32_H)

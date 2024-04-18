@@ -4,8 +4,8 @@
 
 #pragma once
 
-#ifndef STDLIB_H
-#define STDLIB_H
+#ifndef PASCAL_STDLIB_H
+#define PASCAL_STDLIB_H
 
 #include "pascal.h"
 
@@ -27,4 +27,4 @@ void *custom_realloc (void *ptr, size_t size);
 #define free custom_free
 #define realloc custom_realloc
 
-#endif // !defined(STDLIB_H)
+#endif // !defined(PASCAL_STDLIB_H)

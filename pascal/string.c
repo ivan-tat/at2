@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2024 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "pascal.h"
 #include "pascal/string.h"
 
 void *memcpy (void *dest, const void *src, size_t n) {
@@ -18,13 +17,6 @@ void *memmove (void *dest, const void *src, size_t n) {
 void *memset (void *s, int c, size_t n) {
   Pascal_FillChar (s, n, c);
   return s;
-}
-
-size_t strlen (const char *s) {
-  if (s)
-    return Pascal_strlen (s);
-  else
-    return 0;
 }
 
 String *StrToString (String *dest, const char *src, uint8_t n) {

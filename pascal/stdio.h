@@ -4,8 +4,8 @@
 
 #pragma once
 
-#ifndef STDIO_H
-#define STDIO_H
+#ifndef PASCAL_STDIO_H
+#define PASCAL_STDIO_H
 
 #include "defines.h"
 
@@ -54,4 +54,4 @@ int custom_fflush (FILE *stream);
 
 #define fflush custom_fflush
 
-#endif // !defined(STDIO_H)
+#endif // !defined(PASCAL_STDIO_H)

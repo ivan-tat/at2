@@ -20,7 +20,7 @@ int32_t _go32_dpmi_unlock_data (void *lockaddr, uint32_t locksize) {
   return Pascal_unlock_data (lockaddr, locksize) ? 0 : -1;
 }
 
-#else // USE_FPC
+#else // !USE_FPC
 
 int32_t _go32_dpmi_unlock_code (void *lockaddr, uint32_t locksize) {
   __dpmi_meminfo mi = {
@@ -50,4 +50,4 @@ int32_t _go32_dpmi_unlock_data (void *lockaddr, uint32_t locksize) {
   return __dpmi_unlock_linear_region (mi);
 }
 
-#endif // USE_FPC
+#endif // !USE_FPC

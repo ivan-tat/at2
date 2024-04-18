@@ -7,6 +7,7 @@
 #ifndef PASCAL_H
 #define PASCAL_H
 
+#include "defines.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -28,7 +29,7 @@ extern void *Pascal_Output;
 extern uint16_t *Pascal_InOutRes_ptr;
 #define Pascal_InOutRes (*Pascal_InOutRes_ptr)
 
-extern void Pascal_Halt (int32_t errnum);
+extern void Pascal_Halt (int32_t errnum) __NORETURN;
 
 extern void Pascal_FillChar (void *x, ssize_t count, uint8_t value);
 extern void Pascal_FillWord (void *x, ssize_t count, uint16_t value);

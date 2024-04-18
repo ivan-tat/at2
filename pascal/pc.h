@@ -6,8 +6,8 @@
 
 #pragma once
 
-#ifndef PC_H
-#define PC_H
+#ifndef PASCAL_PC_H
+#define PASCAL_PC_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -56,4 +56,4 @@ __inline__ void outportw (uint16_t port, uint16_t data) {
 
 void outportsb (uint16_t port, const uint8_t  *buf, size_t len);
 
-#endif // !defined(PC_H)
+#endif // !defined(PASCAL_PC_H)

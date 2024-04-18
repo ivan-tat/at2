@@ -4,17 +4,17 @@
 
 #pragma once
 
-#ifndef STRING_H
-#define STRING_H
+#ifndef PASCAL_STRING_H
+#define PASCAL_STRING_H
 
-#include <stdint.h>
+#include "pascal.h"
 
 void *memcpy (void *dest, const void *src, size_t n);
 void *memmove (void *dest, const void *src, size_t n);
 
 void *memset (void *s, int c, size_t n);
 
-size_t strlen (const char *s);
+#define strlen Pascal_strlen
 
 // Pascal strings support
 
@@ -30,4 +30,4 @@ String *CopyString (String *dest, const String *src, uint8_t n);
 // n=1..255
 String *AppendString (String *dest, const String *src, uint8_t n);
 
-#endif // !defined(STRING_H)
+#endif // !defined(PASCAL_STRING_H)

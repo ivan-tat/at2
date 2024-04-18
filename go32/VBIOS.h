@@ -6,8 +6,8 @@
 
 #pragma once
 
-#ifndef VBIOS_H
-#define VBIOS_H
+#ifndef GO32_VBIOS_H
+#define GO32_VBIOS_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -22,4 +22,4 @@
 #include "go32/VBIOS_set_cursor_pos.c"
 #include "go32/VBIOS_set_screen_refresh.c"
 
-#endif // !defined(VBIOS_H)
+#endif // !defined(GO32_VBIOS_H)

@@ -6,12 +6,12 @@
 
 #pragma once
 
-#ifndef MATH_H
-#define MATH_H
+#ifndef PASCAL_MATH_H
+#define PASCAL_MATH_H
 
 #include "pascal.h"
 
 #define truncf(x) Pascal_Trunc_Single (x)
 #define trunc(x) Pascal_Trunc_Double (x)
 
-#endif // !defined(MATH_H)
+#endif // !defined(PASCAL_MATH_H)

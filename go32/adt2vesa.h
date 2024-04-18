@@ -6,8 +6,8 @@
 
 #pragma once
 
-#ifndef ADT2VESA_H
-#define ADT2VESA_H
+#ifndef GO32_ADT2VESA_H
+#define GO32_ADT2VESA_H
 
 #include "pascal.h"
 
@@ -113,4 +113,4 @@ void VESA_InitStepFade (const tPaletteArray StartPalette,
 void VESA_StepFade (void);
 void VESA_SwitchBank (uint8_t Bank);
 
-#endif // !defined(ADT2VESA_H)
+#endif // !defined(GO32_ADT2VESA_H)

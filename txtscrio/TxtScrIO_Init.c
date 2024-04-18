@@ -11,7 +11,7 @@ void TxtScrIO_Init (void) {
   CopyString (_last_debug_str_, _debug_str_, 255);
   StrToString (_debug_str_, __FILE__ ":" "TxtScrIO_Init", 255);
   program_screen_mode = screen_mode;
-#endif // !GO32
+#endif // GO32
 
   mn_environment.v_dest = screen_ptr;
   centered_frame_vdest = screen_ptr;

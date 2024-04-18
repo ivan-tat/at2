@@ -6,8 +6,8 @@
 
 #pragma once
 
-#ifndef DOS_H
-#define DOS_H
+#ifndef PASCAL_DOS_H
+#define PASCAL_DOS_H
 
 #include "pascal.h"
 
@@ -21,4 +21,4 @@ int custom_disable (void);
 
 #define delay Pascal_Delay
 
-#endif // !defined(DOS_H)
+#endif // !defined(PASCAL_DOS_H)

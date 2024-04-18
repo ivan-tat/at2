@@ -6,8 +6,8 @@
 
 #pragma once
 
-#ifndef FARPTR_H
-#define FARPTR_H
+#ifndef PASCAL_FARPTR_H
+#define PASCAL_FARPTR_H
 
 #include <stdint.h>
 
@@ -96,4 +96,4 @@ __inline__ void _farnspokel (uint32_t ofs, uint32_t x) {
   );
 }
 
-#endif // !defined(FARPTR_H)
+#endif // !defined(PASCAL_FARPTR_H)

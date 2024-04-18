@@ -14,7 +14,7 @@
 #include <stdint.h>
 #if USE_FPC
 #include "pascal.h"
-#endif
+#endif // USE_FPC
 
 // HINT: (FPC) $PACKRECORDS 1: Alignment of record elements (1)
 

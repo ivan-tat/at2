@@ -13,12 +13,12 @@
 #include <string.h>
 
 #if linux||__gnu_linux__||__linux||__linux__||unix||__unix||__unix__
-# if _POSIX_C_SOURCE >= 200809L
-#  define HAS_getline 1
-# else
-#  define HAS_getline 0
-# endif
-#endif
+#if _POSIX_C_SOURCE >= 200809L
+#define HAS_getline 1
+#else // _POSIX_C_SOURCE < 200809L
+#define HAS_getline 0
+#endif // _POSIX_C_SOURCE < 200809L
+#endif // linux||__gnu_linux__||__linux||__linux__||unix||__unix||__unix__
 
 #define NL "\n"
 

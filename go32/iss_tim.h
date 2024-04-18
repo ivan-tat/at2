@@ -10,8 +10,8 @@
 
 #pragma once
 
-#ifndef ISS_TIM_H
-#define ISS_TIM_H
+#ifndef GO32_ISS_TIM_H
+#define GO32_ISS_TIM_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -41,4 +41,4 @@ int ISS_GetTimerNumber (void (*const proc) (void));
 
 void init_ISS_Timer (void);
 
-#endif // !defined(ISS_TIM_H)
+#endif // !defined(GO32_ISS_TIM_H)
