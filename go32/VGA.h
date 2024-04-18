@@ -45,6 +45,9 @@ void VGA_SetPaletteEntry (uint8_t red, uint8_t green, uint8_t blue,
                           uint8_t index);
 void VGA_SetPalette (const void *palette, uint16_t count, uint8_t index);
 
+void VGA_SetPresetRowScan (uint8_t row);
+void VGA_SetStartAddress (uint16_t address);
+
 void VGA_SetLineCompare (uint16_t line);
 void VGA_SetPixelPanningMode (bool mode);
 

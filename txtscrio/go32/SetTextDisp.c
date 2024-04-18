@@ -5,26 +5,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void SetTextDisp (uint16_t x, uint16_t y) {
-  uint_least8_t maxcol_val;
-  uint_least16_t t;
+  unsigned w;
 
   VGA_wait_while_display_disabled (true);
   VGA_wait_while_display_disabled (false);
 
-  if (program_screen_mode != 4 && program_screen_mode != 5)
-    maxcol_val = MaxCol;
+  if (program_screen_mode == 4 || program_screen_mode == 5)
+    w = SCREEN_RES_X / scr_font_width;
   else
-    maxcol_val = SCREEN_RES_X / scr_font_width;
+    w = MaxCol;
 
-  t = (y / scr_font_height) * maxcol_val + (x / scr_font_width);
-
-  outportb (VGA_CRTC_ADDR_PORT, 0x0C);
-  outportb (VGA_CRTC_DATA_PORT, (t >> 8) & 0xFF);
-
-  outportb (VGA_CRTC_ADDR_PORT, 0x0D);
-  outportb (VGA_CRTC_DATA_PORT, t & 0xFF);
-
-  outportb (VGA_CRTC_ADDR_PORT, 0x08);
-  outportb (VGA_CRTC_DATA_PORT,
-            (inportb (VGA_CRTC_DATA_PORT) & 0xE0) | (y & 0x0F));
+  VGA_SetStartAddress ((y / scr_font_height) * w + (x / scr_font_width));
+  VGA_SetPresetRowScan (y % scr_font_height);
 }

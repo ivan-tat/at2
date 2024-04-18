@@ -17,6 +17,8 @@ procedure VGA_GetPaletteEntry; cdecl; external;
 procedure VGA_GetPalette; cdecl; external;
 procedure VGA_SetPaletteEntry; cdecl; external;
 procedure VGA_SetPalette; cdecl; external;
+procedure VGA_SetPresetRowScan; cdecl; external;
+procedure VGA_SetStartAddress; cdecl; external;
 procedure VGA_SetLineCompare; cdecl; external;
 procedure VGA_SetPixelPanningMode; cdecl; external;
 

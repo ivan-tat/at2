@@ -20,5 +20,7 @@
 #include "go32/VGA/VGA_GetPalette.c"
 #include "go32/VGA/VGA_SetPaletteEntry.c"
 #include "go32/VGA/VGA_SetPalette.c"
+#include "go32/VGA/VGA_SetPresetRowScan.c"
+#include "go32/VGA/VGA_SetStartAddress.c"
 #include "go32/VGA/VGA_SetLineCompare.c"
 #include "go32/VGA/VGA_SetPixelPanningMode.c"
