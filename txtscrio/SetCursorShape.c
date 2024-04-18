@@ -9,14 +9,7 @@ void SetCursorShape (uint16_t shape) {
 #if !ADT2PLAY
   virtual_cur_shape = shape;
 #endif // !ADT2PLAY
-
-  outportb (VGA_CRTC_ADDR_PORT, 0x0A);
-  outportb (VGA_CRTC_DATA_PORT,
-            (inportb (VGA_CRTC_DATA_PORT) & 0xE0) | (shape >> 8));
-
-  outportb (VGA_CRTC_ADDR_PORT, 0x0B);
-  outportb (VGA_CRTC_DATA_PORT,
-            (inportb (VGA_CRTC_DATA_PORT) & 0xE0) | (shape & 0xFF));
+  VGA_SetCursorShape (shape);
 #else // !GO32
   virtual_cur_shape = shape;
 #endif // !GO32

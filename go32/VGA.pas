@@ -11,11 +11,14 @@ unit VGA;
 interface
 
 procedure VGA_WaitRetrace; cdecl; external;
+procedure VGA_GetCursorShape; cdecl; external;
+procedure VGA_SetCursorShape; cdecl; external;
 procedure VGA_GetPaletteEntry; cdecl; external;
 procedure VGA_GetPalette; cdecl; external;
 procedure VGA_SetPaletteEntry; cdecl; external;
 procedure VGA_SetPalette; cdecl; external;
-procedure VGA_SplitScreen; cdecl; external;
+procedure VGA_SetLineCompare; cdecl; external;
+procedure VGA_SetPixelPanningMode; cdecl; external;
 
 implementation
 

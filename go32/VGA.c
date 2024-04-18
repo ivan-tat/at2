@@ -14,8 +14,11 @@
 #include "go32/VGA.h"
 
 #include "go32/VGA/VGA_WaitRetrace.c"
+#include "go32/VGA/VGA_GetCursorShape.c"
+#include "go32/VGA/VGA_SetCursorShape.c"
 #include "go32/VGA/VGA_GetPaletteEntry.c"
 #include "go32/VGA/VGA_GetPalette.c"
 #include "go32/VGA/VGA_SetPaletteEntry.c"
 #include "go32/VGA/VGA_SetPalette.c"
-#include "go32/VGA/VGA_SplitScreen.c"
+#include "go32/VGA/VGA_SetLineCompare.c"
+#include "go32/VGA/VGA_SetPixelPanningMode.c"

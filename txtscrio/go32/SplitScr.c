@@ -5,5 +5,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void SplitScr (uint16_t line) {
-  VGA_SplitScreen (line);
+  VGA_SetLineCompare (line);
 }

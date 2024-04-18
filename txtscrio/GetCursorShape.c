@@ -6,13 +6,7 @@
 
 uint16_t GetCursorShape (void) {
 #if GO32
-  uint_least8_t x;
-
-  outportb (VGA_CRTC_ADDR_PORT, 0x0A);
-  x = inportb (VGA_CRTC_DATA_PORT);
-
-  outportb (VGA_CRTC_ADDR_PORT, 0x0B);
-  return (inportb (VGA_CRTC_DATA_PORT) + (x << 8)) & 0x1F1F;
+  return VGA_GetCursorShape ();
 #else // !GO32
   return virtual_cur_shape;
 #endif // !GO32

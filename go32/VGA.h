@@ -9,6 +9,7 @@
 #ifndef GO32_VGA_H
 #define GO32_VGA_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #define VGA_ATTR_WRITE_PORT     0x3C0 // Attribute Address/Data Register (write)
@@ -30,12 +31,18 @@
 #define VGA_CRTC_DATA_PORT      0x3D5 // CRT Controller Data Register
 
 void VGA_WaitRetrace (void);
+
+uint16_t VGA_GetCursorShape (void);
+void VGA_SetCursorShape (uint16_t shape);
+
 void VGA_GetPaletteEntry (uint8_t index, uint8_t *red, uint8_t *green,
                           uint8_t *blue);
 void VGA_GetPalette (uint8_t index, uint16_t count, void *palette);
 void VGA_SetPaletteEntry (uint8_t red, uint8_t green, uint8_t blue,
                           uint8_t index);
 void VGA_SetPalette (const void *palette, uint16_t count, uint8_t index);
-void VGA_SplitScreen (uint16_t line);
+
+void VGA_SetLineCompare (uint16_t line);
+void VGA_SetPixelPanningMode (bool mode);
 
 #endif // !defined(GO32_VGA_H)
