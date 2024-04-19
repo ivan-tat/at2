@@ -53,9 +53,10 @@ void SetVideoState (tVIDEO_STATE *data, bool restore_screen) {
   _farsetsel (_dos_ds);
 #endif // !USE_FPC
 
-  _farnspokew (0x44E, data->v_ofs); // offset from video segment of active video memory page
-  _farnspokew (0x44A, MaxCol); // screen width in text columns
-  _farnspokeb (0x484, MaxLn - 1); // EGA text rows - 1
+  BDA_set_screen_text_columns (MaxCol);
+  BDA_set_screen_text_rows (MaxLn);
+  BDA_set_video_regen_buffer_size (MaxCol * MaxLn * 2);
+  BDA_set_video_page_offset (data->v_ofs);
 
 #if !USE_FPC
   _farsetsel (orig_fs);

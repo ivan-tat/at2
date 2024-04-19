@@ -24,13 +24,13 @@ void GetVideoState (tVIDEO_STATE *data) {
 #endif // !USE_FPC
 
   data->cursor = GetCursor ();
-  data->font = _farnspeekw (0x485); // EGA bytes per character (scan lines per char.)
+  data->font = BDA_get_screen_character_height ();
   data->v_seg = 0xB800;
-  data->v_ofs = _farnspeekb (0x44E); // offset from video segment of active video memory page
+  data->v_ofs = BDA_get_video_page_offset ();
   data->DispPg = DispPg;
   data->v_mode = v_mode;
-  data->MaxCol = _farnspeekw (0x44A); // screen width in text columns
-  data->MaxLn = _farnspeekb (0x484) + 1; // EGA text rows - 1
+  data->MaxCol = BDA_get_screen_text_columns ();
+  data->MaxLn = BDA_get_screen_text_rows ();
 
 #if !USE_FPC
   _farsetsel (orig_fs);

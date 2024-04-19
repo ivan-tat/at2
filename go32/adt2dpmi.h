@@ -14,14 +14,14 @@
 #include "defines.h"
 #if USE_FPC
 #include "pascal/dpmi.h"
-#include "pascal/farptr.h"
 #include "pascal/go32.h"
 #include "pascal/sys/exceptn.h"
+#include "pascal/sys/farptr.h"
 #else // !USE_FPC
 #include <dpmi.h>
-#include <farptr.h>
 #include <go32.h>
 #include <sys/exceptn.h>
+#include <sys/farptr.h>
 #endif // !USE_FPC
 #include "go32/dpmi.h"
 

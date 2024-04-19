@@ -16,8 +16,8 @@ void initialize (void) {
   _farsetsel (_dos_ds);
 #endif // !USE_FPC
 
-  MaxCol = _farnspeekw (0x44A); // screen width in text columns
-  MaxLn  = _farnspeekb (0x484) + 1; // EGA text rows - 1
+  MaxCol = BDA_get_screen_text_columns ();
+  MaxLn  = BDA_get_screen_text_rows ();
 #if !ADT2PLAY
   work_MaxCol = MaxCol;
   work_MaxLn  = MaxLn;

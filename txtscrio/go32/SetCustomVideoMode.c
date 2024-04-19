@@ -423,7 +423,7 @@ void SetCustomVideoMode (tCUSTOM_VIDEO_MODE vmode) {
   _farsetsel (_dos_ds);
 #endif // !USE_FPC
 
-  _farnspokew (0x463, CRTC_addr); // port address for 6845 video controller chip
+  BDA_set_active_6845_CRTC_port (CRTC_addr);
 
   outportb (CRTC_addr, 0x11);
   outportw (CRTC_addr, 0x11 | ((inportb (CRTC_data) & 0x7F) << 8));
@@ -447,20 +447,17 @@ void SetCustomVideoMode (tCUSTOM_VIDEO_MODE vmode) {
   outportb (VGA_ATTR_WRITE_PORT, 32);
 
   // 0..4 - BIOS variables
-  _farnspokew (0x44A, p[0]); // screen width in text columns
-  _farnspokeb (0x484, p[1]); // EGA text rows - 1
-  _farnspokew (0x485, p[2]); // EGA bytes per character (scan lines per char.)
-  _farnspokeb (0x44C, p[3]); // length in bytes of video area (LSB)
-  _farnspokeb (0x44D, p[4]); // length in bytes of video area (MSB)
+  BDA_set_screen_character_height (p[2]);
+  BDA_set_screen_text_columns (p[0]);
+  BDA_set_screen_text_rows (p[1] + 1);
+  BDA_set_video_regen_buffer_size (p[3] + (p[4] << 8));
 
-  // 0x44E (2 bytes) - offset from video segment of active video memory page
-  // 0x450 (16 bytes) - cursor locations for 8 video pages
-  for (i = 0; i <= 17; i++)
-    _farnspokeb (0x44E + i, 0);
+  BDA_set_active_video_page (0);
+  BDA_set_video_page_offset (0);
+  BDA_set_cursor_shape (p[21], p[20]);
 
-  _farnspokeb (0x460, p[20]); // cursor shape (end scan line)
-  _farnspokeb (0x461, p[21]); // cursor shape (start scan line)
-  _farnspokeb (0x462, 0); // current active video page number
+  for (i = 0; i <= 7; i++)
+    BDA_set_cursor_position (i, 0, 0);
 
 #if !USE_FPC
   _farsetsel (orig_fs);

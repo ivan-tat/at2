@@ -19,8 +19,7 @@ static void set_svga_txtmode (uint16_t mode, uint8_t cols, uint8_t rows) {
   _farsetsel (_dos_ds);
 #endif // !USE_FPC
 
-  // port address for 6845 video controller chip:
-  CRTC_addr = _farnspeekw (0x463);
+  CRTC_addr = BDA_get_active_6845_CRTC_port ();
   CRTC_data = CRTC_addr + 1;
 
   disable ();
@@ -77,8 +76,8 @@ static void set_svga_txtmode (uint16_t mode, uint8_t cols, uint8_t rows) {
   MaxCol = cols;
   MaxLn  = rows;
 
-  _farnspokew (0x44A, MaxCol); // screen width in text columns
-  _farnspokeb (0x484, MaxLn - 1); // EGA text rows - 1
+  BDA_set_screen_text_columns (MaxCol);
+  BDA_set_screen_text_rows (MaxLn);
 
 #if !USE_FPC
   _farsetsel (orig_fs);

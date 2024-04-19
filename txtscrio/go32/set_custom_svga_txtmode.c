@@ -19,8 +19,8 @@ void set_custom_svga_txtmode (void) {
   _farsetsel (_dos_ds);
 #endif // !USE_FPC
 
-  _farnspokew (0x44A, MaxCol); // screen width in text columns
-  _farnspokeb (0x484, MaxLn - 1); // EGA text rows - 1
+  BDA_set_screen_text_columns (MaxCol);
+  BDA_set_screen_text_rows (MaxLn);
 
 #if !USE_FPC
   _farsetsel (orig_fs);

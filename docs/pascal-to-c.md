@@ -70,12 +70,12 @@
 | `w := dosmemselector;` | `w = _dos_ds;` | `"pascal/go32.h"` | `<go32.h>` |
 | `dosmemget(seg, ofs, data, size);` | `dosmemget(seg*16+ofs, size, data);` | `"pascal/go32.h"` | `<go32.h>` |
 | `dosmemput(seg, ofs, data, size);` | `dosmemput(data, size, seg*16+ofs);` | `"pascal/go32.h"` | `<go32.h>` |
-| `b := mem[seg:ofs];` | `b = _farnspeekb(seg*16+ofs);` | `"pascal/farptr.h"` | `<farptr.h>` |
-| `w := memw[seg:ofs];` | `w = _farnspeekw(seg*16+ofs);` | `"pascal/farptr.h"` | `<farptr.h>` |
-| `l := meml[seg:ofs];` | `l = _farnspeekl(seg*16+ofs);` | `"pascal/farptr.h"` | `<farptr.h>` |
-| `mem[seg:ofs] := b;` | `_farnspokeb(seg*16+ofs, b);` | `"pascal/farptr.h"` | `<farptr.h>` |
-| `memw[seg:ofs] := w;` | `_farnspokew(seg*16+ofs, w);` | `"pascal/farptr.h"` | `<farptr.h>` |
-| `meml[seg:ofs] := l;` | `_farnspokel(seg*16+ofs, l);` | `"pascal/farptr.h"` | `<farptr.h>` |
+| `b := mem[seg:ofs];` | `b = _farnspeekb(seg*16+ofs);` | `"pascal/sys/farptr.h"` | `<sys/farptr.h>` |
+| `w := memw[seg:ofs];` | `w = _farnspeekw(seg*16+ofs);` | `"pascal/sys/farptr.h"` | `<sys/farptr.h>` |
+| `l := meml[seg:ofs];` | `l = _farnspeekl(seg*16+ofs);` | `"pascal/sys/farptr.h"` | `<sys/farptr.h>` |
+| `mem[seg:ofs] := b;` | `_farnspokeb(seg*16+ofs, b);` | `"pascal/sys/farptr.h"` | `<sys/farptr.h>` |
+| `memw[seg:ofs] := w;` | `_farnspokew(seg*16+ofs, w);` | `"pascal/sys/farptr.h"` | `<sys/farptr.h>` |
+| `meml[seg:ofs] := l;` | `_farnspokel(seg*16+ofs, l);` | `"pascal/sys/farptr.h"` | `<sys/farptr.h>` |
 | `lock_data(x, s);` | `_go32_dpmi_lock_data(&x, s);` | `"pascal/dpmi.h"` | `<dpmi.h>` |
 | `lock_code(@x, s);` | `_go32_dpmi_lock_code((void *)(uintptr_t)x, s);` | `"pascal/dpmi.h"` | `<dpmi.h>` |
 | `unlock_data(x, s);` | `_go32_dpmi_unlock_data(&x, s);` | `"go32/dpmi.h"` | `"go32/dpmi.h"` |
