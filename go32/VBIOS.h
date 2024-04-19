@@ -12,14 +12,14 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "go32/VBIOS_is_VGA.c"
-#include "go32/VBIOS_get_video_mode.c"
-#include "go32/VBIOS_set_video_mode.c"
-#include "go32/VBIOS_load_ROM_font_8x8.c"
-#include "go32/VBIOS_load_ROM_font_8x14.c"
-#include "go32/VBIOS_load_ROM_font_8x16.c"
-#include "go32/VBIOS_get_cursor_pos.c"
-#include "go32/VBIOS_set_cursor_pos.c"
-#include "go32/VBIOS_set_screen_refresh.c"
+#include "go32/VBIOS/VBIOS_is_VGA.c"
+#include "go32/VBIOS/VBIOS_get_video_mode.c"
+#include "go32/VBIOS/VBIOS_set_video_mode.c"
+#include "go32/VBIOS/VBIOS_load_ROM_font_8x8.c"
+#include "go32/VBIOS/VBIOS_load_ROM_font_8x14.c"
+#include "go32/VBIOS/VBIOS_load_ROM_font_8x16.c"
+#include "go32/VBIOS/VBIOS_get_cursor_pos.c"
+#include "go32/VBIOS/VBIOS_set_cursor_pos.c"
+#include "go32/VBIOS/VBIOS_set_screen_refresh.c"
 
 #endif // !defined(GO32_VBIOS_H)
