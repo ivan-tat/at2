@@ -8,12 +8,6 @@ unit dpmi;
 
 interface
 
-procedure _go32_dpmi_unlock_code; cdecl; external;
-procedure _go32_dpmi_unlock_data; cdecl; external;
-
 implementation
-
-uses
-  pascal;
 
 end.

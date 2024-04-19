@@ -4,12 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-unit VGA;
-
-{$L go32/VGA.o}
-
-interface
-
-implementation
-
-end.
+void VGA_WaitDisplayDisabled (void) {
+  VGA_wait_while_display_disabled (true);
+  VGA_wait_while_display_disabled (false);
+}

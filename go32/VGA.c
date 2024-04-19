@@ -13,6 +13,7 @@
 #endif // !USE_FPC
 #include "go32/VGA.h"
 
+#include "go32/VGA/VGA_WaitDisplayDisabled.c"
 #include "go32/VGA/VGA_WaitVerticalRetrace.c"
 #include "go32/VGA/VGA_GetCursorShape.c"
 #include "go32/VGA/VGA_SetCursorShape.c"

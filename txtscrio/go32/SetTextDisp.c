@@ -7,8 +7,7 @@
 void SetTextDisp (uint16_t x, uint16_t y) {
   unsigned w;
 
-  VGA_wait_while_display_disabled (true);
-  VGA_wait_while_display_disabled (false);
+  VGA_WaitDisplayDisabled ();
 
   if (program_screen_mode == 4 || program_screen_mode == 5)
     w = SCREEN_RES_X / scr_font_width;
