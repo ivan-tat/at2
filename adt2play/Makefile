@@ -52,11 +52,11 @@ SRCS=\
  pascal/pc.c\
  pascal/stdio.c\
  pascal/stdlib.c\
- pascal/string.c
+ pascal/string.c\
+ txtscrio.c
 
 SRCS1=\
- a2data.c\
- txtscrio.c
+ a2data.c
 
 DEPS=$(patsubst %.c,_deps_/%.d,$(SRCS) $(SRCS1))
 
@@ -240,20 +240,18 @@ units/PIT.ppu: $(PIT_ppu_deps) $(makefile) | units
 	 $< -o$@ -vnh >>$(buildlog)
 
 txtscrio_ppu_deps=\
- $(srcdir1)/txtscrio.pas\
- $(srcdir)/txtscrio/pas/colors.pas\
+ $(srcdir)/txtscrio.pas\
  txtscrio.o\
  units/common.ppu\
  units/pascal.ppu
 
 ifeq ($(FPC_OS_TARGET),go32v2)
  txtscrio_ppu_deps+=\
-  $(srcdir)/txtscrio/go32/pas/fade.pas\
   units/VGA.ppu
 endif
 
 units/txtscrio.ppu: $(txtscrio_ppu_deps) $(makefile) | units
-	@echo "  PC     $(patsubst $(srcdir1)/%,%,$<)"; \
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 

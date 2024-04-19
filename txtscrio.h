@@ -19,8 +19,27 @@
 
 // HINT: (FPC) $PACKRECORDS 1: Alignment of record elements (1)
 
-#include "txtscrio/colors.h"
+#define Black    0x00
+#define Blue     0x01
+#define Green    0x02
+#define Cyan     0x03
+#define Red      0x04
+#define Magenta  0x05
+#define Brown    0x06
+#define LGray    0x07
+#define DGray    0x08
+#define LBlue    0x09
+#define LGreen   0x0A
+#define LCyan    0x0B
+#define LRed     0x0C
+#define LMagenta 0x0D
+#define Yellow   0x0E
+#define White    0x0F
+#define Blink    0x80
 
+#define MAX_SCREEN_MEM_SIZE (180 * 60 * 2)
+extern int32_t  SCREEN_MEM_SIZE;
+#if !ADT2PLAY
 extern uint16_t SCREEN_RES_X;
 extern uint16_t SCREEN_RES_Y;
 extern uint8_t  MAX_COLUMNS;
@@ -33,12 +52,12 @@ extern int8_t   INSCTRL_yshift;
 extern uint8_t  INSEDIT_yshift;
 extern uint8_t  PATTORD_xshift;
 extern uint8_t  GOTOXY_xshift;
-
-#define MAX_SCREEN_MEM_SIZE (180 * 60 * 2)
-extern int32_t SCREEN_MEM_SIZE;
+#endif // !ADT2PLAY
 
 typedef uint8_t tSCREEN_MEM[MAX_SCREEN_MEM_SIZE]; // HINT: (FPC) start index 0
 
+extern tSCREEN_MEM text_screen_shadow;
+#if !ADT2PLAY
 extern tSCREEN_MEM temp_screen;
 extern tSCREEN_MEM temp_screen2;
 extern tSCREEN_MEM screen_backup;
@@ -47,9 +66,10 @@ extern tSCREEN_MEM scr_backup2;
 extern tSCREEN_MEM screen_mirror;
 extern tSCREEN_MEM screen_emulator;
 extern tSCREEN_MEM *centered_frame_vdest;
-extern tSCREEN_MEM text_screen_shadow;
+#endif // !ADT2PLAY
 
 extern void *screen_ptr;
+#if !ADT2PLAY
 extern void *ptr_temp_screen;
 extern void *ptr_temp_screen2;
 extern void *ptr_screen_backup;
@@ -63,9 +83,11 @@ extern uint8_t move_to_screen_area[4]; // HINT: (FPC) start index 1
 extern void  (*move_to_screen_routine) ();
 
 extern uint8_t program_screen_mode;
+#endif // !ADT2PLAY
 
 extern uint8_t MaxCol;
 extern uint8_t MaxLn;
+#if !ADT2PLAY
 extern uint8_t hard_maxcol;
 extern uint8_t hard_maxln;
 extern uint8_t work_MaxCol;
@@ -82,9 +104,11 @@ extern uint8_t scroll_pos1;
 extern uint8_t scroll_pos2;
 extern uint8_t scroll_pos3;
 extern uint8_t scroll_pos4;
+#endif // !ADT2PLAY
 
 extern int32_t cursor_backup;
 
+#if !ADT2PLAY
 void show_str (uint8_t xpos, uint8_t ypos, const String *str, uint8_t attr);
 void show_cstr (uint8_t xpos, uint8_t ypos, const String *str, uint8_t attr1,
                 uint8_t attr2);
@@ -106,8 +130,10 @@ void ShowCStr2 (tSCREEN_MEM *dest, uint8_t x, uint8_t y, const String *str,
                 uint8_t attr1, uint8_t attr2);
 void ShowVCStr2 (tSCREEN_MEM *dest, uint8_t x, uint8_t y, const String *str,
                  uint8_t attr1, uint8_t attr2);
+#endif // !ADT2PLAY
 void ShowC3Str (tSCREEN_MEM *dest, uint8_t x, uint8_t y, const String *str,
                 uint8_t attr1, uint8_t attr2, uint8_t attr3);
+#if !ADT2PLAY
 void ShowVC3Str (tSCREEN_MEM *dest, uint8_t x, uint8_t y, const String *str,
                  uint8_t attr1, uint8_t attr2, uint8_t attr3);
 void ShowC4Str (tSCREEN_MEM *dest, uint8_t x, uint8_t y, const String *str,
@@ -142,6 +168,7 @@ extern tFRAME_SETTING fr_setting;
 void Frame (tSCREEN_MEM *dest, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2,
             uint8_t attr1, const String *title, uint8_t attr2,
             const String *border);
+#endif // !ADT2PLAY
 
 uint8_t WhereX (void);
 uint8_t WhereY (void);
@@ -162,21 +189,48 @@ extern uint8_t  v_mode;
 
 extern uint8_t DispPg;
 
+#if !ADT2PLAY
 typedef uint8_t tCUSTOM_VIDEO_MODE; // 0..52
+#endif // !ADT2PLAY
 
 bool iVGA (void);
 void initialize (void);
+#if !ADT2PLAY
 void ResetMode (void);
 void SetCustomVideoMode (tCUSTOM_VIDEO_MODE vmode);
+#endif // !ADT2PLAY
 void GetRGBitem (uint8_t color, uint8_t *red, uint8_t *green, uint8_t *blue);
 void SetRGBitem (uint8_t color, uint8_t red, uint8_t green, uint8_t blue);
 void WaitRetrace (void);
 void GetPalette (void *pal, uint8_t first, uint8_t last);
 void SetPalette (void *pal, uint8_t first, uint8_t last);
 
-#include "txtscrio/go32/fade.h"
+typedef enum {
+  fadeFirst,
+  fadeOut,
+  fadeIn
+} tFADE;
+
+typedef enum {
+  fast,
+  delayed
+} tDELAY;
+
+#pragma pack(push, 1)
+typedef struct {
+  tFADE action;
+  struct {
+    uint8_t r, g, b;
+  } pal0[256], pal1[256]; // HINT: (FPC) start index 0
+} tFADE_BUF;
+#pragma pack(pop)
+
+extern uint8_t fade_speed;
 
 void VgaFade (tFADE_BUF *data, tFADE fade, tDELAY dly);
+
+#if !ADT2PLAY
+
 void RefreshEnable (void);
 void RefreshDisable (void);
 void Split2Static (void);
@@ -201,6 +255,24 @@ typedef VGA_REGISTER VGA_REG_DATA[29]; // HINT: (FPC) start index 1
 extern uint8_t svga_txtmode_cols;
 extern uint8_t svga_txtmode_rows;
 extern VGA_REG_DATA svga_txtmode_regs;
+
+#else // ADT2PLAY
+
+#pragma pack(push, 1)
+typedef struct {
+  int32_t cursor;
+  uint8_t font;
+  uint8_t MaxLn, MaxCol, v_mode, DispPg;
+  uint16_t v_seg, v_ofs;
+  tSCREEN_MEM screen;
+  uint8_t data[4096];
+} tVIDEO_STATE;
+#pragma pack(pop)
+
+void GetVideoState (tVIDEO_STATE *data);
+void SetVideoState (tVIDEO_STATE *data, bool restore_screen);
+
+#endif // ADT2PLAY
 
 #endif // GO32
 

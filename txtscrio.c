@@ -23,15 +23,19 @@
 #endif // !USE_FPC
 #if GO32
 #include "go32/adt2dpmi.h"
+#if !ADT2PLAY
 #include "go32/adt2vesa.h"
+#endif // !ADT2PLAY
 #include "go32/BIOS.h"
 #include "go32/VBIOS.h"
 #include "go32/VGA.h"
 #endif // GO32
+#if !ADT2PLAY
 #include "adt2ext2.h"
 #include "adt2sys.h"
 #include "adt2unit.h"
 #include "dialogio.h"
+#endif // !ADT2PLAY
 #include "common.h"
 #include "txtscrio.h"
 
@@ -43,6 +47,9 @@
 // HINT: (FPC) X+: Extended syntax (ON)
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 
+int32_t SCREEN_MEM_SIZE = MAX_SCREEN_MEM_SIZE;
+
+#if !ADT2PLAY
 uint16_t SCREEN_RES_X = 720;
 uint16_t SCREEN_RES_Y = 480;
 uint8_t  MAX_COLUMNS = 90;
@@ -55,9 +62,10 @@ int8_t   INSCTRL_yshift = 0;
 uint8_t  INSEDIT_yshift = 0;
 uint8_t  PATTORD_xshift = 0;
 uint8_t  GOTOXY_xshift = 0;
+#endif // !ADT2PLAY
 
-int32_t SCREEN_MEM_SIZE = MAX_SCREEN_MEM_SIZE;
-
+tSCREEN_MEM text_screen_shadow;
+#if !ADT2PLAY
 tSCREEN_MEM temp_screen;
 tSCREEN_MEM temp_screen2;
 tSCREEN_MEM screen_backup;
@@ -66,25 +74,28 @@ tSCREEN_MEM scr_backup2;
 tSCREEN_MEM screen_mirror;
 tSCREEN_MEM screen_emulator;
 tSCREEN_MEM *centered_frame_vdest;
-tSCREEN_MEM text_screen_shadow;
+#endif // !ADT2PLAY
 
-void *screen_ptr          = (void *) text_screen_shadow;
-void *ptr_temp_screen     = (void *) temp_screen;
-void *ptr_temp_screen2    = (void *) temp_screen2;
-void *ptr_screen_backup   = (void *) screen_backup;
-void *ptr_scr_backup      = (void *) scr_backup;
-void *ptr_scr_backup2     = (void *) scr_backup2;
-void *ptr_screen_mirror   = (void *) screen_mirror;
-void *ptr_screen_emulator = (void *) screen_emulator;
+void *screen_ptr          = &text_screen_shadow;
+#if !ADT2PLAY
+void *ptr_temp_screen     = &temp_screen;
+void *ptr_temp_screen2    = &temp_screen2;
+void *ptr_screen_backup   = &screen_backup;
+void *ptr_scr_backup      = &scr_backup;
+void *ptr_scr_backup2     = &scr_backup2;
+void *ptr_screen_mirror   = &screen_mirror;
+void *ptr_screen_emulator = &screen_emulator;
 
 void   *move_to_screen_data = NULL;
 uint8_t move_to_screen_area[4] = { 0, 0, 0, 0 };
 void  (*move_to_screen_routine) () = NULL;
 
 uint8_t program_screen_mode = 0;
+#endif // !ADT2PLAY
 
 uint8_t MaxCol = 0;
 uint8_t MaxLn = 0;
+#if !ADT2PLAY
 uint8_t hard_maxcol = 0;
 uint8_t hard_maxln = 0;
 uint8_t work_MaxCol = 0;
@@ -101,18 +112,22 @@ uint8_t scroll_pos1 = UINT8_NULL;
 uint8_t scroll_pos2 = UINT8_NULL;
 uint8_t scroll_pos3 = UINT8_NULL;
 uint8_t scroll_pos4 = UINT8_NULL;
+#endif // !ADT2PLAY
 
 int32_t cursor_backup;
 
+#if !ADT2PLAY
 #include "txtscrio/show_str.c"
 #include "txtscrio/show_cstr.c"
 #include "txtscrio/show_cstr_alt.c"
 #include "txtscrio/show_vstr.c"
 #include "txtscrio/show_vcstr.c"
+#endif // !ADT2PLAY
 
 static uint16_t absolute_pos;
 
 #include "txtscrio/PosChar.c"
+#if !ADT2PLAY
 #include "txtscrio/DupChar.c"
 
 #include "txtscrio/ShowStr.c"
@@ -121,7 +136,9 @@ static uint16_t absolute_pos;
 #include "txtscrio/ShowVCStr.c"
 #include "txtscrio/ShowCStr2.c"
 #include "txtscrio/ShowVCStr2.c"
+#endif // !ADT2PLAY
 #include "txtscrio/ShowC3Str.c"
+#if !ADT2PLAY
 #include "txtscrio/ShowVC3Str.c"
 #include "txtscrio/ShowC4Str.c"
 
@@ -148,6 +165,7 @@ tFRAME_SETTING fr_setting = {
 };
 
 #include "txtscrio/Frame.c"
+#endif // !ADT2PLAY
 
 #include "txtscrio/WhereX.c"
 #include "txtscrio/WhereY.c"
@@ -170,17 +188,22 @@ uint8_t DispPg;
 
 #include "txtscrio/go32/iVGA.c"
 #include "txtscrio/go32/initialize.c"
+#if !ADT2PLAY
 #include "txtscrio/go32/ResetMode.c"
 #include "txtscrio/go32/SetCustomVideoMode.c"
+#endif // !ADT2PLAY
 #include "txtscrio/go32/GetRGBitem.c"
 #include "txtscrio/go32/SetRGBitem.c"
 #include "txtscrio/go32/GetPalette.c"
 #include "txtscrio/go32/SetPalette.c"
 #include "txtscrio/go32/WaitRetrace.c"
 
-#include "txtscrio/go32/fade.c"
+uint8_t fade_speed = 63;
 
 #include "txtscrio/go32/VgaFade.c"
+
+#if !ADT2PLAY
+
 #include "txtscrio/go32/RefreshEnable.c"
 #include "txtscrio/go32/RefreshDisable.c"
 #include "txtscrio/go32/Split2Static.c"
@@ -230,5 +253,12 @@ VGA_REG_DATA svga_txtmode_regs = {
 #include "txtscrio/go32/out_reg.c"
 #include "txtscrio/go32/LoadVgaRegisters.c"
 #include "txtscrio/go32/set_custom_svga_txtmode.c"
+
+#else // ADT2PLAY
+
+#include "txtscrio/go32/GetVideoState.c"
+#include "txtscrio/go32/SetVideoState.c"
+
+#endif // ADT2PLAY
 
 #endif // GO32

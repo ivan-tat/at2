@@ -374,12 +374,10 @@ stringio_ppu_deps=\
 
 txtscrio_ppu_deps=\
  $(srcdir)/txtscrio.pas\
- $(srcdir)/txtscrio/pas/colors.pas\
  txtscrio.o
 
 ifeq ($(FPC_OS_TARGET),go32v2)
  txtscrio_ppu_deps+=\
-  $(srcdir)/txtscrio/go32/pas/fade.pas\
   units/VGA.ppu
 endif
 
