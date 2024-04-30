@@ -20,6 +20,11 @@ unit TxtScrIO;
 {$L txtscrio.o}
 interface
 
+{$IFNDEF ADT2PLAY}
+uses
+  stringio;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
+
 const
   Black   = $00;  DGray    = $08;
   Blue    = $01;  LBlue    = $09;
@@ -126,10 +131,6 @@ procedure show_cstr_alt(xpos,ypos: Byte; str: String; attr1,attr2: Byte); cdecl;
 procedure show_vstr(xpos,ypos: Byte; str: String; color: Byte); cdecl; external;
 procedure show_vcstr(xpos,ypos: Byte; str: String; attr1,attr2: Byte); cdecl; external;
 
-function  CStrLen(str: String): Byte; cdecl; external;
-function  CStr2Len(str: String): Byte; cdecl; external;
-function  C3StrLen(str: String): Byte; cdecl; external;
-
 procedure ScreenMemCopy(source,dest: tSCREEN_MEM_PTR); cdecl; external;
 procedure move2screen; cdecl; external;
 procedure move2screen_alt; cdecl; external;
@@ -138,7 +139,7 @@ function  is_default_screen_mode: Boolean; cdecl; external;
 {$IFDEF GO32V2}
 function  is_VESA_emulated_mode: Boolean; cdecl; external;
 function  get_VESA_emulated_mode_idx: Byte; cdecl; external;
-{$ENDIF}
+{$ENDIF} // DEFINED(GO32V2)
 function  is_scrollable_screen_mode: Boolean; cdecl; external;
 
 type
@@ -250,7 +251,40 @@ procedure SetVideoState(var data: tVIDEO_STATE; restore_screen: Boolean); cdecl;
 
 {$ENDIF} // DEFINED(ADT2PLAY)
 
-{$ENDIF}
+{$ENDIF} // DEFINED(GO32V2)
+
+{$IFNDEF ADT2PLAY}
+
+type
+  tINPUT_STR_SETTING = Record
+                         insert_mode,
+                         replace_enabled,
+                         append_enabled:  Boolean;
+                         char_filter,
+                         character_set,
+                         valid_chars,
+                         word_characters: tCHARSET;
+                         terminate_keys:  array[1..50] of Word;
+                       end;
+  tINPUT_STR_ENVIRONMENT = Record
+                             keystroke: Word;
+                             locate_pos: Byte;
+                             insert_mode: Boolean;
+                             min_num: Dword;
+                             max_num: Dword;
+                             cur_str: String;
+                             ext_proc: procedure;
+                           end;
+
+var
+  is_setting: tINPUT_STR_SETTING; cvar; external;
+  is_environment: tINPUT_STR_ENVIRONMENT; cvar; external;
+
+function InputStr(s: String; x,y,ln,ln1: Byte; atr1,atr2: Byte): String;
+
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
+
+procedure init_TxtScrIO; cdecl; external;
 
 implementation
 
@@ -261,19 +295,20 @@ uses
 {$ENDIF} // NOT DEFINED(ADT2PLAY)
   GO32,
   VGA,
-{$ENDIF}
+{$ENDIF} // DEFINED(GO32V2)
   pascal,
 {$IFNDEF ADT2PLAY}
-  AdT2unit,
+  AdT2keyb,
   AdT2sys,
-  AdT2ext2,
-  DialogIO;
+  AdT2unit;
 {$ELSE} // DEFINED(ADT2PLAY)
   common;
 {$ENDIF} // DEFINED(ADT2PLAY)
 
-{$IFDEF GO32V2}
+{$IFNDEF ADT2PLAY}
+{$I txtscrio/pas/InputStr.pas}
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
+
 begin
-  initialize;
-{$ENDIF}
+  init_TxtScrIO;
 end.

@@ -8,8 +8,6 @@ unit common;
 
 interface
 
-procedure memsetw; cdecl; external;
-
 implementation
 
 end.

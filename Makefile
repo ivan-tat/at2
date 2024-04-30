@@ -70,6 +70,7 @@ SRCS=\
  pascal/stdio.c\
  pascal/stdlib.c\
  pascal/string.c\
+ stringio.c\
  txtscrio.c
 
 DEPS=$(patsubst %.c,_deps_/%.d,$(SRCS))
@@ -175,6 +176,7 @@ adtrack2.inc:
 	 } >$@
 
 adtrack2.res: $(srcdir)/adtrack2.rc $(makefile)
+	@echo "  RC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(WINDRES) -i $< -o $@
 
 font/track16.inc: $(srcdir)/font/track16.pbm $(makefile) | font
@@ -370,10 +372,12 @@ parserio_ppu_deps=\
  $(srcdir)/parserio.pas
 
 stringio_ppu_deps=\
- $(srcdir)/stringio.pas
+ $(srcdir)/stringio.pas\
+ stringio.o
 
 txtscrio_ppu_deps=\
  $(srcdir)/txtscrio.pas\
+ $(srcdir)/txtscrio/pas/InputStr.pas\
  txtscrio.o
 
 ifeq ($(FPC_OS_TARGET),go32v2)

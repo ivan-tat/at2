@@ -6,6 +6,7 @@
 
 void TxtScrIO_Init (void) {
   uint8_t temp;
+  int i;
 
 #if GO32
   CopyString (_last_debug_str_, _debug_str_, 255);
@@ -261,9 +262,10 @@ void TxtScrIO_Init (void) {
     break;
   }
 
-  StrToString (patt_win[0], patt_win_tracks[temp][0], 176);
-  StrToString (patt_win[1], patt_win_tracks[temp][1], 176);
-  StrToString (patt_win[2], patt_win_tracks[temp][2], 176);
-  StrToString (patt_win[3], patt_win_tracks[temp][3], 176);
-  StrToString (patt_win[4], patt_win_tracks[temp][4], 176);
+  for (i = 0; i < 5; i++) {
+    char s[176+1];
+
+    UTF8nstr_to_AT2 (s, 176, patt_win_tracks[temp][i]);
+    StrToString (patt_win[i], s, 176);
+  }
 }

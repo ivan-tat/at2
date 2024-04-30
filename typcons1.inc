@@ -549,9 +549,9 @@ const
 
   pos6: array[1..11] of Byte = (+1,+2,+3,+5,+6,+8,+9,+10,+12,+13,+14);
 
-const
-  _valid_characters: Set of Char = [#0,#32..#127,#176..#223,#254,#255];
-  _valid_characters_fname: Set of Char = [#0,#32..#127,#255];
+var
+  _valid_characters: Set of Char; cvar; external;
+  _valid_characters_fname: Set of Char; cvar; external;
 
 const
   _panning: array[0..2] of Byte = ($30,$10,$20);

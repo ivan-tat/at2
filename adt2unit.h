@@ -12,7 +12,10 @@
 #include "defines.h"
 
 #include <stdint.h>
+#if USE_FPC
 #include "pascal.h"
+#endif // USE_FPC
+#include "common.h"
 
 #if GO32
 extern uint8_t ___ADT2UNIT_DATA_START___, ___ADT2UNIT_DATA_END___;

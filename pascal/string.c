@@ -19,6 +19,25 @@ void *memset (void *s, int c, size_t n) {
   return s;
 }
 
+int memcmp (const void *s1, const void *s2, size_t n) {
+  int res = 0;
+  const uint8_t *p1 = s1, *p2 = s2;
+
+  while ((!res) && n) {
+    if (*p1 < *p2)
+      res = -1;
+    else if (*p1 > *p2)
+      res = 1;
+    else {
+      p1++;
+      p2++;
+      n--;
+    }
+  }
+
+  return res;
+}
+
 String *StrToString (String *dest, const char *src, uint8_t n) {
   size_t l = src ? Pascal_strlen (src) : 0;
 

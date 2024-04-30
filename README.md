@@ -129,6 +129,8 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 ### Fonts
 
 * [Code page 437](https://en.wikipedia.org/wiki/Code_page_437)
+* [UTF-8](https://en.wikipedia.org/wiki/UTF-8)
+* [Unicode Consortium](https://home.unicode.org/)
 
 ### Hardware
 

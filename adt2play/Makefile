@@ -53,6 +53,7 @@ SRCS=\
  pascal/stdio.c\
  pascal/stdlib.c\
  pascal/string.c\
+ stringio.c\
  txtscrio.c
 
 SRCS1=\
@@ -286,7 +287,8 @@ parserio_ppu_deps=\
  $(srcdir1)/parserio.pas
 
 stringio_ppu_deps=\
- $(srcdir1)/stringio.pas
+ $(srcdir1)/stringio.pas\
+ stringio.o
 
 # Setup target dependencies
 

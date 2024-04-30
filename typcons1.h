@@ -22,3 +22,6 @@ extern uint8_t comp_text_mode;
 #endif // GO32
 
 extern uint8_t command_typing;
+
+extern CharSet_t _valid_characters; // HINT: (FPC) set of char
+extern CharSet_t _valid_characters_fname; // HINT: (FPC) set of char

@@ -16,6 +16,8 @@
 unit StringIO;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$MODESWITCH CVAR}
+{$L stringio.o}
 interface
 
 function byte2hex(value: Byte): String;
@@ -34,6 +36,8 @@ function PathOnly(path: String): String;
 function NameOnly(path: String): String;
 function BaseNameOnly(path: String): String;
 function ExtOnly(path: String): String;
+
+procedure init_StringIO; cdecl; external;
 
 implementation
 
@@ -421,4 +425,6 @@ begin
   ExtOnly := Lower(ext);
 end;
 
+begin
+  init_StringIO;
 end.

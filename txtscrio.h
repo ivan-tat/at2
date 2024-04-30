@@ -16,6 +16,9 @@
 #if USE_FPC
 #include "pascal.h"
 #endif // USE_FPC
+#if !ADT2PLAY
+#include "stringio.h"
+#endif // !ADT2PLAY
 
 // HINT: (FPC) $PACKRECORDS 1: Alignment of record elements (1)
 
@@ -138,10 +141,6 @@ void ShowVC3Str (tSCREEN_MEM *dest, uint8_t x, uint8_t y, const String *str,
                  uint8_t attr1, uint8_t attr2, uint8_t attr3);
 void ShowC4Str (tSCREEN_MEM *dest, uint8_t x, uint8_t y, const String *str,
                 uint8_t attr1, uint8_t attr2, uint8_t attr3, uint8_t attr4);
-
-uint8_t CStrLen (const String *str);
-uint8_t CStr2Len (const String *str);
-uint8_t C3StrLen (const String *str);
 
 void ScreenMemCopy (tSCREEN_MEM *src, tSCREEN_MEM *dest);
 void move2screen (void);
@@ -275,5 +274,37 @@ void SetVideoState (tVIDEO_STATE *data, bool restore_screen);
 #endif // ADT2PLAY
 
 #endif // GO32
+
+#if !ADT2PLAY
+
+#pragma pack(push, 1)
+
+typedef struct {
+  bool insert_mode;
+  bool replace_enabled;
+  bool append_enabled;
+  tCHARSET char_filter;
+  tCHARSET character_set;
+  tCHARSET valid_chars;
+  tCHARSET word_characters;
+  uint16_t terminate_keys[50]; // HINT: (FPC) start index 1
+} tINPUT_STR_SETTING;
+
+typedef struct {
+  uint16_t keystroke;
+  uint8_t locate_pos;
+  bool insert_mode;
+  uint32_t min_num;
+  uint32_t max_num;
+  String cur_str[255+1];
+  void (*ext_proc) (void);
+} tINPUT_STR_ENVIRONMENT;
+
+#pragma pack(pop)
+
+extern tINPUT_STR_SETTING is_setting;
+extern tINPUT_STR_ENVIRONMENT is_environment;
+
+#endif // !ADT2PLAY
 
 #endif // !defined(TXTSCRIO_H)
