@@ -17,4 +17,18 @@ void init_StringIO (void) {
   // Setup CP437
   for (i = 0; CP437_it[i].glyph >= 0; i++)
     UCS2_to_AT2_ct[CP437_it[i].uc] = CP437_it[i].glyph;
+
+  // Setup all glyphs
+  for (i = 0; i < 256; i++) {
+    AT2_upper_case_ct[i] = i;
+    AT2_lower_case_ct[i] = i;
+  }
+
+  // Setup CP437
+  for (i = 0; CP437_case_conv_it[i].upper; i++) {
+    AT2_upper_case_ct[CP437_case_conv_it[i].lower] =
+                      CP437_case_conv_it[i].upper;
+    AT2_lower_case_ct[CP437_case_conv_it[i].upper] =
+                      CP437_case_conv_it[i].lower;
+  }
 }

@@ -8,8 +8,7 @@ void move2screen (void) {
   void *screen_ptr_backup;
 
 #if GO32
-  CopyString (_last_debug_str_, _debug_str_, 255);
-  StrToString (_debug_str_, __FILE__ ":" "move2screen", 255);
+  DBG_ENTER ("move2screen");
 #endif // GO32
   HideCursor ();
   screen_ptr_backup = screen_ptr;

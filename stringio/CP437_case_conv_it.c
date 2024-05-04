@@ -1,0 +1,50 @@
+// This file is part of Adlib Tracker II (AT2).
+//
+// SPDX-FileType: SOURCE
+// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+// CP437 case conversion initialization table
+#pragma pack(push, 1)
+struct {
+  uint8_t upper, lower;
+} CP437_case_conv_it[] = {
+  { 0x41, 0x61 }, // 'A'/'a' (U+0041/U+0061) - LATIN CAPITAL/SMALL LETTER A
+  { 0x42, 0x62 }, // 'B'/'b' (U+0042/U+0062) - LATIN CAPITAL/SMALL LETTER B
+  { 0x43, 0x63 }, // 'C'/'c' (U+0043/U+0063) - LATIN CAPITAL/SMALL LETTER C
+  { 0x44, 0x64 }, // 'D'/'d' (U+0044/U+0064) - LATIN CAPITAL/SMALL LETTER D
+  { 0x45, 0x65 }, // 'E'/'e' (U+0045/U+0065) - LATIN CAPITAL/SMALL LETTER E
+  { 0x46, 0x66 }, // 'F'/'f' (U+0046/U+0066) - LATIN CAPITAL/SMALL LETTER F
+  { 0x47, 0x67 }, // 'G'/'g' (U+0047/U+0067) - LATIN CAPITAL/SMALL LETTER G
+  { 0x48, 0x68 }, // 'H'/'h' (U+0048/U+0068) - LATIN CAPITAL/SMALL LETTER H
+  { 0x49, 0x69 }, // 'I'/'i' (U+0049/U+0069) - LATIN CAPITAL/SMALL LETTER I
+  { 0x4A, 0x6A }, // 'J'/'j' (U+004A/U+006A) - LATIN CAPITAL/SMALL LETTER J
+  { 0x4B, 0x6B }, // 'K'/'k' (U+004B/U+006B) - LATIN CAPITAL/SMALL LETTER K
+  { 0x4C, 0x6C }, // 'L'/'l' (U+004C/U+006C) - LATIN CAPITAL/SMALL LETTER L
+  { 0x4D, 0x6D }, // 'M'/'m' (U+004D/U+006D) - LATIN CAPITAL/SMALL LETTER M
+  { 0x4E, 0x6E }, // 'N'/'n' (U+004E/U+006E) - LATIN CAPITAL/SMALL LETTER N
+  { 0x4F, 0x6F }, // 'O'/'o' (U+004F/U+006F) - LATIN CAPITAL/SMALL LETTER O
+  { 0x50, 0x70 }, // 'P'/'p' (U+0050/U+0070) - LATIN CAPITAL/SMALL LETTER P
+  { 0x51, 0x71 }, // 'Q'/'q' (U+0051/U+0071) - LATIN CAPITAL/SMALL LETTER Q
+  { 0x52, 0x72 }, // 'R'/'r' (U+0052/U+0072) - LATIN CAPITAL/SMALL LETTER R
+  { 0x53, 0x73 }, // 'S'/'s' (U+0053/U+0073) - LATIN CAPITAL/SMALL LETTER S
+  { 0x54, 0x74 }, // 'T'/'t' (U+0054/U+0074) - LATIN CAPITAL/SMALL LETTER T
+  { 0x55, 0x75 }, // 'U'/'u' (U+0055/U+0075) - LATIN CAPITAL/SMALL LETTER U
+  { 0x56, 0x76 }, // 'V'/'v' (U+0056/U+0076) - LATIN CAPITAL/SMALL LETTER V
+  { 0x57, 0x77 }, // 'W'/'w' (U+0057/U+0077) - LATIN CAPITAL/SMALL LETTER W
+  { 0x58, 0x78 }, // 'X'/'x' (U+0058/U+0078) - LATIN CAPITAL/SMALL LETTER X
+  { 0x59, 0x79 }, // 'Y'/'y' (U+0059/U+0079) - LATIN CAPITAL/SMALL LETTER Y
+  { 0x5A, 0x7A }, // 'Z'/'z' (U+005A/U+007A) - LATIN CAPITAL/SMALL LETTER Z
+  { 0x80, 0x87 }, // 'Ç'/'ç' (U+00C7/U+00E7) - LATIN CAPITAL/SMALL LETTER C WITH CEDILLA
+  { 0x8E, 0x84 }, // 'Ä'/'ä' (U+00C4/U+00E4) - LATIN CAPITAL/SMALL LETTER A WITH DIAERESIS
+  { 0x8F, 0x86 }, // 'Å'/'å' (U+00C5/U+00E5) - LATIN CAPITAL/SMALL LETTER A WITH RING ABOVE
+  { 0x90, 0x82 }, // 'É'/'é' (U+00C9/U+00E9) - LATIN CAPITAL/SMALL LETTER E WITH ACUTE
+  { 0x92, 0x91 }, // 'Æ'/'æ' (U+00C6/U+00E6) - LATIN CAPITAL/SMALL LIGATURE AE
+  { 0x99, 0x94 }, // 'Ö'/'ö' (U+00D6/U+00F6) - LATIN CAPITAL/SMALL LETTER O WITH DIAERESIS
+  { 0x9A, 0x81 }, // 'Ü'/'ü' (U+00DC/U+00FC) - LATIN CAPITAL/SMALL LETTER U WITH DIAERESIS
+  { 0xA5, 0xA4 }, // 'Ñ'/'ñ' (U+00D1/U+00F1) - LATIN CAPITAL/SMALL LETTER N WITH TILDE
+  { 0xE4, 0xE5 }, // 'Σ'/'σ' (U+03A3/U+03C3) - GREEK CAPITAL/SMALL LETTER SIGMA
+  { 0xE8, 0xED }, // 'Φ'/'φ' (U+03A6/U+03C6) - GREEK CAPITAL/SMALL LETTER PHI
+  { 0, 0 } // end mark
+};
+#pragma pack(pop)

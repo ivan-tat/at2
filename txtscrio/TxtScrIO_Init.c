@@ -9,8 +9,7 @@ void TxtScrIO_Init (void) {
   int i;
 
 #if GO32
-  CopyString (_last_debug_str_, _debug_str_, 255);
-  StrToString (_debug_str_, __FILE__ ":" "TxtScrIO_Init", 255);
+  DBG_ENTER ("TxtScrIO_Init");
   program_screen_mode = screen_mode;
 #endif // GO32
 

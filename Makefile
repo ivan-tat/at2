@@ -56,6 +56,7 @@ FPCFLAGS_DIRS+=-Fi$(srcdir) -Fi. -Fuunits
 SRCS=\
  adt2data.c\
  adt2sys.c\
+ adt2keyb.c\
  adt2unit.c\
  common.c\
  dialogio.c\
@@ -314,7 +315,8 @@ adt2extn_ppu_deps=\
  $(srcdir)/adt2extn.pas
 
 adt2keyb_ppu_deps=\
- $(srcdir)/adt2keyb.pas
+ $(srcdir)/adt2keyb.pas\
+ adt2keyb.o
 
 adt2opl3_ppu_deps=\
  $(srcdir)/adt2opl3.pas\

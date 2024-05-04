@@ -36,6 +36,18 @@ procedure Pascal_FillWord (var x; count: SizeInt; value: Word); cdecl;
 procedure Pascal_Move (const src; var dest; n: SizeInt); cdecl;
 
 function Pascal_strlen (const s: PChar): SizeInt; cdecl;
+function Pascal_strcopy (dest, src: PChar): PChar; cdecl;
+function Pascal_strecopy (dest, src: PChar): PChar; cdecl;
+function Pascal_strlcopy (dest, src: PChar; n: SizeInt): PChar; cdecl;
+function Pascal_strcat (dest, src: PChar): PChar; cdecl;
+function Pascal_strlcat (dest, src: PChar; n: SizeInt): PChar; cdecl;
+function Pascal_strcomp (s1, s2: PChar): SizeInt; cdecl;
+function Pascal_strlcomp (s1, s2: PChar; n: SizeInt): SizeInt; cdecl;
+function Pascal_strnew (const s: PChar): PChar; cdecl;
+function Pascal_strscan (const s: PChar; c: Char): PChar; cdecl;
+function Pascal_strrscan (const s: PChar; c: Char): PChar; cdecl;
+function Pascal_strpos (const haystack, needle: PChar): PChar; cdecl;
+function Pascal_stripos (const haystack, needle: PChar): PChar; cdecl;
 
 procedure Pascal_Delay (ms: Word); cdecl;
 
@@ -120,6 +132,78 @@ function Pascal_strlen (const s: PChar): SizeInt; cdecl;
 public name PUBLIC_PREFIX + 'Pascal_strlen';
 begin
   Pascal_strlen := strings.strlen (s);
+end;
+
+function Pascal_strcopy (dest, src: PChar): PChar; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_strcopy';
+begin
+  Pascal_strcopy := strings.strcopy (dest, src);
+end;
+
+function Pascal_strecopy (dest, src: PChar): PChar; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_strecopy';
+begin
+  Pascal_strecopy := strings.strecopy (dest, src);
+end;
+
+function Pascal_strlcopy (dest, src: PChar; n: SizeInt): PChar; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_strlcopy';
+begin
+  Pascal_strlcopy := strings.strlcopy (dest, src, n);
+end;
+
+function Pascal_strcat (dest, src: PChar): PChar; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_strcat';
+begin
+  Pascal_strcat := strings.strcat (dest, src);
+end;
+
+function Pascal_strlcat (dest, src: PChar; n: SizeInt): PChar; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_strlcat';
+begin
+  Pascal_strlcat := strings.strlcat (dest, src, n);
+end;
+
+function Pascal_strcomp (s1, s2: PChar): SizeInt; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_strcomp';
+begin
+  Pascal_strcomp := strings.strcomp (s1, s2);
+end;
+
+function Pascal_strlcomp (s1, s2: PChar; n: SizeInt): SizeInt; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_strlcomp';
+begin
+  Pascal_strlcomp := strings.strlcomp (s1, s2, n);
+end;
+
+function Pascal_strnew (const s: PChar): PChar; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_strnew';
+begin
+  Pascal_strnew := strings.strnew (s);
+end;
+
+function Pascal_strscan (const s: PChar; c: Char): PChar; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_strscan';
+begin
+  Pascal_strscan := strings.strscan (s, c);
+end;
+
+function Pascal_strrscan (const s: PChar; c: Char): PChar; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_strrscan';
+begin
+  Pascal_strrscan := strings.strrscan (s, c);
+end;
+
+function Pascal_strpos (const haystack, needle: PChar): PChar; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_strpos';
+begin
+  Pascal_strpos := strings.strpos (haystack, needle);
+end;
+
+function Pascal_stripos (const haystack, needle: PChar): PChar; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_stripos';
+begin
+  Pascal_stripos := strings.stripos (haystack, needle);
 end;
 
 procedure Pascal_Delay (ms: Word); cdecl;

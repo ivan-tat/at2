@@ -32,9 +32,11 @@
 #endif // GO32
 #if !ADT2PLAY
 #include "adt2ext2.h"
+#include "adt2keyb.h"
 #include "adt2sys.h"
 #include "adt2unit.h"
 #include "dialogio.h"
+#include "stringio.h"
 #endif // !ADT2PLAY
 #include "common.h"
 #include "txtscrio.h"
@@ -328,6 +330,8 @@ tINPUT_STR_SETTING is_setting = {
 };
 
 tINPUT_STR_ENVIRONMENT is_environment;
+
+#include "txtscrio/InputStr.c"
 
 #endif // !ADT2PLAY
 

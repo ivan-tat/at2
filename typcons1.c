@@ -12,6 +12,7 @@ uint8_t comp_text_mode = 0;
 #endif // GO32
 
 uint8_t command_typing = 1;
+bool    use_large_cursor = false;
 
 CharSet_t _valid_characters = { // 0, 32..127, 176..223, 254, 255
   MK_UINT8 (1,0,0,0,0,0,0,0), MK_UINT8 (0,0,0,0,0,0,0,0), // 0

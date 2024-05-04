@@ -7,6 +7,11 @@
 #include "defines.h"
 
 #include <stddef.h>
+#if USE_FPC
+#include "pascal/string.h"
+#else // !USE_FPC
+#include <string.h>
+#endif // !USE_FPC
 #include "adt2sys.h"
 
 // HINT: (FPC) S-: Stack checking (off)
@@ -80,6 +85,10 @@ struct _custom_svga_cfg_rec_t _custom_svga_cfg[31] = {
 bool   _debug_ = false;
 String _last_debug_str_[255+1] = { 0 };
 String _debug_str_[255+1] = { 0 };
+
+#define Min(a,b) ((a<=b)?a:b)
+
+#include "adt2sys/_dbg_enter.c"
 
 bool    _force_program_quit = false;
 uint8_t _traceprc_last_order = 0;

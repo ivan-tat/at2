@@ -23,9 +23,9 @@ interface
 type
   tCHARSET = Set of Char;
 
-const
-  DEC_NUM_CHARSET = ['0'..'9'];
-  HEX_NUM_CHARSET = ['0'..'9','a'..'f','A'..'F'];
+var
+  DEC_NUM_CHARSET: set of Char; cvar; external;
+  HEX_NUM_CHARSET: set of Char; cvar; external;
 
 {$IFNDEF ADT2PLAY}
 function CStrLen(str: String): Byte; cdecl; external;
@@ -42,7 +42,7 @@ function iCASE(str: String): String;
 function RotStrL(str1,str2: String; shift: Byte): String;
 function RotStrR(str1,str2: String; shift: Byte): String;
 function ExpStrL(str: String; size: Byte; chr: Char): String;
-function ExpStrR(str: String; size: Byte; chr: Char): String;
+function ExpStrR(str: String; size: Byte; chr: Char): String; cdecl; external;
 function ExpC2StrL(str: String; size: Byte; chr: Char): String;
 function ExpC2StrR(str: String; size: Byte; chr: Char): String;
 function ExpC3StrL(str: String; size: Byte; chr: Char): String;
@@ -51,13 +51,13 @@ function CenterStr(str: String; size: Byte): String;
 function DietStr(str: String; size: Byte): String;
 function CutStr(str: String): String;
 function CutStrL(str: String; margin: Byte): String;
-function CutStrR(str: String; margin: Byte): String;
+function CutStrR(str: String; margin: Byte): String; cdecl; external;
 function FlipStr(str: String): String;
 function FilterStr(str: String; chr0,chr1: Char): String;
 function FilterStr1(str: String; chr0: Char): String;
-function FilterStr2(str: String; chr0: tCHARSET; chr1: Char): String;
-function Num2str(num: Longint; base: Byte): String;
-function Str2num(str: String; base: Byte): Longint;
+function FilterStr2(str: String; var chr0: tCHARSET; chr1: Char): String; cdecl; external;
+function Num2str(num: Longint; base: Byte): String; cdecl; external;
+function Str2num(str: String; base: Byte): Longint; cdecl; external;
 function Bpm2str(bpm: Real): String;
 
 function SameName(mask,str: String): Boolean;
@@ -348,40 +348,6 @@ begin
 {$ENDIF}
 end;
 
-function ExpStrR(str: String; size: Byte; chr: Char): String;
-begin
-{$IFNDEF CPU64}
-  asm
-        lea     esi,[str]
-        mov     edi,@RESULT
-        cld
-        xor     ecx,ecx
-        lodsb
-        cmp     al,size
-        jge     @@1
-        mov     ah,al
-        mov     al,size
-        stosb
-        mov     cl,ah
-        rep     movsb
-        mov     al,ah
-        mov     cl,size
-        sub     cl,al
-        mov     al,chr
-        rep     stosb
-        jmp     @@2
-@@1:    stosb
-        mov     cl,al
-        rep     movsb
-@@2:
-  end;
-{$ELSE}
-  While (Length(str) < size) do
-    str := str+chr;
-  ExpStrR := str;
-{$ENDIF}
-end;
-
 function ExpC2StrL(str: String; size: Byte; chr: Char): String;
 begin
   While (CStr2Len(str) < size) do
@@ -466,22 +432,6 @@ begin
     Inc(idx);
   If (idx <> 0) then Delete(str,1,idx);
   CutStrL := str;
-end;
-
-function CutStrR(str: String; margin: Byte): String;
-
-var
-  idx: Byte;
-
-begin
-  If (margin > Length(str)) then
-    margin := Length(str);
-  idx := 0;
-  While (str[BYTE(str[0])-idx] = ' ') and
-        (BYTE(str[0])-idx >= margin) do
-    Inc(idx);
-  Dec(BYTE(str[0]),idx);
-  CutStrR := str;
 end;
 
 {$IFNDEF CPU64}
@@ -603,134 +553,6 @@ begin
 end;
 {$ENDIF}
 
-const
-  _treat_char: array[$80..$a5] of Char =
-    'CueaaaaceeeiiiAAE_AooouuyOU_____aiounN';
-
-function FilterStr2(str: String; chr0: tCHARSET; chr1: Char): String;
-
-var
-  temp: Byte;
-
-begin
-  For temp := 1 to Length(str) do
-    If NOT (str[temp] in chr0) then
-      If (str[temp] >= #128) and (str[temp] <= #165) then
-        str[temp] := _treat_char[BYTE(str[temp])]
-      else If (str[temp] = #0) then str[temp] := ' '
-           else str[temp] := chr1;
-  FilterStr2 := str;
-end;
-
-{$IFNDEF CPU64}
-function Num2str(num: Longint; base: Byte): String;
-
-const
-  hexa: array[0..PRED(16)+32] of Char = '0123456789ABCDEF'+
-                                        #0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0;
-begin
-  asm
-        xor     eax,eax
-        xor     edx,edx
-        xor     edi,edi
-        xor     esi,esi
-        mov     eax,num
-        xor     ebx,ebx
-        mov     bl,base
-        cmp     bl,2
-        jb      @@3
-        cmp     bl,16
-        ja      @@3
-        mov     edi,32
-@@1:    dec     edi
-        xor     edx,edx
-        div     ebx
-        mov     esi,edx
-        mov     dl,byte ptr [hexa+esi]
-        mov     byte ptr [hexa+edi+16],dl
-        and     eax,eax
-        jnz     @@1
-        mov     esi,edi
-        mov     ecx,32
-        sub     ecx,edi
-        mov     edi,@RESULT
-        mov     al,cl
-        stosb
-@@2:    mov     al,byte ptr [hexa+esi+16]
-        stosb
-        inc     esi
-        loop    @@2
-        jmp     @@4
-@@3:    mov     edi,@RESULT
-        xor     al,al
-        stosb
-@@4:
-  end;
-end;
-{$ELSE}
-function Num2str(num: Longint; base: Byte): String;
-
-const
-  hexa: array[0..PRED(16)] of Char = '0123456789ABCDEF';
-
-var
-  result: String;
-
-begin
-  result := '';
-  If (base >= 2) and (base <= 16) then
-    While (num > 0) do
-      begin
-        result := hexa[num MOD base]+result;
-        num := num DIV base;
-      end;
-  If (result = '') then Num2str := '0'
-  else Num2str := result;
-end;
-{$ENDIF}
-
-const
-  digits: array[0..15] of Char = '0123456789ABCDEF';
-
-function Digit2index(digit: Char): Byte;
-
-var
-  index: Byte;
-
-begin
-  digit := UpCase(digit);
-  index := 15;
-  While (index > 0) and (digit <> digits[index]) do Dec(index);
-  Digit2index := Index;
-end;
-
-function position_value(position,base: Byte): Longint;
-
-var
-  value: Longint;
-  index: Byte;
-
-begin
-  value := 1;
-  For index := 2 to position do value := value*base;
-  position_value := value;
-end;
-
-function Str2num(str: String; base: Byte): Longint;
-
-var
-  value: Longint;
-  index: Byte;
-
-begin
-  value := 0;
-  If (base in [2,10,16]) then
-    For index := 1 to Length(str) do
-      Inc(value,Digit2index(str[index])*
-                position_value(Length(str)-index+1,base));
-  Str2num := value;
-end;
-
 function Bpm2str(bpm: Real): String;
 begin
   If (bpm < 1000) then
@@ -782,4 +604,6 @@ begin
   init_StringIO;
 end;
 
+begin
+  init_StringIO;
 end.

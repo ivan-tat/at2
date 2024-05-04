@@ -16,6 +16,8 @@
 unit AdT2keyb;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$MODESWITCH CVAR}
+{$L adt2keyb.o}
 interface
 
 {$IFDEF GO32V2}
@@ -34,8 +36,8 @@ procedure keyboard_done;
 procedure keyboard_reset_buffer;
 procedure wait_until_F11_F12_released;
 procedure keyboard_poll_input;
-function  keypressed: Boolean;
-function  getkey: Word;
+function  keypressed: Boolean; cdecl;
+function  getkey: Word; cdecl;
 function  scankey(scancode: Byte): Boolean;
 function  CapsLock: Boolean;
 function  NumLock: Boolean;
@@ -45,12 +47,12 @@ function  right_shift_pressed: Boolean;
 function  alt_pressed: Boolean;
 function  ctrl_pressed: Boolean;
 function  ctrl_tab_pressed: Boolean;
-function  LookUpKey(key: Word; var table; size: Byte): Boolean;
+function  LookUpKey(key: Word; var table; size: Byte): Boolean; cdecl; external;
 procedure screen_saver;
 
 {$IFDEF GO32V2}
 
-procedure keyboard_reset_buffer_alt;
+procedure keyboard_reset_buffer_alt; cdecl;
 procedure keyboard_toggle_sleep;
 function  ScrollLock: Boolean;
 function  both_shifts_pressed: Boolean;
@@ -72,6 +74,7 @@ uses
   SDL_Events,
   SDL_Keyboard,
 {$ENDIF}
+  pascal,
   AdT2unit,
   AdT2sys,
   AdT2ext2,
@@ -170,7 +173,8 @@ end;
 
 {$IFDEF GO32V2}
 
-function keypressed: Boolean;
+function keypressed: Boolean; cdecl;
+public name PUBLIC_PREFIX + 'keypressed';
 begin
   realtime_gfx_poll_proc;
   draw_screen;
@@ -183,7 +187,8 @@ begin
   else keypressed := CRT.KeyPressed;
 end;
 
-function getkey: Word;
+function getkey: Word; cdecl;
+public name PUBLIC_PREFIX + 'getkey';
 
 var
   result: Word;
@@ -309,7 +314,8 @@ begin
   MEMW[0:$041c] := MEMW[0:$041a];
 end;
 
-procedure keyboard_reset_buffer_alt;
+procedure keyboard_reset_buffer_alt; cdecl;
+public name PUBLIC_PREFIX + 'keyboard_reset_buffer_alt';
 begin
   _last_debug_str_ := _debug_str_;
   _debug_str_ := 'ADT2KEYB.PAS:keyboard_reset_buffer_alt';
@@ -596,7 +602,8 @@ begin
   process_global_keys;
 end;
 
-function keypressed: Boolean;
+function keypressed: Boolean; cdecl;
+public name PUBLIC_PREFIX + 'keypressed';
 
 var
   event: SDL_Event;
@@ -630,7 +637,8 @@ begin
   until FALSE;
 end;
 
-function getkey: Word;
+function getkey: Word; cdecl;
+public name PUBLIC_PREFIX + 'getkey';
 
 function getkey_proc: Word;
 
@@ -798,22 +806,6 @@ end;
 function ctrl_tab_pressed: Boolean;
 begin
   ctrl_tab_pressed := ctrl_pressed and scankey(SC_TAB);
-end;
-
-function LookUpKey(key: Word; var table; size: Byte): Boolean;
-
-var
-  idx: Byte;
-
-begin
-  LookUpKey := FALSE;
-  If (size <> 0) then
-    For idx := 0 to PRED(size) do
-      If (pWord(@table)[idx] = key) then
-        begin
-          LookUpKey := TRUE;
-          BREAK;
-        end;
 end;
 
 end.

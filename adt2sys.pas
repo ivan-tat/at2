@@ -81,7 +81,7 @@ var
 
 procedure sys_init;
 procedure sys_done;
-procedure draw_screen;
+procedure draw_screen; cdecl;
 
 {$IFNDEF GO32V2}
 
@@ -129,6 +129,7 @@ uses
   SDL__rwops,
   AdT2opl3,
 {$ENDIF}
+  pascal,
   AdT2unit,
   AdT2text,
   AdT2keyb,
@@ -553,7 +554,8 @@ begin
   end;
 end;
 
-procedure draw_screen;
+procedure draw_screen; cdecl;
+public name PUBLIC_PREFIX + 'draw_screen';
 begin
   If _draw_screen_without_delay then
     _draw_screen_without_delay := FALSE
@@ -966,7 +968,8 @@ begin
   SDL_SetPalette(screen,SDL_PHYSPAL,SDL_ColorArray(palette),0,16);
 end;
 
-procedure draw_screen;
+procedure draw_screen; cdecl;
+public name PUBLIC_PREFIX + 'draw_screen';
 
 const
    frame_start: Longint = 0;

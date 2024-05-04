@@ -44,7 +44,7 @@ __inline__ void Set_RemoveRange (uint8_t *s, uint8_t start, uint8_t end) {
     s[i / 8] &= ~(1 << (i % 8));
 }
 
-__inline__ bool Set_Contains (uint8_t *s, uint8_t value) {
+__inline__ bool Set_Contains (const uint8_t *s, uint8_t value) {
   return (s[value / 8] & (1 << (value % 8))) ? true : false;
 }
 

@@ -15,7 +15,14 @@
 
 typedef unsigned char Shortstring;
 
+typedef struct {
+  uint8_t len;
+  Shortstring str[255];
+} Shortstring_t;
+
 typedef Shortstring String;
+
+typedef Shortstring_t String_t;
 
 #define Length(s) ((s)[0])
 #define SetLength(s, l) (s)[0] = (l)
@@ -37,6 +44,18 @@ extern void Pascal_FillWord (void *x, ssize_t count, uint16_t value);
 extern void Pascal_Move (const void *src, void *dest, ssize_t n);
 
 extern size_t Pascal_strlen (const char *s);
+extern char *Pascal_strcopy (char *dest, const char *src);
+extern char *Pascal_strecopy (char *dest, const char *src);
+extern char *Pascal_strlcopy (char *dest, const char *src, ssize_t n);
+extern char *Pascal_strcat (char *dest, const char *src);
+extern char *Pascal_strlcat (char *dest, const char *src, ssize_t n);
+extern ssize_t Pascal_strcomp (const char *s1, const char *s2);
+extern ssize_t Pascal_strlcomp (const char *s1, const char *s2, ssize_t n);
+extern char *Pascal_strnew (const char *s);
+extern char *Pascal_strscan (const char *s, char c);
+extern char *Pascal_strrscan (const char *s, char c);
+extern char *Pascal_strpos (const char *haystack, const char *needle);
+extern char *Pascal_stripos (const char *haystack, const char *needle);
 
 extern void Pascal_Delay (uint16_t ms);
 

@@ -69,11 +69,17 @@ extern bool   _debug_;
 extern String _last_debug_str_[255+1];
 extern String _debug_str_[255+1];
 
+void _dbg_enter (const char *filename, const char *funcname);
+
+#define DBG_ENTER(func) _dbg_enter (__FILE__, func)
+
 extern bool    _force_program_quit;
 extern uint8_t _traceprc_last_order;
 extern uint8_t _traceprc_last_pattern;
 extern uint8_t _traceprc_last_line;
 extern uint8_t _pattedit_lastpos;
+
+extern void draw_screen (void);
 
 #if !GO32
 extern void   *_FrameBuffer;

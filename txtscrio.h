@@ -283,10 +283,10 @@ typedef struct {
   bool insert_mode;
   bool replace_enabled;
   bool append_enabled;
-  tCHARSET char_filter;
-  tCHARSET character_set;
-  tCHARSET valid_chars;
-  tCHARSET word_characters;
+  CharSet_t char_filter;
+  CharSet_t character_set;
+  CharSet_t valid_chars;
+  CharSet_t word_characters;
   uint16_t terminate_keys[50]; // HINT: (FPC) start index 1
 } tINPUT_STR_SETTING;
 
@@ -305,6 +305,8 @@ typedef struct {
 extern tINPUT_STR_SETTING is_setting;
 extern tINPUT_STR_ENVIRONMENT is_environment;
 
+String_t InputStr (const String *s, uint8_t x, uint8_t y, uint8_t ln,
+                   uint8_t ln1, uint8_t attr1, uint8_t attr2);
 #endif // !ADT2PLAY
 
 #endif // !defined(TXTSCRIO_H)

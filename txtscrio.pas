@@ -280,7 +280,7 @@ var
   is_setting: tINPUT_STR_SETTING; cvar; external;
   is_environment: tINPUT_STR_ENVIRONMENT; cvar; external;
 
-function InputStr(s: String; x,y,ln,ln1: Byte; atr1,atr2: Byte): String;
+function InputStr(s: String; x,y,ln,ln1: Byte; atr1,atr2: Byte): String; cdecl; external;
 
 {$ENDIF} // NOT DEFINED(ADT2PLAY)
 
@@ -304,10 +304,6 @@ uses
 {$ELSE} // DEFINED(ADT2PLAY)
   common;
 {$ENDIF} // DEFINED(ADT2PLAY)
-
-{$IFNDEF ADT2PLAY}
-{$I txtscrio/pas/InputStr.pas}
-{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 begin
   init_TxtScrIO;

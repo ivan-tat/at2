@@ -804,7 +804,9 @@ const
   alt_ins_name:       Boolean = TRUE;
   adjust_tracks:      Boolean = TRUE;
   mark_lines:         Boolean = FALSE;
-  use_large_cursor:   Boolean = FALSE;
+var
+  use_large_cursor:   Boolean; cvar; external;
+const
   accurate_conv:      Boolean = FALSE;
   fix_c_note_bug:     Boolean = TRUE;
   analyzer_bckg:      Byte    = $010;
