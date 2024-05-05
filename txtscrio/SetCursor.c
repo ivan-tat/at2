@@ -16,7 +16,7 @@ void SetCursor (int32_t cursor) {
   SetCursorShape (cursor & 0xFFFF);
 
 #if GO32
-  VBIOS_set_cursor_pos (DispPg, ((uint32_t) cursor >> 16) & 0xFF,
+  VBIOS_set_cursor_pos (v_page, ((uint32_t) cursor >> 16) & 0xFF,
                         (uint32_t) cursor >> 24);
 #endif // GO32
 }

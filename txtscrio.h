@@ -182,12 +182,6 @@ void SetCursorShape (uint16_t shape);
 
 #if GO32
 
-extern uint16_t v_seg;
-extern uint16_t v_ofs;
-extern uint8_t  v_mode;
-
-extern uint8_t DispPg;
-
 #if !ADT2PLAY
 typedef uint8_t tCUSTOM_VIDEO_MODE; // 0..52
 #endif // !ADT2PLAY
@@ -259,10 +253,13 @@ extern VGA_REG_DATA svga_txtmode_regs;
 
 #pragma pack(push, 1)
 typedef struct {
-  int32_t cursor;
+  uint8_t mode;
   uint8_t font;
-  uint8_t MaxLn, MaxCol, v_mode, DispPg;
-  uint16_t v_seg, v_ofs;
+  uint8_t cols, rows;
+  uint8_t page;
+  uint16_t regen_size;
+  uint16_t ofs, seg;
+  uint16_t curpos, curshape;
   tSCREEN_MEM screen;
   uint8_t data[4096];
 } tVIDEO_STATE;

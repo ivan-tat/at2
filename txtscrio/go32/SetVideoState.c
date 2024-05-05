@@ -14,15 +14,7 @@ void SetVideoState (tVIDEO_STATE *data, bool restore_screen) {
   int32_t dos_sel, dos_seg;
   __dpmi_regs regs;
 
-  v_seg  = data->v_seg;
-  v_ofs  = data->v_ofs;
-  v_mode = data->v_mode;
-  DispPg = data->DispPg;
-
-  VBIOS_set_video_mode (v_mode, DispPg);
-
-  MaxCol = data->MaxCol;
-  MaxLn = data->MaxLn;
+  VBIOS_set_video_mode (data->mode, data->page);
 
   dosmemget (0x400, sizeof (bios_data_backup), &bios_data_backup); // BIOS Data Area
 
@@ -48,20 +40,6 @@ void SetVideoState (tVIDEO_STATE *data, bool restore_screen) {
   __dpmi_free_dos_memory (dos_sel);
   dosmemput (&bios_data_backup, sizeof (bios_data_backup), 0x400); // BIOS Data Area
 
-#if !USE_FPC
-  orig_fs = _fargetsel ();
-  _farsetsel (_dos_ds);
-#endif // !USE_FPC
-
-  BDA_set_screen_text_columns (MaxCol);
-  BDA_set_screen_text_rows (MaxLn);
-  BDA_set_video_regen_buffer_size (MaxCol * MaxLn * 2);
-  BDA_set_video_page_offset (data->v_ofs);
-
-#if !USE_FPC
-  _farsetsel (orig_fs);
-#endif // !USE_FPC
-
   switch (data->font) {
   case 8:
     VBIOS_load_ROM_font_8x8 (0, true);
@@ -69,12 +47,48 @@ void SetVideoState (tVIDEO_STATE *data, bool restore_screen) {
   case 14:
     VBIOS_load_ROM_font_8x14 (0, true);
     break;
+  case 16:
   default:
     VBIOS_load_ROM_font_8x16 (0, true);
     break;
   }
 
-  SetCursor (data->cursor);
+  VBIOS_set_cursor_pos (data->page, data->curpos & 0xFF, data->curpos >> 8);
+  VGA_SetCursorShape (data->curshape);
+
+#if !USE_FPC
+  orig_fs = _fargetsel ();
+  _farsetsel (_dos_ds);
+#endif // !USE_FPC
+
+  BDA_set_screen_text_columns (data->cols);
+  BDA_set_screen_text_rows (data->rows);
+  BDA_set_video_regen_buffer_size (data->regen_size);
+  BDA_set_video_page_offset (data->ofs);
+
+#if !USE_FPC
+  _farsetsel (orig_fs);
+#endif // !USE_FPC
+
+  v_mode = data->mode;
+  v_font = data->font;
+  v_cols = data->cols;
+  v_rows = data->rows;
+  v_page = data->page;
+  v_regen_size = data->regen_size;
+  v_ofs = data->ofs;
+  v_seg = data->seg;
+  v_curpos = data->curpos;
+  v_curshape = data->curshape;
+
   if (restore_screen)
-    dosmemput (&data->screen, MAX_SCREEN_MEM_SIZE, v_seg * 16 + v_ofs);
+    dosmemput (&data->screen,
+               v_regen_size <= sizeof (data->screen) ? v_regen_size : sizeof (data->screen),
+               v_seg * 16 + v_ofs);
+
+  MaxCol = v_cols;
+  MaxLn = v_rows;
+#if !ADT2PLAY
+  virtual_cur_shape = v_curshape;
+#endif // !ADT2PLAY
 }

@@ -178,12 +178,6 @@ tFRAME_SETTING fr_setting = {
 
 #if GO32
 
-uint16_t v_seg = 0xB800;
-uint16_t v_ofs = 0;
-uint8_t  v_mode = 3;
-
-uint8_t DispPg;
-
 #include "txtscrio/go32/iVGA.c"
 #include "txtscrio/go32/initialize.c"
 #if !ADT2PLAY

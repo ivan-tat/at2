@@ -7,7 +7,7 @@
 void set_vga_txtmode_80x25 (void) {
   VBIOS_set_video_mode (3, 0);
 
-  v_seg = 0xB800;
+  v_seg = VGA_SEG_B800;
   v_ofs = 0;
 
   MaxCol = 80;

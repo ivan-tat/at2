@@ -30,6 +30,20 @@
 #define VGA_CRTC_ADDR_PORT      0x3D4 // CRT Controller Address Register
 #define VGA_CRTC_DATA_PORT      0x3D5 // CRT Controller Data Register
 
+#define VGA_SEG_A000 0xA000
+#define VGA_SEG_B800 0xB800
+
+extern uint8_t  v_mode;
+extern uint8_t  v_font;
+extern uint8_t  v_cols;
+extern uint8_t  v_rows;
+extern uint8_t  v_page;
+extern uint16_t v_regen_size;
+extern uint16_t v_ofs;
+extern uint16_t v_seg;
+extern uint16_t v_curpos;
+extern uint16_t v_curshape;
+
 #include "go32/VGA/VGA_wait_while_display_disabled.c"
 #include "go32/VGA/VGA_wait_while_vertical_retrace.c"
 

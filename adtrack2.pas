@@ -23,6 +23,7 @@ uses
   CRT,
   GO32,
   common,
+  VGA,
   AdT2vesa,
   AdT2opl3,
   AdT2unit,

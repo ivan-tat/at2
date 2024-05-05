@@ -10,6 +10,10 @@ unit VGA;
 
 interface
 
+var
+  v_ofs: Word; cvar; external;
+  v_seg: Word; cvar; external;
+
 implementation
 
 end.

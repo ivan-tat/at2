@@ -6,7 +6,7 @@
 
 uint8_t WhereX (void) {
 #if GO32
-  return (VBIOS_get_cursor_pos (DispPg) & 0xFF) + 1;
+  return (VBIOS_get_cursor_pos (v_page) & 0xFF) + 1;
 #else // !GO32
   return virtual_cur_pos & 0xFF;
 #endif // !GO32

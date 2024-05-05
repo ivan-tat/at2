@@ -13,6 +13,17 @@
 #endif // !USE_FPC
 #include "go32/VGA.h"
 
+uint8_t  v_mode = 3;
+uint8_t  v_font = 16;
+uint8_t  v_cols = 80;
+uint8_t  v_rows = 25;
+uint8_t  v_page = 0;
+uint16_t v_regen_size = 4096;
+uint16_t v_ofs = 0;
+uint16_t v_seg = VGA_SEG_B800;
+uint16_t v_curpos = 0x0000;
+uint16_t v_curshape = 0x0D0E;
+
 #include "go32/VGA/VGA_WaitDisplayDisabled.c"
 #include "go32/VGA/VGA_WaitVerticalRetrace.c"
 #include "go32/VGA/VGA_GetCursorShape.c"

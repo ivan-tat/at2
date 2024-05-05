@@ -169,13 +169,6 @@ procedure SetCursorShape(shape: Word); cdecl; external;
 
 {$IFDEF GO32V2}
 
-var
-  v_seg:  Word; cvar; external;
-  v_ofs:  Word; cvar; external;
-  v_mode: Byte; cvar; external;
-
-  DispPg: Byte; cvar; external;
-
 {$IFNDEF ADT2PLAY}
 type
   tCUSTOM_VIDEO_MODE = 0..52;
@@ -238,10 +231,9 @@ var
 
 type
   tVIDEO_STATE = Record
-                   cursor: Longint;
-                   font: Byte;
-                   MaxLn,MaxCol,v_mode,DispPg: Byte;
-                   v_seg,v_ofs: Word;
+                   mode,font,cols,rows,page: Byte;
+                   regen_size,ofs,seg: Word;
+                   curpos,curshape: Word;
                    screen: tSCREEN_MEM;
                    data: array[0..PRED(4096)] of Byte;
                  end;

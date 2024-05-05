@@ -9,26 +9,38 @@ void initialize (void) {
   uint16_t orig_fs;
 #endif // !USE_FPC
 
-  VBIOS_get_video_mode (&v_mode, &DispPg);
+  VBIOS_get_video_mode (&v_mode, &v_page);
 
 #if !USE_FPC
   orig_fs = _fargetsel ();
   _farsetsel (_dos_ds);
 #endif // !USE_FPC
 
-  MaxCol = BDA_get_screen_text_columns ();
-  MaxLn  = BDA_get_screen_text_rows ();
-#if !ADT2PLAY
-  work_MaxCol = MaxCol;
-  work_MaxLn  = MaxLn;
-#endif // !ADT2PLAY
+  v_font = BDA_get_screen_character_height ();
+  v_cols = BDA_get_screen_text_columns ();
+  v_rows = BDA_get_screen_text_rows ();
+  v_regen_size = BDA_get_video_regen_buffer_size ();
+  v_ofs = BDA_get_video_page_offset ();
+  v_seg = VGA_SEG_B800;
 
 #if !USE_FPC
   _farsetsel (orig_fs);
 #endif // !USE_FPC
 
+  v_curpos = VBIOS_get_cursor_pos (v_page);
+  v_curshape = VGA_GetCursorShape ();
+
   memsetw (screen_ptr, 0x0700, MAX_SCREEN_MEM_SIZE / 2);
 #if !ADT2PLAY
-  dosmemput (screen_ptr, MAX_SCREEN_MEM_SIZE, v_seg * 16 + v_ofs);
+  dosmemput (screen_ptr,
+             v_regen_size <= MAX_SCREEN_MEM_SIZE ? v_regen_size : MAX_SCREEN_MEM_SIZE,
+             v_seg * 16 + v_ofs);
+#endif // !ADT2PLAY
+
+  MaxCol = v_cols;
+  MaxLn  = v_rows;
+#if !ADT2PLAY
+  work_MaxCol = v_cols;
+  work_MaxLn  = v_rows;
 #endif // !ADT2PLAY
 }

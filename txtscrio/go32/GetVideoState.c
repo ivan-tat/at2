@@ -14,27 +14,30 @@ void GetVideoState (tVIDEO_STATE *data) {
   int32_t dos_sel, dos_seg;
   __dpmi_regs regs;
 
-  VBIOS_get_video_mode (&v_mode, &DispPg);
-
-  dosmemget (v_seg * 16 + v_ofs, MAX_SCREEN_MEM_SIZE, &data->screen);
+  VBIOS_get_video_mode (&data->mode, &data->page);
 
 #if !USE_FPC
   orig_fs = _fargetsel ();
   _farsetsel (_dos_ds);
 #endif // !USE_FPC
 
-  data->cursor = GetCursor ();
   data->font = BDA_get_screen_character_height ();
-  data->v_seg = 0xB800;
-  data->v_ofs = BDA_get_video_page_offset ();
-  data->DispPg = DispPg;
-  data->v_mode = v_mode;
-  data->MaxCol = BDA_get_screen_text_columns ();
-  data->MaxLn = BDA_get_screen_text_rows ();
+  data->cols = BDA_get_screen_text_columns ();
+  data->rows = BDA_get_screen_text_rows ();
+  data->regen_size = BDA_get_video_regen_buffer_size ();
+  data->ofs = BDA_get_video_page_offset ();
+  data->seg = VGA_SEG_B800;
 
 #if !USE_FPC
   _farsetsel (orig_fs);
 #endif // !USE_FPC
+
+  data->curpos = VBIOS_get_cursor_pos (data->page);
+  data->curshape = VGA_GetCursorShape ();
+
+  dosmemget (data->seg * 16 + data->ofs,
+             data->regen_size <= sizeof (data->screen) ? data->regen_size : sizeof (data->screen),
+             &data->screen);
 
   dosmemget (0x400, sizeof (bios_data_backup), &bios_data_backup); // BIOS Data Area
 

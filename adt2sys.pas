@@ -120,6 +120,7 @@ uses
 {$IFDEF GO32V2}
   DOS,
   GO32,
+  VGA,
   AdT2vesa,
 {$ELSE}
   DOS,
