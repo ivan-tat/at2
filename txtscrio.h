@@ -251,22 +251,9 @@ extern VGA_REG_DATA svga_txtmode_regs;
 
 #else // ADT2PLAY
 
-#pragma pack(push, 1)
-typedef struct {
-  uint8_t mode;
-  uint8_t font;
-  uint8_t cols, rows;
-  uint8_t page;
-  uint16_t regen_size;
-  uint16_t ofs, seg;
-  uint16_t curpos, curshape;
-  tSCREEN_MEM screen;
-  uint8_t data[4096];
-} tVIDEO_STATE;
-#pragma pack(pop)
-
-void GetVideoState (tVIDEO_STATE *data);
-void SetVideoState (tVIDEO_STATE *data, bool restore_screen);
+int GetVideoState (VGAVideoState_t *vs, bool save_screen);
+void SetVideoState (VGAVideoState_t *vs, bool restore_screen);
+void FreeVideoState (VGAVideoState_t *vs);
 
 #endif // ADT2PLAY
 

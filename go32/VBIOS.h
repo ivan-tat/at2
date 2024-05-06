@@ -15,6 +15,7 @@
 #include "go32/VBIOS/VBIOS_is_VGA.c"
 #include "go32/VBIOS/VBIOS_get_video_mode.c"
 #include "go32/VBIOS/VBIOS_set_video_mode.c"
+#include "go32/VBIOS/VBIOS_set_active_video_page.c"
 #include "go32/VBIOS/VBIOS_load_ROM_font_8x8.c"
 #include "go32/VBIOS/VBIOS_load_ROM_font_8x14.c"
 #include "go32/VBIOS/VBIOS_load_ROM_font_8x16.c"

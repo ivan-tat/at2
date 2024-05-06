@@ -478,5 +478,7 @@ void SetCustomVideoMode (tCUSTOM_VIDEO_MODE vmode) {
   }
 
   initialize ();
-  dosmemput (screen_ptr, MAX_SCREEN_MEM_SIZE, v_seg * 16 + v_ofs);
+  dosmemput (screen_ptr,
+             v_regen_size <= MAX_SCREEN_MEM_SIZE ? v_regen_size : MAX_SCREEN_MEM_SIZE,
+             v_seg * 16 + v_ofs);
 }

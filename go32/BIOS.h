@@ -18,6 +18,7 @@
 
 // BIOS Data Area (BDA)
 
+#include "go32/BIOS/BDA_get_active_video_mode.c"
 #include "go32/BIOS/BDA_get_screen_character_height.c"
 #include "go32/BIOS/BDA_set_screen_character_height.c"
 #include "go32/BIOS/BDA_get_screen_text_columns.c"
@@ -28,6 +29,7 @@
 #include "go32/BIOS/BDA_set_video_regen_buffer_size.c"
 #include "go32/BIOS/BDA_get_video_page_offset.c"
 #include "go32/BIOS/BDA_set_video_page_offset.c"
+#include "go32/BIOS/BDA_get_active_video_page.c"
 #include "go32/BIOS/BDA_set_active_video_page.c"
 #include "go32/BIOS/BDA_set_cursor_shape.c"
 #include "go32/BIOS/BDA_set_cursor_position.c"

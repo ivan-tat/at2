@@ -250,6 +250,7 @@ VGA_REG_DATA svga_txtmode_regs = {
 
 #include "txtscrio/go32/GetVideoState.c"
 #include "txtscrio/go32/SetVideoState.c"
+#include "txtscrio/go32/FreeVideoState.c"
 
 #endif // ADT2PLAY
 

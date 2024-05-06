@@ -227,21 +227,7 @@ var
   svga_txtmode_rows: Byte; cvar; external;
   svga_txtmode_regs: VGA_REG_DATA; cvar; external;
 
-{$ELSE} // DEFINED(ADT2PLAY)
-
-type
-  tVIDEO_STATE = Record
-                   mode,font,cols,rows,page: Byte;
-                   regen_size,ofs,seg: Word;
-                   curpos,curshape: Word;
-                   screen: tSCREEN_MEM;
-                   data: array[0..PRED(4096)] of Byte;
-                 end;
-
-procedure GetVideoState(var data: tVIDEO_STATE); cdecl; external;
-procedure SetVideoState(var data: tVIDEO_STATE; restore_screen: Boolean); cdecl; external;
-
-{$ENDIF} // DEFINED(ADT2PLAY)
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 {$ENDIF} // DEFINED(GO32V2)
 

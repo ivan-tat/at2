@@ -5,14 +5,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void set_vga_txtmode_80x25 (void) {
-  VBIOS_set_video_mode (3, 0);
+  VGA_SetTextMode_80x25 (0);
 
-  v_seg = VGA_SEG_B800;
-  v_ofs = 0;
-
-  MaxCol = 80;
-  MaxLn  = 25;
+  MaxCol = v_cols;
+  MaxLn = v_rows;
 
   memsetw (screen_ptr, 0x0700, MAX_SCREEN_MEM_SIZE / 2);
-  dosmemput (screen_ptr, MAX_SCREEN_MEM_SIZE, v_seg * 16 + v_ofs);
+  dosmemput (screen_ptr,
+             v_regen_size <= MAX_SCREEN_MEM_SIZE ? v_regen_size : MAX_SCREEN_MEM_SIZE,
+             v_seg * 16 + v_ofs);
 }

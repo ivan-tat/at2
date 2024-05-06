@@ -5,30 +5,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void initialize (void) {
-#if !USE_FPC
-  uint16_t orig_fs;
-#endif // !USE_FPC
-
-  VBIOS_get_video_mode (&v_mode, &v_page);
-
-#if !USE_FPC
-  orig_fs = _fargetsel ();
-  _farsetsel (_dos_ds);
-#endif // !USE_FPC
-
-  v_font = BDA_get_screen_character_height ();
-  v_cols = BDA_get_screen_text_columns ();
-  v_rows = BDA_get_screen_text_rows ();
-  v_regen_size = BDA_get_video_regen_buffer_size ();
-  v_ofs = BDA_get_video_page_offset ();
-  v_seg = VGA_SEG_B800;
-
-#if !USE_FPC
-  _farsetsel (orig_fs);
-#endif // !USE_FPC
-
-  v_curpos = VBIOS_get_cursor_pos (v_page);
-  v_curshape = VGA_GetCursorShape ();
+  VGA_ReadTextMode ();
 
   memsetw (screen_ptr, 0x0700, MAX_SCREEN_MEM_SIZE / 2);
 #if !ADT2PLAY

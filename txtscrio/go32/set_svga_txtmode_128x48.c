@@ -5,5 +5,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void set_svga_txtmode_128x48 (void) {
-  set_svga_txtmode (VESA_1024x768x4, 128, 48);
+  set_svga_txtmode (VESA_1024x768x4, 16, 128, 48, 0x0E0F);
 }
