@@ -19,6 +19,7 @@
 // BIOS Data Area (BDA)
 
 #include "go32/BIOS/BDA_get_active_video_mode.c"
+#include "go32/BIOS/BDA_set_active_video_mode.c"
 #include "go32/BIOS/BDA_get_screen_character_height.c"
 #include "go32/BIOS/BDA_set_screen_character_height.c"
 #include "go32/BIOS/BDA_get_screen_text_columns.c"

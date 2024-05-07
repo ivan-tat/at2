@@ -190,7 +190,7 @@ bool iVGA (void);
 void initialize (void);
 #if !ADT2PLAY
 void ResetMode (void);
-void SetCustomVideoMode (tCUSTOM_VIDEO_MODE vmode);
+int SetCustomVideoMode (tCUSTOM_VIDEO_MODE vmode);
 #endif // !ADT2PLAY
 void GetRGBitem (uint8_t color, uint8_t *red, uint8_t *green, uint8_t *blue);
 void SetRGBitem (uint8_t color, uint8_t red, uint8_t green, uint8_t blue);

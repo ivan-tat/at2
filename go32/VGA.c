@@ -33,6 +33,10 @@ uint16_t v_seg = VGA_SEG_B800;
 uint16_t v_curpos = 0x0000;
 uint16_t v_curshape = 0x0D0E;
 
+#if !ADT2PLAY
+#include "go32/VGA/VGACustomTextModes.c"
+#endif // !ADT2PLAY
+
 #include "go32/VGA/VGA_WaitDisplayDisabled.c"
 #include "go32/VGA/VGA_WaitVerticalRetrace.c"
 
@@ -52,9 +56,12 @@ uint16_t v_curshape = 0x0D0E;
 #include "go32/VGA/VGA_ReadTextMode.c"
 #include "go32/VGA/VGA_SetTextMode.c"
 #include "go32/VGA/VGA_SetTextMode_80x25.c"
+#if !ADT2PLAY
 #include "go32/VGA/VGA_SetTextModeDimensions.c"
 #include "go32/VGA/VGA_ResetTextMode.c"
 #include "go32/VGA/VGA_MakeTextMode.c"
+#include "go32/VGA/VGA_MakeCustomTextMode.c"
+#endif // !ADT2PLAY
 
 #if ADT2PLAY
 #include "go32/VGA/VGA_SaveVideoState.c"

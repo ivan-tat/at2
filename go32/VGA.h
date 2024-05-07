@@ -45,6 +45,79 @@ extern uint16_t v_seg;
 extern uint16_t v_curpos;
 extern uint16_t v_curshape;
 
+#if !ADT2PLAY
+
+typedef struct {
+  const char *name;
+  uint8_t font_height;
+  uint8_t columns, rows;
+  uint16_t regen_size;
+  uint8_t Seq[4];
+  uint8_t Misc;
+  uint8_t CRTC[25];
+  uint8_t Attr[20];
+  uint8_t Graph[9];
+} VGACustomTextMode_t;
+
+// Predefined custom text modes
+#define VGA_Text_36x14_9x14 0
+#define VGA_Text_40x14_8x14 1
+#define VGA_Text_40x14_9x14 2
+#define VGA_Text_46x14_8x14 3
+#define VGA_Text_36x15_9x16 4
+#define VGA_Text_40x15_8x16 5
+#define VGA_Text_40x15_9x16 6
+#define VGA_Text_46x15_8x16 7
+#define VGA_Text_36x17_9x14 8
+#define VGA_Text_40x17_8x14 9
+#define VGA_Text_40x17_9x14 10
+#define VGA_Text_46x17_9x14 11
+#define VGA_Text_36x22_9x16 12
+#define VGA_Text_40x22_8x16 13
+#define VGA_Text_40x22_9x16 14
+#define VGA_Text_46x22_8x16 15
+#define VGA_Text_70x22_9x16 16
+#define VGA_Text_80x22_8x16 17
+#define VGA_Text_80x22_9x16 18
+#define VGA_Text_90x22_8x16 19
+#define VGA_Text_36x25_9x16 20
+#define VGA_Text_40x25_8x16 21
+#define VGA_Text_40x25_9x16 22
+#define VGA_Text_46x25_8x16 23
+#define VGA_Text_70x25_9x16 24
+#define VGA_Text_80x25_8x16 25
+#define VGA_Text_80x25_9x16 26 // Standard VGA mode
+#define VGA_Text_90x25_8x16 27
+#define VGA_Text_46x29_8x16 28
+#define VGA_Text_70x29_9x14 29
+#define VGA_Text_80x29_8x14 30
+#define VGA_Text_80x29_9x14 31
+#define VGA_Text_90x29_8x14 32
+#define VGA_Text_70x30_9x16 33
+#define VGA_Text_80x30_8x16 34
+#define VGA_Text_80x30_9x16 35
+#define VGA_Text_90x30_8x16 36
+#define VGA_Text_70x34_9x14 37
+#define VGA_Text_80x34_8x14 38
+#define VGA_Text_80x34_9x14 39
+#define VGA_Text_90x34_8x14 40
+#define VGA_Text_70x44_9x8  41
+#define VGA_Text_80x44_8x8  42
+#define VGA_Text_80x44_9x8  43
+#define VGA_Text_90x44_8x8  44
+#define VGA_Text_70x50_9x8  45
+#define VGA_Text_80x50_8x8  46
+#define VGA_Text_80x50_9x8  47 // Standard VGA mode
+#define VGA_Text_90x50_8x8  48
+#define VGA_Text_70x60_9x8  49
+#define VGA_Text_80x60_8x8  50
+#define VGA_Text_80x60_9x8  51
+#define VGA_Text_90x60_8x8  52
+
+extern const VGACustomTextMode_t VGACustomTextModes[53];
+
+#endif // !ADT2PLAY
+
 #include "go32/VGA/VGA_wait_while_display_disabled.c"
 #include "go32/VGA/VGA_wait_while_vertical_retrace.c"
 
@@ -69,10 +142,13 @@ void VGA_SetPixelPanningMode (bool mode);     // ATTRC Reg. 0x10
 void VGA_ReadTextMode (void);
 void VGA_SetTextMode (uint8_t mode, uint8_t font, uint8_t page);
 void VGA_SetTextMode_80x25 (uint8_t page);
+#if !ADT2PLAY
 void VGA_SetTextModeDimensions (uint8_t cols, uint8_t rows, uint16_t size);
 void VGA_ResetTextMode (void);
 void VGA_MakeTextMode (uint8_t font, uint8_t cols, uint8_t rows,
                        uint16_t curshape);
+void VGA_MakeCustomTextMode (const VGACustomTextMode_t *mode);
+#endif // !ADT2PLAY
 
 #if ADT2PLAY
 

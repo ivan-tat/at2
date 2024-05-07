@@ -10,6 +10,7 @@ void VGA_MakeTextMode (uint8_t font, uint8_t cols, uint8_t rows,
   uint16_t orig_fs;
   uint16_t ca, cd; // Controller's Address and Data ports
   bool iflag;
+  int i;
 
   orig_fs = _fargetsel ();
   _farsetsel (_dos_ds);
@@ -152,6 +153,7 @@ void VGA_MakeTextMode (uint8_t font, uint8_t cols, uint8_t rows,
 
   /*** Update internal state ***/
 
+  v_mode = 3; // standard 80x25
   v_font = font;
   v_cols = cols;
   v_rows = rows;
@@ -164,6 +166,7 @@ void VGA_MakeTextMode (uint8_t font, uint8_t cols, uint8_t rows,
 
   /*** Update BIOS Data Area ***/
 
+  BDA_set_active_video_mode (v_mode);
   BDA_set_screen_character_height (v_font);
   BDA_set_screen_text_columns (v_cols);
   BDA_set_screen_text_rows (v_rows);
@@ -171,6 +174,8 @@ void VGA_MakeTextMode (uint8_t font, uint8_t cols, uint8_t rows,
   BDA_set_video_regen_buffer_size (v_regen_size);
   BDA_set_video_page_offset (v_ofs);
   BDA_set_cursor_position (0, 1, 0); // To force update by VBIOS later
+  for (i = 1; i < 8; i++)
+    BDA_set_cursor_position (i, 0, 0);
   BDA_set_cursor_shape (v_curshape & 0xFF, v_curshape >> 8);
 
   if (iflag)

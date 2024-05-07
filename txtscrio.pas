@@ -178,7 +178,7 @@ function  iVGA: Boolean; cdecl; external;
 procedure initialize; cdecl; external;
 {$IFNDEF ADT2PLAY}
 procedure ResetMode; cdecl; external;
-procedure SetCustomVideoMode(vmode: tCUSTOM_VIDEO_MODE); cdecl; external;
+function SetCustomVideoMode(vmode: tCUSTOM_VIDEO_MODE): Longint; cdecl; external;
 {$ENDIF} // NOT DEFINED(ADT2PLAY)
 procedure GetRGBitem(color: Byte; var red,green,blue: Byte); cdecl; external;
 procedure SetRGBitem(color: Byte; red,green,blue: Byte); cdecl; external;
