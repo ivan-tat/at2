@@ -9,14 +9,7 @@ int SetCustomVideoMode (tCUSTOM_VIDEO_MODE vmode) {
     return -1;
 
   VGA_MakeCustomTextMode (&VGACustomTextModes[vmode]);
-
-  MaxCol = v_cols;
-  MaxLn = v_rows;
-
-  memsetw (screen_ptr, 0x0700, MAX_SCREEN_MEM_SIZE / 2);
-  dosmemput (screen_ptr,
-             v_regen_size <= MAX_SCREEN_MEM_SIZE ? v_regen_size : MAX_SCREEN_MEM_SIZE,
-             v_seg * 16 + v_ofs);
+  OnInitVideoMode (true);
 
   return 0;
 }

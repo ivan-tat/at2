@@ -91,6 +91,8 @@ void VGA_MakeCustomTextMode (const VGACustomTextMode_t *mode) {
 
   BDA_set_active_6845_CRTC_port (ca);
 
+  _farsetsel (orig_fs);
+
   /*** CRTC ***/
 
   // Clear write protection of CRTC registers 0-7
@@ -135,40 +137,13 @@ void VGA_MakeCustomTextMode (const VGACustomTextMode_t *mode) {
   v_rows = mode->rows;
   v_page = 0;
   v_regen_size = mode->regen_size;
-  v_ofs = 0;
+  v_ofs = v_regen_size * v_page;
   v_seg = VGA_SEG_B800;
-  v_curpos = 0;
+  VGA_GetCursorPosition ();
   v_curshape = (mode->CRTC[0x0B] + (mode->CRTC[0x0A] << 8)) & 0x1F1F;
 
-  /*** Update BIOS Data Area ***/
-
-  BDA_set_active_video_mode (v_mode);
-  BDA_set_screen_character_height (v_font);
-  BDA_set_screen_text_columns (v_cols);
-  BDA_set_screen_text_rows (v_rows);
-  BDA_set_active_video_page (v_page);
-  BDA_set_video_regen_buffer_size (v_regen_size);
-  BDA_set_video_page_offset (v_ofs);
-  for (i = 0; i < 8; i++)
-    BDA_set_cursor_position (i, 0, 0);
-  BDA_set_cursor_shape (v_curshape >> 8, v_curshape & 0xFF);
+  OnMakeTextMode (true);
 
   if (iflag)
     enable ();
-
-  _farsetsel (orig_fs);
-
-  switch (mode->font_height) {
-  case 8:
-    VBIOS_load_ROM_font_8x8 (0, 0);
-    break;
-  case 14:
-    VBIOS_load_ROM_font_8x14 (0, 0);
-    break;
-  case 16:
-    VBIOS_load_ROM_font_8x16 (0, 0);
-    break;
-  default:
-    break;
-  }
 }

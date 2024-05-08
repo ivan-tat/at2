@@ -6,18 +6,5 @@
 
 void initialize (void) {
   VGA_ReadTextMode ();
-
-  memsetw (screen_ptr, 0x0700, MAX_SCREEN_MEM_SIZE / 2);
-#if !ADT2PLAY
-  dosmemput (screen_ptr,
-             v_regen_size <= MAX_SCREEN_MEM_SIZE ? v_regen_size : MAX_SCREEN_MEM_SIZE,
-             v_seg * 16 + v_ofs);
-#endif // !ADT2PLAY
-
-  MaxCol = v_cols;
-  MaxLn  = v_rows;
-#if !ADT2PLAY
-  work_MaxCol = v_cols;
-  work_MaxLn  = v_rows;
-#endif // !ADT2PLAY
+  OnInitVideoMode (true);
 }

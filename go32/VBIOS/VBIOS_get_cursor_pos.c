@@ -4,6 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+// Return value: LSB = column, MSB = row (all 0-255)
 static __inline__ uint16_t VBIOS_get_cursor_pos (uint8_t page) {
   uint16_t rd;
 

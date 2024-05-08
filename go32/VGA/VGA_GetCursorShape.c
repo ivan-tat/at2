@@ -4,6 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+// Return value: LSB = end, MSB = start (all 0-31)
 uint16_t VGA_GetCursorShape (void) {
   uint_least8_t x;
 

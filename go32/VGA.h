@@ -11,6 +11,11 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#if USE_FPC
+#include "pascal/pc.h"
+#else // !USE_FPC
+#include <pc.h>
+#endif // !USE_FPC
 
 #define VGA_ATTR_WRITE_PORT     0x3C0 // Attribute Address/Data Register (write)
 #define VGA_ATTR_READ_PORT      0x3C1 // Attribute Data Register (read)
@@ -42,8 +47,8 @@ extern uint8_t  v_page;
 extern uint16_t v_regen_size;
 extern uint16_t v_ofs;
 extern uint16_t v_seg;
-extern uint16_t v_curpos;
-extern uint16_t v_curshape;
+extern uint16_t v_curpos; // LSB = column, MSB = row (all 0-255)
+extern uint16_t v_curshape; // LSB = end, MSB = start (all 0-31)
 
 #if !ADT2PLAY
 
@@ -116,6 +121,17 @@ typedef struct {
 
 extern const VGACustomTextMode_t VGACustomTextModes[53];
 
+#if USE_FPC
+#pragma pack(push, 1)
+#endif // USE_FPC
+typedef struct {
+  uint16_t port;
+  uint8_t idx, val;
+} VGARegister_t;
+#if USE_FPC
+#pragma pack(pop)
+#endif // USE_FPC
+
 #endif // !ADT2PLAY
 
 #include "go32/VGA/VGA_wait_while_display_disabled.c"
@@ -131,13 +147,15 @@ void VGA_SetPaletteEntry (uint8_t red, uint8_t green, uint8_t blue,
                           uint8_t index);
 void VGA_SetPalette (const void *palette, uint16_t count, uint8_t index);
 
+uint8_t VGA_GetFontHeight (void);             // CRTC Reg. 0x09
 uint16_t VGA_GetCursorShape (void);           // CRTC Reg. 0x0A, 0x0B
 void VGA_SetCursorShape (uint16_t shape);     // CRTC Reg. 0x0A, 0x0B
+uint16_t VGA_GetCursorLocation (void);        // CRTC Reg. 0x0E, 0x0F
 void VGA_SetPresetRowScan (uint8_t row);      // CRTC Reg. 0x08
 void VGA_SetOffset (uint16_t offset);         // CRTC Reg. 0x13
 void VGA_SetStartAddress (uint16_t address);  // CRTC Reg. 0x0C, 0x0D
 void VGA_SetLineCompare (uint16_t line);      // CRTC Reg. 0x18, 0x07, 0x09
-void VGA_SetPixelPanningMode (bool mode);     // ATTRC Reg. 0x10
+void VGA_SetPixelPanningMode (bool mode);     // AttrC Reg. 0x10
 
 void VGA_ReadTextMode (void);
 void VGA_SetTextMode (uint8_t mode, uint8_t font, uint8_t page);
@@ -148,6 +166,8 @@ void VGA_ResetTextMode (void);
 void VGA_MakeTextMode (uint8_t font, uint8_t cols, uint8_t rows,
                        uint16_t curshape);
 void VGA_MakeCustomTextMode (const VGACustomTextMode_t *mode);
+void VGA_MakeCustomTextModeEx (const VGARegister_t *regs, size_t count,
+                               uint8_t cols, uint8_t rows);
 #endif // !ADT2PLAY
 
 #if ADT2PLAY

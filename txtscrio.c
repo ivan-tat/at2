@@ -28,7 +28,9 @@
 #endif // !ADT2PLAY
 #include "go32/BIOS.h"
 #include "go32/VBIOS.h"
+#if ADT2PLAY
 #include "go32/VGA.h"
+#endif // ADT2PLAY
 #endif // GO32
 #if !ADT2PLAY
 #include "adt2ext2.h"
@@ -179,6 +181,7 @@ tFRAME_SETTING fr_setting = {
 #if GO32
 
 #include "txtscrio/go32/iVGA.c"
+#include "txtscrio/go32/OnInitVideoMode.c"
 #include "txtscrio/go32/initialize.c"
 #if !ADT2PLAY
 #include "txtscrio/go32/ResetMode.c"
@@ -210,7 +213,7 @@ uint8_t fade_speed = 63;
 
 uint8_t svga_txtmode_cols = 100;
 uint8_t svga_txtmode_rows = 37;
-VGA_REG_DATA svga_txtmode_regs = {
+VGARegister_t svga_txtmode_regs[29] = {
   { .port = VGA_MISC_WRITE_PORT, .idx = 0x00, .val = 0x6B }, // Miscellaneous output
   { .port = VGA_CRTC_ADDR_PORT, .idx = 0x00, .val = 0x70 }, // Horizontal total
   { .port = VGA_CRTC_ADDR_PORT, .idx = 0x01, .val = 0x63 }, // Horizontal display enable end
@@ -242,8 +245,6 @@ VGA_REG_DATA svga_txtmode_regs = {
   { .port = VGA_ATTR_WRITE_PORT, .idx = 0x14, .val = 0x00 } // Color select
 };
 
-#include "txtscrio/go32/out_reg.c"
-#include "txtscrio/go32/LoadVgaRegisters.c"
 #include "txtscrio/go32/set_custom_svga_txtmode.c"
 
 #else // ADT2PLAY

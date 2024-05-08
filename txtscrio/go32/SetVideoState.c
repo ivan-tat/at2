@@ -6,10 +6,5 @@
 
 void SetVideoState (VGAVideoState_t *vs, bool restore_screen) {
   VGA_RestoreVideoState (vs, restore_screen);
-
-  MaxCol = v_cols;
-  MaxLn = v_rows;
-#if !ADT2PLAY
-  virtual_cur_shape = v_curshape;
-#endif // !ADT2PLAY
+  OnInitVideoMode (false);
 }

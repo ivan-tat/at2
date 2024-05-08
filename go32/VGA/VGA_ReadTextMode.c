@@ -22,5 +22,5 @@ void VGA_ReadTextMode (void) {
   _farsetsel (orig_fs);
 
   v_curpos = VBIOS_get_cursor_pos (v_page);
-  v_curshape = VGA_GetCursorShape ();
+  VGA_GetCursorShape ();
 }

@@ -22,6 +22,9 @@ interface
 
 {$IFNDEF ADT2PLAY}
 uses
+{$IFDEF GO32V2}
+  VGA,
+{$ENDIF} // DEFINED(GO32V2)
   stringio;
 {$ENDIF} // NOT DEFINED(ADT2PLAY)
 
@@ -213,19 +216,10 @@ procedure set_svga_txtmode_100x38; cdecl; external;
 procedure set_svga_txtmode_128x48; cdecl; external;
 procedure set_custom_svga_txtmode; cdecl; external;
 
-type
-  VGA_REGISTER = Record
-                   port: Word;
-                   idx: Byte;
-                   val: Byte;
-                 end;
-type
-  VGA_REG_DATA = array[1..29] of VGA_REGISTER;
-
 var
   svga_txtmode_cols: Byte; cvar; external;
   svga_txtmode_rows: Byte; cvar; external;
-  svga_txtmode_regs: VGA_REG_DATA; cvar; external;
+  svga_txtmode_regs: array[1..29] of VGARegister_t; cvar; external;
 
 {$ENDIF} // NOT DEFINED(ADT2PLAY)
 
@@ -270,9 +264,10 @@ uses
 {$IFDEF GO32V2}
 {$IFNDEF ADT2PLAY}
   CRT,
-{$ENDIF} // NOT DEFINED(ADT2PLAY)
-  GO32,
+{$ELSE} // DEFINED(ADT2PLAY)
   VGA,
+{$ENDIF} // DEFINED(ADT2PLAY)
+  GO32,
 {$ENDIF} // DEFINED(GO32V2)
   pascal,
 {$IFNDEF ADT2PLAY}

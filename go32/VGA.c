@@ -8,12 +8,10 @@
 
 #if USE_FPC
 #include "pascal/dos.h"
-#include "pascal/pc.h"
 #include "pascal/stdlib.h"
 #include "pascal/string.h"
 #else // !USE_FPC
 #include <dos.h>
-#include <pc.h>
 #include <stdlib.h>
 #include <string.h>
 #endif // !USE_FPC
@@ -27,11 +25,11 @@ uint8_t  v_font = 16;
 uint8_t  v_cols = 80;
 uint8_t  v_rows = 25;
 uint8_t  v_page = 0;
-uint16_t v_regen_size = 4096;
+uint16_t v_regen_size = (80 * 25 * 2 + 0xFF) & ~0xFF;
 uint16_t v_ofs = 0;
 uint16_t v_seg = VGA_SEG_B800;
-uint16_t v_curpos = 0x0000;
-uint16_t v_curshape = 0x0D0E;
+uint16_t v_curpos = 0 + (0 << 8);
+uint16_t v_curshape = 16 - 1 + ((15 - 1) << 8);
 
 #if !ADT2PLAY
 #include "go32/VGA/VGACustomTextModes.c"
@@ -45,6 +43,8 @@ uint16_t v_curshape = 0x0D0E;
 #include "go32/VGA/VGA_SetPaletteEntry.c"
 #include "go32/VGA/VGA_SetPalette.c"
 
+#include "go32/VGA/VGA_GetFontHeight.c"
+#include "go32/VGA/VGA_GetCursorPosition.c"
 #include "go32/VGA/VGA_GetCursorShape.c"
 #include "go32/VGA/VGA_SetCursorShape.c"
 #include "go32/VGA/VGA_SetPresetRowScan.c"
@@ -59,8 +59,10 @@ uint16_t v_curshape = 0x0D0E;
 #if !ADT2PLAY
 #include "go32/VGA/VGA_SetTextModeDimensions.c"
 #include "go32/VGA/VGA_ResetTextMode.c"
+#include "go32/VGA/OnMakeTextMode.c"
 #include "go32/VGA/VGA_MakeTextMode.c"
 #include "go32/VGA/VGA_MakeCustomTextMode.c"
+#include "go32/VGA/VGA_MakeCustomTextModeEx.c"
 #endif // !ADT2PLAY
 
 #if ADT2PLAY

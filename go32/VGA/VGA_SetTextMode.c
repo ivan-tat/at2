@@ -41,5 +41,5 @@ void VGA_SetTextMode (uint8_t mode, uint8_t font, uint8_t page) {
   _farsetsel (orig_fs);
 
   v_curpos = VBIOS_get_cursor_pos (v_page);
-  v_curshape = VGA_GetCursorShape ();
+  VGA_GetCursorShape ();
 }

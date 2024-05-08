@@ -17,6 +17,9 @@
 #include "pascal.h"
 #endif // USE_FPC
 #if !ADT2PLAY
+#if GO32
+#include "go32/VGA.h"
+#endif // GO32
 #include "stringio.h"
 #endif // !ADT2PLAY
 
@@ -235,19 +238,9 @@ void set_svga_txtmode_100x38 (void);
 void set_svga_txtmode_128x48 (void);
 void set_custom_svga_txtmode (void);
 
-#pragma pack(push, 1)
-typedef struct {
-  uint16_t port;
-  uint8_t idx;
-  uint8_t val;
-} VGA_REGISTER;
-#pragma pack(pop)
-
-typedef VGA_REGISTER VGA_REG_DATA[29]; // HINT: (FPC) start index 1
-
 extern uint8_t svga_txtmode_cols;
 extern uint8_t svga_txtmode_rows;
-extern VGA_REG_DATA svga_txtmode_regs;
+extern VGARegister_t svga_txtmode_regs[29];
 
 #else // ADT2PLAY
 

@@ -10,13 +10,14 @@ void VGA_MakeTextMode (uint8_t font, uint8_t cols, uint8_t rows,
   uint16_t orig_fs;
   uint16_t ca, cd; // Controller's Address and Data ports
   bool iflag;
-  int i;
 
   orig_fs = _fargetsel ();
   _farsetsel (_dos_ds);
 
   ca = BDA_get_active_6845_CRTC_port (); // 0x3B4 (mono) or 0x3D4 (color)
   cd = ca + 1;
+
+  _farsetsel (orig_fs);
 
   iflag = disable ();
 
@@ -158,30 +159,14 @@ void VGA_MakeTextMode (uint8_t font, uint8_t cols, uint8_t rows,
   v_cols = cols;
   v_rows = rows;
   v_page = 0;
-  v_regen_size = cols * rows * 2;
-  v_ofs = 0;
+  v_regen_size = (v_cols * v_rows * 2 + 0xFF) & ~0xFF;
+  v_ofs = v_regen_size * v_page;
   v_seg = VGA_SEG_B800;
-  v_curpos = 0;
+  VGA_GetCursorPosition ();
   v_curshape = curshape & 0x1F1F;
 
-  /*** Update BIOS Data Area ***/
-
-  BDA_set_active_video_mode (v_mode);
-  BDA_set_screen_character_height (v_font);
-  BDA_set_screen_text_columns (v_cols);
-  BDA_set_screen_text_rows (v_rows);
-  BDA_set_active_video_page (0);
-  BDA_set_video_regen_buffer_size (v_regen_size);
-  BDA_set_video_page_offset (v_ofs);
-  BDA_set_cursor_position (0, 1, 0); // To force update by VBIOS later
-  for (i = 1; i < 8; i++)
-    BDA_set_cursor_position (i, 0, 0);
-  BDA_set_cursor_shape (v_curshape & 0xFF, v_curshape >> 8);
+  OnMakeTextMode (false);
 
   if (iflag)
     enable ();
-
-  _farsetsel (orig_fs);
-
-  VBIOS_set_cursor_pos (0, 0, 0); // Finally set it
 }
