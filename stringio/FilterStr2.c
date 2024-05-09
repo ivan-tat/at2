@@ -47,9 +47,9 @@ static const unsigned char _treat_char[] = {
 
 String_t FilterStr2 (const String *str, const uint8_t *charset, char chr) {
   String_t r;
+  size_t len = Length (str);
   const unsigned char *s = GetStr (str);
   unsigned char *d = r.str;
-  uint_least8_t len = Length (str);
 
   r.len = len;
 
@@ -58,7 +58,7 @@ String_t FilterStr2 (const String *str, const uint8_t *charset, char chr) {
 
     s++;
 
-    if (!(Set_Contains (charset, c))) {
+    if (!(bit_test (charset, c))) {
       if ((c >= 0x80) && (c <= 0xA5))
         c = _treat_char [c - 0x80];
       else

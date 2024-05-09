@@ -219,11 +219,11 @@ String_t InputStr (const String *s, uint8_t x, uint8_t y, uint8_t ln,
           appn = true;
 
           while ((cloc <= r.len)
-          &&     Set_Contains (is_setting.word_characters, r.str[cloc - 1]))
+          &&     bit_test (is_setting.word_characters, r.str[cloc - 1]))
             Delete ((String *) &r, cloc, 1);
 
           while ((cloc <= r.len)
-          &&     !Set_Contains (is_setting.word_characters, r.str[cloc - 1]))
+          &&     !bit_test (is_setting.word_characters, r.str[cloc - 1]))
             Delete ((String *) &r, cloc, 1);
           break;
 
@@ -236,7 +236,7 @@ String_t InputStr (const String *s, uint8_t x, uint8_t y, uint8_t ln,
           appn = true;
 
           while ((cloc > 1)
-          &&     Set_Contains (is_setting.word_characters, r.str[cloc - 1 - 1])) {
+          &&     bit_test (is_setting.word_characters, r.str[cloc - 1 - 1])) {
             cloc--;
             Delete ((String *) &r, cloc, 1);
             if (xloc > 1)
@@ -244,7 +244,7 @@ String_t InputStr (const String *s, uint8_t x, uint8_t y, uint8_t ln,
           }
 
           while ((cloc > 1)
-          &&     !Set_Contains (is_setting.word_characters, r.str[cloc - 1])) {
+          &&     !bit_test (is_setting.word_characters, r.str[cloc - 1])) {
             cloc--;
             Delete ((String *) &r, cloc, 1);
             if (xloc > 1)
@@ -272,14 +272,14 @@ String_t InputStr (const String *s, uint8_t x, uint8_t y, uint8_t ln,
           appn = true;
 
           while ((cloc > 1)
-          &&     Set_Contains (is_setting.word_characters, r.str[cloc - 1])) {
+          &&     bit_test (is_setting.word_characters, r.str[cloc - 1])) {
             cloc--;
             if (xloc > 1)
               xloc--;
           }
 
           while ((cloc > 1)
-          &&     !Set_Contains (is_setting.word_characters, r.str[cloc - 1])) {
+          &&     !bit_test (is_setting.word_characters, r.str[cloc - 1])) {
             cloc--;
             if (xloc > 1)
               xloc--;
@@ -290,14 +290,14 @@ String_t InputStr (const String *s, uint8_t x, uint8_t y, uint8_t ln,
           appn = true;
 
           while ((cloc < r.len)
-          &&     Set_Contains (is_setting.word_characters, r.str[cloc - 1])) {
+          &&     bit_test (is_setting.word_characters, r.str[cloc - 1])) {
             cloc++;
             if (xloc < ln1)
               xloc++;
           }
 
           while ((cloc < r.len)
-          &&     !Set_Contains (is_setting.word_characters, r.str[cloc - 1])) {
+          &&     !bit_test (is_setting.word_characters, r.str[cloc - 1])) {
             cloc++;
             if (xloc < ln1)
               xloc++;
@@ -356,7 +356,7 @@ String_t InputStr (const String *s, uint8_t x, uint8_t y, uint8_t ln,
         }
       }
 
-      if (chflag && Set_Contains (is_setting.character_set, key & 0xFF)) {
+      if (chflag && bit_test (is_setting.character_set, key & 0xFF)) {
         String_t t;
 
         if (!appn) {

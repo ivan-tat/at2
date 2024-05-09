@@ -6,7 +6,7 @@
 
 // CP437 initialization table
 #pragma pack(push, 1)
-static struct {
+const struct {
   int16_t glyph; // AT2 glyph
   uint16_t uc; // Unicode character
 } CP437_it[] = {

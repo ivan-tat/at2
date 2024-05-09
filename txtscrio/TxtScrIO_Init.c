@@ -262,9 +262,9 @@ void TxtScrIO_Init (void) {
   }
 
   for (i = 0; i < 5; i++) {
-    char s[176+1];
+    AT2_char_t s[176+1];
 
     UTF8nstr_to_AT2 (s, 176, patt_win_tracks[temp][i]);
-    StrToString (patt_win[i], s, 176);
+    StrToString (patt_win[i], (char *) s, 176);
   }
 }

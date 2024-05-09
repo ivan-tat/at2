@@ -6,7 +6,7 @@
 
 // CP437 case conversion initialization table
 #pragma pack(push, 1)
-struct {
+const struct {
   uint8_t upper, lower;
 } CP437_case_conv_it[] = {
   { 0x41, 0x61 }, // 'A'/'a' (U+0041/U+0061) - LATIN CAPITAL/SMALL LETTER A

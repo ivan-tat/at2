@@ -9,18 +9,19 @@
 #endif // USE_FPC
 #include "common.h"
 
-void *memsetw (void *s, int c, size_t n) {
-#if USE_FPC
-  Pascal_FillWord (s, n, c);
-#else // !USE_FPC
-  uint16_t *p = s;
+#if !HAVE_INLINE_bit_set
+#include "common/bit_set.c"
+#endif // !HAVE_INLINE_bit_set
 
-  while (n) {
-    *p = c;
-    p++;
-    n--;
-  }
-#endif // !USE_FPC
+#if !HAVE_INLINE_bit_clear
+#include "common/bit_clear.c"
+#endif // !HAVE_INLINE_bit_clear
 
-  return s;
-}
+#if !HAVE_INLINE_bit_test
+#include "common/bit_test.c"
+#endif // !HAVE_INLINE_bit_test
+
+#include "common/bit_set_range.c"
+#include "common/bit_clear_range.c"
+
+#include "common/memsetw.c"

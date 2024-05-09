@@ -22,31 +22,23 @@
 
 typedef uint8_t CharSet_t[32];
 
-__inline__ void Set_Insert (uint8_t *s, uint8_t value) {
-  s[value / 8] |= 1 << (value % 8);
-}
+#if i386||_X86_||__x86_64
 
-__inline__ void Set_InsertRange (uint8_t *s, uint8_t start, uint8_t end) {
-  size_t i;
+// Inline versions
+#include "common/x86/bit_set.h"
+#include "common/x86/bit_clear.h"
+#include "common/x86/bit_test.h"
 
-  for (i = start; i <= end; i++)
-    s[i / 8] |= 1 << (i % 8);
-}
+#else // !(i386||_X86_||__x86_64)
 
-__inline__ void Set_Remove (uint8_t *s, uint8_t value) {
-  s[value / 8] &= ~(1 << (value % 8));
-}
+void bit_set (uint8_t *s, uint32_t value);
+void bit_clear (uint8_t *s, uint32_t value);
+bool bit_test (const uint8_t *s, uint32_t value);
 
-__inline__ void Set_RemoveRange (uint8_t *s, uint8_t start, uint8_t end) {
-  size_t i;
+#endif // !(i386||_X86_||__x86_64)
 
-  for (i = start; i <= end; i++)
-    s[i / 8] &= ~(1 << (i % 8));
-}
-
-__inline__ bool Set_Contains (const uint8_t *s, uint8_t value) {
-  return (s[value / 8] & (1 << (value % 8))) ? true : false;
-}
+void bit_set_range (uint8_t *s, uint32_t start, uint32_t end);
+void bit_clear_range (uint8_t *s, uint32_t start, uint32_t end);
 
 void *memsetw (void *s, int c, size_t n);
 

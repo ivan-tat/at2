@@ -21,59 +21,41 @@
 // HINT: (FPC) X+: Extended syntax (ON)
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 
-// UCS-2 to `AT2' code page conversion table
-static uint8_t UCS2_to_AT2_ct[0x10000];
+// UCS-2
 
-// `AT2' upper case conversion table
-uint8_t AT2_upper_case_ct[0x100];
+#include "stringio/UCS2_case_conv_it.c"
 
-// `AT2' lower case conversion table
-uint8_t AT2_lower_case_ct[0x100];
+uint8_t UCS2_upper_case_f[(UCS2_CP_SIZE + 7) / 8];
+uint8_t UCS2_lower_case_f[(UCS2_CP_SIZE + 7) / 8];
 
-CharSet_t DEC_NUM_CHARSET = { // '0'..'9'
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  MK_UINT8 (1,1,1,1,1,1,1,1), MK_UINT8 (1,1,0,0,0,0,0,0), // '0'..'9'
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00
-};
+uint16_t UCS2_upper_case_ct[UCS2_CP_SIZE];
+uint16_t UCS2_lower_case_ct[UCS2_CP_SIZE];
 
-CharSet_t HEX_NUM_CHARSET = { // '0'..'9', 'A'..'F', 'a'..'f'
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  MK_UINT8 (1,1,1,1,1,1,1,1), MK_UINT8 (1,1,0,0,0,0,0,0), // '0'..'9'
-  MK_UINT8 (0,1,1,1,1,1,1,0), MK_UINT8 (0,0,0,0,0,0,0,0), // 'A'..'F'
-  0x00, 0x00,
-  MK_UINT8 (0,1,1,1,1,1,1,0), MK_UINT8 (0,0,0,0,0,0,0,0), // 'a'..'f'
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00,
-  0x00, 0x00
-};
+// ASCII (intersects with `AT2' code page)
+
+CharSet_t DEC_NUM_CHARSET;
+CharSet_t HEX_NUM_CHARSET;
+
+// `AT2' code page
 
 #include "stringio/CP437_it.c"
 #include "stringio/CP437_case_conv_it.c"
 
+AT2_char_t UCS2_to_AT2_ct[UCS2_CP_SIZE];
+
+uint8_t AT2_upper_case_f[(AT2_CP_SIZE + 7) / 8];
+uint8_t AT2_lower_case_f[(AT2_CP_SIZE + 7) / 8];
+
+AT2_char_t AT2_upper_case_ct[AT2_CP_SIZE];
+AT2_char_t AT2_lower_case_ct[AT2_CP_SIZE];
+
+// UTF-8
+
 #include "stringio/UTF8_to_wchar.c"
 #include "stringio/UTF8str_to_AT2.c"
 #include "stringio/UTF8nstr_to_AT2.c"
+
+// Mixed CP437 and `AT2' code page, use with caution
 
 #if !ADT2PLAY
 #include "stringio/CStrLen.c"
@@ -81,9 +63,20 @@ CharSet_t HEX_NUM_CHARSET = { // '0'..'9', 'A'..'F', 'a'..'f'
 #include "stringio/C3StrLen.c"
 #endif // !ADT2PLAY
 
+#include "stringio/byte2hex.c"
+#include "stringio/byte2dec.c"
+#include "stringio/Capitalize.c"
+#include "stringio/Upper.c"
+#include "stringio/Lower.c"
+#include "stringio/ExpStrL.c"
 #include "stringio/ExpStrR.c"
+#include "stringio/DietStr.c"
+#include "stringio/CutStr.c"
 #if !ADT2PLAY
 #include "stringio/CutStrR.c"
+#endif // !ADT2PLAY
+#include "stringio/FilterStr.c"
+#if !ADT2PLAY
 #include "stringio/FilterStr2.c"
 #endif // !ADT2PLAY
 #include "stringio/Num2str.c"

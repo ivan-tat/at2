@@ -8,11 +8,11 @@ int32_t Str2num (const String *str, uint8_t base) {
   int32_t value = 0;
 
   if ((base == 2) || (base == 10) || (base == 16)) {
-    const uint8_t *s = GetStr (str);
-    uint_least8_t len = Length (str);
+    size_t len = Length (str);
+    const unsigned char *s = GetStr (str);
 
     while (len) {
-      uint_least8_t c = UpCase (*s);
+      unsigned char c = UpCase (*s);
 
       s++;
 

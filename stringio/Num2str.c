@@ -8,11 +8,11 @@ String_t Num2str (uint32_t num, uint8_t base) {
   String_t r;
 
   if (num && (base >= 2) && (base <= 16)) {
-    char str[32];
-    uint_least8_t len = 0, i = 0;
+    unsigned char str[32];
+    size_t len = 0, i = 0;
 
     do {
-      char n = num % base;
+      unsigned char n = num % base;
 
       num /= base;
       str[len++] = n + ((n <= 9) ? '0' : ('A' - 10));

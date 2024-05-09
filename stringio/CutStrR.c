@@ -6,9 +6,9 @@
 
 String_t CutStrR (const String *str, uint8_t margin) {
   String_t r;
-  const char *s = (const char *) GetStr (str);
-  int len = Length (str);
-  int count = 1 + (margin < len) ? len - margin : 0;
+  size_t len = Length (str);
+  size_t count = 1 + (margin < len) ? len - margin : 0;
+  const unsigned char *s = GetStr (str);
 
   len--;
   while (count && (s[len] == ' ')) {
@@ -18,5 +18,6 @@ String_t CutStrR (const String *str, uint8_t margin) {
 
   r.len = len + 1;
   memcpy (r.str, s, r.len);
+
   return r;
 }
