@@ -121,7 +121,7 @@ String *AppendString (String *dest, const String *src, uint8_t n) {
 
 String_t Copy (const String *s, ssize_t index, ssize_t count) {
   String_t r;
-  int_least8_t len = Length (s);
+  ssize_t len = Length (s);
 
   if (count < 0)
     count = 0;

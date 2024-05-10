@@ -68,12 +68,27 @@ AT2_char_t AT2_lower_case_ct[AT2_CP_SIZE];
 #include "stringio/Capitalize.c"
 #include "stringio/Upper.c"
 #include "stringio/Lower.c"
+#if !ADT2PLAY
+#include "stringio/iCASE.c"
+#include "stringio/RotStrL.c"
+#include "stringio/RotStrR.c"
+#endif // !ADT2PLAY
 #include "stringio/ExpStrL.c"
 #include "stringio/ExpStrR.c"
+#if !ADT2PLAY
+#include "stringio/ExpC2StrL.c"
+#include "stringio/ExpC2StrR.c"
+#include "stringio/ExpC3StrL.c"
+#include "stringio/ExpC3StrR.c"
+#include "stringio/CenterStr.c"
+#endif // !ADT2PLAY
 #include "stringio/DietStr.c"
 #include "stringio/CutStr.c"
 #if !ADT2PLAY
+#include "stringio/CutStrL.c"
 #include "stringio/CutStrR.c"
+#include "stringio/FlipStr.c"
+#include "stringio/FilterStr1.c"
 #endif // !ADT2PLAY
 #include "stringio/FilterStr.c"
 #if !ADT2PLAY
@@ -81,5 +96,8 @@ AT2_char_t AT2_lower_case_ct[AT2_CP_SIZE];
 #endif // !ADT2PLAY
 #include "stringio/Num2str.c"
 #include "stringio/Str2num.c"
+#if !ADT2PLAY
+#include "stringio/Bpm2str.c"
+#endif // !ADT2PLAY
 
 #include "stringio/init_StringIO.c"

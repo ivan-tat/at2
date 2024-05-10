@@ -96,12 +96,27 @@ String_t byte2dec (uint8_t value);
 String_t Capitalize (const String *str);
 String_t Upper (const String *str);
 String_t Lower (const String *str);
+#if !ADT2PLAY
+String_t iCASE (const String *str);
+String_t RotStrL (const String *str1, const String *str2, uint8_t shift);
+String_t RotStrR (const String *str1, const String *str2, uint8_t shift);
+#endif // !ADT2PLAY
 String_t ExpStrL (const String *str, uint8_t size, char chr);
 String_t ExpStrR (const String *str, uint8_t size, char chr);
+#if !ADT2PLAY
+String_t ExpC2StrL (const String *str, uint8_t size, char chr);
+String_t ExpC2StrR (const String *str, uint8_t size, char chr);
+String_t ExpC3StrL (const String *str, uint8_t size, char chr);
+String_t ExpC3StrR (const String *str, uint8_t size, char chr);
+String_t CenterStr (const String *str, uint8_t size);
+#endif // !ADT2PLAY
 String_t DietStr (const String *str, uint8_t size);
 String_t CutStr (const String *str);
 #if !ADT2PLAY
+String_t CutStrL (const String *str, uint8_t margin);
 String_t CutStrR (const String *str, uint8_t margin);
+String_t FlipStr (const String *str);
+String_t FilterStr1 (const String *str, char chr0);
 #endif // !ADT2PLAY
 String_t FilterStr (const String *str, char chr0, char chr1);
 #if !ADT2PLAY
@@ -109,6 +124,9 @@ String_t FilterStr2 (const String *str, const uint8_t *charset, char chr);
 #endif // !ADT2PLAY
 String_t Num2str (uint32_t num, uint8_t base);
 int32_t Str2num (const String *str, uint8_t base);
+#if !ADT2PLAY
+String_t Bpm2str (float bpm);
+#endif // !ADT2PLAY
 
 void init_StringIO (void);
 
