@@ -60,7 +60,7 @@ function Num2str(num: Longint; base: Byte): String; cdecl; external;
 function Str2num(str: String; base: Byte): Longint; cdecl; external;
 function Bpm2str(bpm: Single): String; cdecl; external;
 
-function SameName(mask,str: String): Boolean;
+function SameName(mask,str: String): Boolean; cdecl; external;
 function PathOnly(path: String): String;
 function NameOnly(path: String): String;
 function BaseNameOnly(path: String): String;
@@ -77,14 +77,6 @@ uses
   StrUtils,
   AdT2unit,
   AdT2sys;
-
-function SameName(mask,str: String): Boolean;
-begin
-  If (Length(mask) > Length(str)) then
-    While (mask[Length(mask)] in ['*','?']) and (Length(mask) > Length(str)) do
-      Dec(mask[0]);
-  SameName := IsWild(str,mask,FALSE);
-end;
 
 var
   dir:  DirStr;

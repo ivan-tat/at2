@@ -75,13 +75,26 @@ char *custom_stpncpy (char *dest, const char *src, size_t n) {
   return dest + len;
 }
 
+char *StringToStr (char *dest, String *src, uint8_t n) {
+  size_t l = src ? Length (src) : 0;
+
+  if (l > n)
+    l = n;
+  if (l)
+    memcpy (dest, GetStr (src), l);
+
+  dest[l] = '\0';
+
+  return dest;
+}
+
 String *StrToString (String *dest, const char *src, uint8_t n) {
   size_t l = src ? Pascal_strlen (src) : 0;
 
   if (l > n)
-     l = n;
+    l = n;
   if (l)
-    Pascal_Move (src, dest+1, l);
+    Pascal_Move (src, GetStr (dest), l);
 
   SetLength (dest, l);
 

@@ -126,6 +126,12 @@ String_t Num2str (uint32_t num, uint8_t base);
 int32_t Str2num (const String *str, uint8_t base);
 #if !ADT2PLAY
 String_t Bpm2str (float bpm);
+
+// Ported from Free Pascal `strutils' unit
+ssize_t FindPart (const String *wilds, const String *str);
+bool IsWild (const String *str, const String *wilds, bool ignore_case);
+
+bool SameName (const String *mask, const String *str);
 #endif // !ADT2PLAY
 
 void init_StringIO (void);
