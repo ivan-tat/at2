@@ -131,6 +131,10 @@ String_t Bpm2str (float bpm);
 ssize_t FindPart (const String *wilds, const String *str);
 bool IsWild (const String *str, const String *wilds, bool ignore_case);
 
+String_t Upper_filename (const String *str);
+String_t Lower_filename (const String *str);
+String_t iCASE_filename (const String *str);
+
 bool SameName (const String *mask, const String *str);
 #endif // !ADT2PLAY
 

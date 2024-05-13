@@ -102,6 +102,10 @@ AT2_char_t AT2_lower_case_ct[AT2_CP_SIZE];
 #include "stringio/FindPart.c"
 #include "stringio/IsWild.c"
 
+#include "stringio/Upper_filename.c"
+#include "stringio/Lower_filename.c"
+#include "stringio/iCASE_filename.c"
+
 #include "stringio/SameName.c"
 #endif // !ADT2PLAY
 

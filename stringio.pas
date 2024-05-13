@@ -60,6 +60,10 @@ function Num2str(num: Longint; base: Byte): String; cdecl; external;
 function Str2num(str: String; base: Byte): Longint; cdecl; external;
 function Bpm2str(bpm: Single): String; cdecl; external;
 
+function Upper_filename(str: String): String; cdecl; external;
+function Lower_filename(str: String): String; cdecl; external;
+function iCASE_filename(str: String): String; cdecl; external;
+
 function SameName(mask,str: String): Boolean; cdecl; external;
 function PathOnly(path: String): String;
 function NameOnly(path: String): String;

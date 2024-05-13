@@ -101,10 +101,6 @@ var
 
 {$ENDIF}
 
-function iCASE_filename(str: String): String;
-function Lower_filename(str: String): String;
-function Upper_filename(str: String): String;
-
 procedure ResetF_RW(var f: File);
 procedure ResetF(var f: File);
 procedure RewriteF(var f: File);
@@ -1041,33 +1037,6 @@ begin
 end;
 
 {$ENDIF}
-
-function iCASE_filename(str: String): String;
-begin
-{$IFDEF UNIX}
-  iCASE_filename := str;
-{$ELSE}
-  iCASE_filename := iCASE(str);
-{$ENDIF}
-end;
-
-function Lower_filename(str: String): String;
-begin
-{$IFDEF UNIX}
-  Lower_filename := str;
-{$ELSE}
-  Lower_filename := Lower(str);
-{$ENDIF}
-end;
-
-function Upper_filename(str: String): String;
-begin
-{$IFDEF UNIX}
-  Upper_filename := str;
-{$ELSE}
-  Upper_filename := Upper(str);
-{$ENDIF}
-end;
 
 procedure ResetF_RW(var f: File);
 
