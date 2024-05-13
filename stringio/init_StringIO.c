@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void init_StringIO (void) {
+#if !ADT2PLAY
   uint_least32_t i;
 
   /*** UCS-2 case conversion ***/
@@ -82,4 +83,5 @@ void init_StringIO (void) {
     }
 #endif // AT2_CP_SIZE > 0x100
   }
+#endif // !ADT2PLAY
 }

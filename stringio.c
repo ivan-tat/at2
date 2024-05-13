@@ -6,6 +6,7 @@
 
 #include "defines.h"
 
+#include "platform.h"
 #include "stringio.h"
 #if USE_FPC
 #include "pascal/string.h"
@@ -20,6 +21,8 @@
 // HINT: (FPC) B-: Complete boolean evaluation (off)
 // HINT: (FPC) X+: Extended syntax (ON)
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
+
+#if !ADT2PLAY
 
 // UCS-2
 
@@ -57,10 +60,10 @@ AT2_char_t AT2_lower_case_ct[AT2_CP_SIZE];
 
 // Mixed CP437 and `AT2' code page, use with caution
 
-#if !ADT2PLAY
 #include "stringio/CStrLen.c"
 #include "stringio/CStr2Len.c"
 #include "stringio/C3StrLen.c"
+
 #endif // !ADT2PLAY
 
 #include "stringio/byte2hex.c"
@@ -88,10 +91,10 @@ AT2_char_t AT2_lower_case_ct[AT2_CP_SIZE];
 #include "stringio/CutStrL.c"
 #include "stringio/CutStrR.c"
 #include "stringio/FlipStr.c"
-#include "stringio/FilterStr1.c"
 #endif // !ADT2PLAY
 #include "stringio/FilterStr.c"
 #if !ADT2PLAY
+#include "stringio/FilterStr1.c"
 #include "stringio/FilterStr2.c"
 #endif // !ADT2PLAY
 #include "stringio/Num2str.c"
@@ -99,14 +102,25 @@ AT2_char_t AT2_lower_case_ct[AT2_CP_SIZE];
 #if !ADT2PLAY
 #include "stringio/Bpm2str.c"
 
-#include "stringio/FindPart.c"
-#include "stringio/IsWild.c"
-
 #include "stringio/Upper_filename.c"
+#endif // !ADT2PLAY
 #include "stringio/Lower_filename.c"
+#if !ADT2PLAY
 #include "stringio/iCASE_filename.c"
 
+#include "stringio/FindPart.c"
+#include "stringio/IsWild.c"
 #include "stringio/SameName.c"
 #endif // !ADT2PLAY
+
+#include "stringio/DoDirSeparators.c"
+#include "stringio/_FSplit.c"
+#if !ADT2PLAY
+#include "stringio/FSplit.c"
+#endif // !ADT2PLAY
+#include "stringio/PathOnly.c"
+#include "stringio/NameOnly.c"
+#include "stringio/BaseNameOnly.c"
+#include "stringio/ExtOnly.c"
 
 #include "stringio/init_StringIO.c"

@@ -31,6 +31,12 @@ typedef Shortstring_t String_t;
 extern uint16_t __v2prt0_ds_alias;
 extern uint16_t Pascal_dosmemselector;
 
+#if GO32
+#if USE_FPC
+extern bool Pascal_LFNSupport;
+#endif // USE_FPC
+#endif // GO32
+
 extern void *Pascal_Output;
 
 extern uint16_t *Pascal_InOutRes_ptr;

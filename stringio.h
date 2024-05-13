@@ -14,6 +14,8 @@
 
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 
+#if !ADT2PLAY
+
 // UCS-2 `code page'
 
 #define UCS2_CP_SIZE 0x4000
@@ -37,6 +39,8 @@ extern uint16_t UCS2_lower_case_ct[UCS2_CP_SIZE];
 extern CharSet_t DEC_NUM_CHARSET;
 extern CharSet_t HEX_NUM_CHARSET;
 
+#endif // !ADT2PLAY
+
 __inline__ bool IsUpper (uint8_t c) {
   return (c >= 'A') && (c <= 'Z');
 }
@@ -52,6 +56,8 @@ __inline__ uint8_t UpCase (uint8_t c) {
 __inline__ uint8_t LoCase (uint8_t c) {
   return IsUpper (c) ? c - 'A' + 'a' : c;
 }
+
+#if !ADT2PLAY
 
 // `AT2' code page
 
@@ -85,10 +91,10 @@ AT2_char_t *UTF8nstr_to_AT2 (AT2_char_t *dest, size_t size, const char *s);
 
 // Mixed CP437 and `AT2' code page, use with caution
 
-#if !ADT2PLAY
 uint8_t CStrLen (const String *str);
 uint8_t CStr2Len (const String *str);
 uint8_t C3StrLen (const String *str);
+
 #endif // !ADT2PLAY
 
 String_t byte2hex (uint8_t value);
@@ -127,16 +133,25 @@ int32_t Str2num (const String *str, uint8_t base);
 #if !ADT2PLAY
 String_t Bpm2str (float bpm);
 
-// Ported from Free Pascal `strutils' unit
-ssize_t FindPart (const String *wilds, const String *str);
-bool IsWild (const String *str, const String *wilds, bool ignore_case);
-
 String_t Upper_filename (const String *str);
+#endif // !ADT2PLAY
 String_t Lower_filename (const String *str);
+#if !ADT2PLAY
 String_t iCASE_filename (const String *str);
 
+ssize_t FindPart (const String *wilds, const String *str);
+bool IsWild (const String *str, const String *wilds, bool ignore_case);
 bool SameName (const String *mask, const String *str);
 #endif // !ADT2PLAY
+
+void DoDirSeparators (String *p);
+#if !ADT2PLAY
+void FSplit (const String *path, String *dir, String *name, String *ext);
+#endif // !ADT2PLAY
+String_t PathOnly (const String *path);
+String_t NameOnly (const String *path);
+String_t BaseNameOnly (const String *path);
+String_t ExtOnly (const String *path);
 
 void init_StringIO (void);
 

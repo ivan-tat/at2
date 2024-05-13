@@ -240,6 +240,15 @@ units/PIT.ppu: $(PIT_ppu_deps) $(makefile) | units
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
+stringio_ppu_deps=\
+ $(srcdir)/stringio.pas\
+ stringio.o
+
+units/stringio.ppu: $(stringio_ppu_deps) $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
 txtscrio_ppu_deps=\
  $(srcdir)/txtscrio.pas\
  txtscrio.o\
@@ -273,7 +282,8 @@ a2depack_ppu_deps=\
 a2fileio_ppu_deps=\
  $(srcdir1)/a2fileio.pas\
  $(srcdir)/go32/PIT/pas/PIT_consts.inc\
- $(srcdir)/iloaders.inc
+ $(srcdir)/iloaders.inc\
+ units/stringio.ppu
 
 a2player_ppu_deps=\
  $(srcdir1)/a2player.pas\
@@ -285,10 +295,6 @@ a2scrio_ppu_deps=\
 
 parserio_ppu_deps=\
  $(srcdir1)/parserio.pas
-
-stringio_ppu_deps=\
- $(srcdir1)/stringio.pas\
- stringio.o
 
 # Setup target dependencies
 
@@ -302,10 +308,10 @@ adt2play_bin_deps+=\
  $(a2player_ppu_deps)\
  $(a2scrio_ppu_deps)\
  $(parserio_ppu_deps)\
- $(stringio_ppu_deps)\
  units/a2data.ppu\
  units/common.ppu\
  units/pascal.ppu\
+ units/stringio.ppu\
  units/txtscrio.ppu
 
 ifeq ($(FPC_OS_TARGET),go32v2)

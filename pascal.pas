@@ -9,7 +9,7 @@ unit Pascal;
 {$L pascal/dpmi.o}
 {$L pascal/go32.o}
 {$L pascal/pc.o}
-{$ENDIF}
+{$ENDIF} {DEFINED(GO32V2)}
 {$L pascal/stdio.o}
 {$L pascal/stdlib.o}
 {$L pascal/string.o}
@@ -19,12 +19,15 @@ interface
 {$IFDEF GO32V2}
 uses
   go32;
-{$ENDIF}
+{$ENDIF} {DEFINED(GO32V2)}
 
 const
   PUBLIC_PREFIX = {$IF DEFINED(GO32V2) OR DEFINED(WINDOWS)} '_' {$ELSE} '' {$ENDIF};
 
 var
+{$IFDEF GO32V2}
+  Pascal_LFNSupport: Boolean; cvar;
+{$ENDIF} {DEFINED(GO32V2)}
   Pascal_Output: Pointer; cvar;
   Pascal_InOutRes_ptr: ^Word; cvar;
 
@@ -92,7 +95,7 @@ function Pascal_unlock_code (functionaddr: Pointer; size: Longint): Boolean; cde
 {$I pascal/go32.pas}
 {$I pascal/pc.pas}
 
-{$ENDIF}
+{$ENDIF} {DEFINED(GO32V2)}
 
 {$I pascal/stdio.pas}
 {$I pascal/stdlib.pas}
@@ -370,7 +373,7 @@ begin
   Pascal_unlock_code := go32.unlock_code (functionaddr, size);
 end;
 
-{$ENDIF}
+{$ENDIF} {DEFINED(GO32V2)}
 
 var
   OldExitProc: Pointer;
@@ -385,7 +388,8 @@ begin
 {$IFDEF GO32V2}
   __dpmi_error_ptr := @go32.int31error;
   Pascal_dosmemselector := go32.dosmemselector;
-{$ENDIF}
+  Pascal_LFNSupport := system.LFNSupport;
+{$ENDIF} {DEFINED(GO32V2)}
   Pascal_Output := @system.Output;
   Pascal_InOutRes_ptr := @system.InOutRes;
   OldExitProc := ExitProc;

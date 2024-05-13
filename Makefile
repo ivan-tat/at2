@@ -282,6 +282,15 @@ units/PIT.ppu: $(PIT_ppu_deps) $(makefile) | units
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
+stringio_ppu_deps=\
+ $(srcdir)/stringio.pas\
+ stringio.o
+
+units/stringio.ppu: $(stringio_ppu_deps) $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
 VGA_ppu_deps=\
  $(srcdir)/go32/VGA.pas\
  go32/VGA.o
@@ -373,13 +382,8 @@ opl3emu_ppu_deps=\
 parserio_ppu_deps=\
  $(srcdir)/parserio.pas
 
-stringio_ppu_deps=\
- $(srcdir)/stringio.pas\
- stringio.o
-
 txtscrio_ppu_deps=\
  $(srcdir)/txtscrio.pas\
- $(srcdir)/txtscrio/pas/InputStr.pas\
  txtscrio.o
 
 ifeq ($(FPC_OS_TARGET),go32v2)
@@ -421,11 +425,11 @@ adtrack2_bin_deps+=\
  $(menulib1_ppu_deps)\
  $(menulib2_ppu_deps)\
  $(parserio_ppu_deps)\
- $(stringio_ppu_deps)\
  $(txtscrio_ppu_deps)\
  units/adt2data.ppu\
  units/common.ppu\
- units/pascal.ppu
+ units/pascal.ppu\
+ units/stringio.ppu
 
 ifeq ($(OS_TARGET),Windows)
  adtrack2_bin_deps+=\
