@@ -215,6 +215,22 @@ units/adt2data.ppu: $(srcdir)/adt2data.pas adt2data.o $(makefile) | units
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
+adt2keyb_ppu_deps=\
+ $(srcdir)/adt2keyb.pas\
+ adt2keyb.o\
+ units/pascal.ppu
+
+ifneq ($(findstring $(OS_TARGET),Linux Windows),)
+ adt2keyb_ppu_deps+=\
+  SDL/sdl_events.ppu\
+  SDL/sdl_keyboard.ppu
+endif
+
+units/adt2keyb.ppu: $(adt2keyb_ppu_deps) $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
 units/adt2vesa.ppu: $(srcdir)/go32/adt2vesa.pas go32/adt2vesa.o $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
@@ -323,10 +339,6 @@ adt2ext5_ppu_deps=\
 adt2extn_ppu_deps=\
  $(srcdir)/adt2extn.pas
 
-adt2keyb_ppu_deps=\
- $(srcdir)/adt2keyb.pas\
- adt2keyb.o
-
 adt2opl3_ppu_deps=\
  $(srcdir)/adt2opl3.pas\
  $(opl3emu_ppu_deps)
@@ -414,7 +426,6 @@ adtrack2_bin_deps+=\
  $(adt2ext4_ppu_deps)\
  $(adt2ext5_ppu_deps)\
  $(adt2extn_ppu_deps)\
- $(adt2keyb_ppu_deps)\
  $(adt2opl3_ppu_deps)\
  $(adt2pack_ppu_deps)\
  $(adt2sys_ppu_deps)\
@@ -427,6 +438,7 @@ adtrack2_bin_deps+=\
  $(parserio_ppu_deps)\
  $(txtscrio_ppu_deps)\
  units/adt2data.ppu\
+ units/adt2keyb.ppu\
  units/common.ppu\
  units/pascal.ppu\
  units/stringio.ppu

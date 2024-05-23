@@ -898,7 +898,7 @@ begin
       end;
 
     old_hpos := pattern_hpos;
-    If keypressed then fkey2 := getkey
+    If keypressed then fkey2 := GetKey
     else If NOT (seconds_counter >= ssaver_time) then GOTO _end //CONTINUE
          else begin
                 screen_saver;
@@ -921,12 +921,12 @@ begin
                 track_ch_key[track_ch] := idx;
               end;
 
-        If (fkey2 = kWeird) or (flag AND track_notes) then
+        If (fkey2 = kBquote) or (flag AND track_notes) then
           begin
             idx2 := 1;
             For idx := 1 to nm_track_chan do
               begin
-                If (fkey2 = kWeird) or
+                If (fkey2 = kBquote) or
                    ((track_ch_key[idx2] <> BYTE_NULL) and
                     (track_ch_key[idx2]+12*(current_octave-1) in [1..12*8+1])) then
                   begin
@@ -955,7 +955,7 @@ begin
                         else line_nm := dif2;
                       end;
                     get_chunk(patt_nm,line_nm,curr_ch+idx-1,chunk);
-                    If (fkey2 <> kWeird) then
+                    If (fkey2 <> kBquote) then
                       begin
                         If NOT right_shift_pressed then
                           chunk.note := track_ch_key[idx2]+12*(current_octave-1)
@@ -2324,7 +2324,7 @@ begin
 
     old_patt_page := page;
     old_hpos := hpos;
-    If keypressed then fkey := getkey
+    If keypressed then fkey := GetKey
     else If NOT (seconds_counter >= ssaver_time) then GOTO _end //CONTINUE
          else begin
                 screen_saver;
@@ -4235,7 +4235,7 @@ begin
     end;
 
     If (nope or (fkey = kSPACE) or
-                (fkey = kWeird)) and
+                (fkey = kBquote)) and
        midiboard then
       begin
         nope := FALSE;
@@ -4262,9 +4262,9 @@ begin
 
         fkey_X := fkey;
         If ((fkey = kSPACE) or
-            (((fkey = kWeird) or
+            (((fkey = kBquote) or
               (flag AND (count_pos(hpos) = 0))) and
-              (NOT ((fkey = kWeird) and (count_pos(hpos) >= 2))) or
+              (NOT ((fkey = kBquote) and (count_pos(hpos) >= 2))) or
                track_notes)) then
           begin
             If track_notes then temp1 := nm_track_chan
@@ -4279,7 +4279,7 @@ begin
 
             If NOT nope and (fkey <> kSPACE) then
               For idx := 1 to temp1 do
-                If (fkey = kWeird) or
+                If (fkey = kBquote) or
                    ((track_ch_key[idx2] <> BYTE_NULL) and
                     (track_ch_key[idx2]+12*(current_octave-1) in [1..12*8+1])) then
                   begin
@@ -4287,7 +4287,7 @@ begin
                        NOT (track_notes and mark_lines and (pattern_page MOD mark_line <> 0)) then
                       begin
                         get_chunk(pattern,pattern_page,curr_ch+idx-1,chunk);
-                        If (fkey <> kWeird) then
+                        If (fkey <> kBquote) then
                           begin
                             If NOT right_shift_pressed then
                               chunk.note := track_ch_key[idx2]+12*(current_octave-1)

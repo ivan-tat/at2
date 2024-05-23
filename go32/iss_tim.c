@@ -9,6 +9,7 @@
 // SPDX-FileNotice: Inquisition website: <http://scenergy.dfmk.hu/inquisition/>
 
 #include "defines.h"
+#include "platform.h"
 #if USE_FPC
 #include "pascal.h"
 #include "pascal/dos.h"

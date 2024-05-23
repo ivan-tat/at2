@@ -54,7 +54,9 @@ const
   replay_forbidden:  Boolean   = TRUE;
   single_play:       Boolean   = FALSE;
   calibrating:       Boolean   = FALSE;
-  no_status_refresh: Boolean   = FALSE;
+var
+  no_status_refresh: Boolean; cvar; external;
+const
   do_synchronize:    Boolean   = FALSE;
   space_pressed:     Boolean   = FALSE;
   module_archived:   Boolean   = FALSE;
@@ -112,8 +114,10 @@ var
 
 const
   macro_preview_indic_proc: procedure(state: Byte) = NIL;
-  seconds_counter: Longint = 0;
-  hundereds_counter: Longint = 0;
+var
+  seconds_counter: Longint; cvar; external;
+  hundereds_counter: Longint; cvar; external;
+const
   really_no_status_refresh: Boolean = FALSE;
 
 const
@@ -344,7 +348,7 @@ procedure set_global_volume;
 procedure set_ins_data(ins,chan: Byte);
 procedure init_timer_proc;
 procedure done_timer_proc;
-procedure realtime_gfx_poll_proc;
+procedure realtime_gfx_poll_proc; cdecl;
 procedure decay_bars_refresh; cdecl;
 procedure status_refresh; cdecl;
 procedure trace_update_proc;
@@ -6063,7 +6067,8 @@ begin
 
 end;
 
-procedure realtime_gfx_poll_proc;
+procedure realtime_gfx_poll_proc; cdecl;
+public name PUBLIC_PREFIX + 'realtime_gfx_poll_proc';
 begin
   If _realtime_gfx_no_update then EXIT;
 

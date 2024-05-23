@@ -459,7 +459,7 @@ begin { MenuLib2_Menu }
     end
   else
     Repeat
-      key := getkey;
+      key := GetKey;
       If LookUpKey(key,MenuLib2_mn_setting.terminate_keys,50) then
         If NOT ((key = MenuLib2_mn_setting.terminate_keys[2]) and
                  MenuLib2_mn_setting.edit_contents) then qflg := TRUE

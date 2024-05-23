@@ -569,7 +569,7 @@ begin { PATTERN_ORDER_edit }
       end;
 
     nope := FALSE;
-    If keypressed then fkey := getkey else GOTO _end; //CONTINUE;
+    If keypressed then fkey := GetKey else GOTO _end; //CONTINUE;
 
     Case fkey of
       kLEFT:   If hpos > 1 then Dec(hpos) else If page > 0  then Dec(page);

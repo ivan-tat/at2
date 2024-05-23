@@ -504,7 +504,7 @@ begin
       Repeat
         dl_environment.cur_item := idx2;
         If (Addr(dl_environment.ext_proc) <> NIL) then dl_environment.ext_proc;
-        key := getkey;
+        key := GetKey;
         If LookUpKey(key,dl_setting.terminate_keys,50) then qflg := TRUE;
 
         If NOT qflg then
@@ -1020,7 +1020,7 @@ begin { Menu }
     begin
       Repeat
         mn_environment.keystroke := key;
-        key := getkey;
+        key := GetKey;
         If NOT qflg then
           If (LO(key) in [$20..$0ff]) then
             begin

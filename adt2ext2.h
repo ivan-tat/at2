@@ -9,7 +9,10 @@
 #ifndef ADT2EXT2_H
 #define ADT2EXT2_H
 
+#include <stdint.h>
 #include "ipattord.h"
 #include "ipattern.h"
+
+void process_global_keys (void);
 
 #endif // !defined(ADT2EXT2_H)

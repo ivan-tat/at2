@@ -1190,7 +1190,7 @@ _jmp1:
            end;
 
         3: begin
-             fkey := getkey;
+             fkey := GetKey;
              Case fkey of
                kHOME: _remap_pos := 3;
                kEND,kLEFT: If marking then _remap_pos := 6 else _remap_pos := 5;
@@ -1205,7 +1205,7 @@ _jmp1:
            end;
 
         4: begin
-             fkey := getkey;
+             fkey := GetKey;
              Case fkey of
                kHOME: _remap_pos := 3;
                kEND: If marking then _remap_pos := 6 else _remap_pos := 5;
@@ -1221,7 +1221,7 @@ _jmp1:
            end;
 
         5: begin
-             fkey := getkey;
+             fkey := GetKey;
              Case fkey of
                kHOME: _remap_pos := 3;
                kEND: If marking then _remap_pos := 6 else _remap_pos := 5;
@@ -1237,7 +1237,7 @@ _jmp1:
            end;
 
         6: begin
-             fkey := getkey;
+             fkey := GetKey;
              Case fkey of
                kHOME: _remap_pos := 3;
                kEND: _remap_pos := 6;
@@ -1485,7 +1485,7 @@ _jmp1:
     Repeat
       Case _rearrange_pos of
         1: begin
-             fkey := getkey;
+             fkey := GetKey;
              Case fkey of
                kUP: If (_rearrange_track_pos > 1) then Dec(_rearrange_track_pos)
                     else _rearrange_track_pos := _rearrange_nm_tracks;
@@ -1530,7 +1530,7 @@ _jmp1:
            end;
 
         2: begin
-             fkey := getkey;
+             fkey := GetKey;
              Case fkey of
                kHOME: _rearrange_pos := 2;
                kEND,kLEFT: _rearrange_pos := 3;
@@ -1543,7 +1543,7 @@ _jmp1:
            end;
 
         3: begin
-             fkey := getkey;
+             fkey := GetKey;
              Case fkey of
                kHOME: _rearrange_pos := 2;
                kEND: _rearrange_pos := 3;
@@ -1891,7 +1891,7 @@ _jmp1:
       Case pos of
         1..11: begin
                  GotoXY(xstart+1+pos6[pos],ystart+2);
-                 fkey := getkey;
+                 fkey := GetKey;
 
                  Case fkey of
                    kTAB,
@@ -1983,7 +1983,7 @@ _jmp1:
 
         12..22: begin
                   GotoXY(xstart+1+pos6[pos-11],ystart+5);
-                  fkey := getkey;
+                  fkey := GetKey;
 
                   Case fkey of
                     kTAB,
@@ -2093,7 +2093,7 @@ _jmp1:
 
         27: begin
               GotoXY(xstart+3,ystart+7);
-              fkey := getkey;
+              fkey := GetKey;
               Case fkey of
                 kUP,kShTAB: pos := get_bank_position('?replace_window?posfx',-1)+11;
                 kLEFT: pos := 22;
@@ -2106,7 +2106,7 @@ _jmp1:
             end;
 
         23: begin
-              fkey := getkey;
+              fkey := GetKey;
               Case fkey of
                 kTAB,kDOWN: pos := get_bank_position('?replace_window?posfx',-1);
                 kShTAB,kUP: pos := 27;
@@ -2120,7 +2120,7 @@ _jmp1:
             end;
 
         24: begin
-              fkey := getkey;
+              fkey := GetKey;
               Case fkey of
                 kTAB,kDOWN: pos := get_bank_position('?replace_window?posfx',-1);
                 kShTAB,kUP: pos := 27;
@@ -2135,7 +2135,7 @@ _jmp1:
             end;
 
         25: begin
-              fkey := getkey;
+              fkey := GetKey;
               Case fkey of
                 kTAB,kDOWN: pos := get_bank_position('?replace_window?posfx',-1);
                 kShTAB,kUP: pos := 27;
@@ -2150,7 +2150,7 @@ _jmp1:
             end;
 
         26: begin
-              fkey := getkey;
+              fkey := GetKey;
               Case fkey of
                 kTAB,kDOWN: pos := get_bank_position('?replace_window?posfx',-1);
                 kShTAB,kUP: pos := 27;
@@ -3190,7 +3190,7 @@ _jmp1:
     If _ctrl_alt_flag then
       If keypressed then keyboard_reset_buffer
       else
-    else If keypressed then fkey := getkey;
+    else If keypressed then fkey := GetKey;
 
     If scankey($39) { SPACE } then
       If (play_status = isStopped) then
@@ -4406,7 +4406,7 @@ _jmp1:
              GotoXY(xstart+27,ystart+10);
              If use_large_cursor then WideCursor
              else ThinCursor;
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
                kUP: pos := 3;
@@ -4446,7 +4446,7 @@ _jmp1:
              GotoXY(xstart+3,ystart+13);
              If use_large_cursor then WideCursor
              else ThinCursor;
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
                kLEFT: If (songdata.nm_tracks < 7) then pos := 17 else pos := 111;
@@ -4461,7 +4461,7 @@ _jmp1:
              GotoXY(xstart+3,ystart+14);
              If use_large_cursor then WideCursor
              else ThinCursor;
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
                kUP,kShTAB: pos := 6;
@@ -4477,7 +4477,7 @@ _jmp1:
              GotoXY(xstart+3,ystart+15);
              If use_large_cursor then WideCursor
              else ThinCursor;
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
                kUP: pos := 7;
@@ -4494,7 +4494,7 @@ _jmp1:
              GotoXY(xstart+3,ystart+18);
              If use_large_cursor then WideCursor
              else ThinCursor;
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
                kUP: pos := 8;
@@ -4510,7 +4510,7 @@ _jmp1:
              GotoXY(xstart+3,ystart+19);
              If use_large_cursor then WideCursor
              else ThinCursor;
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
                kUP: pos := 9;
@@ -4527,7 +4527,7 @@ _jmp1:
              GotoXY(xstart+19,ystart+18);
              If use_large_cursor then WideCursor
              else ThinCursor;
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
                kUP: pos := 8;
@@ -4544,7 +4544,7 @@ _jmp1:
              GotoXY(xstart+19,ystart+19);
              If use_large_cursor then WideCursor
              else ThinCursor;
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
                kUP: pos := 11;
@@ -4695,7 +4695,7 @@ _jmp1:
              GotoXY(xstart+3,ystart+24);
              If use_large_cursor then WideCursor
              else ThinCursor;
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
                kLEFT: If (songdata.nm_tracks < 18) then pos := 14 else pos := 155;
@@ -4738,7 +4738,7 @@ _jmp1:
              GotoXY(xstart+3,ystart+25);
              If use_large_cursor then WideCursor
              else ThinCursor;
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
              _check_key_shortcuts;
              Case is_environment.keystroke of
                kUP: pos := 15;
@@ -4759,7 +4759,7 @@ _jmp1:
             GotoXY(xstart+51+(pos-RANGE_PAN_LO) MOD 3*3,ystart+6+(pos-RANGE_PAN_LO) DIV 3);
             If use_large_cursor then WideCursor
             else ThinCursor;
-            is_environment.keystroke := getkey;
+            is_environment.keystroke := GetKey;
             _old_pos_pan := pos;
             _check_key_shortcuts;
             Case is_environment.keystroke of
@@ -4790,7 +4790,7 @@ _jmp1:
             GotoXY(xstart+35+pos_4op*11,ystart+13+pos-RANGE_4OP_LO);
             If use_large_cursor then WideCursor
             else ThinCursor;
-            is_environment.keystroke := getkey;
+            is_environment.keystroke := GetKey;
             _old_pos_4op := pos;
             _check_key_shortcuts;
             Case is_environment.keystroke of
@@ -4848,7 +4848,7 @@ _jmp1:
             GotoXY(xstart+64+(pos-RANGE_LCK_LO) MOD 4*4,ystart+6+(pos-RANGE_LCK_LO) DIV 4);
             If use_large_cursor then WideCursor
             else ThinCursor;
-            is_environment.keystroke := getkey;
+            is_environment.keystroke := GetKey;
             _old_pos_lck := pos;
             _check_key_shortcuts;
             Case is_environment.keystroke of

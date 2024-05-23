@@ -28,7 +28,7 @@ const
   old_block_patt_hpos: Byte = 1;
   old_block_patt_page: Byte = 0;
 
-procedure process_global_keys;
+procedure process_global_keys; cdecl;
 
 procedure PROGRAM_SCREEN_init;
 function  INSTRUMENT_CONTROL_alt(instr: Byte; title: String): Byte;
@@ -363,7 +363,8 @@ begin
 
 end;
 
-procedure process_global_keys;
+procedure process_global_keys; cdecl;
+public name PUBLIC_PREFIX + 'process_global_keys';
 
 var
   temp,temp2: Byte;
@@ -382,7 +383,7 @@ begin
                                   else If scankey(SC_8) then current_octave := 8;
 
   If alt_pressed and NOT ctrl_pressed then
-    If scankey(SC_PLUS) or (shift_pressed and scankey(SC_UP)) then
+    If scankey(SC_NP_PLUS) or (shift_pressed and scankey(SC_UP)) then
       begin
         If (overall_volume < 63) then
           begin
@@ -390,7 +391,7 @@ begin
             set_global_volume;
           end;
       end
-    else If scankey(SC_MINUS2) or (shift_pressed and scankey(SC_DOWN)) then
+    else If scankey(SC_NP_MINUS) or (shift_pressed and scankey(SC_DOWN)) then
            begin
              If (overall_volume > 0) then
                begin

@@ -18,6 +18,10 @@
 
 // BIOS Data Area (BDA)
 
+#include "go32/BIOS/BDA_get_keyboard_flag_byte_0.c"
+#include "go32/BIOS/BDA_get_keyboard_buffer_head.c"
+#include "go32/BIOS/BDA_get_keyboard_buffer_tail.c"
+#include "go32/BIOS/BDA_set_keyboard_buffer_tail.c"
 #include "go32/BIOS/BDA_get_active_video_mode.c"
 #include "go32/BIOS/BDA_set_active_video_mode.c"
 #include "go32/BIOS/BDA_get_screen_character_height.c"

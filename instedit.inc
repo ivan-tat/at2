@@ -2105,7 +2105,7 @@ _jmp1:
         end;
 
       nope := FALSE;
-      If keypressed then fkey := getkey else GOTO _end;
+      If keypressed then fkey := GetKey else GOTO _end;
       If NOT shift_pressed and NOT alt_pressed and NOT ctrl_pressed then
         If (get_4op_to_test <> 0) then
           INSTRUMENT_test(LO(get_4op_to_test),HI(get_4op_to_test),count_channel(pattern_hpos),fkey,TRUE)

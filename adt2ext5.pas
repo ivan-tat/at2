@@ -3898,7 +3898,7 @@ begin { bnk_file_loader }
       If (ticklooper = 0) then
         If keypressed and (index > 1) then
           begin
-            fkey := getkey;
+            fkey := GetKey;
             If (fkey = kESC) then
               begin
                 Dec(index);
@@ -4168,7 +4168,7 @@ begin { fib_file_loader }
       If (ticklooper = 0) then
         If keypressed and (index > 1) then
           begin
-            fkey := getkey;
+            fkey := GetKey;
             If (fkey = kESC) then
               begin
                 Dec(index);
@@ -4422,7 +4422,7 @@ begin { ibk_file_loader }
       If (ticklooper = 0) then
         If keypressed and (index > 1) then
           begin
-            fkey := getkey;
+            fkey := GetKey;
             If (fkey = kESC) then
               begin
                 Dec(index);

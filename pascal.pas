@@ -53,6 +53,8 @@ function Pascal_strpos (const haystack, needle: PChar): PChar; cdecl;
 function Pascal_stripos (const haystack, needle: PChar): PChar; cdecl;
 
 procedure Pascal_Delay (ms: Word); cdecl;
+function Pascal_KeyPressed: Boolean; cdecl;
+function Pascal_ReadKey: Char; cdecl;
 
 // FPC_TRUNC_REAL
 function Pascal_Trunc_Single (x: Single): Single; cdecl;
@@ -213,6 +215,18 @@ procedure Pascal_Delay (ms: Word); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_Delay';
 begin
   crt.Delay (ms);
+end;
+
+function Pascal_KeyPressed: Boolean; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_KeyPressed';
+begin
+  Pascal_KeyPressed := crt.KeyPressed;
+end;
+
+function Pascal_ReadKey: Char; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_ReadKey';
+begin
+  Pascal_ReadKey := crt.ReadKey;
 end;
 
 function Pascal_Trunc_Single (x: Single): Single; cdecl;

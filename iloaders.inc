@@ -5348,7 +5348,7 @@ begin
            dialog_sel_itm_bck+dialog_sel_itm,
            dialog_sel_itm_bck+dialog_sel_short);
 
-  Repeat fkey := getkey;
+  Repeat fkey := GetKey;
   until (fkey = kESC) or (fkey = kENTER) or (HI(fkey) = $2e);
 
   move_to_screen_data := ptr_screen_backup;
@@ -7013,7 +7013,7 @@ begin
            dialog_sel_itm_bck+dialog_sel_itm,
            dialog_sel_itm_bck+dialog_sel_short);
 
-  Repeat fkey := getkey;
+  Repeat fkey := GetKey;
   until (fkey = kESC) or (fkey = kENTER) or (HI(fkey) = $2e);
 
   move_to_screen_data := ptr_screen_backup;

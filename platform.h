@@ -18,6 +18,8 @@
 
 #if GO32
 
+#define _ASM_SYM_STR(x) "_" #x
+
 #if USE_FPC
 #define LFNSupport Pascal_LFNSupport
 #else // !USE_FPC
@@ -26,20 +28,27 @@
 
 #define DRIVE_SEP ':'
 #define DIR_SEP '\\'
+#define DIR_SEP_STR "\\"
 
 #elif WIN32||WIN64
+
+#define _ASM_SYM_STR(x) "_" #x
 
 #define LFNSupport true
 
 #define DRIVE_SEP ':'
 #define DIR_SEP '\\'
+#define DIR_SEP_STR "\\"
 
 #elif linux||unix
+
+#define _ASM_SYM_STR(x) "" #x
 
 #define LFNSupport true
 
 #define DRIVE_SEP '\0' // none
 #define DIR_SEP '/'
+#define DIR_SEP_STR "/"
 
 #endif // linux||unix
 

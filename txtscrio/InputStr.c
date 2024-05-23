@@ -135,7 +135,7 @@ String_t InputStr (const String *s, uint8_t x, uint8_t y, uint8_t ln,
     GotoXY (x + xloc, y);
 
     if (keypressed ()) {
-      key = getkey ();
+      key = GetKey ();
 
       qflg = qflg || LookUpKey (key, is_setting.terminate_keys,
                                 sizeof (is_setting.terminate_keys)

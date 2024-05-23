@@ -12,19 +12,19 @@ static __LOCK_FUNC __NAKED void SysTimerIRQ (void) {
     "pushl   %fs" "\n\t"
     "pushl   %gs" "\n\t"
     "pusha" "\n\t"
-    "movzwl  %cs:_" "__djgpp_ds_alias,%eax" "\n\t"
+    "movzwl  %cs:" _ASM_SYM_STR (__djgpp_ds_alias) ",%eax" "\n\t"
     "movw    %ax,%ds" "\n\t"
     "movw    %ax,%es" "\n\t"
 
 #if USE_FPC
-    "movzwl  _" "_dos_ds,%eax" "\n\t"
+    "movzwl  " _ASM_SYM_STR (_dos_ds) ",%eax" "\n\t"
     "movw    %ax,%fs" "\n\t"
 #endif // USE_FPC
 
-    "call    _" "UpdateUserTimers" "\n\t"
+    "call    " _ASM_SYM_STR (UpdateUserTimers) "\n\t"
 
-    "movl    _" "TimerSpeed,%eax" "\n\t"
-    "movl    $_" "OldTimerCnt,%ebx" "\n\t"
+    "movl    " _ASM_SYM_STR (TimerSpeed) ",%eax" "\n\t"
+    "movl    $" _ASM_SYM_STR (OldTimerCnt) ",%ebx" "\n\t"
     "addl    %eax,(%ebx)" "\n\t"
     "movl    $0x10000,%eax" "\n\t" // PIT_LATENCY_MAX
     "cmpl    %eax,(%ebx)" "\n\t"
@@ -32,7 +32,7 @@ static __LOCK_FUNC __NAKED void SysTimerIRQ (void) {
 
       "subl    %eax,(%ebx)" "\n\t"
 #if !USE_FPC
-      "movzwl  _" "_dos_ds,%eax" "\n\t"
+      "movzwl  " _ASM_SYM_STR (_dos_ds) ",%eax" "\n\t"
       "movw    %ax,%fs" "\n\t"
 #endif // !USE_FPC
       "movl    $1573042,%eax" "\n\t"

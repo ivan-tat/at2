@@ -87,7 +87,7 @@ begin { InputStr }
              ShowStr(screen_ptr,xint+ln1-1,y,' ',atr1);
 
     GotoXY(x+xloc,y);
-    If keypressed then key := getkey else GOTO _end;
+    If keypressed then key := GetKey else GOTO _end;
     If LookupKey(key,is_setting.terminate_keys,50) then qflg := TRUE;
     chflag := FALSE;
 

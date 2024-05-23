@@ -64,6 +64,8 @@ extern char *Pascal_strpos (const char *haystack, const char *needle);
 extern char *Pascal_stripos (const char *haystack, const char *needle);
 
 extern void Pascal_Delay (uint16_t ms);
+extern bool Pascal_KeyPressed (void);
+extern char Pascal_ReadKey (void);
 
 extern float Pascal_Trunc_Single (float x);
 extern double Pascal_Trunc_Double (double x);

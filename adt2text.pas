@@ -1551,7 +1551,7 @@ begin
         Inc(temp);
       end;
 
-    fkey := getkey;
+    fkey := GetKey;
     Case fkey of
       kUP:     begin
                  If (page > 1) then Dec(page);

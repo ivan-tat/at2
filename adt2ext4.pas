@@ -3064,7 +3064,7 @@ _jmp2:
 
         7: begin
              GotoXY(xstart+10+fmreg_cursor_pos-1,ystart+16+(window_area_inc_y DIV 2));
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
 
              If (HI(is_environment.keystroke) = HI(kSlashR)) then
                With songdata.instr_macros[instr].data[fmreg_page] do
@@ -4323,7 +4323,7 @@ _jmp2:
 
        13: begin
              GotoXY(xstart+55+window_area_inc_x,ystart+16+(window_area_inc_y DIV 2));
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
              If _check_macro_speed_change then GOTO _jmp2;
              _check_arp_general_keys;
 
@@ -5029,7 +5029,7 @@ _jmp2:
 
        20: begin
              GotoXY(xstart+72+vibrato_hpos-1+window_area_inc_x,ystart+16+(window_area_inc_y DIV 2));
-             is_environment.keystroke := getkey;
+             is_environment.keystroke := GetKey;
              If _check_macro_speed_change then GOTO _jmp2;
              _check_vib_general_keys;
 
@@ -5247,7 +5247,7 @@ _jmp2:
 
               If keypressed then
                 begin
-                  is_environment.keystroke := getkey;
+                  is_environment.keystroke := GetKey;
                   Case is_environment.keystroke of
                     kF7: For temp := 1 to 20 do reset_chan_data(temp);
 

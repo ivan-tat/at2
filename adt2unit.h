@@ -24,6 +24,11 @@ extern uint8_t ___ADT2UNIT_DATA_START___, ___ADT2UNIT_DATA_END___;
 #include "typcons1.h"
 #include "typcons2.h"
 
+extern bool     no_status_refresh;
+
+extern int32_t seconds_counter;
+extern int32_t hundereds_counter;
+
 extern uint8_t pattord_page;
 extern uint8_t pattord_hpos;
 extern uint8_t pattord_vpos;
@@ -40,5 +45,7 @@ int32_t max (int32_t value, int32_t maximum);
 #if GO32
 void init_adt2unit (void);
 #endif // GO32
+
+void realtime_gfx_poll_proc (void);
 
 #endif // !defined(ADT2UNIT_H)

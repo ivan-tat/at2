@@ -56,4 +56,9 @@ __inline__ void outportw (uint16_t port, uint16_t data) {
 
 void outportsb (uint16_t port, const uint8_t  *buf, size_t len);
 
+int custom_getkey (void); // ALT's have 0x100 set
+
+#define kbhit Pascal_KeyPressed
+#define getkey custom_getkey
+
 #endif // !defined(PASCAL_PC_H)

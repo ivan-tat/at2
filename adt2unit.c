@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
+#include "platform.h"
 #if GO32
 #if USE_FPC
 #include "pascal/stdlib.h"
@@ -30,6 +31,8 @@ uint8_t ___ADT2UNIT_DATA_START___ = 0;
 #include "typcons1.c"
 #include "typcons2.c"
 
+bool     no_status_refresh = false;
+
 uint8_t pattord_page;
 uint8_t pattord_hpos;
 uint8_t pattord_vpos;
@@ -42,6 +45,9 @@ uint8_t pattern_hpos;
 
 #include "adt2unit/min.c"
 #include "adt2unit/max.c"
+
+int32_t seconds_counter = 0;
+int32_t hundereds_counter = 0;
 
 #if GO32
 
