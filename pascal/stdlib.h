@@ -9,6 +9,8 @@
 
 #include "pascal.h"
 
+int custom_abs (int i);
+
 #define ATEXIT_MAX 16
 
 // Returns 0 on success, -1 on error.
@@ -21,6 +23,7 @@ void custom_free (void *ptr);
 void *custom_realloc (void *ptr, size_t size);
 
 // Aliases
+#define abs custom_abs
 #define atexit custom_atexit
 #define exit Pascal_Halt
 #define malloc Pascal_AllocMem

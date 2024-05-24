@@ -64,6 +64,7 @@ SRCS=\
  go32/dpmi.c\
  go32/iss_tim.c\
  go32/VGA.c\
+ opl3emu.c\
  pascal/dos.c\
  pascal/dpmi.c\
  pascal/go32.c\
@@ -263,6 +264,16 @@ units/iss_tim.ppu: $(iss_tim_ppu_deps) $(makefile) | units
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
+opl3emu_ppu_deps=\
+ $(srcdir)/opl3emu.pas\
+ opl3emu.o\
+ units/pascal.ppu
+
+units/opl3emu.ppu: $(opl3emu_ppu_deps) $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
 pascal_ppu_deps=\
  $(srcdir)/pascal.pas\
  $(srcdir)/pascal/stdio.pas\
@@ -341,7 +352,7 @@ adt2extn_ppu_deps=\
 
 adt2opl3_ppu_deps=\
  $(srcdir)/adt2opl3.pas\
- $(opl3emu_ppu_deps)
+ units/opl3emu.ppu
 
 adt2pack_ppu_deps=\
  $(srcdir)/adt2pack.pas
@@ -388,9 +399,6 @@ menulib1_ppu_deps=\
 menulib2_ppu_deps=\
  $(srcdir)/menulib2.pas
 
-opl3emu_ppu_deps=\
- $(srcdir)/opl3emu.pas
-
 parserio_ppu_deps=\
  $(srcdir)/parserio.pas
 
@@ -426,7 +434,6 @@ adtrack2_bin_deps+=\
  $(adt2ext4_ppu_deps)\
  $(adt2ext5_ppu_deps)\
  $(adt2extn_ppu_deps)\
- $(adt2opl3_ppu_deps)\
  $(adt2pack_ppu_deps)\
  $(adt2sys_ppu_deps)\
  $(adt2text_ppu_deps)\

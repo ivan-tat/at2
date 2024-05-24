@@ -8,6 +8,10 @@
 static uint8_t _ExitCount = 0;
 static void (*_ExitList[ATEXIT_MAX]) (void);
 
+int custom_abs (int i) {
+  return (i < 0) ? -i : i;
+}
+
 int custom_atexit (void (*function) (void)) {
   if (_ExitCount < ATEXIT_MAX) {
     _ExitList[_ExitCount++] = function;
