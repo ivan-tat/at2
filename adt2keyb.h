@@ -160,6 +160,8 @@ typedef enum AT2KeyMod {
 
 /* AT2 extended keys */
 
+typedef uint16_t ExtKeyCode; // TODO: Remove enumeration limit - use 32 bits
+
 typedef enum AT2ExtKeyCode {
   ATEK_ANY       = 0x00FF, // Mask for a key or character
   ATEK_MOD_CTRL  = 0x0800,
@@ -704,7 +706,7 @@ void keyboard_toggle_sleep (void);
 void wait_until_F11_F12_released (void);
 void keyboard_poll_input (void);
 bool keypressed (void);
-uint16_t GetKey (void);
+ExtKeyCode GetKey (void);
 bool scankey (uint8_t scancode);
 bool CapsLock (void);
 bool NumLock (void);
@@ -720,7 +722,7 @@ bool both_shifts_pressed (void);
 bool alt_pressed (void);
 bool ctrl_pressed (void);
 bool ctrl_tab_pressed (void);
-bool LookUpKey (uint16_t key, const uint16_t *table, uint8_t size);
+bool LookUpKey (ExtKeyCode key, const ExtKeyCode *table, size_t size);
 void screen_saver (void);
 
 #endif // !defined(ADT2KEYB_H)

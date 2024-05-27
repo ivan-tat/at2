@@ -20,6 +20,7 @@
 #if GO32
 #include "go32/VGA.h"
 #endif // GO32
+#include "adt2keyb.h"
 #include "stringio.h"
 #endif // !ADT2PLAY
 
@@ -264,11 +265,11 @@ typedef struct {
   CharSet_t character_set;
   CharSet_t valid_chars;
   CharSet_t word_characters;
-  uint16_t terminate_keys[50]; // HINT: (FPC) start index 1
+  ExtKeyCode terminate_keys[50]; // HINT: (FPC) start index 1
 } tINPUT_STR_SETTING;
 
 typedef struct {
-  uint16_t keystroke;
+  ExtKeyCode keystroke;
   uint8_t locate_pos;
   bool insert_mode;
   uint32_t min_num;

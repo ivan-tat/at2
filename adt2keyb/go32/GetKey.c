@@ -4,7 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-uint16_t GetKey (void) {
+ExtKeyCode GetKey (void) {
   int x;
 
   no_status_refresh = false;

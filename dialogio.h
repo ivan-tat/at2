@@ -17,7 +17,7 @@
 #pragma pack(push, 1)
 typedef struct {
   tSCREEN_MEM *v_dest;
-  uint16_t keystroke;
+  ExtKeyCode keystroke;
   String   context[255+1];
   bool     unpolite;
   bool     winshade;

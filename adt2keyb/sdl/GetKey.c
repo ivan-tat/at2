@@ -4,7 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-static uint16_t GetKey_proc (void) {
+static ExtKeyCode GetKey_proc (void) {
   while (true) {
     SDL_Event e;
 
@@ -102,7 +102,7 @@ static uint16_t GetKey_proc (void) {
   }
 }
 
-uint16_t GetKey (void) {
+ExtKeyCode GetKey (void) {
   do {
     draw_screen ();
   } while (!keypressed ());
