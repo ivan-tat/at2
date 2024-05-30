@@ -65,6 +65,7 @@ SRCS=\
  go32/iss_tim.c\
  go32/VGA.c\
  opl3emu.c\
+ parserio.c\
  pascal/dos.c\
  pascal/dpmi.c\
  pascal/go32.c\
@@ -274,6 +275,15 @@ units/opl3emu.ppu: $(opl3emu_ppu_deps) $(makefile) | units
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
+parserio_ppu_deps=\
+ $(srcdir)/parserio.pas\
+ parserio.o
+
+units/parserio.ppu: $(parserio_ppu_deps) $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
 pascal_ppu_deps=\
  $(srcdir)/pascal.pas\
  $(srcdir)/pascal/stdio.pas\
@@ -399,9 +409,6 @@ menulib1_ppu_deps=\
 menulib2_ppu_deps=\
  $(srcdir)/menulib2.pas
 
-parserio_ppu_deps=\
- $(srcdir)/parserio.pas
-
 txtscrio_ppu_deps=\
  $(srcdir)/txtscrio.pas\
  txtscrio.o
@@ -442,11 +449,11 @@ adtrack2_bin_deps+=\
  $(dialogio_ppu_deps)\
  $(menulib1_ppu_deps)\
  $(menulib2_ppu_deps)\
- $(parserio_ppu_deps)\
  $(txtscrio_ppu_deps)\
  units/adt2data.ppu\
  units/adt2keyb.ppu\
  units/common.ppu\
+ units/parserio.ppu\
  units/pascal.ppu\
  units/stringio.ppu
 
