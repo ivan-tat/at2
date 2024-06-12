@@ -265,208 +265,84 @@ const
   CHUNK_SIZE = SizeOf(tCHUNK);
   PATTERN_SIZE = 20*256*CHUNK_SIZE;
 
-const
-  status_layout: array[tPLAY_STATUS] of String[10] = ('PLAYiNG   ',
-                                                      'PAUSED    ',
-                                                      'STOPPED   ');
+var
+  status_layout: array[tPLAY_STATUS] of String[10]; cvar; external;
 
-{$IFDEF UNIX}
-const
-  PATHSEP: Char = '/';
-  WILDCARD_ASTERISK: String = '*';
-{$ELSE}
-const
-  PATHSEP: Char = '\';
-  WILDCARD_ASTERISK: String = '*.*';
-{$ENDIF}
+var
+  PATHSEP: Char; cvar; external;
+  WILDCARD_ASTERISK: String; cvar; external; // HINT: (FPC) READ ONLY, size is 2 or 4 (not 256!)
 
 const
   inst_vpos_max = 21;
   inst_hpos_max = 7;
 
-const
-  inst_hpos: array[1..inst_vpos_max,1..inst_hpos_max] of Byte = (
-{1} (+15,+0,+0,+0,+0,+0,+0),
-{2} (+15,+52,+0,+0,+0,+0,+0),
-{3} (+52,+0,+0,+0,+0,+0,+0),
-{4} (+15,+52,+0,+0,+0,+0,+0),
-{5} (+15,+52,+0,+0,+0,+0,+0),
-{6} (+52,+0,+0,+0,+0,+0,+0),
-{7} (+15,+52,+0,+0,+0,+0,+0),
-{8} (+52,+0,+0,+0,+0,+0,+0),
-{9} (+52,+0,+0,+0,+0,+0,+0),
-{10}(+2,+0,+0,+0,+0,+0,+0),
-{11}(+2,+0,+0,+0,+0,+0,+0),
-{12}(+0,+0,+0,+0,+0,+0,+0),
-{13}(+0,+0,+0,+0,+0,+0,+0),
-{14}(+0,+0,+0,+0,+0,+0,+0),
-{15}(+0,+0,+0,+0,+0,+0,+0),
-{16}(+0,+0,+0,+0,+0,+0,+0),
-{17}(+0,+0,+0,+0,+0,+0,+0),
-{18}(+2,+0,+0,+0,+0,+0,+0),
-{19}(+2,+29,+36,+43,+50,+57,+64),
-{20}(+2,+29,+36,+43,+50,+57,+64),
-{21}(+2,+29,+36,+43,+50,+0,+0));
+var
+  inst_hpos: array[1..inst_vpos_max,1..inst_hpos_max] of Byte; cvar; external;
+  inst_hpos_ext_2op: array[1..6,1..inst_hpos_max] of Byte; cvar; external;
+  inst_hpos_ext_perc: array[1..6,1..inst_hpos_max] of Byte; cvar; external;
+  inst_hpos_ext_4op: array[1..6,1..inst_hpos_max] of Byte; cvar; external;
+  inst_vpos: array[1..inst_vpos_max] of Byte; cvar; external;
+
+  note_layout: array[0..12*8+1] of String[3]; cvar; external;
+
+  board_scancodes: array[1..29] of Byte; cvar; external;
+
+  fx_digits: array[0..47] of Char; cvar; external;
 
 const
-  inst_hpos_ext_2op: array[1..6,1..inst_hpos_max] of Byte = (
-{12}(+2,+22,+51,+0,+0,+0,+0),
-{13}(+2,+22,+0,+0,+0,+0,+0),
-{14}(+0,+0,+0,+0,+0,+0,+0),
-{15}(+0,+0,+0,+0,+0,+0,+0),
-{16}(+0,+51,+0,+0,+0,+0,+0),
-{17}(+1,+9,+17,+0,+0,+0,+0));
-
-const
-  inst_hpos_ext_perc: array[1..6,1..inst_hpos_max] of Byte = (
-{12}(+2,+0,+0,+0,+0,+0,+0),
-{13}(+2,+0,+0,+0,+0,+0,+0),
-{14}(+0,+0,+0,+0,+0,+0,+0),
-{15}(+0,+0,+0,+0,+0,+0,+0),
-{16}(+0,+51,+0,+0,+0,+0,+0),
-{17}(+1,+9,+17,+0,+0,+0,+0));
-
-const
-  inst_hpos_ext_4op: array[1..6,1..inst_hpos_max] of Byte = (
-{12}(+2,+0,+51,+0,+0,+0,+0),
-{13}(+2,+0,+0,+0,+0,+0,+0),
-{14}(+22,+0,+0,+0,+0,+0,+0),
-{15}(+22,+0,+0,+0,+0,+0,+0),
-{16}(+22,+51,+0,+0,+0,+0,+0),
-{17}(+1,+9,+17,+22,+0,+0,+0));
-
-const
-  inst_vpos: array[1..inst_vpos_max] of Byte = (+1,+2,+3,+4,+5,+6,+7,+8,+9,+10,+11,+12,+13,+14,+15,+16,
-                                        +17,+20,+21,+22,+23);
-
-const
-  note_layout: array[0..12*8+1] of String[3] = (
-   '   ',
-   'C-1','C#1','D-1','D#1','E-1','F-1','F#1','G-1','G#1','A-1','A#1','%-1',
-   'C-2','C#2','D-2','D#2','E-2','F-2','F#2','G-2','G#2','A-2','A#2','%-2',
-   'C-3','C#3','D-3','D#3','E-3','F-3','F#3','G-3','G#3','A-3','A#3','%-3',
-   'C-4','C#4','D-4','D#4','E-4','F-4','F#4','G-4','G#4','A-4','A#4','%-4',
-   'C-5','C#5','D-5','D#5','E-5','F-5','F#5','G-5','G#5','A-5','A#5','%-5',
-   'C-6','C#6','D-6','D#6','E-6','F-6','F#6','G-6','G#6','A-6','A#6','%-6',
-   'C-7','C#7','D-7','D#7','E-7','F-7','F#7','G-7','G#7','A-7','A#7','%-7',
-   'C-8','C#8','D-8','D#8','E-8','F-8','F#8','G-8','G#8','A-8','A#8','%-8',
-   'C-9');
-
-const
-  board_scancodes: array[1..29] of Byte = (
-    $2c,$1f,$2d,$20,$2e,$2f,$22,$30,$23,$31,$24,$32,
-    $10,$03,$11,$04,$12,$13,$06,$14,$07,$15,$08,$16,$17,$0a,$18,$0b,$19);
-
-const
-  fx_digits: array[0..47] of Char = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ&%!@=#$~^`><';
   NM_FX_DIGITS = SizeOf(fx_digits);
 
-const
-  b_note: Char = 'b';
-  connection_str: array[0..1] of String[2] = ('FM','AM');
-  macro_retrig_str: array[0..7] of String = (#250,#159,#11,#250,#13,#250,#250,#250);
-
-const
-  pos1: array[1..22] of Byte = (+07,+14,+21,+28,+35,+42,+49,+56,+63,+70,+77,+84,+91,+98,+105,+112,+119,+126,+133,+140,+147,+154);
-  pos2: array[1..13] of Byte = (+00,+01,+03,+04,+06,+07,+09,+10,+12,+13,+14,+15,+16);
-
-  { 0123456789ABCDEF }
-  { ... 00 000 000   }
-  { ^   ^  ^   ^     }
-  pos3: array[1..44] of Byte = (+00,+04,+07,+11,      {1}
-                                +15,+19,+22,+26,      {2}
-                                +30,+34,+37,+41,      {3}
-                                +45,+49,+52,+56,      {4}
-                                +60,+64,+67,+71,      {5}
-                                +75,+79,+82,+86,      {6}
-                                +90,+94,+97,+101,     {7}
-                                +105,+109,+112,+116,  {8}
-                                +120,+124,+127,+131,  {9}
-                                +135,+139,+142,+146,  {10}
-                                +150,+154,+157,+161); {11}
-  { 0123456789ABCDEF }
-  { ... 00 000 000   }
-  { ^ ^ ^^ ^^^ ^^^   }
-  pos4: array[1..110] of Byte = (+00,+02,+04,+05,+07,+08,+09,+11,+12,+13,            {1}
-                                +15,+17,+19,+20,+22,+23,+24,+26,+27,+28,             {2}
-                                +30,+32,+34,+35,+37,+38,+39,+41,+42,+43,             {3}
-                                +45,+47,+49,+50,+52,+53,+54,+56,+57,+58,             {4}
-                                 +60,+62,+64,+65,+67,+68,+69,+71,+72,+73,            {5}
-                                 +75,+77,+79,+80,+82,+83,+84,+86,+87,+88,            {6}
-                                 +90,+92,+94,+95,+97,+98,+99,+101,+102,+103,         {7}
-                                 +105,+107,+109,+110,+112,+113,+114,+116,+117,+118,  {8}
-                                 +120,+122,+124,+125,+127,+128,+129,+131,+132,+133,  {9}
-                                 +135,+137,+139,+140,+142,+143,+144,+146,+147,+148,  {10}
-                                 +150,+152,+154,+155,+157,+158,+159,+161,+162,+163); {11}
-
-  pos5: array[1..35] of Byte = (+1,+3,+5,+7,+9,+11,+12,+14,+16,+18,
-                                +19,+20,+21,+23,+25,+27,+29,+31,+33,+34,
-                                +36,+38,+40,+41,+42,+43,+45,+47,
-                                +49,+50,+51,+52,+54,+56,+57);
-
-  pos5vw: array[1..35] of Byte = (+1,+3,+5,+7,+9,+11,+11,+14,+16,+18,
-                                  +19,+20,+21,+23,+25,+27,+29,+31,+33,+33,
-                                  +36,+38,+40,+41,+42,+43,+45,+47,
-                                  +49,+49,+49,+49,+54,+56,+56);
-
-  pos6: array[1..11] of Byte = (+1,+2,+3,+5,+6,+8,+9,+10,+12,+13,+14);
-
 var
+  b_note: Char; cvar; external;
+  connection_str: array[0..1] of String[2]; cvar; external;
+  macro_retrig_str: array[0..7] of String[1]; cvar; external;
+
+  pos1: array[1..22] of Byte; cvar; external;
+  pos2: array[1..13] of Byte; cvar; external;
+  pos3: array[1..44] of Byte; cvar; external;
+  pos4: array[1..110] of Byte; cvar; external;
+  pos5: array[1..35] of Byte; cvar; external;
+  pos5vw: array[1..35] of Byte; cvar; external;
+  pos6: array[1..11] of Byte; cvar; external;
+
   _valid_characters: Set of Char; cvar; external;
   _valid_characters_fname: Set of Char; cvar; external;
 
-const
-  _panning: array[0..2] of Byte = ($30,$10,$20);
+  _panning: array[0..2] of Byte; cvar; external;
 
-const
-  _instr_data_ofs: array[1..13] of Byte = (1,0,3,2,5,4,7,6,9,8,10,11,12);
-  _instr:  array[0..11] of Byte = ($20, $20,
-                                   $40, $40,
-                                   $60, $60,
-                                   $80, $80,
-                                   $0e0,$0e0,
-                                   $0c0,
-                                   $0bd);
+  _instr_data_ofs: array[1..13] of Byte; cvar; external;
+  _instr:  array[0..11] of Byte; cvar; external;
+
 type
   tTRACK_ADDR = array[1..20] of Word;
 
-const                    { 01 - 02 - 03 - 04 - 05 - 06 - 07 - 08 - 09 - 10 - 11 - 12 - 13 - 14 - 15 - 16 - 17 - 18 - 19 - 20 }
-  _chmm_n: tTRACK_ADDR = ($003,$000,$004,$001,$005,$002,$006,$007,$008,$103,$100,$104,$101,$105,$102,$106,$107,$108,BYTE_NULL,BYTE_NULL);
-  _chmm_m: tTRACK_ADDR = ($008,$000,$009,$001,$00a,$002,$010,$011,$012,$108,$100,$109,$101,$10a,$102,$110,$111,$112,BYTE_NULL,BYTE_NULL);
-  _chmm_c: tTRACK_ADDR = ($00b,$003,$00c,$004,$00d,$005,$013,$014,$015,$10b,$103,$10c,$104,$10d,$105,$113,$114,$115,BYTE_NULL,BYTE_NULL);
-                         {                                                                            BD   SD   TT   TC   HH }
-  _chpm_n: tTRACK_ADDR = ($003,$000,$004,$001,$005,$002,$106,$107,$108,$103,$100,$104,$101,$105,$102,$006,$007,$008,$008,$007);
-  _chpm_m: tTRACK_ADDR = ($008,$000,$009,$001,$00a,$002,$110,$111,$112,$108,$100,$109,$101,$10a,$102,$010,$014,$012,$015,$011);
-  _chpm_c: tTRACK_ADDR = ($00b,$003,$00c,$004,$00d,$005,$113,$114,$115,$10b,$103,$10c,$104,$10d,$105,$013,BYTE_NULL,BYTE_NULL,BYTE_NULL,BYTE_NULL);
-
-const
-  _4op_tracks_hi: Set of Byte = [1,3,5,10,12,14];
-  _4op_tracks_lo: Set of Byte = [2,4,6,11,13,15];
-
-const
-  _4op_main_chan: array[1..6] of Byte = (2,4,6,11,13,15);
-  _perc_sim_chan: array[19..20] of Byte = (18,17);
-
 var
-  _chan_n: tTRACK_ADDR;
-  _chan_m: tTRACK_ADDR;
-  _chan_c: tTRACK_ADDR;
-  _ch_tmp: tTRACK_ADDR;
+  _chmm_n: tTRACK_ADDR; cvar; external;
+  _chmm_m: tTRACK_ADDR; cvar; external;
+  _chmm_c: tTRACK_ADDR; cvar; external;
 
-const
-  fade_delay_tab: array[0..63] of Byte = (
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-    3,3,3,3,3,3,3,3,3,3,3,
-    4,4,4,4,4,4,4,
-    5,5,5,5);
+  _chpm_n: tTRACK_ADDR; cvar; external;
+  _chpm_m: tTRACK_ADDR; cvar; external;
+  _chpm_c: tTRACK_ADDR; cvar; external;
 
-const
-  tracing:     Boolean = FALSE;
-  track_notes: Boolean = FALSE;
-  marking:     Boolean = FALSE;
-  debugging:   Boolean = FALSE;
-  quick_cmd:   Boolean = FALSE;
+  _4op_tracks_hi: Set Of Byte; cvar; external;
+  _4op_tracks_lo: Set Of Byte; cvar; external;
+
+  _4op_main_chan: array[1..6] of Byte; cvar; external;
+  _perc_sim_chan: array[19..20] of Byte; cvar; external;
+
+  _chan_n: tTRACK_ADDR; cvar; external;
+  _chan_m: tTRACK_ADDR; cvar; external;
+  _chan_c: tTRACK_ADDR; cvar; external;
+  _ch_tmp: tTRACK_ADDR; cvar; external;
+
+  fade_delay_tab: array[0..63] of Byte; cvar; external;
+
+  tracing:     Boolean; cvar; external;
+  track_notes: Boolean; cvar; external;
+  marking:     Boolean; cvar; external;
+  debugging:   Boolean; cvar; external;
+  quick_cmd:   Boolean; cvar; external;
 
 const
   ef_Arpeggio           = 0;
@@ -622,301 +498,236 @@ var
   sdl_timer_slowdown:  Byte; cvar; external;
   sdl_wav_directory:   String; cvar; external;
 {$ENDIF}
-const
-  init_tempo:         Byte    = 50;
-  init_speed:         Byte    = 6;
-  init_macro_speedup: Word    = 1;
-  midiboard:          Boolean = TRUE;
-  default_octave:     Byte    = 4;
-  patt_len:           Word    = 64;
-  nm_tracks:          Byte    = 18;
-  mod_description:    Boolean = FALSE;
-  highlight_controls: Boolean = TRUE;
-  use_H_for_B:        Boolean = FALSE;
-  linefeed:           Boolean = TRUE;
-  lf_in_mboard_mode:  Boolean = FALSE;
-  update_ins:         Boolean = FALSE;
-  cycle_pattern:      Boolean = TRUE;
-  keep_track_pos:     Boolean = FALSE;
-  remember_ins_pos:   Boolean = TRUE;
-var
+  init_tempo:         Byte; cvar; external;
+  init_speed:         Byte; cvar; external;
+  init_macro_speedup: Word; cvar; external;
+  midiboard:          Boolean; cvar; external;
+  default_octave:     Byte; cvar; external;
+  patt_len:           Word; cvar; external;
+  nm_tracks:          Byte; cvar; external;
+  mod_description:    Boolean; cvar; external;
+  highlight_controls: Boolean; cvar; external;
+  use_H_for_B:        Boolean; cvar; external;
+  linefeed:           Boolean; cvar; external;
+  lf_in_mboard_mode:  Boolean; cvar; external;
+  update_ins:         Boolean; cvar; external;
+  cycle_pattern:      Boolean; cvar; external;
+  keep_track_pos:     Boolean; cvar; external;
+  remember_ins_pos:   Boolean; cvar; external;
   command_typing:     Byte; cvar; external;
-const
-  backspace_dir:      Byte    = 1;
-  mark_line:          Byte    = 4;
-  scroll_bars:        Boolean = TRUE;
-  fforward_factor:    Byte    = 1;
-  rewind_factor:      Byte    = 1;
-var
+  backspace_dir:      Byte; cvar; external;
+  mark_line:          Byte; cvar; external;
+  scroll_bars:        Boolean; cvar; external;
+  fforward_factor:    Byte; cvar; external;
+  rewind_factor:      Byte; cvar; external;
   ssaver_time:        Longint; cvar; external;
-const
-  timer_fix:          Boolean = TRUE;
-  decay_bar_rise:     Real    = 3.00;
-  decay_bar_fall:     Real    = 0.30;
-  force_ins:          Byte    = 0;
-  pattern_layout:     Byte    = 0;
-  trace_by_default:   Boolean = TRUE;
-  nosync_by_default:  Boolean = FALSE;
-  keep_position:      Boolean = TRUE;
-  alt_ins_name:       Boolean = TRUE;
-  adjust_tracks:      Boolean = TRUE;
-  mark_lines:         Boolean = FALSE;
-var
+  timer_fix:          Boolean; cvar; external;
+  decay_bar_rise:     Single; cvar; external;
+  decay_bar_fall:     Single; cvar; external;
+  force_ins:          Byte; cvar; external;
+  pattern_layout:     Byte; cvar; external;
+  trace_by_default:   Boolean; cvar; external;
+  nosync_by_default:  Boolean; cvar; external;
+  keep_position:      Boolean; cvar; external;
+  alt_ins_name:       Boolean; cvar; external;
+  adjust_tracks:      Boolean; cvar; external;
+  mark_lines:         Boolean; cvar; external;
   use_large_cursor:   Boolean; cvar; external;
-const
-  accurate_conv:      Boolean = FALSE;
-  fix_c_note_bug:     Boolean = TRUE;
-  analyzer_bckg:      Byte    = $010;
-  analyzer:           Byte    = $03;
-  analyzer_ovrllvol:  Byte    = $03;
-  analyzer_volumelvl: Byte    = $07;
-  analyzer_modulator: Byte    = $02;
-  analyzer_carrier:   Byte    = $03;
-  pattern_bckg:       Byte    = $010;
-  pattern_border:     Byte    = $0f;
-  pattern_pos_indic:  Byte    = $0b;
-  pattern_pan_indic:  Byte    = $03;
-  pattern_gpan_indic: Byte    = $0f;
-  pattern_lock_indic: Byte    = $07;
-  pattern_4op_indic:  Byte    = $0e;
-  pattern_perc_indic: Byte    = $0f;
-  pattern_chan_indic: Byte    = $0e;
-  pattern_row_bckg:   Byte    = $050;
-  pattern_row_bckg_p: Byte    = $0c0;
-  pattern_row_bckg_m: Byte    = $0b0;
-  pattern_block_bckg: Byte    = $020;
-  pattern_line:       Byte    = $03;
-  pattern_line_p:     Byte    = $00;
-  pattern_line_m:     Byte    = $0b;
-  pattern_hi_line:    Byte    = $0b;
-  pattern_hi_line_m:  Byte    = $03;
-  pattern_note:       Byte    = $07;
-  pattern_hi_note:    Byte    = $0f;
-  pattern_note0:      Byte    = $03;
-  pattern_hi_note0:   Byte    = $0c;
-  pattern_note_hid:   Byte    = $09;
-  pattern_hi_note_h:  Byte    = $07;
-  pattern_inst:       Byte    = $02;
-  pattern_hi_inst:    Byte    = $0a;
-  pattern_inst0:      Byte    = $02;
-  pattern_hi_inst0:   Byte    = $0a;
-  pattern_cmnd:       Byte    = $07;
-  pattern_hi_cmnd:    Byte    = $0f;
-  pattern_cmnd0:      Byte    = $03;
-  pattern_hi_cmnd0:   Byte    = $0b;
-  pattern_note_m:     Byte    = $09;
-  pattern_note0_m:    Byte    = $09;
-  pattern_note_hid_m: Byte    = $0d;
-  pattern_inst_m:     Byte    = $02;
-  pattern_inst0_m:    Byte    = $02;
-  pattern_cmnd_m:     Byte    = $09;
-  pattern_cmnd0_m:    Byte    = $09;
-  pattern_note_b:     Byte    = $0f;
-  pattern_note0_b:    Byte    = $0b;
-  pattern_note_hid_b: Byte    = $05;
-  pattern_inst_b:     Byte    = $0a;
-  pattern_inst0_b:    Byte    = $0a;
-  pattern_cmnd_b:     Byte    = $0f;
-  pattern_cmnd0_b:    Byte    = $0b;
-  pattern_fix_note:   Byte    = $0b;
-  pattern_hi_fx_note: Byte    = $0e;
-  pattern_fix_note_m: Byte    = $0e;
-  pattern_fix_note_b: Byte    = $0e;
-  pattern_cmnd_ctrl:  Byte    = $0d;
-  pattern_input_bckg: Byte    = $0b0;
-  pattern_input:      Byte    = $00;
-  pattern_input_warn: Byte    = $080;
-  debug_info_bckg:    Byte    = $040;
-  debug_info_bckg2:   Byte    = $090;
-  debug_info_border:  Byte    = $05;
-  debug_info_border2: Byte    = $0f;
-  debug_info_title:   Byte    = $0b;
-  debug_info_topic:   Byte    = $0e;
-  debug_info_txt:     Byte    = $07;
-  debug_info_hi_txt:  Byte    = $0f;
-  debug_info_txt_hid: Byte    = $06;
-  debug_info_mod:     Byte    = $02;
-  debug_info_hi_mod:  Byte    = $0a;
-  debug_info_car:     Byte    = $03;
-  debug_info_hi_car:  Byte    = $0b;
-  debug_info_4op:     Byte    = $08;
-  debug_info_perc:    Byte    = $08;
-  debug_info_bpm:     Byte    = $08;
-  help_background:    Byte    = $040;
-  help_title:         Byte    = $0b;
-  help_border:        Byte    = $0f;
-  help_topic:         Byte    = $0c;
-  help_text:          Byte    = $07;
-  help_hi_text:       Byte    = $0c;
-  help_keys:          Byte    = $0f;
-  help_indicators:    Byte    = $0e;
-  dialog_background:  Byte    = $040;
-  dialog_title:       Byte    = $0b;
-  dialog_border:      Byte    = $0f;
-  dialog_text:        Byte    = $0d;
-  dialog_hi_text:     Byte    = $0e;
-  dialog_hid:         Byte    = $06;
-  dialog_item:        Byte    = $0f;
-  dialog_short:       Byte    = $0e;
-  dialog_item_dis:    Byte    = $05;
-  dialog_sel_itm_bck: Byte    = $070;
-  dialog_sel_itm:     Byte    = $00;
-  dialog_sel_short:   Byte    = $04;
-  dialog_context:     Byte    = $0e;
-  dialog_context_dis: Byte    = $07;
-  dialog_contxt_dis2: Byte    = $09;
-  dialog_input_bckg:  Byte    = $070;
-  dialog_input:       Byte    = $00;
-  dialog_def_bckg:    Byte    = $0c0;
-  dialog_def:         Byte    = $00;
-  dialog_prog_bar1:   Byte    = $09;
-  dialog_prog_bar2:   Byte    = $0b;
-  dialog_topic:       Byte    = $0d;
-  dialog_hi_topic:    Byte    = $0e;
-  dialog_mod_text:    Byte    = $0a;
-  dialog_car_text:    Byte    = $0b;
-  dialog_misc_indic:  Byte    = $08;
-  macro_background:   Byte    = $040;
-  macro_title:        Byte    = $0b;
-  macro_border:       Byte    = $0f;
-  macro_topic:        Byte    = $0c;
-  macro_topic2:       Byte    = $0d;
-  macro_hi_topic:     Byte    = $0e;
-  macro_text:         Byte    = $0d;
-  macro_hi_text:      Byte    = $0e;
-  macro_text_dis:     Byte    = $06;
-  macro_text_loop:    Byte    = $0c;
-  macro_text_keyoff:  Byte    = $03;
-  macro_current_bckg: Byte    = $050;
-  macro_current:      Byte    = $0d;
-  macro_current_dis:  Byte    = $00;
-  macro_current_loop: Byte    = $0c;
-  macro_current_koff: Byte    = $0b;
-  macro_input_bckg:   Byte    = $070;
-  macro_input:        Byte    = $00;
-  macro_def_bckg:     Byte    = $0c0;
-  macro_def:          Byte    = $00;
-  macro_scrbar_bckg:  Byte    = $070;
-  macro_scrbar_text:  Byte    = $00;
-  macro_scrbar_mark:  Byte    = $0f;
-  macro_hint:         Byte    = $07;
-  macro_item:         Byte    = $0f;
-  macro_short:        Byte    = $0e;
-  macro_item_dis:     Byte    = $07;
-  macro_sel_itm_bck:  Byte    = $070;
-  macro_sel_itm:      Byte    = $00;
-  macro_sel_short:    Byte    = $04;
-  macro_context:      Byte    = $0e;
-  macro_context_dis:  Byte    = $07;
-  scrollbar_bckg:     Byte    = $030;
-  scrollbar_text:     Byte    = $00;
-  scrollbar_mark:     Byte    = $0b;
-  scrollbar_2nd_mark: Byte    = $0f;
-  main_background:    Byte    = $010;
-  main_title:         Byte    = $0b;
-  main_border:        Byte    = $0b;
-  main_stat_line:     Byte    = $03;
-  main_hi_stat_line:  Byte    = $0b;
-  main_dis_stat_line: Byte    = $05;
-  main_behavior:      Byte    = $0d;
-  main_behavior_dis:  Byte    = $05;
-  status_background:  Byte    = $010;
-  status_border:      Byte    = $0e;
-  status_static_txt:  Byte    = $0b;
-  status_dynamic_txt: Byte    = $0f;
-  status_play_state:  Byte    = $07;
-  status_text_dis:    Byte    = $05;
-  order_background:   Byte    = $010;
-  order_hi_bckg:      Byte    = $050;
-  order_border:       Byte    = $0a;
-  order_entry:        Byte    = $03;
-  order_hi_entry:     Byte    = $0b;
-  order_pattn:        Byte    = $07;
-  order_pattn_jump:   Byte    = $02;
-  order_hi_pattn:     Byte    = $0f;
-  order_played_b:     Byte    = $0c0;
-  order_played:       Byte    = $00;
-  order_input_bckg:   Byte    = $0b0;
-  order_input:        Byte    = $00;
-  order_input_warn:   Byte    = $0c0;
-  instrument_bckg:    Byte    = $040;
-  instrument_title:   Byte    = $0b;
-  instrument_border:  Byte    = $0f;
-  instrument_text:    Byte    = $07;
-  instrument_hi_text: Byte    = $0f;
-  instrument_glob:    Byte    = $0d;
-  instrument_hi_glob: Byte    = $0f;
-  instrument_hid:     Byte    = $06;
-  instrument_mod:     Byte    = $02;
-  instrument_car:     Byte    = $03;
-  instrument_hi_mod:  Byte    = $0a;
-  instrument_hi_car:  Byte    = $0b;
-  instrument_context: Byte    = $0e;
-  instrument_con_dis: Byte    = $05;
-  instrument_adsr:    Byte    = $60;
-  instrument_ai_off:  Byte    = $06;
-  instrument_ai_on:   Byte    = $0d;
-  instrument_ai_trig: Byte    = $0e;
+  accurate_conv:      Boolean; cvar; external;
+  fix_c_note_bug:     Boolean; cvar; external;
+  analyzer_bckg:      Byte; cvar; external;
+  analyzer:           Byte; cvar; external;
+  analyzer_ovrllvol:  Byte; cvar; external;
+  analyzer_volumelvl: Byte; cvar; external;
+  analyzer_modulator: Byte; cvar; external;
+  analyzer_carrier:   Byte; cvar; external;
+  pattern_bckg:       Byte; cvar; external;
+  pattern_border:     Byte; cvar; external;
+  pattern_pos_indic:  Byte; cvar; external;
+  pattern_pan_indic:  Byte; cvar; external;
+  pattern_gpan_indic: Byte; cvar; external;
+  pattern_lock_indic: Byte; cvar; external;
+  pattern_4op_indic:  Byte; cvar; external;
+  pattern_perc_indic: Byte; cvar; external;
+  pattern_chan_indic: Byte; cvar; external;
+  pattern_row_bckg:   Byte; cvar; external;
+  pattern_row_bckg_p: Byte; cvar; external;
+  pattern_row_bckg_m: Byte; cvar; external;
+  pattern_block_bckg: Byte; cvar; external;
+  pattern_line:       Byte; cvar; external;
+  pattern_line_p:     Byte; cvar; external;
+  pattern_line_m:     Byte; cvar; external;
+  pattern_hi_line:    Byte; cvar; external;
+  pattern_hi_line_m:  Byte; cvar; external;
+  pattern_note:       Byte; cvar; external;
+  pattern_hi_note:    Byte; cvar; external;
+  pattern_note0:      Byte; cvar; external;
+  pattern_hi_note0:   Byte; cvar; external;
+  pattern_note_hid:   Byte; cvar; external;
+  pattern_hi_note_h:  Byte; cvar; external;
+  pattern_inst:       Byte; cvar; external;
+  pattern_hi_inst:    Byte; cvar; external;
+  pattern_inst0:      Byte; cvar; external;
+  pattern_hi_inst0:   Byte; cvar; external;
+  pattern_cmnd:       Byte; cvar; external;
+  pattern_hi_cmnd:    Byte; cvar; external;
+  pattern_cmnd0:      Byte; cvar; external;
+  pattern_hi_cmnd0:   Byte; cvar; external;
+  pattern_note_m:     Byte; cvar; external;
+  pattern_note0_m:    Byte; cvar; external;
+  pattern_note_hid_m: Byte; cvar; external;
+  pattern_inst_m:     Byte; cvar; external;
+  pattern_inst0_m:    Byte; cvar; external;
+  pattern_cmnd_m:     Byte; cvar; external;
+  pattern_cmnd0_m:    Byte; cvar; external;
+  pattern_note_b:     Byte; cvar; external;
+  pattern_note0_b:    Byte; cvar; external;
+  pattern_note_hid_b: Byte; cvar; external;
+  pattern_inst_b:     Byte; cvar; external;
+  pattern_inst0_b:    Byte; cvar; external;
+  pattern_cmnd_b:     Byte; cvar; external;
+  pattern_cmnd0_b:    Byte; cvar; external;
+  pattern_fix_note:   Byte; cvar; external;
+  pattern_hi_fx_note: Byte; cvar; external;
+  pattern_fix_note_m: Byte; cvar; external;
+  pattern_fix_note_b: Byte; cvar; external;
+  pattern_cmnd_ctrl:  Byte; cvar; external;
+  pattern_input_bckg: Byte; cvar; external;
+  pattern_input:      Byte; cvar; external;
+  pattern_input_warn: Byte; cvar; external;
+  debug_info_bckg:    Byte; cvar; external;
+  debug_info_bckg2:   Byte; cvar; external;
+  debug_info_border:  Byte; cvar; external;
+  debug_info_border2: Byte; cvar; external;
+  debug_info_title:   Byte; cvar; external;
+  debug_info_topic:   Byte; cvar; external;
+  debug_info_txt:     Byte; cvar; external;
+  debug_info_hi_txt:  Byte; cvar; external;
+  debug_info_txt_hid: Byte; cvar; external;
+  debug_info_mod:     Byte; cvar; external;
+  debug_info_hi_mod:  Byte; cvar; external;
+  debug_info_car:     Byte; cvar; external;
+  debug_info_hi_car:  Byte; cvar; external;
+  debug_info_4op:     Byte; cvar; external;
+  debug_info_perc:    Byte; cvar; external;
+  debug_info_bpm:     Byte; cvar; external;
+  help_background:    Byte; cvar; external;
+  help_title:         Byte; cvar; external;
+  help_border:        Byte; cvar; external;
+  help_topic:         Byte; cvar; external;
+  help_text:          Byte; cvar; external;
+  help_hi_text:       Byte; cvar; external;
+  help_keys:          Byte; cvar; external;
+  help_indicators:    Byte; cvar; external;
+  dialog_background:  Byte; cvar; external;
+  dialog_title:       Byte; cvar; external;
+  dialog_border:      Byte; cvar; external;
+  dialog_text:        Byte; cvar; external;
+  dialog_hi_text:     Byte; cvar; external;
+  dialog_hid:         Byte; cvar; external;
+  dialog_item:        Byte; cvar; external;
+  dialog_short:       Byte; cvar; external;
+  dialog_item_dis:    Byte; cvar; external;
+  dialog_sel_itm_bck: Byte; cvar; external;
+  dialog_sel_itm:     Byte; cvar; external;
+  dialog_sel_short:   Byte; cvar; external;
+  dialog_context:     Byte; cvar; external;
+  dialog_context_dis: Byte; cvar; external;
+  dialog_contxt_dis2: Byte; cvar; external;
+  dialog_input_bckg:  Byte; cvar; external;
+  dialog_input:       Byte; cvar; external;
+  dialog_def_bckg:    Byte; cvar; external;
+  dialog_def:         Byte; cvar; external;
+  dialog_prog_bar1:   Byte; cvar; external;
+  dialog_prog_bar2:   Byte; cvar; external;
+  dialog_topic:       Byte; cvar; external;
+  dialog_hi_topic:    Byte; cvar; external;
+  dialog_mod_text:    Byte; cvar; external;
+  dialog_car_text:    Byte; cvar; external;
+  dialog_misc_indic:  Byte; cvar; external;
+  macro_background:   Byte; cvar; external;
+  macro_title:        Byte; cvar; external;
+  macro_border:       Byte; cvar; external;
+  macro_topic:        Byte; cvar; external;
+  macro_topic2:       Byte; cvar; external;
+  macro_hi_topic:     Byte; cvar; external;
+  macro_text:         Byte; cvar; external;
+  macro_hi_text:      Byte; cvar; external;
+  macro_text_dis:     Byte; cvar; external;
+  macro_text_loop:    Byte; cvar; external;
+  macro_text_keyoff:  Byte; cvar; external;
+  macro_current_bckg: Byte; cvar; external;
+  macro_current:      Byte; cvar; external;
+  macro_current_dis:  Byte; cvar; external;
+  macro_current_loop: Byte; cvar; external;
+  macro_current_koff: Byte; cvar; external;
+  macro_input_bckg:   Byte; cvar; external;
+  macro_input:        Byte; cvar; external;
+  macro_def_bckg:     Byte; cvar; external;
+  macro_def:          Byte; cvar; external;
+  macro_scrbar_bckg:  Byte; cvar; external;
+  macro_scrbar_text:  Byte; cvar; external;
+  macro_scrbar_mark:  Byte; cvar; external;
+  macro_hint:         Byte; cvar; external;
+  macro_item:         Byte; cvar; external;
+  macro_short:        Byte; cvar; external;
+  macro_item_dis:     Byte; cvar; external;
+  macro_sel_itm_bck:  Byte; cvar; external;
+  macro_sel_itm:      Byte; cvar; external;
+  macro_sel_short:    Byte; cvar; external;
+  macro_context:      Byte; cvar; external;
+  macro_context_dis:  Byte; cvar; external;
+  scrollbar_bckg:     Byte; cvar; external;
+  scrollbar_text:     Byte; cvar; external;
+  scrollbar_mark:     Byte; cvar; external;
+  scrollbar_2nd_mark: Byte; cvar; external;
+  main_background:    Byte; cvar; external;
+  main_title:         Byte; cvar; external;
+  main_border:        Byte; cvar; external;
+  main_stat_line:     Byte; cvar; external;
+  main_hi_stat_line:  Byte; cvar; external;
+  main_dis_stat_line: Byte; cvar; external;
+  main_behavior:      Byte; cvar; external;
+  main_behavior_dis:  Byte; cvar; external;
+  status_background:  Byte; cvar; external;
+  status_border:      Byte; cvar; external;
+  status_static_txt:  Byte; cvar; external;
+  status_dynamic_txt: Byte; cvar; external;
+  status_play_state:  Byte; cvar; external;
+  status_text_dis:    Byte; cvar; external;
+  order_background:   Byte; cvar; external;
+  order_hi_bckg:      Byte; cvar; external;
+  order_border:       Byte; cvar; external;
+  order_entry:        Byte; cvar; external;
+  order_hi_entry:     Byte; cvar; external;
+  order_pattn:        Byte; cvar; external;
+  order_pattn_jump:   Byte; cvar; external;
+  order_hi_pattn:     Byte; cvar; external;
+  order_played_b:     Byte; cvar; external;
+  order_played:       Byte; cvar; external;
+  order_input_bckg:   Byte; cvar; external;
+  order_input:        Byte; cvar; external;
+  order_input_warn:   Byte; cvar; external;
+  instrument_bckg:    Byte; cvar; external;
+  instrument_title:   Byte; cvar; external;
+  instrument_border:  Byte; cvar; external;
+  instrument_text:    Byte; cvar; external;
+  instrument_hi_text: Byte; cvar; external;
+  instrument_glob:    Byte; cvar; external;
+  instrument_hi_glob: Byte; cvar; external;
+  instrument_hid:     Byte; cvar; external;
+  instrument_mod:     Byte; cvar; external;
+  instrument_car:     Byte; cvar; external;
+  instrument_hi_mod:  Byte; cvar; external;
+  instrument_hi_car:  Byte; cvar; external;
+  instrument_context: Byte; cvar; external;
+  instrument_con_dis: Byte; cvar; external;
+  instrument_adsr:    Byte; cvar; external;
+  instrument_ai_off:  Byte; cvar; external;
+  instrument_ai_on:   Byte; cvar; external;
+  instrument_ai_trig: Byte; cvar; external;
 
-{$IFDEF GO32V2}
-
-const
-  rgb_color: array[0..15] of tRGB = (
-    (r: 00; g: 00; b: 00),
-    (r: 05; g: 10; b: 30),
-    (r: 00; g: 30; b: 30),
-    (r: 00; g: 30; b: 40),
-    (r: 00; g: 00; b: 20),
-    (r: 15; g: 25; b: 35),
-    (r: 00; g: 10; b: 25),
-    (r: 20; g: 30; b: 40),
-    (r: 45; g: 35; b: 50),
-    (r: 10; g: 20; b: 30),
-    (r: 20; g: 40; b: 40),
-    (r: 20; g: 40; b: 50),
-    (r: 25; g: 35; b: 50),
-    (r: 30; g: 35; b: 45),
-    (r: 35; g: 60; b: 60),
-    (r: 40; g: 50; b: 55));
-
-{$ELSE}
-
-const
-  rgb_color: array[0..15] of tRGB = (
-    (r: 00 SHL 2; g: 00 SHL 2; b: 00 SHL 2; a: 00),
-    (r: 05 SHL 2; g: 10 SHL 2; b: 30 SHL 2; a: 00),
-    (r: 00 SHL 2; g: 30 SHL 2; b: 30 SHL 2; a: 00),
-    (r: 00 SHL 2; g: 30 SHL 2; b: 40 SHL 2; a: 00),
-    (r: 00 SHL 2; g: 00 SHL 2; b: 20 SHL 2; a: 00),
-    (r: 15 SHL 2; g: 25 SHL 2; b: 35 SHL 2; a: 00),
-    (r: 00 SHL 2; g: 10 SHL 2; b: 25 SHL 2; a: 00),
-    (r: 20 SHL 2; g: 30 SHL 2; b: 40 SHL 2; a: 00),
-    (r: 45 SHL 2; g: 35 SHL 2; b: 50 SHL 2; a: 00),
-    (r: 10 SHL 2; g: 20 SHL 2; b: 30 SHL 2; a: 00),
-    (r: 20 SHL 2; g: 40 SHL 2; b: 40 SHL 2; a: 00),
-    (r: 20 SHL 2; g: 40 SHL 2; b: 50 SHL 2; a: 00),
-    (r: 25 SHL 2; g: 35 SHL 2; b: 50 SHL 2; a: 00),
-    (r: 30 SHL 2; g: 35 SHL 2; b: 45 SHL 2; a: 00),
-    (r: 35 SHL 2; g: 60 SHL 2; b: 60 SHL 2; a: 00),
-    (r: 40 SHL 2; g: 50 SHL 2; b: 55 SHL 2; a: 00));
-
-const
-  vga_rgb_color: array[0..15] of tRGB = (
-    (r: $000; g: $000; b: $000; a: 00),
-    (r: $000; g: $000; b: $0aa; a: 00),
-    (r: $000; g: $0aa; b: $000; a: 00),
-    (r: $000; g: $0aa; b: $0aa; a: 00),
-    (r: $0aa; g: $000; b: $000; a: 00),
-    (r: $0aa; g: $000; b: $0aa; a: 00),
-    (r: $0aa; g: $055; b: $000; a: 00),
-    (r: $0aa; g: $0aa; b: $0aa; a: 00),
-    (r: $055; g: $055; b: $055; a: 00),
-    (r: $055; g: $055; b: $0ff; a: 00),
-    (r: $055; g: $0ff; b: $055; a: 00),
-    (r: $055; g: $0ff; b: $0ff; a: 00),
-    (r: $0ff; g: $055; b: $055; a: 00),
-    (r: $0ff; g: $055; b: $0ff; a: 00),
-    (r: $0ff; g: $0ff; b: $055; a: 00),
-    (r: $0ff; g: $0ff; b: $0ff; a: 00));
-
-{$ENDIF}
+  rgb_color: array[0..15] of tRGB; cvar; external;
+{$IFNDEF GO32V2}
+  vga_rgb_color: array[0..15] of tRGB; cvar; external;
+{$ENDIF} // NOT DEFINED(GO32V2)
