@@ -10,11 +10,7 @@
 #define GO32_BIOS_H
 
 #include <stdint.h>
-#if USE_FPC
-#include "pascal/sys/farptr.h"
-#else // !USE_FPC
 #include <sys/farptr.h>
-#endif // !USE_FPC
 
 // BIOS Data Area (BDA)
 

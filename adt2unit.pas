@@ -21,12 +21,9 @@ unit AdT2unit;
 interface
 
 {$IFDEF GO32V2}
-var
-  ___ADT2UNIT_DATA_START___: Byte; cvar; external;
-  ___ADT2UNIT_DATA_END___: Byte; cvar; external;
 const
   ___UNIT_DATA_START___: Dword = 0;
-{$ENDIF}
+{$ENDIF} // DEFINED(GO32V2)
 
 const
   MIN_IRQ_FREQ = 50;
@@ -35,67 +32,47 @@ const
 {$i typcons1.inc}
 {$i typcons2.inc}
 
-const
-  IRQ_freq:          Word      = 50;
-  IRQ_freq_shift:    Integer   = 0;
-  tempo:             Byte      = 50;
-  speed:             Byte      = 6;
-  macro_speedup:     Word      = 1;
-  timer_initialized: Boolean   = FALSE;
-  repeat_pattern:    Boolean   = FALSE;
-  fast_forward:      Boolean   = FALSE;
-  rewind:            Boolean   = FALSE;
-  pattern_break:     Boolean   = FALSE;
-  pattern_delay:     Boolean   = FALSE;
-  next_line:         Byte      = 0;
-  start_order:       Byte      = BYTE_NULL;
-  start_pattern:     Byte      = BYTE_NULL;
-  start_line:        Byte      = BYTE_NULL;
-  replay_forbidden:  Boolean   = TRUE;
-  single_play:       Boolean   = FALSE;
-  calibrating:       Boolean   = FALSE;
 var
+  IRQ_freq:          Word; cvar; external;
+  IRQ_freq_shift:    Integer; cvar; external;
+  tempo:             Byte; cvar; external;
+  speed:             Byte; cvar; external;
+  macro_speedup:     Word; cvar; external;
+  timer_initialized: Boolean; cvar; external;
+  repeat_pattern:    Boolean; cvar; external;
+  fast_forward:      Boolean; cvar; external;
+  _rewind:           Boolean; cvar; external;
+  pattern_break:     Boolean; cvar; external;
+  pattern_delay:     Boolean; cvar; external;
+  next_line:         Byte; cvar; external;
+  start_order:       Byte; cvar; external;
+  start_pattern:     Byte; cvar; external;
+  start_line:        Byte; cvar; external;
+  replay_forbidden:  Boolean; cvar; external;
+  single_play:       Boolean; cvar; external;
+  calibrating:       Boolean; cvar; external;
   no_status_refresh: Boolean; cvar; external;
-const
-  do_synchronize:    Boolean   = FALSE;
-  space_pressed:     Boolean   = FALSE;
-  module_archived:   Boolean   = FALSE;
-  force_scrollbars:  Boolean   = FALSE;
-  no_sync_playing:   Boolean   = FALSE;
-  no_step_debugging: Boolean   = FALSE;
-  play_single_patt:  Boolean   = FALSE;
-  no_trace_pattord:  Boolean   = FALSE;
-  skip_macro_flag:   Boolean   = FALSE;
-  max_patterns:      Byte      = 128;
-  jump_mark_mode:    Boolean   = FALSE;
-  force_macro_keyon: Boolean   = FALSE;
-  ins_trailing_flag: Boolean   = FALSE;
+  do_synchronize:    Boolean; cvar; external;
+  space_pressed:     Boolean; cvar; external;
+  module_archived:   Boolean; cvar; external;
+  force_scrollbars:  Boolean; cvar; external;
+  no_sync_playing:   Boolean; cvar; external;
+  no_step_debugging: Boolean; cvar; external;
+  play_single_patt:  Boolean; cvar; external;
+  no_trace_pattord:  Boolean; cvar; external;
+  skip_macro_flag:   Boolean; cvar; external;
+  max_patterns:      Byte; cvar; external;
+  jump_mark_mode:    Boolean; cvar; external;
+  force_macro_keyon: Boolean; cvar; external;
+  ins_trailing_flag: Boolean; cvar; external;
 
-const
-  def_vibtrem_speed_factor: Byte = 1;
-  def_vibtrem_table_size: Byte = 32;
-  def_vibtrem_table: array[0..255] of Byte = (
-    0,24,49,74,97,120,141,161,180,197,212,224,235,244,250,253,255,
-    253,250,244,235,224,212,197,180,161,141,120,97,74,49,24,
-    0,24,49,74,97,120,141,161,180,197,212,224,235,244,250,253,255,
-    253,250,244,235,224,212,197,180,161,141,120,97,74,49,24,
-    0,24,49,74,97,120,141,161,180,197,212,224,235,244,250,253,255,
-    253,250,244,235,224,212,197,180,161,141,120,97,74,49,24,
-    0,24,49,74,97,120,141,161,180,197,212,224,235,244,250,253,255,
-    253,250,244,235,224,212,197,180,161,141,120,97,74,49,24,
-    0,24,49,74,97,120,141,161,180,197,212,224,235,244,250,253,255,
-    253,250,244,235,224,212,197,180,161,141,120,97,74,49,24,
-    0,24,49,74,97,120,141,161,180,197,212,224,235,244,250,253,255,
-    253,250,244,235,224,212,197,180,161,141,120,97,74,49,24,
-    0,24,49,74,97,120,141,161,180,197,212,224,235,244,250,253,255,
-    253,250,244,235,224,212,197,180,161,141,120,97,74,49,24,
-    0,24,49,74,97,120,141,161,180,197,212,224,235,244,250,253,255,
-    253,250,244,235,224,212,197,180,161,141,120,97,74,49,24);
+  def_vibtrem_speed_factor: Byte; cvar; external;
+  def_vibtrem_table_size: Byte; cvar; external;
+  def_vibtrem_table: array[0..255] of Byte; cvar; external;
 
-var
-  vibtrem_speed_factor: Byte;
-  vibtrem_table_size: Byte;
-  vibtrem_table: array[0..255] of Byte;
+  vibtrem_speed_factor: Byte; cvar; external;
+  vibtrem_table_size: Byte; cvar; external;
+  vibtrem_table: array[0..255] of Byte; cvar; external;
 
 type
   tVIBRATO_TREMOLO_TABLE =
@@ -107,18 +84,16 @@ type
                       fine: Boolean;
                     end;
 var
-  vibr_table:  tVIBRATO_TREMOLO_TABLE;
-  vibr_table2: tVIBRATO_TREMOLO_TABLE;
-  trem_table:  tVIBRATO_TREMOLO_TABLE;
-  trem_table2: tVIBRATO_TREMOLO_TABLE;
+  vibr_table:  tVIBRATO_TREMOLO_TABLE; cvar; external;
+  vibr_table2: tVIBRATO_TREMOLO_TABLE; cvar; external;
+  trem_table:  tVIBRATO_TREMOLO_TABLE; cvar; external;
+  trem_table2: tVIBRATO_TREMOLO_TABLE; cvar; external;
 
-const
-  macro_preview_indic_proc: procedure(state: Byte) = NIL;
-var
+  macro_preview_indic_proc: procedure(state: Byte); cdecl; cvar; external;
+
   seconds_counter: Longint; cvar; external;
   hundereds_counter: Longint; cvar; external;
-const
-  really_no_status_refresh: Boolean = FALSE;
+  really_no_status_refresh: Boolean; cvar; external;
 
 const
   keyoff_flag        = $080;
@@ -127,47 +102,47 @@ const
   pattern_break_flag = $0f0;
 
 var
-  fmpar_table:   array[1..20] of tFM_PARAMETER_TABLE;
-  volume_lock:   array[1..20] of Boolean;
-  vol4op_lock:   array[1..20] of Boolean;
-  volume_table:  array[1..20] of Word;
-  vscale_table:  array[1..20] of Word;
-  peak_lock:     array[1..20] of Boolean;
-  pan_lock:      array[1..20] of Boolean;
-  modulator_vol: array[1..20] of Byte;
-  carrier_vol:   array[1..20] of Byte;
-  decay_bar:     array[1..20] of tDECAY_BAR;
-  volum_bar:     array[1..20] of tVOLUM_BAR;
-  channel_flag:  array[1..20] of Boolean;
-  event_table:   array[1..20] of tCHUNK;
-  voice_table:   array[1..20] of Byte;
-  freq_table:    array[1..20] of Word;
-  zero_fq_table: array[1..20] of Word;
-  effect_table:  array[1..20] of Word;
-  effect_table2: array[1..20] of Word;
-  fslide_table:  array[1..20] of Byte;
-  fslide_table2: array[1..20] of Byte;
-  glfsld_table:  array[1..20] of Word;
-  glfsld_table2: array[1..20] of Word;
-  porta_table:   array[1..20] of Record freq: Word; speed: Byte; end;
-  porta_table2:  array[1..20] of Record freq: Word; speed: Byte; end;
-  portaFK_table: array[1..20] of Boolean;
-  arpgg_table:   array[1..20] of Record state,note,add1,add2: Byte; end;
-  arpgg_table2:  array[1..20] of Record state,note,add1,add2: Byte; end;
-  retrig_table:  array[1..20] of Byte;
-  retrig_table2: array[1..20] of Byte;
-  tremor_table:  array[1..20] of Record pos: Integer; volume: Word; end;
-  tremor_table2: array[1..20] of Record pos: Integer; volume: Word; end;
-  panning_table: array[1..20] of Byte;
-  last_effect:   array[1..20] of Word;
-  last_effect2:  array[1..20] of Word;
-  volslide_type: array[1..20] of Byte;
-  event_new:     array[1..20] of Boolean;
-  freqtable2:    array[1..20] of Word;
-  notedel_table: array[1..20] of Byte;
-  notecut_table: array[1..20] of Byte;
-  ftune_table:   array[1..20] of Shortint;
-  keyoff_loop:   array[1..20] of Boolean;
+  fmpar_table:   array[1..20] of tFM_PARAMETER_TABLE; cvar; external;
+  volume_lock:   array[1..20] of Boolean; cvar; external;
+  vol4op_lock:   array[1..20] of Boolean; cvar; external;
+  volume_table:  array[1..20] of Word; cvar; external;
+  vscale_table:  array[1..20] of Word; cvar; external;
+  peak_lock:     array[1..20] of Boolean; cvar; external;
+  pan_lock:      array[1..20] of Boolean; cvar; external;
+  modulator_vol: array[1..20] of Byte; cvar; external;
+  carrier_vol:   array[1..20] of Byte; cvar; external;
+  decay_bar:     array[1..20] of tDECAY_BAR; cvar; external;
+  volum_bar:     array[1..20] of tVOLUM_BAR; cvar; external;
+  channel_flag:  array[1..20] of Boolean; cvar; external;
+  event_table:   array[1..20] of tCHUNK; cvar; external;
+  voice_table:   array[1..20] of Byte; cvar; external;
+  freq_table:    array[1..20] of Word; cvar; external;
+  zero_fq_table: array[1..20] of Word; cvar; external;
+  effect_table:  array[1..20] of Word; cvar; external;
+  effect_table2: array[1..20] of Word; cvar; external;
+  fslide_table:  array[1..20] of Byte; cvar; external;
+  fslide_table2: array[1..20] of Byte; cvar; external;
+  glfsld_table:  array[1..20] of Word; cvar; external;
+  glfsld_table2: array[1..20] of Word; cvar; external;
+  porta_table:   array[1..20] of Record freq: Word; speed: Byte; end; cvar; external;
+  porta_table2:  array[1..20] of Record freq: Word; speed: Byte; end; cvar; external;
+  portaFK_table: array[1..20] of Boolean; cvar; external;
+  arpgg_table:   array[1..20] of Record state,note,add1,add2: Byte; end; cvar; external;
+  arpgg_table2:  array[1..20] of Record state,note,add1,add2: Byte; end; cvar; external;
+  retrig_table:  array[1..20] of Byte; cvar; external;
+  retrig_table2: array[1..20] of Byte; cvar; external;
+  tremor_table:  array[1..20] of Record pos: Integer; volume: Word; end; cvar; external;
+  tremor_table2: array[1..20] of Record pos: Integer; volume: Word; end; cvar; external;
+  panning_table: array[1..20] of Byte; cvar; external;
+  last_effect:   array[1..20] of Word; cvar; external;
+  last_effect2:  array[1..20] of Word; cvar; external;
+  volslide_type: array[1..20] of Byte; cvar; external;
+  event_new:     array[1..20] of Boolean; cvar; external;
+  freqtable2:    array[1..20] of Word; cvar; external;
+  notedel_table: array[1..20] of Byte; cvar; external;
+  notecut_table: array[1..20] of Byte; cvar; external;
+  ftune_table:   array[1..20] of Shortint; cvar; external;
+  keyoff_loop:   array[1..20] of Boolean; cvar; external;
   macro_table:   array[1..20] of Record
                                    fmreg_pos,arpg_pos,vib_pos: Word;
                                    fmreg_count,fmreg_duration,arpg_count,
@@ -176,58 +151,55 @@ var
                                    fmreg_table,arpg_table,vib_table: Byte;
                                    arpg_note: Byte;
                                    vib_freq: Word;
-                                 end;
+                                 end; cvar; external;
 
-  loopbck_table: array[1..20] of Byte;
-  loop_table:    array[1..20,0..255] of Byte;
-  misc_register: Byte;
-  ai_table:      array[1..255] of Byte;
+  loopbck_table: array[1..20] of Byte; cvar; external;
+  loop_table:    array[1..20,0..255] of Byte; cvar; external;
+  misc_register: Byte; cvar; external;
+  ai_table:      array[1..255] of Byte; cvar; external;
 
-const
-  overall_volume: Byte = 63;
-  global_volume: Byte = 63;
-  fade_out_volume: Byte = 63;
-  playback_speed_shift: Longint = 0;
-  play_status: tPLAY_STATUS = isStopped;
-  chan_pos: Byte = 1;
-  chpos: Byte = 1;
-  transpos: Byte = 1;
-  track_chan_start: Byte = 1;
-  nm_track_chan: Byte = 1;
-  play_pos_buf: array[1..9] of Word = (0,0,0,0,0,0,0,0,0);
-  rec_correction: Byte = 0;
+  overall_volume: Byte; cvar; external;
+  global_volume: Byte; cvar; external;
+  fade_out_volume: Byte; cvar; external;
+  playback_speed_shift: Longint; cvar; external;
+  play_status: tPLAY_STATUS; cvar; external;
+  chan_pos: Byte; cvar; external;
+  chpos: Byte; cvar; external;
+  transpos: Byte; cvar; external;
+  track_chan_start: Byte; cvar; external;
+  nm_track_chan: Byte; cvar; external;
+  play_pos_buf: array[1..9] of Word; cvar; external;
+  rec_correction: Byte; cvar; external;
 
 const
   MACRO_NOTE_RETRIG_FLAG = $80;
   MACRO_ENVELOPE_RESTART_FLAG = $40;
   MACRO_ZERO_FREQ_FLAG = $20;
 
-const
-  current_order: Byte = 0;
-  current_pattern: Byte = 0;
-  current_line: Byte = 0;
-  current_tremolo_depth: Byte = 0;
-  current_vibrato_depth: Byte = 0;
-  current_inst: Byte = 1;
-  current_octave: Byte = 4;
-
 var
-  adt2_title: array[0..36] of String[18];
+  current_order: Byte; cvar; external;
+  current_pattern: Byte; cvar; external;
+  current_line: Byte; cvar; external;
+  current_tremolo_depth: Byte; cvar; external;
+  current_vibrato_depth: Byte; cvar; external;
+  current_inst: Byte; cvar; external;
+  current_octave: Byte; cvar; external;
 
-var
-  songdata_source: String;
-  instdata_source: String;
-  songdata_title:  String;
+  adt2_title: array[0..36] of String[18]; cvar; external;
 
-var
-  songdata_crc,songdata_crc_ord: Longint;
-  temp_instrument: tADTRACK2_INS;
-  temp_instrument2: tADTRACK2_INS;
-  temp_instrument_macro: tREGISTER_TABLE;
-  temp_instrument_macro2: tREGISTER_TABLE;
-  temp_instrument_dis_fmreg_col: tDIS_FMREG_COL;
-  temp_instrument_dis_fmreg_col2: tDIS_FMREG_COL;
-  temp_ins_type: Byte;
+  songdata_source: String; cvar; external;
+  instdata_source: String; cvar; external;
+  songdata_title:  String; cvar; external;
+
+  songdata_crc: Longint; cvar; external;
+  songdata_crc_ord: Longint; cvar; external;
+  temp_instrument: tADTRACK2_INS; cvar; external;
+  temp_instrument2: tADTRACK2_INS; cvar; external;
+  temp_instrument_macro: tREGISTER_TABLE; cvar; external;
+  temp_instrument_macro2: tREGISTER_TABLE; cvar; external;
+  temp_instrument_dis_fmreg_col: tDIS_FMREG_COL; cvar; external;
+  temp_instrument_dis_fmreg_col2: tDIS_FMREG_COL; cvar; external;
+  temp_ins_type: Byte; cvar; external;
   pattord_page: Byte; cvar; external;
   pattord_hpos: Byte; cvar; external;
   pattord_vpos: Byte; cvar; external;
@@ -235,119 +207,122 @@ var
   pattern_patt: Byte; cvar; external;
   pattern_page: Byte; cvar; external;
   pattern_hpos: Byte; cvar; external;
-  limit_exceeded: Boolean;
-  load_flag,load_flag_alt: Byte;
-  reset_chan: array[1..20] of Boolean;
-  reset_adsrw: array[1..20] of Boolean;
-  ignore_note_once: array[1..20] of Boolean;
-  track_notes_ins: Boolean;
-  seek_pattern_break: Boolean;
+  limit_exceeded: Boolean; cvar; external;
+  load_flag: Byte; cvar; external;
+  load_flag_alt: Byte; cvar; external;
+  reset_chan: array[1..20] of Boolean; cvar; external;
+  reset_adsrw: array[1..20] of Boolean; cvar; external;
+  ignore_note_once: array[1..20] of Boolean; cvar; external;
+  track_notes_ins: Boolean; cvar; external;
+  seek_pattern_break: Boolean; cvar; external;
 
-var
-  speed_update,lockvol,panlock,lockVP: Boolean;
-  tremolo_depth,vibrato_depth: Byte;
-  volume_scaling,percussion_mode: Boolean;
-  last_order: Byte;
+  speed_update: Boolean; cvar; external;
+  lockvol: Boolean; cvar; external;
+  panlock: Boolean; cvar; external;
+  lockVP: Boolean; cvar; external;
+  tremolo_depth: Byte; cvar; external;
+  vibrato_depth: Byte; cvar; external;
+  volume_scaling: Boolean; cvar; external;
+  percussion_mode: Boolean; cvar; external;
+  last_order: Byte; cvar; external;
 
-var
-  buf1: tGENERIC_IO_BUFFER;
-  buf2: tGENERIC_IO_BUFFER;
-  buf3: array[WORD] of Byte;
-  buf4: array[WORD] of Byte;
+  buf1: tGENERIC_IO_BUFFER; cvar; external;
+  buf2: tGENERIC_IO_BUFFER; cvar; external;
+  buf3: array[WORD] of Byte; cvar; external;
+  buf4: array[WORD] of Byte; cvar; external;
 
-const
-  pattdata: ^tPATTERN_DATA = NIL;
+  pattdata: ^tPATTERN_DATA; cvar; external;
 
-var
-  old_hash_buffer: tOLD_VARIABLE_DATA1;
-  hash_buffer: tOLD_VARIABLE_DATA2;
-  old_songdata: tOLD_FIXED_SONGDATA;
-  dos_memavail: Word;
+  old_hash_buffer: tOLD_VARIABLE_DATA1; cvar; external;
+  hash_buffer: tOLD_VARIABLE_DATA2; cvar; external;
+  old_songdata: tOLD_FIXED_SONGDATA; cvar; external;
+  dos_memavail: Word; cvar; external;
 
-var
-  songdata:      tFIXED_SONGDATA;
-  songdata_bak:  tFIXED_SONGDATA;
-  temp_songdata: tFIXED_SONGDATA;
-  clipboard:     tCLIPBOARD;
+  songdata:      tFIXED_SONGDATA; cvar; external;
+  songdata_bak:  tFIXED_SONGDATA; cvar; external;
+  temp_songdata: tFIXED_SONGDATA; cvar; external;
+  clipboard:     tCLIPBOARD; cvar; external;
+{
+  ptr_songdata:      Pointer; cvar; external;
+  ptr_songdata_bak:  Pointer; cvar; external;
+  ptr_temp_songdata: Pointer; cvar; external;
+  ptr_clipboard:     Pointer; cvar; external;
+}
+  song_timer: Longint; cvar; external;
+  timer_temp: Longint; cvar; external;
+  song_timer_tenths: Longint; cvar; external;
+  ticks: Longint; cvar; external;
+  tick0: Longint; cvar; external;
+  tickD: Longint; cvar; external;
+  tickXF: Longint; cvar; external;
+  time_playing: Double; cvar; external;
+  time_playing0: Double; cvar; external;
 
-const
-  ptr_songdata:      Pointer = Addr(songdata);
-  ptr_songdata_bak:  Pointer = Addr(songdata_bak);
-  ptr_temp_songdata: Pointer = Addr(ptr_temp_songdata);
-  ptr_clipboard:     Pointer = Addr(clipboard);
-
-var
-  song_timer,timer_temp: Longint;
-  song_timer_tenths: Longint;
-  ticks,tick0,tickD,tickXF: Longint;
-  time_playing,time_playing0: Real;
-
-const
 {$IFDEF GO32V2}
-  timer_determinator: Longint = 1;
-  timer_det2: Longint = 1;
-  scr_scroll_x: Word = 0;
-  old_scr_scroll_x: Word = 0;
-  scr_scroll_y: Word = 0;
-  old_scr_scroll_y: Word = 0;
-{$ELSE}
-  screen_scroll_offset: Word = 0;
-{$ENDIF}
+  timer_determinator: Longint; cvar; external;
+  timer_det2: Longint; cvar; external;
+  scr_scroll_x: Word; cvar; external;
+  old_scr_scroll_x: Word; cvar; external;
+  scr_scroll_y: Word; cvar; external;
+  old_scr_scroll_y: Word; cvar; external;
+{$ELSE} // NOT DEFINED(GO32V2)
+  screen_scroll_offset: Word; cvar; external;
+{$ENDIF} // NOT DEFINED(GO32V2)
 
-var
-  common_flag_backup: Byte;
-  volume_scaling_backup: Boolean;
-  event_table_backup: array[1..20] of tCHUNK;
-  freq_table_backup,freqtable2_backup: array[1..20] of Word;
-  keyoff_loop_backup: array[1..20] of Boolean;
-  channel_flag_backup: array[1..20] of Boolean;
-  fmpar_table_backup: array[1..20] of tFM_PARAMETER_TABLE;
-  volume_table_backup: array[1..20] of Word;
-  pan_lock_backup: array[1..20] of Boolean;
-  volume_lock_backup: array[1..20] of Boolean;
-  peak_lock_backup: array[1..20] of Boolean;
-  panning_table_backup: array[1..20] of Byte;
-  voice_table_backup: array[1..20] of Byte;
-  flag_4op_backup: Byte;
+  common_flag_backup: Byte; cvar; external;
+  volume_scaling_backup: Boolean; cvar; external;
+  event_table_backup: array[1..20] of tCHUNK; cvar; external;
+  freq_table_backup: array[1..20] of Word; cvar; external;
+  freqtable2_backup: array[1..20] of Word; cvar; external;
+  keyoff_loop_backup: array[1..20] of Boolean; cvar; external;
+  channel_flag_backup: array[1..20] of Boolean; cvar; external;
+  fmpar_table_backup: array[1..20] of tFM_PARAMETER_TABLE; cvar; external;
+  volume_table_backup: array[1..20] of Word; cvar; external;
+  pan_lock_backup: array[1..20] of Boolean; cvar; external;
+  volume_lock_backup: array[1..20] of Boolean; cvar; external;
+  peak_lock_backup: array[1..20] of Boolean; cvar; external;
+  panning_table_backup: array[1..20] of Byte; cvar; external;
+  voice_table_backup: array[1..20] of Byte; cvar; external;
+  flag_4op_backup: Byte; cvar; external;
   status_backup: Record
                    replay_forbidden: Boolean;
                    play_status: tPLAY_STATUS;
-                 end;
+                 end; cvar; external;
 
-function  nFreq(note: Byte): Word;
-procedure change_freq(chan: Byte; freq: Word);
-function  calc_pattern_pos(pattern: Byte): Byte;
-function  concw(lo,hi: Byte): Word;
-function  ins_parameter(ins,param: Byte): Byte;
-function  is_chan_adsr_data_empty(chan: Byte): Boolean;
-function  is_ins_adsr_data_empty(ins: Byte): Boolean;
-function  scale_volume(volume,scale_factor: Byte): Byte;
-function  _macro_speedup: Word;
+function  nFreq(note: Byte): Word; cdecl; external;
+procedure change_freq(chan: Byte; freq: Word); cdecl; external;
+function  calc_pattern_pos(pattern: Byte): Byte; cdecl; external;
+function  concw(lo,hi: Byte): Word; cdecl; external;
+function  ins_parameter(ins,param: Byte): Byte; cdecl; external;
+function  is_chan_adsr_data_empty(chan: Byte): Boolean; cdecl; external;
+function  is_ins_adsr_data_empty(ins: Byte): Boolean; cdecl; external;
+function  scale_volume(volume,scale_factor: Byte): Byte; cdecl; external;
+function  _macro_speedup: Word; cdecl; external;
 procedure calibrate_player(order,line: Byte; status_filter: Boolean;
                            line_dependent: Boolean);
-procedure update_timer(Hz: Word);
-procedure key_on(chan: Byte);
-procedure key_off(chan: Byte);
-procedure release_sustaining_sound(chan: Byte);
-procedure init_macro_table(chan,note,ins: Byte; freq: Word);
-procedure set_ins_volume(modulator,carrier,chan: Byte);
-procedure update_modulator_adsrw(chan: Byte);
-procedure update_carrier_adsrw(chan: Byte);
+procedure update_timer(Hz: Word); cdecl; external;
+procedure key_on(chan: Byte); cdecl; external;
+procedure key_off(chan: Byte); cdecl; external;
+procedure release_sustaining_sound(chan: Byte); cdecl; external;
+procedure init_macro_table(chan,note,ins: Byte; freq: Word); cdecl;
+procedure set_ins_volume(modulator,carrier,chan: Byte); cdecl; external;
+procedure update_modulator_adsrw(chan: Byte); cdecl; external;
+procedure update_carrier_adsrw(chan: Byte); cdecl; external;
 procedure update_fmpar(chan: Byte);
 procedure reset_chan_data(chan: Byte);
-procedure poll_proc;
-procedure macro_poll_proc;
+procedure poll_proc; cdecl;
+procedure macro_poll_proc; cdecl;
 procedure init_buffers;
 procedure init_player;
 procedure reset_player;
 procedure start_playing;
 procedure stop_playing;
 procedure update_song_position;
-procedure change_frequency(chan: Byte; freq: Word);
+procedure change_frequency(chan: Byte; freq: Word); cdecl; external;
 procedure set_global_volume;
-procedure set_ins_data(ins,chan: Byte);
-procedure init_timer_proc;
-procedure done_timer_proc;
+procedure set_ins_data(ins,chan: Byte); cdecl; external;
+procedure init_timer_proc; cdecl; external;
+procedure done_timer_proc; cdecl; external;
 procedure realtime_gfx_poll_proc; cdecl;
 procedure decay_bars_refresh; cdecl;
 procedure status_refresh; cdecl;
@@ -372,8 +347,8 @@ function  calc_max_speedup(tempo: Byte): Word;
 function  calc_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
 function  calc_realtime_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
 function  calc_order_jump: Integer;
-function  calc_following_order(order: Byte): Integer;
-function  is_4op_chan(chan: Byte): Boolean;
+function  calc_following_order(order: Byte): Integer; cdecl;
+function  is_4op_chan(chan: Byte): Boolean; cdecl; external;
 
 procedure count_order(var entries: Byte);
 procedure count_patterns(var patterns: Byte);
@@ -388,46 +363,43 @@ procedure output_note(note,ins,chan: Byte;
 function  min(value: Longint; minimum: Longint): Longint; cdecl; external;
 function  max(value: Longint; maximum: Longint): Longint; cdecl; external;
 function  asciiz_string(str: String): String;
-procedure TimerSetup(Hz: Longint);
+procedure TimerSetup(Hz: Longint); cdecl; external;
 
-const
-  block_xstart: Byte = 1;
-  block_ystart: Byte = 0;
+var
+  block_xstart: Byte; cvar; external;
+  block_ystart: Byte; cvar; external;
 
-const
-  block_x0: Byte = 0;
-  block_y0: Byte = 1;
-  block_x1: Byte = 0;
-  block_y1: Byte = 1;
+  block_x0: Byte; cvar; external;
+  block_y0: Byte; cvar; external;
+  block_x1: Byte; cvar; external;
+  block_y1: Byte; cvar; external;
 
 function  is_in_block(x0,y0,x1,y1: Byte): Boolean;
 procedure fade_out_playback(fade_screen: Boolean);
 
-const
-  ticklooper: Longint = 0;
-  macro_ticklooper: Longint = 0;
+var
+  ticklooper: Longint; cvar; external;
+  macro_ticklooper: Longint; cvar; external;
 
 const
 {$IFDEF GO32V2}
   MAX_NUM_BANK_POSITIONS = 1000;
-{$ELSE}
+{$ELSE} // NOT DEFINED(GO32V2)
   MAX_NUM_BANK_POSITIONS = 500;
-{$ENDIF}
-
-const
-  bank_position_list_size: Longint = 0;
+{$ENDIF} // NOT DEFINED(GO32V2)
 
 var
+  bank_position_list_size: Longint; cvar; external;
   bank_position_list:
     array[1..MAX_NUM_BANK_POSITIONS] of Record
 {$IFDEF GO32V2}
                                           bank_name: String[50];
-{$ELSE}
+{$ELSE} // NOT DEFINED(GO32V2)
                                           bank_name: String;
-{$ENDIF}
+{$ENDIF} // NOT DEFINED(GO32V2)
                                           bank_size: Longint;
                                           bank_position: Longint;
-                                        end;
+                                        end; cvar; external;
 
 function  get_bank_position(bank_name: String; bank_size: Longint): Longint;
 procedure add_bank_position(bank_name: String; bank_size: Longint; bank_position: Longint);
@@ -435,9 +407,11 @@ procedure add_bank_position(bank_name: String; bank_size: Longint; bank_position
 {$IFDEF GO32V2}
 const
   ___UNIT_DATA_END___: Dword = 0;
-{$ENDIF}
+{$ENDIF} // DEFINED(GO32V2)
 
 procedure init_adt2unit; cdecl; external;
+
+procedure timer_poll_proc; cdecl; // TODO: remove when done (private)
 
 implementation
 
@@ -448,11 +422,11 @@ uses
   GO32,
   PIT,
   ISS_Tim,
-{$ELSE}
+{$ELSE} // NOT DEFINED(GO32V2)
   DOS,
   SDL_Types,
   SDL_Timer,
-{$ENDIF}
+{$ENDIF} // NOT DEFINED(GO32V2)
   pascal,
   AdT2opl3,
   AdT2sys,
@@ -471,290 +445,17 @@ const
 
 procedure ___IRQ_CODE_START___; begin end;
 
-{$ENDIF}
+{$ENDIF} // DEFINED(GO32V2)
 
 const
   FreqStart = $156;
   FreqEnd   = $2ae;
   FreqRange = FreqEnd-FreqStart;
 
-function nFreq(note: Byte): Word;
-
-const
-  Fnum: array[0..11] of Word = (
-    $157,$16b,$181,$198,$1b0,$1ca,$1e5,$202,$220,$241,$263,$287);
-
-var
-  result: Word;
-
-begin
-  asm
-        xor     ebx,ebx
-        mov     al,[note]
-        xor     ah,ah
-        cmp     ax,12*8
-        jae     @@1
-        push    eax
-        mov     bl,12
-        div     bl
-        mov     bl,ah
-        xor     bh,bh
-        shl     bx,1
-        pop     eax
-        mov     cl,12
-        div     cl
-        xor     ah,ah
-        shl     ax,10
-        add     ax,word ptr [Fnum+ebx]
-        jmp     @@2
-@@1:    mov     ax,7
-        shl     ax,10
-        add     ax,FreqEnd
-@@2:    mov     result,ax
-  end;
-  nFreq := result;
-end;
-
-function calc_freq_shift_up(freq,shift: Word): Word;
-
-var
-  result: Word;
-
-begin
-  asm
-        mov     cx,freq
-        mov     ax,shift
-        mov     bx,cx
-        and     bx,0000001111111111b
-        mov     dx,cx
-        and     dx,0001110000000000b
-        add     bx,ax
-        and     cx,1110000000000000b
-        shr     dx,10
-        cmp     bx,FreqEnd
-        jb      @@2
-        cmp     dx,7
-        jnz     @@1
-        mov     bx,FreqEnd
-        jmp     @@2
-@@1:    sub     bx,FreqRange
-        inc     dx
-@@2:    mov     ax,cx
-        shl     dx,10
-        add     ax,dx
-        add     ax,bx
-        mov     result,ax
-  end;
-  calc_freq_shift_up := result;
-end;
-
-function calc_freq_shift_down(freq,shift: Word): Word;
-
-var
-  result: Word;
-
-begin
-  asm
-        mov     cx,freq
-        mov     ax,shift
-        mov     bx,cx
-        and     bx,0000001111111111b
-        mov     dx,cx
-        and     dx,0001110000000000b
-        sub     bx,ax
-        and     cx,1110000000000000b
-        shr     dx,10
-        cmp     bx,FreqStart
-        ja      @@2
-        or      dx,dx
-        jnz     @@1
-        mov     bx,FreqStart
-        jmp     @@2
-@@1:    add     bx,FreqRange
-        dec     dx
-@@2:    mov     ax,cx
-        shl     dx,10
-        add     ax,dx
-        add     ax,bx
-        mov     result,ax
-  end;
-  calc_freq_shift_down := result;
-end;
-
-function calc_vibtrem_shift(chan: Byte; var table_data): Word;
-
-var
-  pos,dir,depth: Byte;
-  result: Word;
-
-begin
-  pos := tVIBRATO_TREMOLO_TABLE(table_data)[chan].pos;
-  depth := tVIBRATO_TREMOLO_TABLE(table_data)[chan].depth;
-  asm
-        xor     ebx,ebx
-        mov     al,depth
-        xor     ah,ah
-        mov     bl,pos
-        xor     bh,bh
-        mov     dh,bl
-        mov     cl,byte ptr [vibtrem_table_size]
-        dec     cl
-        and     bl,cl
-        mov     dl,byte ptr [vibtrem_table+ebx]
-        mul     dl
-        rol     ax,1
-        xchg    ah,al
-        and     ah,1
-        mov     dir,1
-        mov     dl,byte ptr [vibtrem_table_size]
-        test    dh,dl
-        jne     @@1
-        mov     dir,0
-@@1:    mov     result,ax
-  end;
-  tVIBRATO_TREMOLO_TABLE(table_data)[chan].dir := dir;
-  calc_vibtrem_shift := result;
-end;
-
-procedure change_freq(chan: Byte; freq: Word);
-begin
-  If is_4op_chan(chan) and (chan in _4op_tracks_hi) then
-    begin
-      freq_table[SUCC(chan)] := freq_table[chan];
-      freqtable2[SUCC(chan)] := freqtable2[chan];
-      chan := SUCC(chan);
-    end;
-
-  asm
-        xor     ebx,ebx
-        mov     bl,chan
-        dec     ebx
-        shl     ebx,1
-        mov     ax,freq
-        and     ax,1fffh
-        mov     dx,word ptr [freq_table+ebx]
-        and     dx,NOT 1fffh
-        add     ax,dx
-        mov     word ptr [freq_table+ebx],ax
-        mov     word ptr [freqtable2+ebx],ax
-        shr     ebx,1
-        cmp     byte ptr [channel_flag+ebx],TRUE
-        jnz     @@1
-        shl     ebx,1
-        xor     edx,edx
-        mov     dx,word ptr [_chan_n+ebx]
-        add     dx,0a0h
-        push    edx
-        xor     edx,edx
-        mov     dl,al
-        push    edx
-        mov     dx,word ptr [_chan_n+ebx]
-        add     dx,0b0h
-        push    edx
-        xor     edx,edx
-        mov     dl,ah
-        push    edx
-        call    opl3out
-        call    opl3out
-@@1:
-  end;
-
-  If is_4op_chan(chan) then
-    begin
-      freq_table[PRED(chan)] := freq_table[chan];
-      freqtable2[PRED(chan)] := freqtable2[chan];
-    end;
-end;
-
-function ins_parameter(ins,param: Byte): Byte;
-
-var
-  result: Byte;
-
-begin
-  asm
-        xor     ebx,ebx
-        lea     esi,[songdata.instr_data]
-        mov     bl,ins
-        dec     ebx
-        mov     eax,INSTRUMENT_SIZE
-        mul     ebx
-        add     esi,eax
-        mov     bl,param
-        add     esi,ebx
-        lodsb
-        mov     result,al
-  end;
-  ins_parameter := result;
-end;
-
-function is_chan_adsr_data_empty(chan: Byte): Boolean;
-begin
-  is_chan_adsr_data_empty :=
-    (fmpar_table[chan].adsrw_car.attck = 0) and
-    (fmpar_table[chan].adsrw_mod.attck = 0) and
-    (fmpar_table[chan].adsrw_car.dec = 0) and
-    (fmpar_table[chan].adsrw_mod.dec = 0) and
-    (fmpar_table[chan].adsrw_car.sustn = 0) and
-    (fmpar_table[chan].adsrw_mod.sustn = 0) and
-    (fmpar_table[chan].adsrw_car.rel = 0) and
-    (fmpar_table[chan].adsrw_mod.rel = 0);
-end;
-
-function is_ins_adsr_data_empty(ins: Byte): Boolean;
-begin
-  is_ins_adsr_data_empty :=
-    (ins_parameter(ins,5) SHR 4 = 0) and
-    (ins_parameter(ins,4) SHR 4 = 0) and
-    (ins_parameter(ins,5) AND $0f = 0) and
-    (ins_parameter(ins,4) AND $0f = 0) and
-    (ins_parameter(ins,7) SHR 4 = 0) and
-    (ins_parameter(ins,6) SHR 4 = 0) and
-    (ins_parameter(ins,7) AND $0f = 0) and
-    (ins_parameter(ins,6) AND $0f = 0);
-end;
-
-function is_data_empty(var buf; size: Longint): Boolean;
-
-var
-  result: Boolean;
-
-begin
-  asm
-        xor     edx,edx
-        mov     eax,size
-        cmp     eax,16
-        jb      @@3
-        mov     ecx,4
-        div     ecx
-        mov     ecx,eax
-        jecxz   @@1
-        mov     edi,[buf]
-        xor     eax,eax
-        repz    scasd
-        jnz     @@2
-        mov     ecx,edx
-        jecxz   @@1
-        repz    scasb
-        jnz     @@2
-@@1:    mov     result,TRUE
-        jmp     @@6
-@@2:    mov     result,FALSE
-        jmp     @@6
-@@3:    mov     ecx,size
-        jecxz   @@4
-        mov     edi,[buf]
-        xor     eax,eax
-        repz    scasb
-        jnz     @@5
-@@4:    mov     result,TRUE
-        jmp     @@6
-@@5:    mov     result,FALSE
-@@6:
-  end;
-  is_data_empty := result;
-end;
-
+function calc_freq_shift_up(freq,shift: Word): Word; cdecl; external;
+function calc_freq_shift_down(freq,shift: Word): Word; cdecl; external;
+function calc_vibtrem_shift(chan: Byte; var table_data): Word; cdecl; external;
+function is_data_empty(var buf; size: Longint): Boolean; cdecl; external;
 //min
 //max
 
@@ -764,437 +465,23 @@ begin
   else asciiz_string := '';
 end;
 
-function concw(lo,hi: Byte): Word;
-begin
-  concw := lo+(hi SHL 8);
-end;
-
-procedure synchronize_song_timer;
-begin
-  song_timer := TRUNC(time_playing);
-  song_timer_tenths := TRUNC(time_playing*100) MOD 100;
-  timer_temp := song_timer_tenths;
-end;
-
-procedure change_frequency(chan: Byte; freq: Word);
-begin
-  macro_table[chan].vib_paused := TRUE;
-  change_freq(chan,freq);
-
-  If is_4op_chan(chan) then
-    If (chan in _4op_tracks_hi) then
-      begin
-        macro_table[SUCC(chan)].vib_count := 1;
-        macro_table[SUCC(chan)].vib_pos := 0;
-        macro_table[SUCC(chan)].vib_freq := freq;
-        macro_table[SUCC(chan)].vib_paused := FALSE;
-      end
-    else
-      begin
-        macro_table[PRED(chan)].vib_count := 1;
-        macro_table[PRED(chan)].vib_pos := 0;
-        macro_table[PRED(chan)].vib_freq := freq;
-        macro_table[PRED(chan)].vib_paused := FALSE;
-      end;
-
-  macro_table[chan].vib_count := 1;
-  macro_table[chan].vib_pos := 0;
-  macro_table[chan].vib_freq := freq;
-  macro_table[chan].vib_paused := FALSE;
-end;
-
-procedure update_timer(Hz: Word);
-begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:update_timer';
-{$ENDIF}
-  If (Hz = 0) then begin TimerSetup(18); EXIT end
-  else tempo := Hz;
-  If (tempo = 18) and timer_fix then IRQ_freq := TRUNC((tempo+0.2)*20)
-  else IRQ_freq := 250;
-  While (IRQ_freq MOD (tempo*_macro_speedup) <> 0) do Inc(IRQ_freq);
-  If (IRQ_freq > MAX_IRQ_FREQ) then IRQ_freq := MAX_IRQ_FREQ;
-  While (IRQ_freq+IRQ_freq_shift+playback_speed_shift > MAX_IRQ_FREQ) and
-        (playback_speed_shift > 0) do
-    Dec(playback_speed_shift);
-  While (IRQ_freq+IRQ_freq_shift+playback_speed_shift > MAX_IRQ_FREQ) and
-        (IRQ_freq_shift > 0) do
-    Dec(IRQ_freq_shift);
-  TimerSetup(max(IRQ_freq+IRQ_freq_shift+playback_speed_shift,MAX_IRQ_FREQ));
-end;
-
-procedure update_playback_speed(speed_shift: Longint);
-begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:update_playback_speed';
-{$ENDIF}
-  If (speed_shift = 0) then EXIT
-  else If (speed_shift > 0) and (IRQ_freq+playback_speed_shift+speed_shift > MAX_IRQ_FREQ) then
-         While (IRQ_freq+IRQ_freq_shift+playback_speed_shift+speed_shift > MAX_IRQ_FREQ) do
-           Dec(speed_shift)
-       else If (speed_shift < 0) and (IRQ_freq+IRQ_freq_shift+playback_speed_shift+speed_shift < MIN_IRQ_FREQ) then
-              While (IRQ_freq+IRQ_freq_shift+playback_speed_shift+speed_shift < MIN_IRQ_FREQ) do
-                Inc(speed_shift);
-  playback_speed_shift := playback_speed_shift+speed_shift;
-  update_timer(tempo);
-end;
-
-procedure key_on(chan: Byte);
-begin
-  If NOT (is_4op_chan(chan) and (chan in _4op_tracks_hi)) then
-    opl3out($0b0+_chan_n[chan],0)
-  else opl3out($0b0+_chan_n[SUCC(chan)],0);
-end;
-
-procedure key_off(chan: Byte);
-begin
-  freq_table[chan] := LO(freq_table[chan])+
-                      (HI(freq_table[chan]) AND NOT $20) SHL 8;
-  change_freq(chan,freq_table[chan]);
-  event_table[chan].note := event_table[chan].note OR keyoff_flag;
-end;
-
-procedure release_sustaining_sound(chan: Byte);
-begin
-  opl3out(_instr[02]+_chan_m[chan],63);
-  opl3out(_instr[03]+_chan_c[chan],63);
-
-  FillChar(fmpar_table[chan].adsrw_car,
-           SizeOf(fmpar_table[chan].adsrw_car),0);
-  FillChar(fmpar_table[chan].adsrw_mod,
-           SizeOf(fmpar_table[chan].adsrw_mod),0);
-
-  key_on(chan);
-  opl3out(_instr[04]+_chan_m[chan],BYTE_NULL);
-  opl3out(_instr[05]+_chan_c[chan],BYTE_NULL);
-  opl3out(_instr[06]+_chan_m[chan],BYTE_NULL);
-  opl3out(_instr[07]+_chan_c[chan],BYTE_NULL);
-
-  key_off(chan);
-  event_table[chan].instr_def := 0;
-  reset_chan[chan] := TRUE;
-end;
-
-function scale_volume(volume,scale_factor: Byte): Byte;
-begin
-  scale_volume := 63-Round((63-volume)/63*
-                           (63-scale_factor));
-end;
-
-function _4op_data_flag(chan: Byte): Dword;
-
-var
-  _4op_conn: Byte;
-  _4op_mode: Boolean;
-  _4op_ch1,_4op_ch2: Byte;
-  _4op_ins1,_4op_ins2: Byte;
-
-begin
-  _4op_mode := FALSE;
-  If is_4op_chan(chan) then
-    begin
-      _4op_mode := TRUE;
-      If (chan in _4op_tracks_hi) then
-        begin
-          _4op_ch1 := chan;
-          _4op_ch2 := SUCC(chan);
-        end
-      else
-        begin
-          _4op_ch1 := PRED(chan);
-          _4op_ch2 := chan;
-        end;
-      _4op_ins1 := event_table[_4op_ch1].instr_def;
-      If (_4op_ins1 = 0) then _4op_ins1 := voice_table[_4op_ch1];
-      _4op_ins2 := event_table[_4op_ch2].instr_def;
-      If (_4op_ins2 = 0) then _4op_ins2 := voice_table[_4op_ch2];
-      If (_4op_ins1 <> 0) and (_4op_ins2 <> 0) then
-        begin
-          _4op_mode := TRUE;
-          _4op_conn := (pBYTE(@Addr(songdata.instr_data[_4op_ins1])^)[_instr_data_ofs[11]] AND 1) SHL 1 +
-                       (pBYTE(@Addr(songdata.instr_data[_4op_ins2])^)[_instr_data_ofs[11]] AND 1);
-        end;
-    end;
-
-  {------+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+---}
-  { BIT  |31|30|29|28|27|26|25|24|23|22|21|20|19|18|17|16|15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0 }
-  {------+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+---}
-  { DATA |..|..|..|..|..|F7|F6|F5|F4|F3|F2|F1|F0|E7|E6|E5|E4|E3|E2|E1|E0|D3|D2|D1|D0|C3|C2|C1|C0|B1|B0|A0 }
-  {------+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+---}
-  _4op_data_flag := ORD(_4op_mode) +           {1-bit: A0}
-                    (_4op_conn AND 3) SHL 1 +  {2-bit: B1-B0}
-                    (_4op_ch1 AND 15) SHL 3 +  {4-bit: C3-C0}
-                    (_4op_ch2 AND 15) SHL 7 +  {4-bit: D3-D0}
-                    _4op_ins1 SHL 11 +         {8-bit: E7-E0}
-                    _4op_ins2 SHL 19;          {8-bit: F7-F0}
-end;
-
-function _4op_vol_valid_chan(chan: Byte): Boolean;
-
-var
-  _4op_flag: Dword;
-
-begin
-  _4op_flag := _4op_data_flag(chan);
-  _4op_vol_valid_chan := BOOLEAN(_4op_flag AND 1) and vol4op_lock[chan] and
-                     (BYTE(_4op_flag SHR 11) <> 0) and
-                     (BYTE(_4op_flag SHR 19) <> 0);
-end;
-
-procedure set_ins_volume(modulator,carrier,chan: Byte);
-
-var
-  temp: Byte;
-
-begin
-{$IFNDEF GO32V2}
-  // ** OPL3 emulation workaround **
-  // force muted instrument volume with missing channel ADSR data
-  // when there is additionally no FM-reg macro defined for this instrument
-  If is_chan_adsr_data_empty(chan) and
-     NOT (songdata.instr_macros[voice_table[chan]].length <> 0) then
-    begin
-      modulator := 63;
-      carrier := 63;
-    end;
-{$ENDIF}
-
-  If (modulator <> BYTE_NULL) then
-    begin
-      temp := modulator;
-      If volume_scaling then
-        If (ins_parameter(voice_table[chan],10) AND 1 = 1) or
-           (percussion_mode and (chan in [17..20])) then
-          modulator := scale_volume(ins_parameter(voice_table[chan],2) AND $3f,modulator);
-      If (ins_parameter(voice_table[chan],10) AND 1 = 1) or
-         (percussion_mode and (chan in [17..20])) then
-        opl3out(_instr[02]+_chan_m[chan],
-                scale_volume(scale_volume(modulator,scale_volume(63-global_volume,63-fade_out_volume)),63-overall_volume)+LO(vscale_table[chan]))
-      else
-        opl3out(_instr[02]+_chan_m[chan],
-                temp+LO(vscale_table[chan]));
-      volume_table[chan] := concw(temp,HI(volume_table[chan]));
-      If (ins_parameter(voice_table[chan],10) AND 1 = 1) or
-         (percussion_mode and (chan in [17..20])) then
-        modulator_vol[chan] := 63-scale_volume(modulator,scale_volume(63-global_volume,63-fade_out_volume))
-      else modulator_vol[chan] := 63-modulator;
-    end;
-
-  If (carrier <> BYTE_NULL) then
-    begin
-      temp := carrier;
-      If volume_scaling then
-        carrier := scale_volume(ins_parameter(voice_table[chan],3) AND $3f,carrier);
-      opl3out(_instr[03]+_chan_c[chan],
-              scale_volume(scale_volume(carrier,scale_volume(63-global_volume,63-fade_out_volume)),63-overall_volume)+HI(vscale_table[chan]));
-      volume_table[chan] := concw(LO(volume_table[chan]),temp);
-      carrier_vol[chan] := 63-scale_volume(carrier,scale_volume(63-global_volume,63-fade_out_volume));
-    end;
-end;
-
-procedure set_ins_volume_4op(volume,chan: Byte);
-
-var
-  _4op_flag: Dword;
-  _4op_conn: Byte;
-  _4op_ch1,_4op_ch2: Byte;
-
-procedure set_volume(modulator,carrier,chan: Byte);
-
-var
-  temp: Byte;
-
-begin
-{$IFNDEF GO32V2}
-  // OPL3 EMULATION WORKAROUND
-  // force muted instrument volume with missing channel ADSR data
-  // when there is additionally no FM-reg macro defined for this instrument
-  If is_chan_adsr_data_empty(chan) and
-     NOT (songdata.instr_macros[voice_table[chan]].length <> 0) then
-    begin
-      modulator := 63;
-      carrier := 63;
-    end;
-{$ENDIF}
-
-  If (modulator <> BYTE_NULL) then
-    begin
-      temp := modulator;
-      modulator := scale_volume(ins_parameter(voice_table[chan],2) AND $3f,modulator);
-      opl3out(_instr[02]+_chan_m[chan],
-              scale_volume(scale_volume(modulator,scale_volume(63-global_volume,63-fade_out_volume)),63-overall_volume)+LO(vscale_table[chan]));
-      volume_table[chan] := concw(temp,HI(volume_table[chan]));
-      modulator_vol[chan] := 63-scale_volume(modulator,scale_volume(63-global_volume,63-fade_out_volume))
-    end;
-
-  If (carrier <> BYTE_NULL) then
-    begin
-      temp := carrier;
-      carrier := scale_volume(ins_parameter(voice_table[chan],3) AND $3f,carrier);
-      opl3out(_instr[03]+_chan_c[chan],
-              scale_volume(scale_volume(carrier,scale_volume(63-global_volume,63-fade_out_volume)),63-overall_volume)+HI(vscale_table[chan]));
-      volume_table[chan] := concw(LO(volume_table[chan]),temp);
-      carrier_vol[chan] := 63-scale_volume(carrier,scale_volume(63-global_volume,63-fade_out_volume));
-    end;
-end;
-
-begin
-  _4op_flag := _4op_data_flag(chan);
-  _4op_conn := (_4op_flag SHR 1) AND 3;
-  _4op_ch1 := (_4op_flag SHR 3) AND 15;
-  _4op_ch2 := (_4op_flag SHR 7) AND 15;
-
-  If _4op_vol_valid_chan(chan) then
-    Case _4op_conn of
-      // FM/FM
-      0: If (volume = BYTE_NULL) then
-           set_volume(BYTE_NULL,HI(volume_table[_4op_ch1]),_4op_ch1)
-         else set_volume(BYTE_NULL,volume,_4op_ch1);
-      // FM/AM
-      1: If (volume = BYTE_NULL) then
-           begin
-             set_volume(BYTE_NULL,HI(volume_table[_4op_ch1]),_4op_ch1);
-             set_volume(LO(volume_table[_4op_ch2]),BYTE_NULL,_4op_ch2);
-           end
-         else begin
-                set_volume(BYTE_NULL,volume,_4op_ch1);
-                set_volume(volume,BYTE_NULL,_4op_ch2);
-              end;
-      // AM/FM
-      2: If (volume = BYTE_NULL) then
-           begin
-             set_volume(BYTE_NULL,HI(volume_table[_4op_ch1]),_4op_ch1);
-             set_volume(BYTE_NULL,HI(volume_table[_4op_ch2]),_4op_ch2);
-           end
-         else begin
-                set_volume(BYTE_NULL,volume,_4op_ch1);
-                set_volume(BYTE_NULL,volume,_4op_ch2);
-              end;
-      // AM/AM
-      3: If (volume = BYTE_NULL) then
-           begin
-             set_volume(LO(volume_table[_4op_ch1]),HI(volume_table[_4op_ch1]),_4op_ch1);
-             set_volume(LO(volume_table[_4op_ch2]),BYTE_NULL,_4op_ch2);
-           end
-         else begin
-                set_volume(volume,volume,_4op_ch1);
-                set_volume(volume,BYTE_NULL,_4op_ch2);
-              end;
-    end;
-end;
-
-procedure reset_ins_volume(chan: Byte);
-begin
-  If NOT volume_scaling then
-    set_ins_volume(ins_parameter(voice_table[chan],2) AND $3f,
-                   ins_parameter(voice_table[chan],3) AND $3f,chan)
-  else If (ins_parameter(voice_table[chan],10) AND 1 = 0) then
-         set_ins_volume(ins_parameter(voice_table[chan],2) AND $3f,0,chan)
-       else set_ins_volume(0,0,chan);
-end;
-
-procedure set_ins_data(ins,chan: Byte);
-
-var
-  old_ins: Byte;
-
-begin
-  If (ins <> event_table[chan].instr_def) or reset_chan[chan] then
-    begin
-      opl3out(_instr[02]+_chan_m[chan],63);
-      opl3out(_instr[03]+_chan_c[chan],63);
-
-      If NOT pan_lock[chan] then
-        panning_table[chan] := ins_parameter(ins,11)
-      else panning_table[chan] := songdata.lock_flags[chan] AND 3;
-
-      opl3out(_instr[00]+_chan_m[chan],ins_parameter(ins,0));
-      opl3out(_instr[01]+_chan_c[chan],ins_parameter(ins,1));
-      opl3out(_instr[04]+_chan_m[chan],ins_parameter(ins,4));
-      opl3out(_instr[05]+_chan_c[chan],ins_parameter(ins,5));
-      opl3out(_instr[06]+_chan_m[chan],ins_parameter(ins,6));
-      opl3out(_instr[07]+_chan_c[chan],ins_parameter(ins,7));
-      opl3out(_instr[08]+_chan_m[chan],ins_parameter(ins,8));
-      opl3out(_instr[09]+_chan_c[chan],ins_parameter(ins,9));
-      opl3out(_instr[10]+_chan_n[chan],ins_parameter(ins,10) OR _panning[panning_table[chan]]);
-
-      fmpar_table[chan].connect := ins_parameter(ins,10) AND 1;
-      fmpar_table[chan].feedb   := ins_parameter(ins,10) SHR 1 AND 7;
-      fmpar_table[chan].multipM := ins_parameter(ins,0)  AND $0f;
-      fmpar_table[chan].kslM    := ins_parameter(ins,2)  SHR 6;
-      fmpar_table[chan].tremM   := ins_parameter(ins,0)  SHR 7;
-      fmpar_table[chan].vibrM   := ins_parameter(ins,0)  SHR 6 AND 1;
-      fmpar_table[chan].ksrM    := ins_parameter(ins,0)  SHR 4 AND 1;
-      fmpar_table[chan].sustM   := ins_parameter(ins,0)  SHR 5 AND 1;
-      fmpar_table[chan].multipC := ins_parameter(ins,1)  AND $0f;
-      fmpar_table[chan].kslC    := ins_parameter(ins,3)  SHR 6;
-      fmpar_table[chan].tremC   := ins_parameter(ins,1)  SHR 7;
-      fmpar_table[chan].vibrC   := ins_parameter(ins,1)  SHR 6 AND 1;
-      fmpar_table[chan].ksrC    := ins_parameter(ins,1)  SHR 4 AND 1;
-      fmpar_table[chan].sustC   := ins_parameter(ins,1)  SHR 5 AND 1;
-
-      fmpar_table[chan].adsrw_car.attck := ins_parameter(ins,5) SHR 4;
-      fmpar_table[chan].adsrw_mod.attck := ins_parameter(ins,4) SHR 4;
-      fmpar_table[chan].adsrw_car.dec   := ins_parameter(ins,5) AND $0f;
-      fmpar_table[chan].adsrw_mod.dec   := ins_parameter(ins,4) AND $0f;
-      fmpar_table[chan].adsrw_car.sustn := ins_parameter(ins,7) SHR 4;
-      fmpar_table[chan].adsrw_mod.sustn := ins_parameter(ins,6) SHR 4;
-      fmpar_table[chan].adsrw_car.rel   := ins_parameter(ins,7) AND $0f;
-      fmpar_table[chan].adsrw_mod.rel   := ins_parameter(ins,6) AND $0f;
-      fmpar_table[chan].adsrw_car.wform := ins_parameter(ins,9) AND $07;
-      fmpar_table[chan].adsrw_mod.wform := ins_parameter(ins,8) AND $07;
-
-      If NOT reset_chan[chan] then
-        keyoff_loop[chan] := FALSE;
-
-      If reset_chan[chan] then
-        begin
-          voice_table[chan] := ins;
-          reset_ins_volume(chan);
-          reset_chan[chan] := FALSE;
-        end;
-
-      If (event_table[chan].note AND $7f in [1..12*8+1]) then
-        init_macro_table(chan,event_table[chan].note AND $7f,ins,freq_table[chan])
-      else init_macro_table(chan,0,ins,freq_table[chan]);
-    end;
-
-  vscale_table[chan] := concw(fmpar_table[chan].kslM SHL 6,
-                              fmpar_table[chan].kslC SHL 6);
-  voice_table[chan] := ins;
-  old_ins := event_table[chan].instr_def;
-  event_table[chan].instr_def := ins;
-
-  If NOT volume_lock[chan] or (ins <> old_ins) then
-    reset_ins_volume(chan);
-  ai_table[ins] := 1;
-end;
-
-procedure update_modulator_adsrw(chan: Byte);
-begin
-  opl3out(_instr[04]+_chan_m[chan],
-          fmpar_table[chan].adsrw_mod.attck SHL 4+
-          fmpar_table[chan].adsrw_mod.dec);
-  opl3out(_instr[06]+_chan_m[chan],
-          fmpar_table[chan].adsrw_mod.sustn SHL 4+
-          fmpar_table[chan].adsrw_mod.rel);
-  opl3out(_instr[08]+_chan_m[chan],
-          fmpar_table[chan].adsrw_mod.wform);
-end;
-
-procedure update_carrier_adsrw(chan: Byte);
-begin
-  opl3out(_instr[05]+_chan_c[chan],
-          fmpar_table[chan].adsrw_car.attck SHL 4+
-          fmpar_table[chan].adsrw_car.dec);
-  opl3out(_instr[07]+_chan_c[chan],
-          fmpar_table[chan].adsrw_car.sustn SHL 4+
-          fmpar_table[chan].adsrw_car.rel);
-  opl3out(_instr[09]+_chan_c[chan],
-          fmpar_table[chan].adsrw_car.wform);
-end;
+//concw
+procedure synchronize_song_timer; cdecl; external;
+//change_frequency
+//update_timer
+procedure update_playback_speed(speed_shift: Longint); cdecl; external;
+//key_on
+//key_off
+//release_sustaining_sound
+//scale_volume
+function _4op_data_flag(chan: Byte): Dword; cdecl; external;
+function _4op_vol_valid_chan(chan: Byte): Boolean; cdecl; external;
+//set_ins_volume
+procedure set_ins_volume_4op(volume,chan: Byte); cdecl; external;
+procedure reset_ins_volume(chan: Byte); cdecl; external;
+//set_ins_data
+//update_modulator_adsrw
+//update_carrier_adsrw
 
 procedure update_fmpar(chan: Byte);
 begin
@@ -1246,7 +533,8 @@ begin
     else init_macro_table(chan,0,voice_table[chan],freq_table[chan]);
 end;
 
-procedure init_macro_table(chan,note,ins: Byte; freq: Word);
+procedure init_macro_table(chan,note,ins: Byte; freq: Word); cdecl;
+public name PUBLIC_PREFIX + 'init_macro_table';
 begin
   macro_table[chan].fmreg_count := 1;
   macro_table[chan].fmreg_pos := 0;
@@ -3933,7 +3221,8 @@ begin
     end;
 end;
 
-function calc_following_order(order: Byte): Integer;
+function calc_following_order(order: Byte): Integer; cdecl;
+public name PUBLIC_PREFIX + 'calc_following_order';
 
 var
   result: Integer;
@@ -3986,7 +3275,7 @@ begin
     play_pos_buf[temp] := play_pos_buf[temp-1];
   play_pos_buf[1] := (current_pattern SHL 8)+current_line;
 
-  If NOT rewind then
+  If NOT _rewind then
     begin
       If (current_line < PRED(songdata.patt_len)) and NOT pattern_break then Inc(current_line)
       else begin
@@ -4059,7 +3348,8 @@ begin
       end;
 end;
 
-procedure poll_proc;
+procedure poll_proc; cdecl;
+public name PUBLIC_PREFIX + 'poll_proc';
 
 var
   temp: Byte;
@@ -4075,7 +3365,7 @@ begin
 {$ENDIF}
 
   If (NOT pattern_delay and (ticks-tick0+1 >= speed)) or
-     fast_forward or rewind or single_play then
+     fast_forward or _rewind or single_play then
     begin
       If debugging and
          NOT single_play and NOT pattern_break and
@@ -4090,7 +3380,7 @@ begin
         end;
 
       play_line;
-      If NOT single_play and NOT (fast_forward or rewind) then update_effects
+      If NOT single_play and NOT (fast_forward or _rewind) then update_effects
       else For temp := 1 to speed do
              begin
                update_effects;
@@ -4100,20 +3390,20 @@ begin
              end;
 
       tick0 := ticks;
-      If NOT single_play and (fast_forward or rewind or
+      If NOT single_play and (fast_forward or _rewind or
                               NOT pattern_delay) then
         update_song_position;
 
-      If fast_forward or rewind then
+      If fast_forward or _rewind then
         If NOT pattern_delay then synchronize_song_timer;
 
-      If (fast_forward or rewind) and pattern_delay then
+      If (fast_forward or _rewind) and pattern_delay then
         begin
           tickD := 0;
           pattern_delay := FALSE;
         end;
 
-      If fast_forward or rewind then
+      If fast_forward or _rewind then
         begin
 {$IFDEF GO32V2}
           keyboard_reset_buffer;
@@ -4123,7 +3413,7 @@ begin
           If (Abs(time_playing-time_playing0) > factor*(1+(1/255*tempo))/speed) then
             begin
               fast_forward := FALSE;
-              rewind := FALSE;
+              _rewind := FALSE;
               time_playing0 := time_playing;
               synchronize_song_timer;
             end;
@@ -4157,7 +3447,8 @@ begin
 {$ENDIF}
 end;
 
-procedure macro_poll_proc;
+procedure macro_poll_proc; cdecl;
+public name PUBLIC_PREFIX + 'macro_poll_proc';
 
 const
   IDLE = $0fff;
@@ -4526,13 +3817,10 @@ begin
 {$ENDIF}
 end;
 
-function _macro_speedup: Word;
-begin
-  If (macro_speedup > 0) then _macro_speedup := macro_speedup
-  else _macro_speedup := macro_speedup+1;
-end;
+//_macro_speedup
 
-procedure timer_poll_proc;
+procedure timer_poll_proc; cdecl;
+public name PUBLIC_PREFIX + 'timer_poll_proc';
 
 {$IFDEF GO32V2}
 var
@@ -4634,7 +3922,7 @@ begin
 {$ELSE}
 
   Inc(blink_ticks);
-  If ((fast_forward or rewind or (space_pressed and debugging) or
+  If ((fast_forward or _rewind or (space_pressed and debugging) or
        (@macro_preview_indic_proc <> NIL)) and
       (blink_ticks > 50)) or (blink_ticks > 50) then
     begin
@@ -4643,7 +3931,7 @@ begin
     end;
 
   Inc(_WAVREC_blink_ticks);
-  If ((fast_forward or rewind or (space_pressed and debugging) or
+  If ((fast_forward or _rewind or (space_pressed and debugging) or
        (@macro_preview_indic_proc <> NIL)) and
       (_WAVREC_blink_ticks > 50)) or (_WAVREC_blink_ticks > 50) then
     begin
@@ -4652,7 +3940,7 @@ begin
     end;
 
   Inc(_NRECM_blink_ticks);
-  If ((fast_forward or rewind or (space_pressed and debugging) or
+  If ((fast_forward or _rewind or (space_pressed and debugging) or
        (@macro_preview_indic_proc <> NIL)) and
       (_NRECM_blink_ticks > 50)) or (_NRECM_blink_ticks > 50) then
     begin
@@ -4661,7 +3949,7 @@ begin
     end;
 
   Inc(_IRQFREQ_blink_ticks);
-  If ((fast_forward or rewind or (space_pressed and debugging) or
+  If ((fast_forward or _rewind or (space_pressed and debugging) or
        (@macro_preview_indic_proc <> NIL)) and
       (_IRQFREQ_blink_ticks > 25)) or (_IRQFREQ_blink_ticks > 25) then
     begin
@@ -4720,7 +4008,7 @@ begin
 {$IFDEF GO32V2}
 
   If (ticklooper > 0) then
-    If (fast_forward or rewind) and NOT replay_forbidden then
+    If (fast_forward or _rewind) and NOT replay_forbidden then
       poll_proc
     else
   else If NOT replay_forbidden then
@@ -4748,140 +4036,32 @@ const
 
 procedure ___IRQ_CODE_END___; begin end;
 
-const
-  timer_poll_proc_ptr: Pointer = NIL;
+//TimerSetup
+procedure TimerDone; cdecl; external;
+procedure TimerInstallHandler(handler: Pointer); cdecl; external;
+procedure TimerRemoveHandler; cdecl; external;
 
-procedure TimerSetup(Hz: Longint);
-begin
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:TimerSetup';
-  If (Hz < PIT_FREQ_MIN) then Hz := PIT_FREQ_MIN;
-  If (Hz > PIT_FREQ_MAX) then Hz := PIT_FREQ_MAX;
-  ISS_DisableTimerIRQ;
-  If (timer_poll_proc_ptr <> NIL) then ISS_StopTimer(timer_poll_proc_ptr);
-  timer_poll_proc_ptr := @timer_poll_proc;
-  ISS_StartTimer(timer_poll_proc_ptr,ISS_TimerSpeed DIV Hz);
-  ISS_EnableTimerIRQ;
-end;
+{$ELSE} // NOT DEFIED(GO32V2)
 
-procedure TimerDone;
-begin
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:TimerDone';
-  ISS_DisableTimerIRQ;
-  If (timer_poll_proc_ptr <> NIL) then ISS_StopTimer(timer_poll_proc_ptr);
-  timer_poll_proc_ptr := NIL;
-  ISS_EnableTimerIRQ;
-end;
+var
+  timer_handler: Procedure; cdecl; cvar; external;
+  TimerID: SDL_TimerID; cvar; external;
+  _interval: longint; cvar; external;
 
-procedure TimerInstallHandler(handler: Pointer);
-begin
-end;
+//TimerCallback
+//TimerSetup
+procedure TimerDone; cdecl; external;
+procedure TimerInstallHandler(handler: Pointer); cdecl; external;
+procedure TimerRemoveHandler; cdecl; external;
 
-procedure TimerRemoveHandler;
-begin
-end;
+{$ENDIF} // NOT DEFIED(GO32V2)
 
-{$ELSE}
-
-const
-  timer_handler: Procedure = NIL;
-  TimerID: SDL_TimerID = NIL;
-  _interval: longint = 1000 DIV 50; // 1000 ms / Hz
-
-function TimerCallback(interval: Uint32; param: Pointer):Uint32; cdecl;
-begin
-  If (@timer_handler <> NIL) then timer_handler;
-  TimerCallback := _interval; // trick to alter delay rate on the fly
-end;
-
-procedure TimerSetup(Hz: Longint);
-begin
-  _interval := 1000 DIV Hz;
-  // only activate timer once, later only alter delay rate
-  If (TimerID = NIL) then
-    begin
-      TimerID := SDL_AddTimer(_interval,SDL_NewTimerCallback(@TimerCallBack),NIL);
-      If (TimerID = NIL) then
-        Writeln('SDL: Error creating timer');
-    end;
-  snd_SetTimer(Hz);
-end;
-
-procedure TimerDone;
-begin
-end;
-
-procedure TimerInstallHandler(handler: Pointer);
-begin
-  @timer_handler := handler;
-end;
-
-procedure TimerRemoveHandler;
-begin
-  @timer_handler := NIL;
-end;
-
-{$ENDIF}
-
-procedure init_timer_proc;
-begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:init_timer_proc';
-  scroll_ticks := 0;
-{$ENDIF}
-  Randomize;
-  If timer_initialized then EXIT;
-  timer_initialized := TRUE;
-{$IFNDEF GO32V2}
-  TimerInstallHandler(@timer_poll_proc);
-{$ENDIF}
-  TimerSetup(50);
-end;
-
-procedure done_timer_proc;
-begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:done_timer_proc';
-{$ENDIF}
-  If NOT timer_initialized then EXIT;
-  timer_initialized := FALSE;
-  TimerDone;
-  TimerRemoveHandler;
-end;
+//init_timer_proc
+//done_timer_proc
 
 {$i realtime.inc}
 
-function calc_pattern_pos(pattern: Byte): Byte;
-
-var
-  index: Integer;
-  jump_count,pattern_pos: Byte;
-
-begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:calc_pattern_pos';
-{$ENDIF}
-  pattern_pos := BYTE_NULL;
-  jump_count := 0;
-  index := calc_following_order(0);
-  While (index <> -1) and (jump_count < $7f) do
-    If (songdata.pattern_order[index] <> pattern) then
-      If NOT (index < $7f) then BREAK
-      else begin
-             Inc(index);
-             index := calc_following_order(index);
-             Inc(jump_count);
-           end
-    else begin
-           pattern_pos := index;
-           BREAK;
-         end;
-  calc_pattern_pos := pattern_pos;
-end;
+//calc_pattern_pos
 
 procedure calibrate_player(order,line: Byte; status_filter: Boolean;
                            line_dependent: Boolean);
@@ -5877,69 +5057,6 @@ begin
   update_modulator_adsrw(chan);
   update_carrier_adsrw(chan);
   update_fmpar(chan);
-end;
-
-function is_4op_chan(chan: Byte): Boolean;
-
-var
-  result: Boolean;
-
-begin
-  asm
-        mov     al,byte ptr [songdata.flag_4op]
-        mov     ah,chan
-        test    al,1
-        jz      @@1
-        cmp     ah,1
-        jb      @@1
-        cmp     ah,2
-        ja      @@1
-        mov     result,TRUE
-        jmp     @@7
-@@1:    test    al,2
-        jz      @@2
-        cmp     ah,3
-        jb      @@2
-        cmp     ah,4
-        ja      @@2
-        mov     result,TRUE
-        jmp     @@7
-@@2:    test    al,4
-        jz      @@3
-        cmp     ah,5
-        jb      @@3
-        cmp     ah,6
-        ja      @@3
-        mov     result,TRUE
-        jmp     @@7
-@@3:    test    al,8
-        jz      @@4
-        cmp     ah,10
-        jb      @@4
-        cmp     ah,11
-        ja      @@4
-        mov     result,TRUE
-        jmp     @@7
-@@4:    test    al,10h
-        jz      @@5
-        cmp     ah,12
-        jb      @@5
-        cmp     ah,13
-        ja      @@5
-        mov     result,TRUE
-        jmp     @@7
-@@5:    test    al,20h
-        jz      @@6
-        cmp     ah,14
-        jb      @@6
-        cmp     ah,15
-        ja      @@6
-        mov     result,TRUE
-        jmp     @@7
-@@6:    mov     result,FALSE
-@@7:
-  end;
-  is_4op_chan := result;
 end;
 
 function is_in_block(x0,y0,x1,y1: Byte): Boolean;

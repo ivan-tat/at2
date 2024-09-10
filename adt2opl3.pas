@@ -16,236 +16,74 @@
 unit AdT2opl3;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$MODESWITCH CVAR}
+{$L adt2opl3.o}
 interface
 
-{$IFDEF GO32V2}
-const
-  ___OPL3OUT_UNIT_DATA_START___: Dword = 0;
-{$ENDIF}
-
-procedure opl2out(reg,data: Word);
-procedure opl3out_proc(reg,data: Word);
-procedure opl3exp(data: Word);
+procedure opl2out(reg,data: Word); cdecl; external;
+procedure opl3exp(data: Word); cdecl; external;
 
 type
-  tOPL3OUT_proc = procedure(reg,data: Word);
-
-const
-  opl3out: tOPL3OUT_proc = opl3out_proc;
-
-{$IFDEF GO32V2}
-
-const
-  opl3port: Word = 0;
-  opl_latency: Byte = 0;
-
-function detect_OPL3: Boolean;
-
-{$ELSE}
-
-const
-  renew_wav_files_flag: Boolean = TRUE;
-  opl3_channel_recording_mode: Boolean = FALSE;
-  opl3_record_channel: array[1..20] of Boolean = (
-    FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,
-    FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE);
-
-procedure flush_WAV_data;
-procedure opl3_init;
-procedure opl3_done;
-procedure snd_init;
-procedure snd_done;
-procedure snd_SetTimer(value: Longint);
-procedure update_recorded_channels;
-
-const
-  opl3_flushmode: Boolean = FALSE;
-
-const
-  WAV_BUFFER_SIZE = 18*512*1024; // cache buffer size -> 512k per file
+  tOPL3OUT_proc = procedure(reg,data: Word); cdecl;
 
 var
-  wav_buffer_len: Longint;
-  wav_buffer: array[0..18,0..PRED(WAV_BUFFER_SIZE)] of Byte;
-
-{$ENDIF}
+  opl3out: tOPL3OUT_proc; cvar; external;
 
 {$IFDEF GO32V2}
 
-const
-  ___OPL3OUT_UNIT_DATA_END___: Dword = 0;
+var
+  opl3port: Word; cvar; external;
+  opl_latency: Byte; cvar; external;
 
-{$ENDIF}
+function detect_OPL3: Boolean; cdecl; external;
+
+{$ELSE} { NOT DEFINED(GO32V2) }
+
+var
+  renew_wav_files_flag: Boolean; cvar; external;
+  opl3_channel_recording_mode: Boolean; cvar; external;
+  opl3_record_channel: array[1..20] of Boolean; cvar; external;
+
+procedure flush_WAV_data; cdecl;
+procedure opl3_init; cdecl; external;
+procedure opl3_done; cdecl; external;
+procedure snd_init; cdecl; external;
+procedure snd_done; cdecl; external;
+procedure snd_SetTimer(value: Longint); cdecl; external;
+procedure update_recorded_channels; cdecl; external;
+
+var
+  opl3_flushmode: Boolean; cvar; external;
+
+const
+  WAV_BUFFER_SIZE = 512*1024; // cache buffer size -> 512k per file
+
+var
+  wav_buffer_len: Longint; cvar; external;
+  wav_buffer: array[0..18,0..PRED(18*WAV_BUFFER_SIZE)] of Byte; cvar; external;
+
+{$ENDIF} { NOT DEFINED(GO32V2) }
 
 implementation
 
+uses
 {$IFDEF GO32V2}
-
-uses
-  GO32,
-  AdT2sys,
-  TxtScrIO;
-
-procedure  ___OPL3OUT_IRQ_CODE_START___; begin end;
-
-var
-  _opl_regs_cache: array[WORD] of Word;
-
-procedure opl2out(reg,data: Word);
-begin
-  If (_opl_regs_cache[reg] <> data) then
-    _opl_regs_cache[reg] := data
-  else EXIT;
-
-  asm
-        mov     ax,reg
-        mov     dx,word ptr [opl3port]
-        or      ah,ah
-        jz      @@1
-        add     dx,2
-@@1:    out     dx,al
-        mov     ecx,6
-@@2:    in      al,dx
-        loop    @@2
-        inc     dl
-        mov     ax,data
-        out     dx,al
-        dec     dl
-        mov     ecx,36
-@@3:    in      al,dx
-        loop    @@3
-  end;
-end;
-
-procedure opl3out_proc(reg,data: Word);
-begin
-  If (_opl_regs_cache[reg] <> data) then
-    _opl_regs_cache[reg] := data
-  else EXIT;
-
-  asm
-        mov     ax,reg
-        mov     dx,word ptr [opl3port]
-        or      ah,ah
-        jz      @@1
-        add     dx,2
-@@1:    out     dx,al
-        inc     dl
-        mov     ax,data
-        out     dx,al
-        dec     dl
-        mov     ecx,26
-@@2:    in      al,dx
-        loop    @@2
-  end;
-end;
-
-procedure opl3exp(data: Word);
-begin
-  if (_opl_regs_cache[(data AND $ff) OR $100] <> data SHR 8) then
-    _opl_regs_cache[(data AND $ff) OR $100] := data SHR 8
-  else EXIT;
-
-  asm
-        mov     ax,data
-        mov     dx,word ptr [opl3port]
-        add     dx,2
-        out     dx,al
-        mov     ecx,6
-@@1:    in      al,dx
-        loop    @@1
-        inc     dl
-        mov     al,ah
-        out     dx,al
-        mov     ecx,36
-@@2:    in      al,dx
-        loop    @@2
-  end;
-end;
-
-procedure  ___OPL3OUT_IRQ_CODE_END___; begin end;
-
-function detect_OPL3: Boolean;
-
-var
-  result: Boolean;
-
-begin
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2OPL3.PAS:detect_OPL3';
-
-  asm
-        push    dword 04h
-        push    dword 80h
-        push    dword 04h
-        push    dword 60h
-        call    opl2out
-        call    WaitRetrace
-        call    opl2out
-        call    WaitRetrace
-        mov     dx,opl3port
-        in      al,dx
-        and     al,0e0h
-        mov     bl,al
-        push    dword 04h
-        push    dword 21h
-        push    dword 02h
-        push    dword 0ffh
-        call    opl2out
-        call    WaitRetrace
-        call    opl2out
-        call    WaitRetrace
-        mov     dx,opl3port
-        in      al,dx
-        and     al,0e0h
-        mov     bh,al
-        cmp     bx,0c000h
-        jnz     @@1
-        push    dword 04h
-        push    dword 80h
-        push    dword 04h
-        push    dword 60h
-        call    opl2out
-        call    WaitRetrace
-        call    opl2out
-        call    WaitRetrace
-        mov     dx,opl3port
-        in      al,dx
-        and     al,6
-        or      al,al
-        jnz     @@1
-        mov     result,TRUE
-        jmp     @@2
-  @@1:  mov     result,FALSE
-  @@2:
-  end;
-
-  detect_OPL3 := result;
-end;
-
-{$ELSE}
-
-uses
-  MATH,
+  AdT2sys;
+{$ELSE} { NOT DEFINED(GO32V2) }
+  pascal,
   SysUtils,
   AdT2unit,
   AdT2sys,
-  TxtScrIO,
   StringIO,
   SDL_Types,
   SDL_Audio,
   OPL3EMU;
+{$ENDIF} { NOT DEFINED(GO32V2) }
 
-const
-  opl3_sample_buffer_ptr: Pointer = NIL;
-  opl3_sample_buffer_chan_ptr: array[1..18] of Pointer = (
-    NIL,NIL,NIL,NIL,NIL,NIL,NIL,NIL,NIL,NIL,NIL,NIL,NIL,NIL,NIL,NIL,NIL,NIL);
+{$IFNDEF GO32V2}
 
-var
-  sample_frame_size: Longint;
-  sdl_audio_spec: SDL_AudioSpec;
-
-procedure flush_WAV_data;
+procedure flush_WAV_data; cdecl;
+public name PUBLIC_PREFIX + 'flush_WAV_data';
 
 type
   tWAV_HEADER = Record
@@ -447,224 +285,12 @@ begin
   renew_wav_files_flag := FALSE;
 end;
 
-procedure opl2out(reg,data: Word);
-begin
-  // relevant only for DOS version -> option opl_latency=1
-  opl3out_proc(reg,data);
-end;
-
-procedure opl3out_proc(reg,data: Word);
-begin
-  OPL3EMU_WriteReg(reg,data);
-end;
-
-procedure opl3exp(data: Word);
-begin
-  OPL3EMU_WriteReg((data AND $ff) OR $100,data SHR 8);
-end;
-
-procedure opl3_init;
-begin
-  OPL3EMU_init;
-end;
-
-procedure opl3_done;
-begin
-  SDL_PauseAudio(1);
-end;
-
-// value in Hz for timer
-procedure snd_SetTimer(value: Longint);
-begin
-  If (value < 18) then value := 18;
-  sample_frame_size := ROUND(sdl_sample_rate/value*(1+sdl_timer_slowdown/100));
-end;
-
-function get_num_files: Byte;
-
-var
-  idx,result: Byte;
-
-begin
-  result := 18;
-  For idx := 1 to 18 do
-    If NOT opl3_record_channel[idx] then Dec(result);
-  If (result <> 0) then get_num_files := result
-  else get_num_files := 1;
-end;
-
-procedure update_recorded_channels;
-
-var
-  idx: Byte;
-
-begin
-  For idx := 1 to 20 do
-    If channel_flag[idx] then opl3_record_channel[idx] := TRUE
-    else opl3_record_channel[idx] := FALSE;
-  For idx := SUCC(songdata.nm_tracks) to 20 do
-    opl3_record_channel[idx] := FALSE;
-  If percussion_mode then
-    begin
-      If NOT channel_flag[19] then opl3_record_channel[18] := FALSE;
-      If NOT channel_flag[20] then opl3_record_channel[17] := FALSE;
-    end;
-end;
-
-procedure playcallback(var userdata; stream: pByte; len: Longint); cdecl;
-
-const
-  counter_idx: Longint = 0;
-
-var
-  counter: Longint;
-  idx: Byte;
-  IRQ_freq_val: Longint;
-  buffer_ptr_table: array[1..18] of pDword;
-  buf_size: Longint;
-
-begin
-  If NOT rewind then
-    IRQ_freq_val := IRQ_freq
-  else IRQ_freq_val := IRQ_freq * 20;
-
-  For counter := 0 to PRED(len DIV 4) do
-    begin
-      Inc(counter_idx);
-      If (counter_idx >= sample_frame_size) then
-        begin
-          counter_idx := 0;
-          If (ticklooper > 0) then
-            If (fast_forward or rewind) and NOT replay_forbidden then
-              poll_proc
-            else
-          else If NOT replay_forbidden then
-                 poll_proc;
-
-          If (macro_ticklooper = 0) then
-            macro_poll_proc;
-
-          Inc(ticklooper);
-          If (ticklooper >= IRQ_freq_val DIV tempo) then
-            ticklooper := 0;
-
-          Inc(macro_ticklooper);
-          If (macro_ticklooper >= IRQ_freq_val DIV (tempo*macro_speedup)) then
-            macro_ticklooper := 0;
-        end;
-
-      // update partial channel sample buffer pointers
-      For idx := 1 to 18 do
-        buffer_ptr_table[idx] := opl3_sample_buffer_chan_ptr[idx]+counter*4;
-      // update one step
-      OPL3EMU_PollProc(opl3_sample_buffer_ptr+counter*4,buffer_ptr_table);
-    end;
-
-  // update SDL Audio sample buffer
-  Move(opl3_sample_buffer_ptr^,stream^,len);
-  If (play_status = isStopped) then
-    begin
-      wav_buffer_len := 0;
-      EXIT;
-    end;
-
-  // calculate cache buffer size
-  If opl3_channel_recording_mode then
-    buf_size := WAV_BUFFER_SIZE DIV 18 * get_num_files
-  else buf_size := WAV_BUFFER_SIZE DIV 18;
-
-  // WAV dumper
-  If (sdl_opl3_emulator <> 0) then
-    If (wav_buffer_len+len <= buf_size) then
-      begin
-        // update main sample buffer
-        Move(opl3_sample_buffer_ptr^,wav_buffer[0][wav_buffer_len],len);
-        // update partial channel sample buffers
-        For idx := 1 to 18 do
-          Move(opl3_sample_buffer_chan_ptr[idx]^,wav_buffer[idx][wav_buffer_len],len);
-        Inc(wav_buffer_len,len);
-      end
-    else
-      begin
-        // sample buffers full -> flush to disk!
-        flush_WAV_data;
-        // update main sample buffer
-        Move(opl3_sample_buffer_ptr^,wav_buffer[0][wav_buffer_len],len);
-        // update partial channel sample buffers
-        For idx := 1 to 18 do
-          Move(opl3_sample_buffer_chan_ptr[idx]^,wav_buffer[idx][wav_buffer_len],len);
-        Inc(wav_buffer_len,len);
-      end;
-end;
-
-procedure snd_init;
-
-var
-  idx: Byte;
-
-begin
-  GetMem(opl3_sample_buffer_ptr,sdl_sample_buffer*4);
-  For idx := 1 to 18 do GetMem(opl3_sample_buffer_chan_ptr[idx],sdl_sample_buffer*4);
-  sample_frame_size := ROUND(sdl_sample_rate/50*(1+sdl_timer_slowdown/100));;
-
-  opl3_init;
-
-  sdl_audio_spec.freq := sdl_sample_rate;
-  sdl_audio_spec.format := AUDIO_S16;
-  sdl_audio_spec.channels := 2;
-  sdl_audio_spec.samples := sdl_sample_buffer;
-  @sdl_audio_spec.callback := @playcallback;
-  sdl_audio_spec.userdata := NIL;
-
-  If (SDL_Openaudio(@sdl_audio_spec,NIL) < 0) then
-    begin
-      WriteLn('SDL: Audio initialization error');
-      HALT(1);
-    end;
-
-  WriteLn('  Sample buffer size: ',sdl_audio_spec.samples,' samples (requested ',sdl_sample_buffer,')');
-  WriteLn('  Sampling rate: ',sdl_audio_spec.freq,' Hz (requested ',sdl_sample_rate,')');
-
-  sdl_sample_rate := sdl_audio_spec.freq;
-  sdl_sample_buffer := sdl_audio_spec.samples;
-
-  SDL_PauseAudio(0);
-end;
-
-procedure snd_done;
-
-var
-  idx: Byte;
-
-begin
-  SDL_PauseAudio(1);
-  SDL_CloseAudio;
-  FreeMem(opl3_sample_buffer_ptr);
-  For idx := 1 to 18 do FreeMem(opl3_sample_buffer_chan_ptr[idx]);
-  opl3_sample_buffer_ptr := NIL;
-end;
-
-{$ENDIF}
+{$ENDIF} { NOT DEFINED(GO32V2) }
 
 {$IFDEF GO32V2}
-
-var
-  old_exit_proc: procedure;
-
-procedure new_exit_proc;
-begin
-  Lock_Data(___OPL3OUT_UNIT_DATA_START___,DWORD(Addr(___OPL3OUT_UNIT_DATA_END___))-DWORD(Addr(___OPL3OUT_UNIT_DATA_START___)));
-  Lock_Code(@___OPL3OUT_IRQ_CODE_START___,DWORD(@___OPL3OUT_IRQ_CODE_END___)-DWORD(@___OPL3OUT_IRQ_CODE_START___));
-  ExitProc := @old_exit_proc;
-end;
+procedure init_adt2opl3; cdecl; external;
 
 begin
-  FillWord(_opl_regs_cache,SizeOf(_opl_regs_cache) DIV SizeOf(WORD),NOT 0);
-  Lock_Data(___OPL3OUT_UNIT_DATA_START___,DWORD(Addr(___OPL3OUT_UNIT_DATA_END___))-DWORD(Addr(___OPL3OUT_UNIT_DATA_START___)));
-  Lock_Code(@___OPL3OUT_IRQ_CODE_START___,DWORD(@___OPL3OUT_IRQ_CODE_END___)-DWORD(@___OPL3OUT_IRQ_CODE_START___));
-  @old_exit_proc := ExitProc;
-  ExitProc := @new_exit_proc;
-
-{$ENDIF}
-
+  init_adt2opl3;
+{$ENDIF} { DEFINED(GO32V2) }
 end.

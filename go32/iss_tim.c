@@ -12,14 +12,10 @@
 #include "platform.h"
 #if USE_FPC
 #include "pascal.h"
-#include "pascal/dos.h"
-#include "pascal/pc.h"
-#include "pascal/string.h"
-#else // !USE_FPC
+#endif // USE_FPC
 #include <dos.h>
 #include <pc.h>
 #include <string.h>
-#endif // !USE_FPC
 #include "go32/adt2dpmi.h"
 #include "go32/PIT.h"
 #include "go32/iss_tim.h"

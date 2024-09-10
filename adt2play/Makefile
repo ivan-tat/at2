@@ -31,7 +31,7 @@ GCCFLAGS+=-std=gnu99 -Wall -Wextra -pedantic
 
 GCCFLAGS+=-DADT2PLAY=1
 
-GCCFLAGS_DIRS+=-I$(srcdir1) -I$(srcdir) -I.
+GCCFLAGS_DIRS+=-isystem $(srcdir)/pascal -I $(srcdir1) -I $(srcdir) -I .
 
 # Setup FPC
 

@@ -45,7 +45,7 @@ endif
 # in DJGPP environment
 GCCFLAGS+=-std=gnu99 -Wall -Wextra -pedantic
 
-GCCFLAGS_DIRS+=-I$(srcdir) -I.
+GCCFLAGS_DIRS+=-isystem $(srcdir)/pascal -I $(srcdir) -I .
 
 # Setup FPC
 
@@ -57,6 +57,7 @@ SRCS=\
  adt2data.c\
  adt2sys.c\
  adt2keyb.c\
+ adt2opl3.c\
  adt2unit.c\
  common.c\
  dialogio.c\
@@ -73,6 +74,7 @@ SRCS=\
  pascal/stdio.c\
  pascal/stdlib.c\
  pascal/string.c\
+ pascal/time.c\
  stringio.c\
  txtscrio.c
 
@@ -289,9 +291,11 @@ pascal_ppu_deps=\
  $(srcdir)/pascal/stdio.pas\
  $(srcdir)/pascal/stdlib.pas\
  $(srcdir)/pascal/string.pas\
+ $(srcdir)/pascal/time.pas\
  pascal/stdio.o\
  pascal/stdlib.o\
- pascal/string.o
+ pascal/string.o\
+ pascal/time.o
 
 ifeq ($(FPC_OS_TARGET),go32v2)
  pascal_ppu_deps+=\
@@ -362,21 +366,20 @@ adt2extn_ppu_deps=\
 
 adt2opl3_ppu_deps=\
  $(srcdir)/adt2opl3.pas\
- units/opl3emu.ppu
+ units/opl3emu.ppu\
+ adt2opl3.o
 
 adt2pack_ppu_deps=\
  $(srcdir)/adt2pack.pas
 
 adt2sys_ppu_deps=\
  $(srcdir)/adt2sys.pas\
+ $(adt2opl3_ppu_deps)\
  adt2sys.o
 
 ifeq ($(FPC_OS_TARGET),go32v2)
  adt2sys_ppu_deps+=\
   units/adt2vesa.ppu
-else
- adt2sys_ppu_deps+=\
-  $(adt2opl3_ppu_deps)
 endif
 
 adt2text_ppu_deps=\

@@ -4,10 +4,8 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <string.h> // CopyString()
 #include "parserio.h"
-#if USE_FPC
-#include "pascal/string.h" // CopyString()
-#endif // USE_FPC
 
 static uint16_t CRC16_table[0x100];
 static uint32_t CRC32_table[0x100];

@@ -281,7 +281,7 @@ extern const uint8_t inst_hpos_ext_perc[6][inst_hpos_max]; // HINT: (FPC) start 
 extern const uint8_t inst_hpos_ext_4op[6][inst_hpos_max]; // HINT: (FPC) start index 1,1
 extern const uint8_t inst_vpos[inst_vpos_max]; // HINT: (FPC) start index 1
 
-extern String note_layout[12*8+2][3+1]; // HINT: (FPC) start index 1
+extern String note_layout[12*8+2][3+1]; // HINT: (FPC) start index 0
 
 // TODO: replace scancodes (GO32-only) in `board_scancodes' with keys (all)
 extern const uint8_t board_scancodes[29]; // HINT: (FPC) start index 1
@@ -312,13 +312,13 @@ extern const uint8_t _instr[12]; // HINT: (FPC) start index 0
 
 typedef uint16_t tTRACK_ADDR[20]; // HINT: (FPC) start index 1
 
-extern const tTRACK_ADDR _chmm_n;
-extern const tTRACK_ADDR _chmm_m;
-extern const tTRACK_ADDR _chmm_c;
+extern const tTRACK_ADDR _chmm_n; // HINT: (FPC) start index 1
+extern const tTRACK_ADDR _chmm_m; // HINT: (FPC) start index 1
+extern const tTRACK_ADDR _chmm_c; // HINT: (FPC) start index 1
 
-extern const tTRACK_ADDR _chpm_n;
-extern const tTRACK_ADDR _chpm_m;
-extern const tTRACK_ADDR _chpm_c;
+extern const tTRACK_ADDR _chpm_n; // HINT: (FPC) start index 1
+extern const tTRACK_ADDR _chpm_m; // HINT: (FPC) start index 1
+extern const tTRACK_ADDR _chpm_c; // HINT: (FPC) start index 1
 
 extern const uint8_t _4op_tracks_hi[256/8]; // HINT: (FPC) set of byte
 extern const uint8_t _4op_tracks_lo[256/8]; // HINT: (FPC) set of byte
@@ -326,10 +326,10 @@ extern const uint8_t _4op_tracks_lo[256/8]; // HINT: (FPC) set of byte
 extern const uint8_t _4op_main_chan[6]; // HINT: (FPC) start index 1
 extern const uint8_t _perc_sim_chan[2]; // HINT: (FPC) start index 19
 
-extern tTRACK_ADDR _chan_n;
-extern tTRACK_ADDR _chan_m;
-extern tTRACK_ADDR _chan_c;
-extern tTRACK_ADDR _ch_tmp;
+extern tTRACK_ADDR _chan_n; // HINT: (FPC) start index 1
+extern tTRACK_ADDR _chan_m; // HINT: (FPC) start index 1
+extern tTRACK_ADDR _chan_c; // HINT: (FPC) start index 1
+extern tTRACK_ADDR _ch_tmp; // HINT: (FPC) start index 1
 
 extern const uint8_t fade_delay_tab[64]; // HINT: (FPC) start index 0
 

@@ -9,13 +9,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
-
 #include <stdbool.h>
-#if USE_FPC
-#include "pascal/stdlib.h"
-#else // !USE_FPC
 #include <stdlib.h>
-#endif // !USE_FPC
 #include "opl3emu.h"
 
 // HINT: (FPC) S-: Stack checking (off)

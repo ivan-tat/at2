@@ -1209,7 +1209,7 @@ begin
                else
              else If NOT shift_pressed and
                          (track_notes or (NOT debugging and (play_status = isPlaying))) then
-                    rewind := TRUE;
+                    _rewind := TRUE;
 
       kDOWN: If shift_pressed and track_notes then
                If NOT (jump_mark_mode and mark_lines) and
@@ -1221,7 +1221,7 @@ begin
 
       kCtLEFT: If track_notes then
                  If NOT debugging and (play_status = isPlaying) then
-                   rewind := TRUE;
+                   _rewind := TRUE;
 
       kCtRGHT: If track_notes then
                  If NOT debugging and (play_status = isPlaying) then
@@ -3647,7 +3647,7 @@ begin
                           end;
                  end
                else If NOT debugging and (play_status = isPlaying) then
-                      rewind := TRUE;
+                      _rewind := TRUE;
 
       kCtRGHT: If track_notes then
                  begin

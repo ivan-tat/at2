@@ -824,7 +824,7 @@ begin { PATTERN_ORDER_edit }
       kCtrlM:  MACRO_BROWSER(TRUE,TRUE);
       kCtrlX:  REARRANGE;
 
-      kCtLEFT: If (play_status = isPlaying) then rewind := TRUE;
+      kCtLEFT: If (play_status = isPlaying) then _rewind := TRUE;
       kCtRGHT: If (play_status = isPlaying) then fast_forward := TRUE;
 
       kCtENTR: If play_single_patt then current_line := 0

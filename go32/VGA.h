@@ -11,11 +11,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#if USE_FPC
-#include "pascal/pc.h"
-#else // !USE_FPC
 #include <pc.h>
-#endif // !USE_FPC
 
 #define VGA_ATTR_WRITE_PORT     0x3C0 // Attribute Address/Data Register (write)
 #define VGA_ATTR_READ_PORT      0x3C1 // Attribute Data Register (read)

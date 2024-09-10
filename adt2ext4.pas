@@ -68,7 +68,7 @@ const
   _pip_loop: Boolean = FALSE;
   _operator_enabled: array[1..4] of Boolean = (TRUE,TRUE,TRUE,TRUE);
 
-procedure _preview_indic_proc(state: Byte);
+procedure _preview_indic_proc(state: Byte); cdecl;
 begin
   Case state of
     0: ShowStr(_pip_dest,_pip_xloc,_pip_yloc,

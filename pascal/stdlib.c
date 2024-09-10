@@ -3,10 +3,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <stddef.h>
+#include <limits.h>
 #include "stdlib.h"
 
 static uint8_t _ExitCount = 0;
 static void (*_ExitList[ATEXIT_MAX]) (void);
+
+extern int32_t *Pascal_RandSeedPtr;
 
 int custom_abs (int i) {
   return (i < 0) ? -i : i;
@@ -29,6 +32,14 @@ void *custom_realloc (void *ptr, size_t size) {
 
   Pascal_ReAllocMem (&p, size);
   return p;
+}
+
+int custom_rand (void) {
+  return Pascal_Random (RAND_MAX);
+}
+
+void custom_srand (unsigned seed) {
+  *Pascal_RandSeedPtr = seed;
 }
 
 void init_stdlib (void) {

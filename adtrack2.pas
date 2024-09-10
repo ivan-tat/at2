@@ -19,6 +19,7 @@ program AdLib_Tracker_II;
 {$I adtrack2.inc}
 
 uses
+  pascal,
 {$IFDEF GO32V2}
   CRT,
   GO32,

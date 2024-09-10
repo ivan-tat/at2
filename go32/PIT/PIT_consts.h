@@ -10,7 +10,9 @@
 #define GO32_PIT_CONSTS_H
 
 #define PIT_FREQ_MAX    1193182 // Base HW frequency
-#define PIT_FREQ_MIN    19      // PIT_FREQ_MAX / PIT_LATENCY_MAX =~ 18.206512451
+// Minimal frequency is PIT_FREQ_MAX / PIT_LATENCY_MAX =~ 18.206512451
+#define PIT_FREQ_FLOOR  18 // =floor(min)
+#define PIT_FREQ_MIN    19 // =ceil(min)
 #define PIT_LATENCY_MIN 1
 #define PIT_LATENCY_MAX 0x10000
 

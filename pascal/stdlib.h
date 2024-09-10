@@ -22,6 +22,11 @@ int custom_atexit (void (*function) (void));
 void custom_free (void *ptr);
 void *custom_realloc (void *ptr, size_t size);
 
+#define RAND_MAX INT_MAX
+
+int custom_rand (void);
+void custom_srand (unsigned seed);
+
 // Aliases
 #define abs custom_abs
 #define atexit custom_atexit
@@ -29,5 +34,7 @@ void *custom_realloc (void *ptr, size_t size);
 #define malloc Pascal_AllocMem
 #define free custom_free
 #define realloc custom_realloc
+#define rand custom_rand
+#define srand custom_srand
 
 #endif // !defined(PASCAL_STDLIB_H)

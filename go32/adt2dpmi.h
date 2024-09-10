@@ -12,17 +12,10 @@
 #define GO32_ADT2DPMI_H
 
 #include "defines.h"
-#if USE_FPC
-#include "pascal/dpmi.h"
-#include "pascal/go32.h"
-#include "pascal/sys/exceptn.h"
-#include "pascal/sys/farptr.h"
-#else // !USE_FPC
 #include <dpmi.h>
 #include <go32.h>
 #include <sys/exceptn.h>
 #include <sys/farptr.h>
-#endif // !USE_FPC
 #include "go32/dpmi.h"
 
 #define __LOCK_FUNC     __NO_REORDER

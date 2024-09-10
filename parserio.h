@@ -10,13 +10,8 @@
 #define PARSERIO_H
 
 #include "defines.h"
-
 #include <stdint.h>
-#if USE_FPC
-#include "pascal/stdio.h" // ssize_t
-#else // !USE_FPC
 #include <stdio.h> // ssize_t
-#endif // !USE_FPC
 
 int32_t Scan (const void *buf, ssize_t skip, ssize_t size, const String *str);
 int32_t SensitiveScan (const void *buf, ssize_t skip, ssize_t size,

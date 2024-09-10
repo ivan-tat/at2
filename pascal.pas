@@ -13,16 +13,20 @@ unit Pascal;
 {$L pascal/stdio.o}
 {$L pascal/stdlib.o}
 {$L pascal/string.o}
+{$L pascal/time.o}
 
 interface
 
-{$IFDEF GO32V2}
 uses
-  go32;
-{$ENDIF} {DEFINED(GO32V2)}
+{$IFDEF GO32V2}
+  go32,
+{$ENDIF} {NOT DEFINED(GO32V2)}
+  sysutils;
 
 const
   PUBLIC_PREFIX = {$IF DEFINED(GO32V2) OR DEFINED(WINDOWS)} '_' {$ELSE} '' {$ENDIF};
+
+{ `system' unit }
 
 var
 {$IFDEF GO32V2}
@@ -38,6 +42,29 @@ procedure Pascal_FillWord (var x; count: SizeInt; value: Word); cdecl;
 
 procedure Pascal_Move (const src; var dest; n: SizeInt); cdecl;
 
+// FPC_TRUNC_REAL
+function Pascal_Trunc_Single (x: Single): Single; cdecl;
+function Pascal_Trunc_Double (x: Double): Double; cdecl;
+
+function Pascal_AllocMem (size: PtrUInt): Pointer; cdecl;
+function Pascal_FreeMem (p: Pointer): PtrUInt; cdecl;
+function Pascal_ReAllocMem (var p: pointer; size: PtrUInt): Pointer; cdecl;
+
+procedure Pascal_Write_PChar (var t: Text; str: PChar); cdecl;
+procedure Pascal_Write_String (var t: Text; str: String); cdecl;
+procedure Pascal_Flush (var t: Text); cdecl;
+
+const
+  Pascal_RandSeedPtr: Pointer = @system.RandSeed; cvar;
+
+{$IFDEF CPU64}
+function Pascal_Random (l: Int64): Int64; cdecl;
+{$ELSE} {NOT DEFINED(CPU64)}
+function Pascal_Random (l: Longint): Longint; cdecl;
+{$ENDIF} {NOT DEFINED(CPU64)}
+
+{ `strings' unit }
+
 function Pascal_strlen (const s: PChar): SizeInt; cdecl;
 function Pascal_strcopy (dest, src: PChar): PChar; cdecl;
 function Pascal_strecopy (dest, src: PChar): PChar; cdecl;
@@ -52,23 +79,23 @@ function Pascal_strrscan (const s: PChar; c: Char): PChar; cdecl;
 function Pascal_strpos (const haystack, needle: PChar): PChar; cdecl;
 function Pascal_stripos (const haystack, needle: PChar): PChar; cdecl;
 
+{ `sysutils' unit }
+
+function Pascal_Now: TDateTime; cdecl;
+
+{ `dateutils' unit }
+
+function Pascal_DateTimeToUnix (const AValue: TDateTime): Int64; cdecl;
+
+{ `crt' unit }
+
 procedure Pascal_Delay (ms: Word); cdecl;
 function Pascal_KeyPressed: Boolean; cdecl;
 function Pascal_ReadKey: Char; cdecl;
 
-// FPC_TRUNC_REAL
-function Pascal_Trunc_Single (x: Single): Single; cdecl;
-function Pascal_Trunc_Double (x: Double): Double; cdecl;
-
-function Pascal_AllocMem (size: PtrUInt): Pointer; cdecl;
-function Pascal_FreeMem (p: Pointer): PtrUInt; cdecl;
-function Pascal_ReAllocMem (var p: pointer; size: PtrUInt): Pointer; cdecl;
-
-procedure Pascal_Write_PChar (var t: Text; str: PChar); cdecl;
-procedure Pascal_Write_String (var t: Text; str: String); cdecl;
-procedure Pascal_Flush (var t: Text); cdecl;
-
 {$IFDEF GO32V2}
+
+{ `go32' unit }
 
 var
   __v2prt0_ds_alias: Word; cvar; external;
@@ -92,46 +119,117 @@ function Pascal_lock_code (functionaddr: Pointer; size: Longint): Boolean; cdecl
 function Pascal_unlock_data (var data; size: Longint): Boolean; cdecl;
 function Pascal_unlock_code (functionaddr: Pointer; size: Longint): Boolean; cdecl;
 
+{$ENDIF} {DEFINED(GO32V2)}
+
+{$IFDEF GO32V2}
 {$I pascal/dos.pas}
 {$I pascal/dpmi.pas}
 {$I pascal/go32.pas}
 {$I pascal/pc.pas}
-
 {$ENDIF} {DEFINED(GO32V2)}
-
 {$I pascal/stdio.pas}
 {$I pascal/stdlib.pas}
 {$I pascal/string.pas}
+{$I pascal/time.pas}
 
 implementation
 
 uses
   crt,
+  dateutils,
   strings;
+
+{ `System' unit }
 
 procedure Pascal_Halt (errnum: Longint); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_Halt';
 begin
-  Halt (errnum);
+  system.Halt (errnum);
 end;
 
 procedure Pascal_FillChar (var x; count: SizeInt; value: Byte); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_FillChar';
 begin
-  FillChar (x, count, value);
+  system.FillChar (x, count, value);
 end;
 
 procedure Pascal_FillWord (var x; count: SizeInt; value: Word); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_FillWord';
 begin
-  FillWord (x, count, value);
+  system.FillWord (x, count, value);
 end;
 
 procedure Pascal_Move (const src; var dest; n: SizeInt); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_Move';
 begin
-  Move (src, dest, n);
+  system.Move (src, dest, n);
 end;
+
+function Pascal_Trunc_Single (x: Single): Single; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Trunc_Single';
+begin
+  Pascal_Trunc_Single := system.Trunc (x);
+end;
+
+function Pascal_Trunc_Double (x: Double): Double; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Trunc_Double';
+begin
+  Pascal_Trunc_Double := system.Trunc (x);
+end;
+
+function Pascal_AllocMem (size: PtrUInt): Pointer; cdecl
+public name PUBLIC_PREFIX + 'Pascal_AllocMem';
+begin
+  Pascal_AllocMem := system.AllocMem (size);
+end;
+
+function Pascal_FreeMem (p: Pointer): PtrUInt; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_FreeMem';
+begin
+  Pascal_FreeMem := system.FreeMem (p);
+end;
+
+function Pascal_ReAllocMem (var p: pointer; size: PtrUInt): Pointer; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_ReAllocMem';
+begin
+  Pascal_ReAllocMem := system.ReAllocMem (p, size);
+end;
+
+procedure Pascal_Write_PChar (var t: Text; str: PChar); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Write_PChar';
+begin
+  {$PUSH} {$I-}
+  system.Write (t, str);
+  {$POP}
+end;
+
+procedure Pascal_Write_String (var t: Text; str: String); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Write_String';
+begin
+  {$PUSH} {$I-}
+  system.Write (t, str);
+  {$POP}
+end;
+
+procedure Pascal_Flush (var t: Text); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Flush';
+begin
+  {$PUSH} {$I-}
+  system.Flush (t);
+  {$POP}
+end;
+
+{$IFDEF CPU64}
+function Pascal_Random (l: Int64): Int64; cdecl;
+{$ELSE} {NOT DEFINED(CPU64)}
+function Pascal_Random (l: Longint): Longint; cdecl;
+{$ENDIF} {NOT DEFINED(CPU64)}
+public name PUBLIC_PREFIX + 'Pascal_Random';
+begin
+  Pascal_Random := system.Random (l);
+end;
+
+{ `strings' unit }
 
 function Pascal_strlen (const s: PChar): SizeInt; cdecl;
 public name PUBLIC_PREFIX + 'Pascal_strlen';
@@ -211,6 +309,24 @@ begin
   Pascal_stripos := strings.stripos (haystack, needle);
 end;
 
+{ `sysutils' unit }
+
+function Pascal_Now: TDateTime; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Now';
+begin
+  Pascal_Now := sysutils.Now;
+end;
+
+{ `dateutils' unit }
+
+function Pascal_DateTimeToUnix (const AValue: TDateTime): Int64; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_DateTimeToUnix';
+begin
+  Pascal_DateTimeToUnix := dateutils.DateTimeToUnix (AValue);
+end;
+
+{ `crt' unit }
+
 procedure Pascal_Delay (ms: Word); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_Delay';
 begin
@@ -229,61 +345,9 @@ begin
   Pascal_ReadKey := crt.ReadKey;
 end;
 
-function Pascal_Trunc_Single (x: Single): Single; cdecl;
-public name PUBLIC_PREFIX + 'Pascal_Trunc_Single';
-begin
-  Pascal_Trunc_Single := Trunc (x);
-end;
-
-function Pascal_Trunc_Double (x: Double): Double; cdecl;
-public name PUBLIC_PREFIX + 'Pascal_Trunc_Double';
-begin
-  Pascal_Trunc_Double := Trunc (x);
-end;
-
-function Pascal_AllocMem (size: PtrUInt): Pointer; cdecl
-public name PUBLIC_PREFIX + 'Pascal_AllocMem';
-begin
-  Pascal_AllocMem := system.AllocMem (size);
-end;
-
-function Pascal_FreeMem (p: Pointer): PtrUInt; cdecl;
-public name PUBLIC_PREFIX + 'Pascal_FreeMem';
-begin
-  Pascal_FreeMem := system.FreeMem (p);
-end;
-
-function Pascal_ReAllocMem (var p: pointer; size: PtrUInt): Pointer; cdecl;
-public name PUBLIC_PREFIX + 'Pascal_ReAllocMem';
-begin
-  Pascal_ReAllocMem := system.ReAllocMem (p, size);
-end;
-
-procedure Pascal_Write_PChar (var t: Text; str: PChar); cdecl;
-public name PUBLIC_PREFIX + 'Pascal_Write_PChar';
-begin
-  {$PUSH} {$I-}
-  system.Write (t, str);
-  {$POP}
-end;
-
-procedure Pascal_Write_String (var t: Text; str: String); cdecl;
-public name PUBLIC_PREFIX + 'Pascal_Write_String';
-begin
-  {$PUSH} {$I-}
-  system.Write (t, str);
-  {$POP}
-end;
-
-procedure Pascal_Flush (var t: Text); cdecl;
-public name PUBLIC_PREFIX + 'Pascal_Flush';
-begin
-  {$PUSH} {$I-}
-  system.Flush (t);
-  {$POP}
-end;
-
 {$IFDEF GO32V2}
+
+{ `go32' unit }
 
 function Pascal_allocate_ldt_descriptors (count: Word): Word; cdecl;
 public name PUBLIC_PREFIX + 'Pascal_allocate_ldt_descriptors';
@@ -389,13 +453,15 @@ end;
 
 {$ENDIF} {DEFINED(GO32V2)}
 
+{ Initialization and finalization }
+
 var
   OldExitProc: Pointer;
 
 procedure OnExit;
 begin
   done_stdlib; // Shuts down all C code
-  ExitProc := OldExitProc;
+  system.ExitProc := OldExitProc;
 end;
 
 begin
@@ -406,8 +472,8 @@ begin
 {$ENDIF} {DEFINED(GO32V2)}
   Pascal_Output := @system.Output;
   Pascal_InOutRes_ptr := @system.InOutRes;
-  OldExitProc := ExitProc;
-  ExitProc := @OnExit;
+  OldExitProc := system.ExitProc;
+  system.ExitProc := @OnExit;
   // `stdlib' must be first (controls proper exit in C via `atexit' routine)
   init_stdlib;
   init_stdio;

@@ -7,11 +7,13 @@
 #include "defines.h"
 
 #include <stddef.h>
-#if USE_FPC
-#include "pascal/string.h"
-#else // !USE_FPC
 #include <string.h>
-#endif // !USE_FPC
+#if GO32
+#include "go32/adt2dpmi.h"
+#include "go32/adt2vesa.h"
+#include "txtscrio.h"
+#else // !GO32
+#endif // !GO32
 #include "adt2sys.h"
 
 // HINT: (FPC) S-: Stack checking (off)
@@ -101,3 +103,7 @@ void   *_FrameBuffer = NULL;
 #else // GO32
 uint8_t _FrameBuffer_mirror[1024*768];
 #endif // GO32
+
+#if GO32
+#include "adt2sys/go32/dump_VESA_buffer.c"
+#endif // !GO32

@@ -3229,7 +3229,7 @@ _jmp1:
 
     Case fkey of
       kCtLEFT: If NOT debugging and (play_status = isPlaying) then
-                 rewind := TRUE;
+                 _rewind := TRUE;
 
       kCtRGHT: If NOT debugging and (play_status = isPlaying) then
                  fast_forward := TRUE;

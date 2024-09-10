@@ -8,14 +8,9 @@
 #define COMMON_H
 
 #include "defines.h"
-
 #include <stdbool.h>
 #include <stdint.h>
-#if USE_FPC
-#include "pascal/string.h"
-#else // !USE_FPC
 #include <string.h>
-#endif // !USE_FPC
 
 #define MK_UINT8(a,b,c,d,e,f,g,h) (a+b*2+c*4+d*8+e*16+f*32+g*64+h*128)
 #define MK_UINT32(a,b,c,d) (a+((b)<<8)+((c)<<16)+((d)<<24))

@@ -5,16 +5,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
-
-#if USE_FPC
-#include "pascal/dos.h"
-#include "pascal/stdlib.h"
-#include "pascal/string.h"
-#else // !USE_FPC
 #include <dos.h>
 #include <stdlib.h>
 #include <string.h>
-#endif // !USE_FPC
 #include "go32/adt2dpmi.h"
 #include "go32/BIOS.h"
 #include "go32/VBIOS.h"

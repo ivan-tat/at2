@@ -5,14 +5,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
-
 #include "platform.h"
-#include "stringio.h"
-#if USE_FPC
-#include "pascal/string.h"
-#else // !USE_FPC
 #include <string.h>
-#endif // !USE_FPC
+#include "stringio.h"
 
 // HINT: (FPC) S-: Stack checking (off)
 // HINT: (FPC) Q-: Overflow checking (off)

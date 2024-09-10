@@ -30,6 +30,8 @@
 #define DIR_SEP '\\'
 #define DIR_SEP_STR "\\"
 
+#define NL "\r\n" // new line string
+
 #elif WIN32||WIN64
 
 #define _ASM_SYM_STR(x) "_" #x
@@ -40,6 +42,8 @@
 #define DIR_SEP '\\'
 #define DIR_SEP_STR "\\"
 
+#define NL "\r\n" // new line string
+
 #elif linux||unix
 
 #define _ASM_SYM_STR(x) "" #x
@@ -49,6 +53,8 @@
 #define DRIVE_SEP '\0' // none
 #define DIR_SEP '/'
 #define DIR_SEP_STR "/"
+
+#define NL "\n" // new line string
 
 #endif // linux||unix
 
