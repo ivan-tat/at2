@@ -362,7 +362,6 @@ procedure output_note(note,ins,chan: Byte;
 
 function  min(value: Longint; minimum: Longint): Longint; cdecl; external;
 function  max(value: Longint; maximum: Longint): Longint; cdecl; external;
-function  asciiz_string(str: String): String;
 procedure TimerSetup(Hz: Longint); cdecl; external;
 
 var
@@ -458,13 +457,6 @@ function calc_vibtrem_shift(chan: Byte; var table_data): Word; cdecl; external;
 function is_data_empty(var buf; size: Longint): Boolean; cdecl; external;
 //min
 //max
-
-function asciiz_string(str: String): String;
-begin
-  If (Pos(#0,str) <> 0) then asciiz_string := Copy(str,1,Pos(#0,str)-1)
-  else asciiz_string := '';
-end;
-
 //concw
 procedure synchronize_song_timer; cdecl; external;
 //change_frequency

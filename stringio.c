@@ -17,6 +17,8 @@
 // HINT: (FPC) X+: Extended syntax (ON)
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 
+#include "stringio/asciiz_string.c"
+
 #if !ADT2PLAY
 
 // UCS-2

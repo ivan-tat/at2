@@ -298,7 +298,6 @@ struct status_backup_t status_backup;
 
 #include "adt2unit/min.c"
 #include "adt2unit/max.c"
-//#include "adt2unit/asciiz_string.c"
 #include "adt2unit/change_frequency.c"
 #include "adt2unit/update_timer.c"
 #include "adt2unit/update_playback_speed.c" // HINT: static

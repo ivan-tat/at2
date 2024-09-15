@@ -336,7 +336,6 @@ bool    is_4op_chan (uint8_t chan);
 
 int32_t min (int32_t value, int32_t minimum);
 int32_t max (int32_t value, int32_t maximum);
-//String_t asciiz_string (const String *str);
 void    TimerSetup (uint32_t Hz);
 
 extern uint8_t block_xstart;

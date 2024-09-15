@@ -20,6 +20,8 @@ unit StringIO;
 {$L stringio.o}
 interface
 
+function asciiz_string(str: String): String; cdecl; external;
+
 {$IFNDEF ADT2PLAY}
 
 type

@@ -14,6 +14,8 @@
 
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 
+String_t asciiz_string (const String *str);
+
 #if !ADT2PLAY
 
 // UCS-2 `code page'
