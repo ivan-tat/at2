@@ -206,12 +206,14 @@ typedef enum {
   fadeFirst,
   fadeOut,
   fadeIn
-} tFADE;
+} FADE_enum;
+typedef uint8_t tFADE; // holds FADE_enum
 
 typedef enum {
   fast,
   delayed
-} tDELAY;
+} DELAY_enum;
+typedef uint8_t tDELAY; // holds DELAY_enum
 
 #pragma pack(push, 1)
 typedef struct {

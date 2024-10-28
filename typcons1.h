@@ -205,13 +205,15 @@ typedef enum {
   objMacroTableColumn,
   objMacroTable,
   objInstrumentWithMacros
-} tCOPY_OBJECT;
+} COPY_OBJECT_enum;
+typedef uint8_t tCOPY_OBJECT; // holds COPY_OBJECT_enum
 
 typedef enum {
   mttFM_reg_table,
   mttArpeggio_table,
   mttVibrato_table
-} tMACRO_TABLE_TYPE;
+} MACRO_TABLE_TYPE_enum;
+typedef uint8_t tMACRO_TABLE_TYPE; // holds MACRO_TABLE_TYPE_enum
 
 typedef struct {
   tCOPY_OBJECT object_type;
@@ -249,7 +251,8 @@ typedef enum {
   isPlaying,
   isPaused,
   isStopped
-} tPLAY_STATUS;
+} PLAY_STATUS_enum;
+typedef uint8_t tPLAY_STATUS; // holds PLAY_STATUS_enum
 
 typedef struct {
 #if GO32
