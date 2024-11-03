@@ -33,4 +33,6 @@ void update_timer (uint16_t Hz) {
 
     TimerSetup (max (IRQ_freq + IRQ_freq_shift + playback_speed_shift, MAX_IRQ_FREQ));
   }
+
+  DBG_LEAVE (); //update_timer
 }

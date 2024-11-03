@@ -26,13 +26,18 @@ bool detect_OPL3 (void) {
 
   x.b[1] = inportb (opl3port) & 0xE0;
 
-  if (x.w != 0xC000)
+  if (x.w != 0xC000) {
+    DBG_LEAVE (); //detect_OPL3
     return false;
+  }
 
   opl2out (0x04, 0x80);
   WaitRetrace ();
   opl2out (0x04, 0x60);
   WaitRetrace ();
 
-  return (inportb (opl3port) & 0x06) == 0;
+  x.b[0] = inportb (opl3port) & 0x06;
+
+  DBG_LEAVE (); //detect_OPL3
+  return x.b[0] == 0;
 }

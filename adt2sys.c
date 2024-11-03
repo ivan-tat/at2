@@ -8,6 +8,7 @@
 
 #include <stddef.h>
 #include <string.h>
+#include "debug.h"
 #if GO32
 #include "go32/adt2dpmi.h"
 #include "go32/adt2vesa.h"
@@ -83,14 +84,6 @@ struct _custom_svga_cfg_rec_t _custom_svga_cfg[31] = {
  { .flag = false, .value = -1 }
 };
 #endif // GO32
-
-bool   _debug_ = false;
-String _last_debug_str_[255+1] = { 0 };
-String _debug_str_[255+1] = { 0 };
-
-#define Min(a,b) ((a<=b)?a:b)
-
-#include "adt2sys/_dbg_enter.c"
 
 bool    _force_program_quit = false;
 uint8_t _traceprc_last_order = 0;

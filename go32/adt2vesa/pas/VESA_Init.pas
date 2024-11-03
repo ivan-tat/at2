@@ -18,7 +18,8 @@ begin
 end;
 
 begin
-  If VESA_GraphicsSysInited then EXIT;
+  If VESA_GraphicsSysInited then
+    EXIT; //VESA_Init
   With VESA_ModeList[0] do
     begin
       ModeNumber := $13;
@@ -45,11 +46,11 @@ begin
   global_dos_free(dos_sel);
 
   If (VESA_Info.Signature <> 'VESA') then
-    EXIT; // ERROR: VESA BIOS extensions not found!
+    EXIT; //VESA_Init // ERROR: VESA BIOS extensions not found!
   VESA_Version := VESA_Info.Version;
 
   If (HI(VESA_Version) < 2) then
-    EXIT; // ERROR: VESA 2.0 required!
+    EXIT; //VESA_Init // ERROR: VESA 2.0 required!
 
   VESA_OEM_String := GetVESAInfoStr(VESA_Info.OEM_StringPtr);
   VESA_Capabilities := VESA_Info.Capabilities;
@@ -128,11 +129,13 @@ begin
       VESA_ModeList[1].BufferAddress :=
         POINTER(DWORD(Get_Linear_Addr(DWORD(VESA_ModeList[1].BufferAddress),4096*1024)));
       If (VESA_ModeList[1].BufferAddress = NIL) then
-        EXIT; // ERROR: Cannot remap LFB to linear address space!
+        EXIT; //VESA_Init // ERROR: Cannot remap LFB to linear address space!
       For idx := 2 to VESA_NumberOfModes do
         VESA_ModeList[idx].BufferAddress := VESA_ModeList[1].BufferAddress;
     end;
 
    VESA_Mode := 0;
   VESA_GraphicsSysInited := TRUE;
+
+  //EXIT //VESA_Init
 end;

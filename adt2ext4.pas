@@ -40,6 +40,7 @@ procedure MACRO_BROWSER(instrBrowser: Boolean; updateCurInstr: Boolean);
 implementation
 
 uses
+  debug,
 {$IFDEF GO32V2}
   CRT,
 {$ELSE}
@@ -134,10 +135,8 @@ end;
 
 procedure _macro_preview_init(state,instr2: Byte);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:_macro_preview_init';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_macro_preview_init');
+
   _4op_mode := (songdata.flag_4op <> 0) and (instr2 <> BYTE_NULL);
 
   Case state of
@@ -238,6 +237,8 @@ begin
          If (play_status = isStopped) then update_timer(songdata.tempo);
        end;
   end;
+
+  _dbg_leave; //EXIT //_macro_preview_init
 end;
 
 procedure _macro_preview_body(instr,instr2,chan: Byte; fkey: Word);
@@ -250,16 +251,13 @@ var
   ins: tADTRACK2_INS;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:_macro_preview_body:output_note';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_macro_preview_body.output_note');
 
   note := board_pos+12*(current_octave-1);
   If NOT (note in [0..12*8+1]) then
     begin
       output_note := FALSE;
-      EXIT;
+      _dbg_leave; EXIT; //_macro_preview_body.output_note
     end;
 
   _m_chan_handle[chan] := board_scancodes[board_pos];
@@ -313,14 +311,17 @@ begin
 
   If _4op_mode and NOT _1op_preview_active then
     init_macro_table(PRED(chan),note,instr2,freq);
+
+  _dbg_leave; //EXIT //_macro_preview_body.output_note
 end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:_macro_preview_body';
-{$ENDIF}
-  If ctrl_pressed or alt_pressed or shift_pressed then EXIT;
+  _dbg_enter ({$I %FILE%}, '_macro_preview_body');
+
+  If ctrl_pressed or alt_pressed or shift_pressed then
+    begin
+      _dbg_leave; EXIT; //_macro_preview_body
+    end;
   _m_valid_key := FALSE;
   For _m_temp := 1 to 29 do
     If NOT shift_pressed then
@@ -328,7 +329,10 @@ begin
         begin _m_valid_key := TRUE; BREAK; end;
 
   If NOT _m_valid_key or
-     NOT (_m_temp+12*(current_octave-1)-1 in [0..12*8+1]) then EXIT;
+     NOT (_m_temp+12*(current_octave-1)-1 in [0..12*8+1]) then
+    begin
+      _dbg_leave; EXIT; //_macro_preview_body
+    end;
 
   _m_temp2 := _m_temp;
   If percussion_mode and
@@ -386,6 +390,8 @@ begin
         draw_screen;
       until NOT _m_valid_key;
     end;
+
+  _dbg_leave; //EXIT //_macro_preview_body
 end;
 
 procedure MACRO_EDITOR(instr: Byte; arp_vib_mode: Boolean);
@@ -496,10 +502,7 @@ var
   attr2: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:fmreg_def_attr';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR.fmreg_def_attr');
 
   If (page <= songdata.instr_macros[instr].length) then
     If (page >= songdata.instr_macros[instr].loop_begin) and
@@ -529,6 +532,8 @@ begin
     end;
 
   fmreg_def_attr := attr+attr2 SHL 8;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR.fmreg_def_attr
 end;
 
 function _fmreg_str(page: Byte): String;
@@ -537,10 +542,7 @@ var
   fmreg_str: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:_fmreg_str';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR._fmreg_str');
 
   With songdata.instr_macros[instr].data[page].fm_data do
     begin
@@ -602,6 +604,8 @@ begin
     end;
 
   _fmreg_str := fmreg_str;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR._fmreg_str
 end;
 
 function _dis_fmreg_col(fmreg_col: Byte): Boolean;
@@ -610,10 +614,7 @@ var
   result: Boolean;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:_dis_fmreg_col';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR._dis_fmreg_col');
 
   result := FALSE;
   Case fmreg_col of
@@ -650,6 +651,8 @@ begin
     result := TRUE;
 
   _dis_fmreg_col := result;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR._dis_fmreg_col
 end;
 
 function _str1(def_chr: Char): String;
@@ -662,10 +665,7 @@ var
   temp_str: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:_str1';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR._str1');
 
   temp_str := '';
   _on_off[FALSE] := def_chr;
@@ -721,6 +721,8 @@ begin
               _on_off[songdata.dis_fmreg_col[instr][27]];
 
   _str1 := temp_str;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR._str1
 end;
 
 {$IFNDEF CPU64}
@@ -791,10 +793,7 @@ var
   dummy_str: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:fmreg_page_refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR.fmreg_page_refresh');
 
   attr := LO(fmreg_def_attr(page AND $0fff));
   attr2 := HI(fmreg_def_attr(page AND $0fff));
@@ -859,6 +858,8 @@ begin
         ShowStr(ptr_temp_screen,xpos,ypos,ExpStrL('',36,' '),
                 macro_background+macro_text_dis);
     end;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR.fmreg_page_refresh
 end;
 
 function arpeggio_def_attr(page: Byte): Word;
@@ -868,10 +869,7 @@ var
   attr2: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:arpeggio_def_attr';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR.arpeggio_def_attr');
 
   If (page <= songdata.macro_table[ptr_arpeggio_table].
               arpeggio.length) then
@@ -907,6 +905,8 @@ begin
        end;
 
   arpeggio_def_attr := attr+attr2 SHL 8;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR.arpeggio_def_attr
 end;
 
 procedure arpeggio_page_refresh(xpos,ypos: Byte; page: Word);
@@ -916,10 +916,7 @@ var
   temps: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:arpeggio_page_refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR.arpeggio_page_refresh');
 
   attr  := LO(arpeggio_def_attr(page AND $0fff));
   attr2 := HI(arpeggio_def_attr(page AND $0fff));
@@ -947,6 +944,8 @@ begin
                macro_current_bckg+macro_current,attr2)
   else
     ShowStr(ptr_temp_screen,xpos,ypos,ExpStrL('',9,' '),attr);
+
+  _dbg_leave; //EXIT //MACRO_EDITOR.arpeggio_page_refresh
 end;
 
 function vibrato_def_attr(page: Byte): Word;
@@ -956,10 +955,7 @@ var
   attr2: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:vibrato_def_attr';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR.vibrato_def_attr');
 
   If (page <= songdata.macro_table[ptr_vibrato_table].
               vibrato.length) then
@@ -995,6 +991,8 @@ begin
        end;
 
   vibrato_def_attr := attr+attr2 SHL 8;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR.vibrato_def_attr
 end;
 
 procedure vibrato_page_refresh(xpos,ypos: Byte; page: Word);
@@ -1004,10 +1002,7 @@ var
   temps: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:vibrato_page_refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR.vibrato_page_refresh');
 
   attr  := LO(vibrato_def_attr(page AND $0fff));
   attr2 := HI(vibrato_def_attr(page AND $0fff));
@@ -1035,14 +1030,13 @@ begin
                macro_current_bckg+macro_current,attr2)
   else
     ShowStr(ptr_temp_screen,xpos,ypos,ExpStrL('',9,' '),attr);
+
+  _dbg_leave; //EXIT //MACRO_EDITOR.vibrato_page_refresh
 end;
 
 procedure arpeggio_page_refresh_alt(xpos,ypos: Byte; page: Word);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:arpeggio_page_refresh_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR.arpeggio_page_refresh_alt');
 
   If (page <> EMPTY_FIELD) then
     If (page OR COMMON_FLAG <> page) then
@@ -1062,14 +1056,13 @@ begin
     ShowStr(ptr_temp_screen,xpos,ypos,
             ExpStrL('',9,' '),
             macro_background+macro_text_dis);
+
+  _dbg_leave; //EXIT //MACRO_EDITOR.arpeggio_page_refresh_alt
 end;
 
 procedure vibrato_page_refresh_alt(xpos,ypos: Byte; page: Word);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:vibrato_page_refresh_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR.vibrato_page_refresh_alt');
 
   temps := #250#250#250;
   If (page <> EMPTY_FIELD) then
@@ -1090,6 +1083,8 @@ begin
     ShowStr(ptr_temp_screen,xpos,ypos,
             ExpStrL('',9,' '),
             macro_background+macro_text_dis);
+
+  _dbg_leave; //EXIT //MACRO_EDITOR.vibrato_page_refresh_alt
 end;
 
 function _gfx_bar_str(value: Byte; neg: Boolean): String;
@@ -1098,10 +1093,8 @@ var
   result: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:_gfx_bar_str';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR._gfx_bar_str');
+
   result := '';
   If NOT neg then
     Repeat
@@ -1123,6 +1116,8 @@ begin
            result := CHR(158-value)+result;
        until (value <= 15);
   _gfx_bar_str := flipstr(result);
+
+  _dbg_leave; //EXIT //MACRO_EDITOR._gfx_bar_str
 end;
 
 function _fmreg_param(page,fmreg_hpos: Byte): Integer;
@@ -1132,10 +1127,8 @@ var
   fmreg_str: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:_fmreg_param';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR._fmreg_param');
+
   fmreg_str := _fmreg_str(page);
   Case fmreg_hpos of
     {%n}
@@ -1165,6 +1158,8 @@ begin
         end;
   end;
   _fmreg_param := result;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR._fmreg_param
 end;
 
 const
@@ -1187,10 +1182,8 @@ var
   _4op_ins1,_4op_ins2: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR.refresh');
+
   For temp := 1 to 20 do
     If (pos = temp) then attr[temp] := macro_background+macro_hi_text
     else If (temp in [1..7]) and arp_vib_mode then
@@ -1854,6 +1847,8 @@ begin
 
   _preview_indic_proc(0);
   move2screen_alt;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR.refresh
 end;
 
 function hex(chr: Char): Byte;
@@ -1867,10 +1862,7 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:copy_object';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR.copy_object');
 
   Case clipboard.object_type of
     objMacroTableLine:
@@ -1924,6 +1916,8 @@ begin
             songdata.macro_table[ptr_vibrato_table].vibrato;
       end;
   end;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR.copy_object
 end;
 
 procedure paste_object;
@@ -1932,10 +1926,7 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:paste_object';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR.paste_object');
 
   Case clipboard.object_type of
     objMacroTableLine:
@@ -2093,34 +2084,36 @@ begin
               clipboard.macro_table.vibrato;
       end;
   end;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR.paste_object
 end;
 
 procedure _scroll_cur_left;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:_scroll_cur_left';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR._scroll_cur_left');
+
   Repeat
     If (fmreg_cursor_pos > 1) then Dec(fmreg_cursor_pos)
     else Dec(fmreg_left_margin);
   until (fmreg_str[PRED(fmreg_left_margin+fmreg_cursor_pos-1)] = ' ') or
         (fmreg_left_margin+fmreg_cursor_pos-1 = 1);
   fmreg_cursor_pos := pos5[fmreg_hpos]-fmreg_left_margin+1;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR._scroll_cur_left
 end;
 
 procedure _scroll_cur_right;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR:_scroll_cur_right';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR._scroll_cur_right');
+
   Repeat
     If (fmreg_cursor_pos < max(57,31+window_area_inc_x)) then Inc(fmreg_cursor_pos)
     else Inc(fmreg_left_margin);
   until (fmreg_str[SUCC(fmreg_left_margin+fmreg_cursor_pos-1)] = ' ') or
         (fmreg_left_margin+fmreg_cursor_pos-1 = 57);
   fmreg_cursor_pos := pos5[fmreg_hpos]-fmreg_left_margin+1;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR._scroll_cur_right
 end;
 
 function _inc(value,limit: Integer): Integer;
@@ -2144,13 +2137,13 @@ begin
   If (songdata.instr_data[instr].perc_voice in [2..5]) or
      (NOT (get_4op_to_test <> 0) and NOT (operator in [1..2])) or
      (NOT (operator in [1..4])) then
-    EXIT;
+    EXIT; //MACRO_EDITOR._set_operator_flag
 
   If NOT toggle then
     begin
       FillChar(_operator_enabled,SizeOf(_operator_enabled),FALSE);
       _operator_enabled[operator] := TRUE;
-      EXIT;
+      EXIT; //MACRO_EDITOR._set_operator_flag
     end;
 
   Move(_operator_enabled,_temp_operator_enabled,SizeOf(_temp_operator_enabled));
@@ -2170,6 +2163,8 @@ begin
                    (_temp_operator_enabled[4] = FALSE)) then
            Move(_temp_operator_enabled,_operator_enabled,SizeOf(_operator_enabled));
          end;
+
+  //EXIT //MACRO_EDITOR._set_operator_flag
 end;
 
 function _check_macro_speed_change: Boolean;
@@ -2538,10 +2533,7 @@ end;
 label _jmp1,_jmp2,_end2;
 
 begin { MACRO_EDITOR }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_EDITOR';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_EDITOR');
 
   _arp_vib_mode := arp_vib_mode;
   If is_default_screen_mode then
@@ -2598,7 +2590,10 @@ _jmp1:
   vibrato_hpos := _macro_editor__vibrato_hpos[arp_vib_mode];
   vibrato_page := _macro_editor__vibrato_page[arp_vib_mode];
 
-  If _force_program_quit then EXIT;
+  If _force_program_quit then
+    begin
+      _dbg_leave; EXIT; //MACRO_EDITOR
+    end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
   HideCursor;
@@ -5595,18 +5590,20 @@ _end2:
              end;
   end;
   _pip_loop := FALSE;
+
+  _dbg_leave; //EXIT //MACRO_EDITOR
 end;
 
 procedure MACRO_BROWSER(instrBrowser: Boolean; updateCurInstr: Boolean);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT4.PAS:MACRO_BROWSER';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MACRO_BROWSER');
+
   songdata_crc := Update32(songdata,SizeOf(songdata),0);
   a2w_file_loader(FALSE,NOT instrBrowser,TRUE,FALSE,updateCurInstr); // browse internal A2W data
   If (Update32(songdata,SizeOf(songdata),0) <> songdata_crc) then
     module_archived := FALSE;
+
+  _dbg_leave; //EXIT //MACRO_BROWSER
 end;
 
 end.

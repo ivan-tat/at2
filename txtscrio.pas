@@ -261,6 +261,8 @@ procedure init_TxtScrIO; cdecl; external;
 implementation
 
 uses
+  debug,
+  pascal,
 {$IFDEF GO32V2}
 {$IFNDEF ADT2PLAY}
   CRT,
@@ -269,7 +271,6 @@ uses
 {$ENDIF} // DEFINED(ADT2PLAY)
   GO32,
 {$ENDIF} // DEFINED(GO32V2)
-  pascal,
 {$IFNDEF ADT2PLAY}
   AdT2keyb,
   AdT2sys,

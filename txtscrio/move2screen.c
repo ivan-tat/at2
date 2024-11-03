@@ -7,9 +7,8 @@
 void move2screen (void) {
   void *screen_ptr_backup;
 
-#if GO32
   DBG_ENTER ("move2screen");
-#endif // GO32
+
   HideCursor ();
   screen_ptr_backup = screen_ptr;
   screen_ptr = move_to_screen_data;
@@ -29,4 +28,6 @@ void move2screen (void) {
   ScreenMemCopy (screen_ptr, screen_ptr_backup);
   screen_ptr = screen_ptr_backup;
   SetCursor (cursor_backup);
+
+  DBG_LEAVE (); //move2screen
 }

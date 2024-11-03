@@ -39,6 +39,8 @@ static void fadeout (void) {
 
     keyboard_reset_buffer ();
   }
+
+  DBG_LEAVE (); //fadeout
 }
 
 static void fadein (void) {
@@ -64,6 +66,8 @@ static void fadein (void) {
 
     keyboard_reset_buffer ();
   }
+
+  DBG_LEAVE (); //fadein
 }
 
 void screen_saver (void) {
@@ -77,4 +81,6 @@ void screen_saver (void) {
     } while (seconds_counter);
     fadein ();
   }
+
+  DBG_LEAVE (); //screen_saver
 }

@@ -415,6 +415,8 @@ procedure timer_poll_proc; cdecl; // TODO: remove when done (private)
 implementation
 
 uses
+  debug,
+  pascal,
 {$IFDEF GO32V2}
   CRT,
   DOS,
@@ -426,7 +428,6 @@ uses
   SDL_Types,
   SDL_Timer,
 {$ENDIF} // NOT DEFINED(GO32V2)
-  pascal,
   AdT2opl3,
   AdT2sys,
   AdT2extn,
@@ -551,7 +552,8 @@ var
   freq: Word;
 
 begin
-  If (note = 0) and (ftune_table[chan] = 0) then EXIT;
+  If (note = 0) and (ftune_table[chan] = 0) then
+    EXIT; //output_note
   If NOT (note in [1..12*8+1]) then freq := freq_table[chan]
   else begin
          freq := nFreq(note-1)+SHORTINT(ins_parameter(ins,12));
@@ -653,6 +655,8 @@ begin
              init_macro_table(chan,note,ins,freq)
            else macro_table[chan].arpg_note := note;
     end;
+
+  //EXIT //output_note
 end;
 
 procedure generate_custom_vibrato(value: Byte);
@@ -2285,10 +2289,13 @@ var
   freq: Word;
 
 begin
-  If (freq_table[chan] AND $1fff = 0) then EXIT;
+  If (freq_table[chan] AND $1fff = 0) then
+    EXIT; //portamento_up
   freq := calc_freq_shift_up(freq_table[chan] AND $1fff,slide);
   If (freq <= limit) then change_frequency(chan,freq)
   else change_frequency(chan,limit);
+
+  //EXIT //portamento_up
 end;
 
 procedure portamento_down(chan: Byte; slide: Word; limit: Word);
@@ -2297,10 +2304,13 @@ var
   freq: Word;
 
 begin
-  If (freq_table[chan] AND $1fff = 0) then EXIT;
+  If (freq_table[chan] AND $1fff = 0) then
+    EXIT; //portamento_down
   freq := calc_freq_shift_down(freq_table[chan] AND $1fff,slide);
   If (freq >= limit) then change_frequency(chan,freq)
   else change_frequency(chan,limit);
+
+  //EXIT //portamento_down
 end;
 
 procedure macro_vibrato__porta_up(chan: Byte; depth: Byte);
@@ -3307,7 +3317,8 @@ begin
 
                     If NOT play_single_patt then
                       If (songdata.pattern_order[current_order] > $7f) then
-                        If (calc_order_jump = -1) then EXIT;
+                        If (calc_order_jump = -1) then
+                          EXIT; //update_song_position
 
                     If NOT play_single_patt then
                       current_pattern := songdata.pattern_order[current_order];
@@ -3338,6 +3349,8 @@ begin
         speed := songdata.speed;
         update_timer(tempo);
       end;
+
+  //EXIT //update_song_position
 end;
 
 procedure poll_proc; cdecl;
@@ -3346,28 +3359,28 @@ public name PUBLIC_PREFIX + 'poll_proc';
 var
   temp: Byte;
   factor: Real;
-{$IFDEF GO32V2}
-  _debug_str_bak_: String;
-{$ENDIF}
 
 begin
-{$IFDEF GO32V2}
-  _debug_str_bak_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:_poll_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'poll_proc');
 
   If (NOT pattern_delay and (ticks-tick0+1 >= speed)) or
      fast_forward or _rewind or single_play then
     begin
       If debugging and
          NOT single_play and NOT pattern_break and
-         (NOT space_pressed or no_step_debugging) then EXIT;
+         (NOT space_pressed or no_step_debugging) then
+        begin
+          _dbg_leave; EXIT; //poll_proc
+        end;
 
       If NOT single_play and
          NOT play_single_patt then
         begin
           If (songdata.pattern_order[current_order] > $7f) then
-            If (calc_order_jump = -1) then EXIT;
+            If (calc_order_jump = -1) then
+              begin
+                _dbg_leave; EXIT; //poll_proc
+              end;
           current_pattern := songdata.pattern_order[current_order];
         end;
 
@@ -3434,9 +3447,8 @@ begin
       update_extra_fine_effects;
       Dec(tickXF,4);
     end;
-{$IFDEF GO32V2}
-  _debug_str_ := _debug_str_bak_;
-{$ENDIF}
+
+  _dbg_leave; //EXIT //poll_proc
 end;
 
 procedure macro_poll_proc; cdecl;
@@ -3450,16 +3462,9 @@ var
   chan: Byte;
   finished_flag: Word;
 
-{$IFDEF GO32V2}
-var
-  _debug_str_bak_: String;
-{$ENDIF}
-
 begin
-{$IFDEF GO32V2}
-  _debug_str_bak_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:macro_poll_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'macro_poll_proc');
+
   For chan := 1 to songdata.nm_tracks do
     begin
       If NOT keyoff_loop[chan] then finished_flag := FINISHED
@@ -3723,9 +3728,8 @@ begin
               else Inc(vib_count);
         end;
     end;
-{$IFDEF GO32V2}
-  _debug_str_ := _debug_str_bak_;
-{$ENDIF}
+
+  _dbg_leave; //EXIT //macro_poll_proc
 end;
 
 procedure set_global_volume;
@@ -3765,10 +3769,9 @@ end;
 
 procedure synchronize_screen;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:synchronize_screen';
+  _dbg_enter ({$I %FILE%}, 'synchronize_screen');
 
+{$IFDEF GO32V2}
   If mouse_active then
     begin
       FillChar(regs,SizeOf(regs),0);
@@ -3802,11 +3805,16 @@ begin
       else virtual_screen__first_row := scr_scroll_y*800;
     end;
 {$ELSE}
-  If NOT is_default_screen_mode then EXIT;
+  If NOT is_default_screen_mode then
+    begin
+      _dbg_leave; EXIT; //synchronize_screen
+    end;
   If (screen_scroll_offset > 16*MaxLn-16*hard_maxln) then
     screen_scroll_offset := 16*MaxLn-16*hard_maxln;
   virtual_screen__first_row := screen_scroll_offset*SCREEN_RES_X;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //synchronize_screen
 end;
 
 //_macro_speedup
@@ -3814,17 +3822,11 @@ end;
 procedure timer_poll_proc; cdecl;
 public name PUBLIC_PREFIX + 'timer_poll_proc';
 
-{$IFDEF GO32V2}
-var
-  _debug_str_bak_: String;
-{$ENDIF}
-
 begin
+  _dbg_enter ({$I %FILE%}, 'timer_poll_proc');
 
 {$IFDEF GO32V2}
 
-  _debug_str_bak_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:timer_poll_proc';
   If (timer_determinator < IRQ_freq+IRQ_freq_shift+playback_speed_shift) then
     Inc(timer_determinator)
   else begin
@@ -4017,8 +4019,9 @@ begin
   If (macro_ticklooper >= IRQ_freq DIV (tempo*_macro_speedup)) then
     macro_ticklooper := 0;
 
-  _debug_str_ := _debug_str_bak_;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //timer_poll_proc
 end;
 
 {$IFDEF GO32V2}
@@ -4075,10 +4078,8 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:calibrate_player:update_status';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'calibrate_player.update_status');
+
   temp := songdata.pattern_order[current_order];
   If NOT (temp <= $7f) then temp := 0;
   show_str(17,03,byte2hex(current_order),pattern_bckg+status_dynamic_txt);
@@ -4088,6 +4089,8 @@ begin
   _draw_screen_without_delay := TRUE;
 {$ENDIF}
   draw_screen;
+
+  _dbg_leave; //EXIT //calibrate_player.update_status
 end;
 
 var
@@ -4095,11 +4098,12 @@ var
   _pattord_hpos,_pattord_vpos: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:calibrate_player';
-{$ENDIF}
-  If (calc_following_order(0) = -1) then EXIT;
+  _dbg_enter ({$I %FILE%}, 'calibrate_player');
+
+  If (calc_following_order(0) = -1) then
+    begin
+      _dbg_leave; EXIT; //calibrate_player
+    end;
   calibrating := TRUE;
   status_backup.replay_forbidden := replay_forbidden;
   status_backup.play_status := play_status;
@@ -4253,6 +4257,8 @@ begin
     end;
 
   keyboard_reset_buffer;
+
+  _dbg_leave; //EXIT //calibrate_player
 end;
 
 procedure init_buffers;
@@ -4261,10 +4267,8 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:init_buffers';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'init_buffers');
+
   FillChar(fmpar_table,SizeOf(fmpar_table),0);
   FillChar(pan_lock,SizeOf(pan_lock),BYTE(panlock));
   FillChar(volume_table,SizeOf(volume_table),63);
@@ -4331,6 +4335,8 @@ begin
 
   For temp := 1 to 20 do
     volslide_type[temp] := songdata.lock_flags[temp] SHR 2 AND 3;
+
+  _dbg_leave; //EXIT //init_buffers
 end;
 
 procedure init_player;
@@ -4339,10 +4345,9 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:init_player';
-{$ELSE}
+  _dbg_enter ({$I %FILE%}, 'init_player');
+
+{$IFNDEF GO32V2}
   opl3_init;
 {$ENDIF}
 
@@ -4381,6 +4386,8 @@ begin
       arpgg_table2[temp].state := 1;
       voice_table[temp] := temp;
     end;
+
+  _dbg_leave; //EXIT //init_player
 end;
 
 procedure reset_player;
@@ -4389,10 +4396,8 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:reset_player';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'reset_player');
+
   opl2out($01,0);
 
   For temp := 1 to 18 do opl2out($0b0+_chan_n[temp],0);
@@ -4412,14 +4417,14 @@ begin
   key_off(18);
   opl2out(_instr[11],misc_register);
   For temp := 1 to 20 do reset_chan_data(temp);
+
+  _dbg_leave; //EXIT //reset_player
 end;
 
 procedure start_playing;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:start_playing';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'start_playing');
+
   init_player;
   If (start_pattern = BYTE_NULL) then current_order := 0
   else If (start_order = BYTE_NULL) then
@@ -4430,7 +4435,7 @@ begin
                   begin
                     start_pattern := BYTE_NULL;
                     current_order := 0;
-                    EXIT;
+                    _dbg_leave; EXIT; //start_playing
                   end;
          end
        else begin
@@ -4440,7 +4445,10 @@ begin
 
   If NOT play_single_patt then
     If (songdata.pattern_order[current_order] > $7f) then
-      If (calc_order_jump = -1) then EXIT;
+      If (calc_order_jump = -1) then
+        begin
+          _dbg_leave; EXIT; //start_playing
+        end;
 
   If NOT play_single_patt then
     current_pattern := songdata.pattern_order[current_order]
@@ -4472,6 +4480,8 @@ begin
   no_status_refresh := FALSE;
   really_no_status_refresh := FALSE;
   FillChar(play_pos_buf,SizeOf(play_pos_buf),0);
+
+  _dbg_leave; //EXIT //start_playing
 end;
 
 procedure stop_playing;
@@ -4480,10 +4490,9 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:stop_playing';
-{$ELSE}
+  _dbg_enter ({$I %FILE%}, 'stop_playing');
+
+{$IFNDEF GO32V2}
   flush_WAV_data;
   If NOT opl3_flushmode then
     renew_wav_files_flag := TRUE;
@@ -4518,6 +4527,8 @@ begin
 
   speed := songdata.speed;
   update_timer(songdata.tempo);
+
+  _dbg_leave; //EXIT //stop_playing
 end;
 
 function _partial(max,val: Byte; base: Byte): Byte;
@@ -4553,7 +4564,7 @@ begin
   If (pos = temp) and NOT force_scrollbars then
     begin
       hscroll_bar := temp;
-      EXIT;
+      EXIT; //hscroll_bar
     end;
 
   If (size < len1*4) and (len1 > 4) then
@@ -4565,6 +4576,8 @@ begin
     end
   else show_Str(x,y,#17+ExpStrL('',size-2,#177)+#16,atr1);
   hscroll_bar := pos;
+
+  //EXIT //hscroll_bar
 end;
 
 function vscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
@@ -4582,7 +4595,7 @@ begin
   If (pos = temp) and NOT force_scrollbars then
     begin
       vscroll_bar := temp;
-      EXIT;
+      EXIT; //vscroll_bar
     end;
 
   If (size < len1*4) and (len1 > 5) then
@@ -4594,6 +4607,8 @@ begin
     end
   else show_vstr(x,y,#30+ExpStrL('',size-2,#177)+#31,atr1);
   vscroll_bar := pos;
+
+  //EXIT //vscroll_bar
 end;
 
 procedure centered_frame(var xstart,ystart: Byte; hsize,vsize: Byte;
@@ -4811,10 +4826,8 @@ var
   index2: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:count_order';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'count_order');
+
   index := 0;
   index2 := 0;
 
@@ -4834,6 +4847,8 @@ begin
   until (index > $7f);
 
   entries := index;
+
+  _dbg_leave; //EXIT //count_order
 end;
 
 procedure count_patterns(var patterns: Byte);
@@ -4842,10 +4857,8 @@ var
   temp1: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:count_patterns';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'count_patterns');
+
   patterns := 0;
   For temp1 := 0 to PRED(max_patterns) do
     begin
@@ -4853,18 +4866,20 @@ begin
       If NOT is_data_empty(pattdata^[temp1 DIV 8][temp1 MOD 8],PATTERN_SIZE) then
         patterns := temp1+1;
     end;
+
+  _dbg_leave; //EXIT //count_patterns
 end;
 
 procedure count_instruments(var instruments: Byte);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:count_instruments';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'count_instruments');
+
   instruments := 255;
   While (instruments > 0) and
         Empty(songdata.instr_data[instruments],INSTRUMENT_SIZE) do
     Dec(instruments);
+
+  _dbg_leave; //EXIT //count_instruments
 end;
 
 function calc_max_speedup(tempo: Byte): Word;
@@ -4874,10 +4889,8 @@ var
   result: Word;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:calc_max_speedup';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'calc_max_speedup');
+
   result := MAX_IRQ_FREQ DIV tempo;
   Repeat
     If (tempo = 18) and timer_fix then temp := TRUNC((tempo+0.2)*20)
@@ -4886,6 +4899,8 @@ begin
     If (temp <= MAX_IRQ_FREQ) then Inc(result);
   until NOT (temp <= MAX_IRQ_FREQ);
   calc_max_speedup := PRED(result);
+
+  _dbg_leave; //EXIT //calc_max_speedup
 end;
 
 function calc_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
@@ -4912,10 +4927,8 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:init_old_songdata';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'init_old_songdata');
+
   FillChar(old_songdata,SizeOf(old_songdata),0);
   FillChar(old_songdata.pattern_order,SizeOf(old_songdata.pattern_order),$080);
   FillChar(old_songdata.instr_data,SizeOf(old_songdata.instr_data),0);
@@ -4923,6 +4936,8 @@ begin
   For temp := 1 to 250 do
     old_songdata.instr_names[temp] :=
       ' iNS_'+byte2hex(temp)+#247' ';
+
+  _dbg_leave; //EXIT //init_old_songdata
 end;
 
 procedure init_songdata;
@@ -4931,10 +4946,8 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:init_songdata';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'init_songdata');
+
   If (play_status <> isStopped) then
     begin
       fade_out_playback(FALSE);
@@ -4996,6 +5009,8 @@ begin
   songdata_crc_ord := Update32(songdata.pattern_order,
                                SizeOf(songdata.pattern_order),0);
   module_archived := TRUE;
+
+  _dbg_leave; //EXIT //init_songdata
 end;
 
 procedure update_instr_data(ins: Byte);
@@ -5086,11 +5101,9 @@ var
 {$ENDIF}
 
 begin
+  _dbg_enter ({$I %FILE%}, 'fade_out_playback');
 
 {$IFDEF GO32V2}
-
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:fade_out_playback';
 
   If fade_screen then
     begin
@@ -5174,12 +5187,14 @@ begin
 
 {$ENDIF}
 
+  _dbg_leave; //EXIT //fade_out_playback
 end;
 
 procedure realtime_gfx_poll_proc; cdecl;
 public name PUBLIC_PREFIX + 'realtime_gfx_poll_proc';
 begin
-  If _realtime_gfx_no_update then EXIT;
+  If _realtime_gfx_no_update then
+    EXIT; //realtime_gfx_poll_proc
 
 {$IFDEF GO32V2}
 
@@ -5251,6 +5266,8 @@ begin
 {$IFDEF GO32V2}
     end;
 {$ENDIF}
+
+  //EXIT //realtime_gfx_poll_proc
 end;
 
 function get_bank_position(bank_name: String; bank_size: Longint): Longint;
@@ -5260,10 +5277,8 @@ var
   result: Longint;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:get_bank_position';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'get_bank_position');
+
   result := 0;
   bank_name := CutStr(Upper_filename(bank_name));
   For idx := 1 to bank_position_list_size do
@@ -5275,6 +5290,8 @@ begin
         BREAK;
       end;
   get_bank_position := result;
+
+  _dbg_leave; //EXIT //get_bank_position
 end;
 
 procedure add_bank_position(bank_name: String; bank_size: Longint; bank_position: Longint);
@@ -5284,10 +5301,8 @@ var
   found_flag: Boolean;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:add_bank_position';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'add_bank_position');
+
   found_flag := FALSE;
   bank_name := CutStr(Upper_filename(bank_name));
   For idx := 1 to bank_position_list_size do
@@ -5303,7 +5318,7 @@ begin
   If found_flag then
     begin
       bank_position_list[idx2].bank_position := bank_position;
-      EXIT;
+      _dbg_leave; EXIT; //add_bank_position
     end;
 
   If (bank_position_list_size < MAX_NUM_BANK_POSITIONS) then
@@ -5318,6 +5333,8 @@ begin
   bank_position_list[bank_position_list_size].bank_name := bank_name;
   bank_position_list[bank_position_list_size].bank_size := bank_size;
   bank_position_list[bank_position_list_size].bank_position := bank_position;
+
+  _dbg_leave; //EXIT //add_bank_position
 end;
 
 {$IFDEF GO32V2}

@@ -1307,6 +1307,7 @@ procedure ShowStartMessage;
 implementation
 
 uses
+  debug,
   StrUtils,
   AdT2unit,
   AdT2sys,
@@ -1408,10 +1409,8 @@ begin
 end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2TEXT.PAS:Help';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'Help');
+
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
   centered_frame_vdest := screen_ptr;
 
@@ -1594,6 +1593,8 @@ begin
   move_to_screen_area[3] := xstart+77+2;
   move_to_screen_area[4] := ystart+page_len+1;
   move2screen;
+
+  _dbg_leave; //EXIT //Help
 end;
 
 {$IFDEF GO32V2}

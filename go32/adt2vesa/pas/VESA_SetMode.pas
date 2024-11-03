@@ -14,7 +14,7 @@ begin
   If NOT VESA_GraphicsSysInited then
     begin
       VESA_SetMode := -1;
-      EXIT;
+      EXIT; //VESA_SetMode
     end;
 
   VESA_ModeIndex := VESA_NumberOfModes+1;
@@ -29,7 +29,7 @@ begin
   If (VESA_ModeIndex = VESA_NumberOfModes+1) then
     begin
       VESA_SetMode := -1;
-      EXIT;
+      EXIT; //VESA_SetMode
     end;
 
   If (Mode <> 19) then Mode := Mode OR $4000;
@@ -45,10 +45,13 @@ begin
   end;
 
   VESA_SetMode := result;
-  If (result <> 0) then EXIT;
+  If (result <> 0) then
+    EXIT; //VESA_SetMode
 
   VESA_Mode := Mode;
   VESA_XResolution := VESA_ModeList[VESA_ModeIndex].XResolution;
   VESA_YResolution := VESA_ModeList[VESA_ModeIndex].YResolution;
   VESA_Framebuffer := VESA_ModeList[VESA_ModeIndex].BufferAddress;
+
+  //EXIT //VESA_SetMode
 end;

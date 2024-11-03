@@ -420,7 +420,7 @@ begin
       dec_ptr := SUCC(dec_ptr) AND PRED(DIC_SIZE);
       Inc(idx2);
       If (idx2 = count) then
-        EXIT;
+        EXIT; //DecodeBuffer
       Dec(dec_counter);
     end;
   Repeat
@@ -430,7 +430,7 @@ begin
         buffer^[idx2] := idx;
         Inc(idx2);
         If (idx2 = count) then
-          EXIT;
+          EXIT; //DecodeBuffer
       end
     else begin
            dec_counter := idx-(256-THRESHOLD);
@@ -442,7 +442,7 @@ begin
                dec_ptr := SUCC(dec_ptr) AND PRED(DIC_SIZE);
                Inc(idx2);
                If (idx2 = count) then
-                 EXIT;
+                 EXIT; //DecodeBuffer
                Dec(dec_counter);
              end;
          end;
@@ -622,7 +622,7 @@ begin
     begin
       c_par^[heap[1]] := 0;
       MakeTree := heap[1];
-      EXIT;
+      EXIT; //MakeTree
     end;
 
   For idx := (heap_size DIV 2) downto 1 do
@@ -657,6 +657,8 @@ begin
   MakeLen(idx2);
   MakeCode(n_par,l_par,c_par);
   MakeTree := idx2;
+
+  //EXIT //MakeTree
 end;
 
 procedure CountFreq;
@@ -1012,7 +1014,7 @@ begin
            begin
              MakeChild(idx,chr,pos);
              match_len := 1;
-             EXIT;
+             EXIT; //InsertNode
            end;
          match_len := 2;
        end;
@@ -1036,7 +1038,7 @@ begin
         If (ptr1^ <> ptr2^) then
           begin
             SplitTree(idx2);
-            EXIT;
+            EXIT; //InsertNode
           end;
         Inc(match_len);
         Inc(ptr1);
@@ -1050,7 +1052,7 @@ begin
     If (idx2 = 0) then
       begin
         MakeChild(idx,ORD(ptr1^),pos);
-         EXIT;
+         EXIT; //InsertNode
       end;
     Inc(match_len);
   until FALSE;
@@ -1064,6 +1066,8 @@ begin
   parent^[pos] := idx;
   parent^[idx2] := 0;
   next^[idx2] := pos;
+
+  //EXIT //InsertNode
 end;
 
 procedure DeleteNode;
@@ -1074,7 +1078,7 @@ var
 
 begin
   If (parent^[pos] = 0) then
-    EXIT;
+    EXIT; //DeleteNode
   idx := previous^[pos];
   idx2 := next^[pos];
   next^[idx] := idx2;
@@ -1085,7 +1089,7 @@ begin
   Dec(child_count^[idx]);
   If (idx >= DIC_SIZE) or
      (child_count^[idx] > 1) then
-    EXIT;
+    EXIT; //DeleteNode
   idx3 := pos_ptr^[idx] AND NOT PERC_FLAG;
   If (idx3 >= pos) then
     Dec(idx3,DIC_SIZE);
@@ -1128,6 +1132,8 @@ begin
   parent^[idx] := 0;
   next^[idx] := avail;
   avail := idx;
+
+  //EXIT //DeleteNode
 end;
 
 procedure GetNextMatch;

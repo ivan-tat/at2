@@ -47,6 +47,7 @@ procedure test_instrument_alt2(chan: Byte; fkey: Word);
 implementation
 
 uses
+  debug,
   DOS,
   AdT2opl3,
   AdT2sys,
@@ -100,10 +101,8 @@ var
   _4op_ins_idx: Byte;
 
 begin
-{$IFDEF GO32V2}
-    _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT3.PAS:a2i_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2i_file_loader');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -114,7 +113,7 @@ begin
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2i LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2i_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -124,7 +123,7 @@ begin
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2i LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2i_file_loader
     end;
 
   If NOT (header.ffver in [1..FFVER_A2I]) then
@@ -133,7 +132,7 @@ begin
       Dialog('UNKNOWN FiLE FORMAT VERSiON$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2i LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2i_file_loader
     end;
 
   init_old_songdata;
@@ -146,7 +145,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2i LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader
         end;
 
       crc := WORD_NULL;
@@ -159,7 +158,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2i LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader
         end;
 
       Case header.ffver of
@@ -192,7 +191,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2i LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader
         end;
 
       crc := WORD_NULL;
@@ -205,7 +204,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2i LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader
         end;
 
       Case header.ffver of
@@ -238,7 +237,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2i LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader
         end;
 
       BlockReadF(f,buf2,header2.b0len,temp);
@@ -248,7 +247,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2i LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader
         end;
 
       crc := WORD_NULL;
@@ -261,7 +260,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2i LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader
         end;
 
       APACK_decompress(buf2,buf3);
@@ -287,7 +286,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2i LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader
         end;
 
       BlockReadF(f,buf2,header2.b0len,temp);
@@ -297,7 +296,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2i LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader
         end;
 
       crc := WORD_NULL;
@@ -310,7 +309,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2i LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader
         end;
 
       _4op_ins_flag := FALSE;
@@ -363,6 +362,8 @@ begin
 
   CloseF(f);
   load_flag := 1;
+
+  _dbg_leave; //EXIT //a2i_file_loader
 end;
 
 procedure a2f_file_loader;
@@ -392,10 +393,8 @@ var
   _4op_ins_idx: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT3.PAS:a2f_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2f_file_loader');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -406,7 +405,7 @@ begin
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2F LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2f_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -416,7 +415,7 @@ begin
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2F LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2f_file_loader
     end;
 
   If NOT (header.ffver in [1..FFVER_A2F]) then
@@ -425,7 +424,7 @@ begin
       Dialog('UNKNOWN FiLE FORMAT VERSiON$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2F LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2f_file_loader
     end;
 
   If (header.ffver = 1) then
@@ -437,7 +436,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2F LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2f_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -450,7 +449,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2F LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2f_file_loader
         end;
 
       APACK_decompress(buf2,buf3);
@@ -486,7 +485,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2F LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2f_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -499,7 +498,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2F LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2f_file_loader
         end;
 
       _4op_ins_flag := FALSE;
@@ -566,6 +565,8 @@ begin
 
   CloseF(f);
   load_flag := 1;
+
+  _dbg_leave; //EXIT //a2f_file_loader
 end;
 
 procedure cif_file_loader;
@@ -591,10 +592,8 @@ const
                  SizeOf(buffer.idata)+
                  SizeOf(buffer.resrv);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT3.PAS:cif_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'cif_file_loader');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -605,7 +604,7 @@ begin
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' CiF LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //cif_file_loader
     end;
 
   BlockReadF(f,buffer,SizeOf(buffer),temp);
@@ -615,7 +614,7 @@ begin
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' CiF LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //cif_file_loader
     end;
 
   import_hsc_instrument(current_inst,buffer.idata);
@@ -629,6 +628,8 @@ begin
 
   CloseF(f);
   load_flag := 1;
+
+  _dbg_leave; //EXIT //cif_file_loader
 end;
 
 procedure fin_file_loader;
@@ -640,10 +641,8 @@ var
   temp_str: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT3.PAS:fin_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'fin_file_loader');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -654,7 +653,7 @@ begin
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' FiN LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //fin_file_loader
     end;
 
   BlockReadF(f,buffer,SizeOf(buffer),temp);
@@ -664,7 +663,7 @@ begin
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' FiN LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //fin_file_loader
     end;
 
   import_fin_instrument(current_inst,buffer.idata);
@@ -678,6 +677,8 @@ begin
 
   CloseF(f);
   load_flag := 1;
+
+  _dbg_leave; //EXIT //fin_file_loader
 end;
 
 procedure ins_file_loader;
@@ -710,10 +711,8 @@ begin
 end;
 
 begin { ins_file_loader }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT3.PAS:ins_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'ins_file_loader');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -724,7 +723,7 @@ begin { ins_file_loader }
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' iNS LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //ins_file_loader
     end;
 
   If (FileSize(f) > SizeOf(buffer)) then
@@ -733,7 +732,7 @@ begin { ins_file_loader }
       Dialog('UNKNOWN FiLE FORMAT TYPE$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' iNS LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //ins_file_loader
     end;
 
   BlockReadF(f,buffer,FileSize(f),temp);
@@ -743,7 +742,7 @@ begin { ins_file_loader }
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' iNS LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //ins_file_loader
     end;
 
   Case force_ins of
@@ -767,6 +766,8 @@ begin { ins_file_loader }
 
   CloseF(f);
   load_flag := 1;
+
+  _dbg_leave; //EXIT //ins_file_loader
 end;
 
 procedure sbi_file_loader;
@@ -788,10 +789,8 @@ var
   temp_str: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT3.PAS:sbi_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'sbi_file_loader');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -802,7 +801,7 @@ begin
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' SBi LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //sbi_file_loader
     end;
 
   BlockReadF(f,buffer,SizeOf(buffer),temp);
@@ -812,7 +811,7 @@ begin
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' SBi LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //sbi_file_loader
     end;
 
   import_standard_instrument(current_inst,buffer.idata);
@@ -824,6 +823,8 @@ begin
 
   CloseF(f);
   load_flag := 1;
+
+  _dbg_leave; //EXIT //sbi_file_loader
 end;
 
 procedure import_sgi_instrument(inst: Byte; var data);
@@ -901,10 +902,8 @@ var
   temp_str: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT3.PAS:sgi_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'sgi_file_loader');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -915,7 +914,7 @@ begin
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' SGi LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //sgi_file_loader
     end;
 
   BlockReadF(f,buffer,SizeOf(buffer),temp);
@@ -925,7 +924,7 @@ begin
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' SGi LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //sgi_file_loader
     end;
 
   import_sgi_instrument(current_inst,buffer);
@@ -935,6 +934,8 @@ begin
 
   CloseF(f);
   load_flag := 1;
+
+  _dbg_leave; //EXIT //sgi_file_loader
 end;
 
 end.

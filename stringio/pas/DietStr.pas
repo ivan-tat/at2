@@ -9,7 +9,7 @@ begin
   If (Length(str) <= size) then
     begin
       DietStr := str;
-      EXIT;
+      EXIT; //DietStr
     end;
 
   Repeat
@@ -18,4 +18,6 @@ begin
 
   Insert('...',str,size DIV 2);
   DietStr := str
+
+  //EXIT //DietStr
 end;

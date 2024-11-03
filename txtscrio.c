@@ -14,6 +14,8 @@
 #endif // GO32
 #include <dos.h>
 #include <string.h>
+#include "common.h"
+#include "debug.h"
 #if GO32
 #include "go32/adt2dpmi.h"
 #if !ADT2PLAY
@@ -32,7 +34,6 @@
 #include "dialogio.h"
 #include "stringio.h"
 #endif // !ADT2PLAY
-#include "common.h"
 #include "txtscrio.h"
 
 // HINT: (FPC) S-: Stack checking (off)

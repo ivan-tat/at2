@@ -68,11 +68,6 @@ var
 {$ENDIF}
 
 var
-  _debug_: Boolean; cvar; external;
-  _last_debug_str_: String; cvar; external;
-  _debug_str_: String; cvar; external;
-
-var
   _force_program_quit: Boolean; cvar; external;
   _traceprc_last_order: Byte; cvar; external;
   _traceprc_last_pattern: Byte; cvar; external;
@@ -113,6 +108,8 @@ procedure CloseF(var f: File);
 implementation
 
 uses
+  debug,
+  pascal,
 {$IFDEF GO32V2}
   DOS,
   GO32,
@@ -126,7 +123,6 @@ uses
   SDL__rwops,
   AdT2opl3,
 {$ENDIF}
-  pascal,
   AdT2unit,
   AdT2text,
   AdT2keyb,
@@ -536,10 +532,10 @@ begin
   If _draw_screen_without_delay then
     _draw_screen_without_delay := FALSE
   else If do_synchronize and NOT (_screen_refresh_pending_frames > fps_down_factor) then
-        EXIT
+        EXIT //draw_screen
       else _screen_refresh_pending_frames := 0;
   If Compare(screen_ptr,ptr_screen_mirror,(SCREEN_RES_X DIV scr_font_width)*MAX_ROWS*2) then
-    EXIT
+    EXIT //draw_screen
   else begin
          ScreenMemCopy(screen_ptr,ptr_screen_mirror);
          If NOT is_VESA_emulated_mode then
@@ -572,6 +568,8 @@ begin
            dump_VESA_buffer(1024*768);
          end;
     end;
+
+  //EXIT //draw_screen
 end;
 
 {$ELSE}
@@ -908,7 +906,8 @@ end;
 procedure draw_screen_proc;
 begin
   _update_sdl_screen := FALSE;
-  If Compare(screen_ptr,ptr_screen_mirror,(SCREEN_RES_X DIV scr_font_width)*MAX_ROWS*2) then EXIT
+  If Compare(screen_ptr,ptr_screen_mirror,(SCREEN_RES_X DIV scr_font_width)*MAX_ROWS*2) then
+    EXIT //draw_screen_proc
   else ScreenMemCopy(screen_ptr,ptr_screen_mirror);
   _cursor_blink_factor := ROUND(13/100*sdl_frame_rate);
   _update_sdl_screen := TRUE;
@@ -926,6 +925,8 @@ begin
     2: draw_SDL_screen(180,60,1440*960);
   end;
 {$ENDIF}
+
+  //EXIT //draw_screen_proc
 end;
 
 procedure vid_Init;
@@ -1023,7 +1024,8 @@ var
   fattr: Word;
 
 begin
-  _debug_str_:= 'ADT2SYS.PAS:ResetF_RW';
+  _dbg_enter ({$I %FILE%}, 'ResetF_RW');
+
   GetFAttr(f,fattr);
   If (fattr AND ReadOnly = ReadOnly) then
     SetFAttr(f,fattr AND NOT ReadOnly);
@@ -1032,6 +1034,8 @@ begin
   {$i-}
   Reset(f,1);
   {$i+}
+
+  _dbg_leave; //EXIT //ResetF_RW
 end;
 
 procedure ResetF(var f: File);
@@ -1040,13 +1044,16 @@ var
   fattr: Word;
 
 begin
-  _debug_str_:= 'ADT2SYS.PAS:ResetF';
+  _dbg_enter ({$I %FILE%}, 'ResetF');
+
   GetFAttr(f,fattr);
   If (fattr AND ReadOnly = ReadOnly) then
     FileMode := 0;
   {$i-}
   Reset(f,1);
   {$i+}
+
+  _dbg_leave; //EXIT //ResetF
 end;
 
 procedure RewriteF(var f: File);
@@ -1055,59 +1062,77 @@ var
   fattr: Word;
 
 begin
-  _debug_str_:= 'ADT2SYS.PAS:RewriteF';
+  _dbg_enter ({$I %FILE%}, 'RewriteF');
+
   GetFAttr(f,fattr);
   If (fattr AND ReadOnly = ReadOnly) then
     SetFAttr(f,fattr AND NOT ReadOnly);
   {$i-}
   Rewrite(f,1);
   {$i+}
+
+  _dbg_leave; //EXIT //RewriteF
 end;
 
 procedure BlockReadF(var f: File; var data; size: Longint; var bytes_read: Longint);
 begin
-  _debug_str_:= 'ADT2SYS.PAS:BlockReadF';
+  _dbg_enter ({$I %FILE%}, 'BlockReadF');
+
   {$i-}
   BlockRead(f,data,size,bytes_read);
   {$i+}
   If (IOresult <> 0) then
     bytes_read := 0;
+
+  _dbg_leave; //EXIT //BlockReadF
 end;
 
 procedure BlockWriteF(var f: File; var data; size: Longint; var bytes_written: Longint);
 begin
-  _debug_str_:= 'ADT2SYS.PAS:BlockWriteF';
+  _dbg_enter ({$I %FILE%}, 'BlockWriteF');
+
   {$i-}
   BlockWrite(f,data,size,bytes_written);
   {$i+}
   If (IOresult <> 0) then
     bytes_written := 0;
+
+  _dbg_leave; //EXIT //BlockWriteF
 end;
 
 procedure SeekF(var f: File; fpos: Longint);
 begin
-  _debug_str_:= 'ADT2SYS.PAS:SeekF';
+  _dbg_enter ({$I %FILE%}, 'SeekF');
+
   {$i-}
   Seek(f,fpos);
   {$i+}
+
+  _dbg_leave; //EXIT //SeekF
 end;
 
 procedure EraseF(var f: File);
 begin
-  _debug_str_:= 'ADT2SYS.PAS:EraseF';
+  _dbg_enter ({$I %FILE%}, 'EraseF');
+
   {$i-}
   Erase(f);
   {$i+}
   If (IOresult <> 0) then ;
+
+  _dbg_leave; //EXIT //EraseF
 end;
 
 procedure CloseF(var f: File);
 begin
-  _debug_str_:= 'ADT2SYS.PAS:CloseF';
+  _dbg_enter ({$I %FILE%}, 'CloseF');
+
   {$i-}
   Close(f);
   {$i+}
   If (IOresult <> 0) then ;
+
+  _dbg_leave; //EXIT //CloseF
 end;
 
 end.

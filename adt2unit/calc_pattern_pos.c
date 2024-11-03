@@ -24,5 +24,6 @@ uint8_t calc_pattern_pos (uint8_t pattern) {
     }
   }
 
+  DBG_LEAVE (); //calc_pattern_pos
   return pattern_pos;
 }

@@ -6,6 +6,7 @@
 
 #include "defines.h"
 #include "platform.h"
+#include "debug.h"
 #include <math.h>
 #include <time.h>
 #if GO32
@@ -19,9 +20,9 @@
 #endif // USE_FPC
 #endif // !GO32
 #include "go32/PIT/PIT_consts.h"
-#include "adt2sys.h" // DBG_ENTER()
 #include "adt2keyb.h"
 #include "adt2opl3.h"
+#include "adt2sys.h"
 #include "adt2unit.h"
 
 // HINT: (FPC) S-: Stack checking (off)

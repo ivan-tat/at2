@@ -372,6 +372,3 @@ const
   _4op_tracks_hi: Set of Byte = [1,3,5,10,12,14];
   _4op_tracks_lo: Set of Byte = [2,4,6,11,13,15];
   _4op_main_chan: array[1..6] of Byte = (2,4,6,11,13,15);
-
-const
-  _debug_str_: String = '';

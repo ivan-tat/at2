@@ -17,6 +17,7 @@ program AdT2_Player;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
 uses
+  debug,
   DOS,
   GO32,
   A2player,
@@ -132,7 +133,7 @@ begin
       WriteLn('ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß');
       WriteLn('PROGRAM VERSION: ',VERSION_STR);
       WriteLn('ERROR #'+Num2str(ExitCode,10)+' at '+ExpStrL(Num2str(LONGINT(ErrorAddr),16),8,'0'));
-      WriteLn('DEBUG INFO -> ',_debug_str_);
+      _dbg_dump_callstack;
       WriteLn;
       WriteLn('Please send this information with brief description what you were doing');
       WriteLn('when you encountered this error to following email address:');

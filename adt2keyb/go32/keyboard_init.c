@@ -20,4 +20,6 @@ void keyboard_init (void) {
   p.offset32 = (uint32_t) SysKeyboardIRQ;
   p.selector = _go32_my_cs ();
   __dpmi_set_protected_mode_interrupt_vector (9, &p);
+
+  DBG_LEAVE (); //keyboard_init
 }

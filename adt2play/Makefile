@@ -43,6 +43,7 @@ FPCFLAGS_DIRS+=-Fi$(srcdir1) -Fi$(srcdir) -Fi.
 
 SRCS=\
  common.c\
+ debug.c\
  go32/dpmi.c\
  go32/iss_tim.c\
  go32/VGA.c\
@@ -53,6 +54,7 @@ SRCS=\
  pascal/stdio.c\
  pascal/stdlib.c\
  pascal/string.c\
+ pascal/time.c\
  stringio.c\
  txtscrio.c
 
@@ -183,6 +185,16 @@ units/common.ppu: $(srcdir)/common.pas common.o $(makefile) | units
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
+debug_ppu_deps=\
+ $(srcdir)/debug.pas\
+ units/pascal.ppu\
+ debug.o
+
+units/debug.ppu: $(debug_ppu_deps) $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
 dpmi_ppu_deps=\
  $(srcdir)/go32/dpmi.pas\
  go32/dpmi.o\
@@ -212,7 +224,8 @@ pascal_ppu_deps=\
  $(srcdir)/pascal/string.pas\
  pascal/stdio.o\
  pascal/stdlib.o\
- pascal/string.o
+ pascal/string.o\
+ pascal/time.o
 
 ifeq ($(FPC_OS_TARGET),go32v2)
  pascal_ppu_deps+=\
@@ -283,15 +296,18 @@ a2fileio_ppu_deps=\
  $(srcdir1)/a2fileio.pas\
  $(srcdir)/go32/PIT/pas/PIT_consts.inc\
  $(srcdir)/iloaders.inc\
+ units/debug.ppu\
  units/stringio.ppu
 
 a2player_ppu_deps=\
  $(srcdir1)/a2player.pas\
  $(srcdir)/go32/PIT/pas/PIT_consts.inc\
- $(srcdir1)/typconst.inc
+ $(srcdir1)/typconst.inc\
+ units/debug.ppu
 
 a2scrio_ppu_deps=\
- $(srcdir1)/a2scrio.pas
+ $(srcdir1)/a2scrio.pas\
+ units/debug.ppu
 
 parserio_ppu_deps=\
  $(srcdir1)/parserio.pas
@@ -310,6 +326,7 @@ adt2play_bin_deps+=\
  $(parserio_ppu_deps)\
  units/a2data.ppu\
  units/common.ppu\
+ units/debug.ppu\
  units/pascal.ppu\
  units/stringio.ppu\
  units/txtscrio.ppu

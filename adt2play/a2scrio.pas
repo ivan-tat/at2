@@ -70,6 +70,7 @@ procedure fade_out;
 implementation
 
 uses
+  debug,
   GO32,
   A2data,
   A2player,
@@ -173,8 +174,12 @@ var
   temp: Byte;
 
 begin
-  _debug_str_:= 'A2SCRIO.PAS:decay_bars_refresh';
-  If NOT _picture_mode then EXIT;
+  _dbg_enter ({$I %FILE%}, 'decay_bars_refresh');
+
+  If NOT _picture_mode then
+    begin
+      _dbg_leave; EXIT; //decay_bars_refresh
+    end;
   dosmemget($0a000,_title_offset,vmem_320x200[_title_offset],
             320*_decay_bar_ypos-_title_offset);
   If NOT _decay_bars_initialized then
@@ -216,6 +221,8 @@ begin
     end;
   dosmemput($0a000,_title_offset,vmem_320x200[_title_offset],
             320*_decay_bar_ypos-_title_offset);
+
+  _dbg_leave; //EXIT //decay_bars_refresh
 end;
 
 procedure wtext(xstart,ystart: Word; txt: String; color: Byte);
@@ -225,8 +232,12 @@ var
   temp,i,j,b: Word;
 
 begin
-  _debug_str_:= 'A2SCRIO.PAS:wtext';
-  If NOT _picture_mode then EXIT;
+  _dbg_enter ({$I %FILE%}, 'wtext');
+
+  If NOT _picture_mode then
+    begin
+      _dbg_leave; EXIT; //wtext
+    end;
   dosmemget($0a000,320*ystart,vmem_320x200[320*ystart],(8+1)*320);
   Move(pGENERIC_IO_BUFFER(_ptr_picture_bitmap)^[320*ystart],
        vmem_320x200_mirror[320*ystart],(8+1)*320);
@@ -263,6 +274,8 @@ begin
     end;
 
   dosmemput($0a000,320*ystart,vmem_320x200[320*ystart],(8+1)*320);
+
+  _dbg_leave; //EXIT //wtext
 end;
 
 procedure wtext2(xstart,ystart: Word; txt: String; color: Byte);
@@ -275,8 +288,12 @@ var
   temp,i,j,b: Word;
 
 begin
-  _debug_str_:= 'A2SCRIO.PAS:wtext2';
-  If NOT _picture_mode then EXIT;
+  _dbg_enter ({$I %FILE%}, 'wtext2');
+
+  If NOT _picture_mode then
+    begin
+      _dbg_leave; EXIT; //wtext2
+    end;
   dosmemget($0a000,320*ystart,vmem_320x200[320*ystart],(16+1)*320);
   Move(pGENERIC_IO_BUFFER(_ptr_picture_bitmap)^[320*ystart],
        vmem_320x200_mirror[320*ystart],(16+1)*320);
@@ -313,25 +330,39 @@ begin
     end;
 
   dosmemput($0a000,320*ystart,vmem_320x200[320*ystart],(16+1)*320);
+
+  _dbg_leave; //EXIT //wtext2
 end;
 
 procedure C3Write(str: String; atr1,atr2,atr3: Byte);
 begin
-  _debug_str_:= 'A2SCRIO.PAS:CWrite';
-  If _picture_mode then EXIT;
+  _dbg_enter ({$I %FILE%}, 'C3Write');
+
+  If _picture_mode then
+    begin
+      _dbg_leave; EXIT; //C3Write
+    end;
   dosmemget($0b800,0,screen_ptr^,MAX_SCREEN_MEM_SIZE);
   ShowC3Str(screen_ptr,WhereX,WhereY,str,atr1,atr2,atr3);
   dosmemput($0b800,0,screen_ptr^,MAX_SCREEN_MEM_SIZE);
   GotoXY(1,WhereY);
+
+  _dbg_leave; //EXIT //C3Write
 end;
 
 procedure C3WriteLn(str: String; atr1,atr2,atr3: Byte);
 begin
-  _debug_str_:= 'A2SCRIO.PAS:C3WriteLn';
-  If _picture_mode then EXIT;
+  _dbg_enter ({$I %FILE%}, 'C3WriteLn');
+
+  If _picture_mode then
+    begin
+      _dbg_leave; EXIT; //C3WriteLn
+    end;
   ShowC3Str(screen_ptr,WhereX,WhereY,str,
             atr1,atr2,atr3);
   WriteLn;
+
+  _dbg_leave; //EXIT //C3WriteLn
 end;
 
 procedure CWriteLn(str: String; atr1,atr2: Byte);
@@ -342,8 +373,12 @@ var
   color2: Boolean;
 
 begin
-  _debug_str_:= 'A2SCRIO.PAS:CWriteLn';
-  If _picture_mode then EXIT;
+  _dbg_enter ({$I %FILE%}, 'CWriteLn');
+
+  If _picture_mode then
+    begin
+      _dbg_leave; EXIT; //CWriteLn
+    end;
   color2 := FALSE;
   attr := atr1;
   posx := WhereX;
@@ -405,6 +440,8 @@ begin
 
   posx := 1;
   GotoXY(posx,posy);
+
+  _dbg_leave; //EXIT //CWriteLn
 end;
 
 function __progress_str(value: Byte): String;
@@ -428,13 +465,16 @@ end;
 
 function _progress_str: String;
 begin
-  If (songdata.patt_len = 0) then EXIT;
+  If (songdata.patt_len = 0) then
+    EXIT; //_progress_str
   If (entries <> 0) then
      _progress_str :=
        ExpStrR(__progress_str(
                  ROUND(4*38/entries*(current_order-correction+
                  1/songdata.patt_len*(current_line+1)))),38,#0)
   else _progress_str := ExpStrR('',38,#0);
+
+  //EXIT //_progress_str
 end;
 
 function _timer_str: String;
@@ -446,7 +486,8 @@ end;
 
 function _position_str: String;
 begin
-  If (songdata.patt_len = 0) then EXIT;
+  If (songdata.patt_len = 0) then
+    EXIT; //_position_str
   If (entries <> 0) then
     _position_str :=
       'Order '+ExpStrL(Num2str(current_order,10),3,'0')+'/'+
@@ -463,6 +504,8 @@ begin
          'row '+ExpStrL(Num2str(current_line,10),3,'0')+' '+
          '['+ExpStrL('',3,'0')+'%] '+
          '['+_timer_str+']'+' ';
+
+  //EXIT //_position_str
 end;
 
 function _position_str2: String;
@@ -480,7 +523,8 @@ var
   index: Byte;
 
 begin
-  _debug_str_:= 'A2SCRIO.PAS:toggle_picture_mode';
+  _dbg_enter ({$I %FILE%}, 'toggle_picture_mode');
+
   If NOT _picture_mode then
     begin
       fade_speed := 16;
@@ -513,6 +557,8 @@ begin
              int   10h
          end;
        end;
+
+  _dbg_leave; //EXIT //toggle_picture_mode
 end;
 
 procedure fade_out;
@@ -521,7 +567,8 @@ var
   temp: Byte;
 
 begin
-  _debug_str_:= 'A2SCRIO.PAS:fade_out';
+  _dbg_enter ({$I %FILE%}, 'fade_out');
+
   For temp := overall_volume downto 0 do
     begin
       set_overall_volume(temp);
@@ -545,6 +592,8 @@ begin
           MEMW[0:$041c] := MEMW[0:$041a];
         end;
     end;
+
+  _dbg_leave; //EXIT //fade_out
 end;
 
 end.

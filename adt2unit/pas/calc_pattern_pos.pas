@@ -11,10 +11,8 @@ var
   jump_count,pattern_pos: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:calc_pattern_pos';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'calc_pattern_pos');
+
   pattern_pos := BYTE_NULL;
   jump_count := 0;
   index := calc_following_order(0);
@@ -30,5 +28,8 @@ begin
            pattern_pos := index;
            BREAK;
          end;
+
   calc_pattern_pos := pattern_pos;
+
+  _dbg_leave; //EXIT //calc_pattern_pos
 end;

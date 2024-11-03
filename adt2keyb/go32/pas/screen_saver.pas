@@ -24,8 +24,8 @@ begin
 end;
 
 begin
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2KEYB.PAS:screen_saver:fadeout';
+  _dbg_enter ({$I %FILE%}, 'screen_saver.fadeout');
+
   For depth := 1 to 32 do
     begin
       For index := 1 to 255 do
@@ -41,6 +41,8 @@ begin
       If (depth MOD 4 = 0) then draw_screen;
       keyboard_reset_buffer;
     end;
+
+  _dbg_leave; //EXIT //screen_saver.fadeout
 end;
 
 procedure fadein;
@@ -51,8 +53,8 @@ var
 
 
 begin
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2KEYB.PAS:screen_saver:fadein';
+  _dbg_enter ({$I %FILE%}, 'screen_saver.fadein');
+
   For depth := 32 downto 1 do
     begin
       For index := 1 to 255 do
@@ -64,16 +66,23 @@ begin
       If (depth MOD 4 = 0) then draw_screen;
       keyboard_reset_buffer;
     end;
+
+  _dbg_leave; //EXIT //screen_saver.fadein
 end;
 
 begin
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2KEYB.PAS:screen_saver';
-  If (ssaver_time = 0) then EXIT;
+  _dbg_enter ({$I %FILE%}, 'screen_saver');
+
+  If (ssaver_time = 0) then
+    begin
+      _dbg_leave; EXIT; //screen_saver
+    end;
   fadeout;
   Repeat
     realtime_gfx_poll_proc;
     draw_screen;
   until (seconds_counter = 0);
   fadein;
+
+  _dbg_leave; //EXIT //screen_saver
 end;

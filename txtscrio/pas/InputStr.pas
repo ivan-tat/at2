@@ -21,10 +21,8 @@ end;
 label _end;
 
 begin { InputStr }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'InputStr.pas:InputStr';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'InputStr');
+
   s := Copy(s,1,ln);
   If (is_environment.locate_pos > ln1) then
     is_environment.locate_pos := ln1;
@@ -302,4 +300,6 @@ _end:
   is_environment.keystroke := key;
   is_environment.insert_mode := ins;
   InputStr := s;
+
+  _dbg_leave; //EXIT //InputStr
 end;

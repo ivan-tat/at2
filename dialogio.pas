@@ -228,6 +228,9 @@ procedure DialogIO_Init;
 
 implementation
 
+uses
+  debug;
+
 type
   tDBUFFR = array[1.. 100] of Record
                                 str: String;
@@ -306,7 +309,8 @@ end;
 
 procedure ShowItem;
 begin
-  If (idx2 = 0) then EXIT;
+  If (idx2 = 0) then
+    EXIT; //Dialog.ShowItem
   If (idx2 <> idx3) then
     ShowCStr(screen_ptr,dbuf[idx3].pos,ystart+num+1,dbuf[idx3].str,
              dl_setting.keys_attr,dl_setting.short_attr);
@@ -314,6 +318,8 @@ begin
     ShowCStr(screen_ptr,dbuf[idx2].pos,ystart+num+1,dbuf[idx2].str,
              dl_setting.keys2_attr,dl_setting.short2_attr);
   idx3 := idx2;
+
+  //EXIT //Dialog.ShowItem
 end;
 
 function RetKey(code: Byte): Word;
@@ -345,10 +351,8 @@ begin
 end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:Dialog';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'Dialog');
+
   pos := 1;
   max := Length(title);
   num := 0;
@@ -371,19 +375,31 @@ begin
     begin
       Inc(pos,14);
       str := ReadChunk(keys,pos); ln := Str2num(str,10);
-      If (str = '') then EXIT;
+      If (str = '') then
+        begin
+          _dbg_leave; EXIT; //Dialog
+        end;
       Inc(pos,Length(str)+1);
 
       str := ReadChunk(keys,pos); ln1 := Str2num(str,10); mx2 := ln1;
-      If (str = '') then EXIT;
+      If (str = '') then
+        begin
+          _dbg_leave; EXIT; //Dialog
+        end;
       Inc(pos,Length(str)+1);
 
       str := ReadChunk(keys,pos); atr1 := Str2num(str,16);
-      If (str = '') then EXIT;
+      If (str = '') then
+        begin
+          _dbg_leave; EXIT; //Dialog
+        end;
       Inc(pos,Length(str)+1);
 
       str := ReadChunk(keys,pos); atr2 := Str2num(str,16);
-      If (str = '') then EXIT;
+      If (str = '') then
+        begin
+          _dbg_leave; EXIT; //Dialog
+        end;
       Inc(pos,Length(str)+1);
     end
   else
@@ -499,7 +515,10 @@ begin
       ShowItem;
       ShowItem;
       qflg := FALSE;
-      If (keys = '$') then EXIT;
+      If (keys = '$') then
+        begin
+          _dbg_leave; EXIT; //Dialog
+        end;
 
       Repeat
         dl_environment.cur_item := idx2;
@@ -575,6 +594,8 @@ begin
     end
   else
     ScreenMemCopy(ptr_scr_backup,screen_ptr);
+
+  _dbg_leave; //EXIT //Dialog
 end;
 
 var
@@ -591,15 +612,15 @@ var
   temp: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:pstr';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'pstr');
+
   If (item <= mnu_count) then
     Move(pBYTE(mnu_data)[(item-1)*(mnu_len+1)],temp,mnu_len+1)
   else temp := '';
   If NOT solid then pstr := ExpStrR(temp,mnu_len-2,' ')
   else pstr := ExpStrR(temp,mnu_len,' ');
+
+  _dbg_leave; //EXIT //pstr
 end;
 
 function pstr2(item: Word): String;
@@ -631,14 +652,14 @@ var
   temp: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:pdes';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'pdes');
+
   If (mn_environment.descr <> NIL) and (item <= mnu_count) then
     Move(pBYTE(mn_environment.descr)[(item-1)*(mn_environment.descr_len+1)],temp,mn_environment.descr_len+1)
   else temp := '';
   pdes := ExpStrR(temp,mn_environment.descr_len,' ');
+
+  _dbg_leave; //EXIT //pdes
 end;
 
 procedure refresh;
@@ -651,14 +672,12 @@ var
   highlighted: Boolean;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:refresh:ShowCStr_clone';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'refresh.ShowCStr_clone');
+
   If NOT (mn_setting.fixed_len <> 0) then
     begin
       ShowC3Str(dest,x,y,str,atr1,atr2,atr1 AND $0f0+mn_setting.topic_attr AND $0f);
-      EXIT;
+      _dbg_leave; EXIT; //refresh.ShowCStr_clone
     end;
 
   highlighted := FALSE;
@@ -683,6 +702,8 @@ begin
                Inc(len2);
              end
          end;
+
+  _dbg_leave; //EXIT //refresh.ShowCStr_clone
 end;
 
 var
@@ -691,11 +712,12 @@ var
   desc_str,desc_str2,desc_str3: String;
 
 begin { refresh }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:refresh';
-{$ENDIF}
-  If (page = opage) and (idx2 = opos) and NOT mn_environment.do_refresh then EXIT
+  _dbg_enter ({$I %FILE%}, 'refresh');
+
+  If (page = opage) and (idx2 = opos) and NOT mn_environment.do_refresh then
+    begin
+      _dbg_leave; EXIT; //refresh
+    end
   else begin
          opage := page;
          opos  := idx2;
@@ -766,6 +788,8 @@ begin { refresh }
       VScrollBar(mn_environment.v_dest,mnu_x+max+1,mnu_y+1-mn_setting.topic_len,
                  temp2,mnu_count,idx2+page-1,
                  vscrollbar_pos,mn_setting.menu_attr,mn_setting.menu_attr);
+
+  _dbg_leave; //EXIT //refresh
 end;
 
 function Menu(var data; x,y: Byte; spos: Word;
@@ -833,10 +857,8 @@ var
   item_str,temp: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:Menu:edit_contents';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'Menu.edit_contents');
+
   is_setting.append_enabled := TRUE;
   is_setting.character_set  := [' '..'_','a'..'}',#128..#255]; // exclude ` and ~ characters
   is_environment.locate_pos := 1;
@@ -868,17 +890,17 @@ begin
 
   mn_environment.do_refresh := TRUE;
   refresh;
+
+  _dbg_leave; //EXIT //Menu.edit_contents
 end;
 
 begin { Menu }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:Menu';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'Menu');
+
   If (count = 0) then
     begin
       Menu := 0;
-      EXIT;
+      _dbg_leave; EXIT; //Menu
     end;
 
   max := Length(title);
@@ -889,7 +911,10 @@ begin { Menu }
   If NOT mn_environment.unpolite then
     ScreenMemCopy(mn_environment.v_dest,ptr_scr_backup2);
 
-  If (count < 1) then EXIT;
+  If (count < 1) then
+    begin
+      _dbg_leave; EXIT; //Menu
+    end;
   vscrollbar_pos := WORD_NULL;
 
   If NOT mn_environment.preview then HideCursor;
@@ -1129,6 +1154,8 @@ begin { Menu }
     end;
 
   Menu := idx2+page-1;
+
+  _dbg_leave; //EXIT //Menu
 end;
 
 const
@@ -1204,8 +1231,7 @@ var
   regs: tRealRegs;
 
 begin
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:phantom_drive';
+  _dbg_enter ({$I %FILE%}, 'valid_drive.phantom_drive');
 
   regs.ax := $440e;
   regs.bl := BYTE(UpCase(drive))-$40;
@@ -1214,6 +1240,8 @@ begin
   If Odd(regs.flags) then phantom_drive := FALSE
   else If (regs.al = 0) then phantom_drive := FALSE
        else phantom_drive := (regs.al <> BYTE(UpCase(drive))-$40);
+
+  _dbg_leave; //EXIT //valid_drive.phantom_drive
 end;
 
 var
@@ -1223,8 +1251,7 @@ var
   dos_data: array[0..PRED(40)] of Byte;
 
 begin
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:valid_drive';
+  _dbg_enter ({$I %FILE%}, 'valid_drive');
 
   dos_mem_adr := global_dos_alloc(40);
   dos_sel := WORD(dos_mem_adr);
@@ -1244,6 +1271,8 @@ begin
 
   global_dos_free(dos_sel);
   valid_drive := (regs.al <> BYTE_NULL) and NOT phantom_drive(drive);
+
+  _dbg_leave; //EXIT //valid_drive
 end;
 
 {$ELSE}
@@ -1296,7 +1325,7 @@ begin
   If (result <> isEqual) then
     begin
       CompareStr := result;
-      EXIT;
+      EXIT; //CompareStr
     end;
 
   str1 := Upper(FilterStr2(str1,_valid_characters_fname,'_'));
@@ -1324,6 +1353,8 @@ begin
            result := isMore;
 
   CompareStr := result;
+
+  //EXIT //CompareStr
 end;
 
 {$ENDIF}
@@ -1336,7 +1367,8 @@ var
   tmp: tSEARCH;
 
 begin
-  If (l >= r) then EXIT;
+  If (l >= r) then
+    EXIT; //QuickSort
   cmp := stream.stuff[(l+r) DIV 2].name;
   i := l;
   j := r;
@@ -1368,13 +1400,14 @@ begin
 
   If (l < j) then QuickSort(l,j);
   If (i < r) then QuickSort(i,r);
+
+  //EXIT //QuickSort
 end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:make_stream';
-{$ELSE}
+  _dbg_enter ({$I %FILE%}, 'make_stream');
+
+{$IFNDEF GO32V2}
 {$IFNDEF UNIX}
   GetLogicalDriveStrings(SizeOf(drive_list),drive_list);
 {$ENDIF}
@@ -1456,6 +1489,8 @@ begin
 
   stream.count := count1+count2;
   stream.match_count := count2;
+
+  _dbg_leave; //EXIT //make_stream
 end;
 
 var
@@ -1493,10 +1528,7 @@ end;
 label _jmp1;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:Fselect';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'Fselect');
 
 _jmp1:
 
@@ -1838,6 +1870,8 @@ _jmp1:
   {$i+}
   If (IOresult <> 0) then ;
   If (mn_environment.keystroke = kESC) then Fselect := '';
+
+  _dbg_leave; //EXIT //Fselect
 end;
 
 function _partial(max,val: Word; base: Byte): Word;
@@ -1864,10 +1898,8 @@ var
   temp: Word;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:HScrollBar';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'HScrollBar');
+
   If (size > work_MaxCol-x) then size := work_MaxCol-x;
   If (size < 5) then size := 5;
 
@@ -1877,7 +1909,7 @@ begin
   If (pos = temp) then
     begin
       HScrollBar := temp;
-      EXIT;
+      _dbg_leave; EXIT; //HScrollBar
     end;
 
   If (size < len1) then
@@ -1889,6 +1921,8 @@ begin
     end
   else ShowCStr(dest,x,y,'~'#17'~'+ExpStrL('',size-2,#177)+'~'#16'~',atr2,atr1);
   HScrollBar := pos;
+
+  _dbg_leave; //EXIT //HScrollBar
 end;
 
 function VScrollBar(dest: tSCREEN_MEM_PTR; x,y: Byte; size: Byte; len1,len2,pos: Word;
@@ -1897,10 +1931,8 @@ var
   temp: Word;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:VScrollBar';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'VScrollBar');
+
   If (size > work_MaxLn-y) then size := work_MaxLn-y;
   If (size < 5) then size := 5;
 
@@ -1910,7 +1942,7 @@ begin
   If (pos = temp) then
     begin
       VScrollBar := temp;
-      EXIT;
+      _dbg_leave; EXIT; //VScrollBar
     end;
 
   If (size < len1) then
@@ -1922,6 +1954,8 @@ begin
     end
   else ShowVCStr(dest,x,y,'~'#30'~'+ExpStrL('',size-2,#177)+'~'#31'~',atr2,atr1);
   VScrollBar := pos;
+
+  _dbg_leave; //EXIT //VScrollBar
 end;
 
 procedure DialogIO_Init;
@@ -1930,10 +1964,7 @@ var
   index: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'DIALOGIO.PAS:DialogIO_Init';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'DialogIO_Init');
 
   dl_setting.frame_type      := frame_double;
   dl_setting.title_attr      := dialog_background+dialog_title;
@@ -1999,6 +2030,8 @@ begin
 
   For index := 1 to 26 do
     path[index] := CHR(ORD('a')+PRED(index))+':'+PATHSEP;
+
+  _dbg_leave; //EXIT //DialogIO_Init
 end;
 
 end.

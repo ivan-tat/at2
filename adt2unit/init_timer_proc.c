@@ -20,4 +20,6 @@ void init_timer_proc (void) {
 #endif // !GO32
     TimerSetup (50);
   }
+
+  DBG_LEAVE (); //init_timer_proc
 }

@@ -12,4 +12,6 @@ void done_timer_proc (void) {
     TimerDone ();
     TimerRemoveHandler ();
   }
+
+  DBG_LEAVE (); //done_timer_proc
 }

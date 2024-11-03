@@ -7,7 +7,7 @@
 procedure update_fnum_block_ksr(p_chan: P_OPL3_CHAN; data: Byte; msb_flag: Boolean);
 begin
   If (p_chan^.ch_type = CH_4OP_2) then
-    EXIT;
+    EXIT; //update_fnum_block_ksr
 
   If msb_flag then
     begin
@@ -44,4 +44,6 @@ begin
       envelope_update_rate(p_chan^.p_chan^.p_slot[0]);
       envelope_update_rate(p_chan^.p_chan^.p_slot[1]);
     end;
+
+  //EXIT //update_fnum_block_ksr
 end;

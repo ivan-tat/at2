@@ -10,8 +10,7 @@ var
   result: Boolean;
 
 begin
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2OPL3.PAS:detect_OPL3';
+  _dbg_enter ({$I %FILE%}, 'detect_OPL3');
 
   asm
         push    dword 04h
@@ -60,4 +59,6 @@ begin
   end;
 
   detect_OPL3 := result;
+
+  _dbg_leave; //EXIT //detect_OPL3
 end;

@@ -10,9 +10,9 @@ var
   temp: Byte;
 
 begin
+  _dbg_enter ({$I %FILE%}, 'TxtScrIO_Init');
+
 {$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'TXTSCRIO.PAS:TxtScrIO_Init';
   program_screen_mode := screen_mode;
 {$ENDIF}
 
@@ -253,4 +253,6 @@ begin
   patt_win[3] := patt_win_tracks[temp][3];
   patt_win[4] := patt_win_tracks[temp][4];
   patt_win[5] := patt_win_tracks[temp][5];
+
+  _dbg_leave; //EXIT //TxtScrIO_Init
 end;

@@ -67,10 +67,11 @@ var
 implementation
 
 uses
+  debug,
+  pascal,
 {$IFDEF GO32V2}
   AdT2sys;
 {$ELSE} { NOT DEFINED(GO32V2) }
-  pascal,
   SysUtils,
   AdT2unit,
   AdT2sys,
@@ -126,13 +127,15 @@ var
 begin
   bytes_to_write := wav_buffer_len;
   // flush when at least 1 sec of recorded data
-  If (bytes_to_write < 2*sdl_sample_rate*16 DIV 8) then EXIT;
-  If NOT ((play_status = isPlaying) and (sdl_opl3_emulator <> 0)) then EXIT;
+  If (bytes_to_write < 2*sdl_sample_rate*16 DIV 8) then
+    EXIT; //flush_WAV_data
+  If NOT ((play_status = isPlaying) and (sdl_opl3_emulator <> 0)) then
+    EXIT; //flush_WAV_data
 
   // prepare output directory
   If NOT DirectoryExists(Copy(sdl_wav_directory,1,Length(sdl_wav_directory)-Length(NameOnly(sdl_wav_directory)))) then
     If NOT CreateDir(Copy(sdl_wav_directory,1,Length(sdl_wav_directory)-Length(NameOnly(sdl_wav_directory)))) then
-      EXIT;
+      EXIT; //flush_WAV_data
 
   wav_buffer_len := 0;
   If NOT opl3_channel_recording_mode then
@@ -191,7 +194,7 @@ begin
               EraseF(wav_file);
               {$i+}
               If (IOresult <> 0) then ;
-              EXIT;
+              EXIT; //flush_WAV_data
             end;
           wav_header.samples_sec := sdl_sample_rate;
           wav_header.bytes_sec := 2*sdl_sample_rate*16 DIV 8;
@@ -208,7 +211,7 @@ begin
               EraseF(wav_file);
               {$i+}
               If (IOresult <> 0) then ;
-              EXIT;
+              EXIT; //flush_WAV_data
             end;
         end
       else begin
@@ -223,7 +226,7 @@ begin
                  EraseF(wav_file);
                  {$i+}
                  If (IOresult <> 0) then ;
-                 EXIT;
+                 EXIT; //flush_WAV_data
                end;
              wav_header.file_size := wav_header.file_size+bytes_to_write;
              wav_header.data_size := wav_header.data_size+bytes_to_write;
@@ -237,7 +240,7 @@ begin
                  EraseF(wav_file);
                  {$i+}
                  If (IOresult <> 0) then ;
-                 EXIT;
+                 EXIT; //flush_WAV_data
                end;
              {$i-}
              BlockWriteF(wav_file,wav_header,SizeOf(wav_header),temp);
@@ -250,7 +253,7 @@ begin
                  EraseF(wav_file);
                  {$i+}
                  If (IOresult <> 0) then ;
-                 EXIT;
+                 EXIT; //flush_WAV_data
                end;
              {$i-}
              SeekF(wav_file,FileSize(wav_file));
@@ -262,7 +265,7 @@ begin
                  EraseF(wav_file);
                  {$i+}
                  If (IOresult <> 0) then ;
-                 EXIT;
+                 EXIT; //flush_WAV_data
                end;
            end;
 
@@ -283,6 +286,8 @@ begin
     end;
 
   renew_wav_files_flag := FALSE;
+
+  //EXIT //flush_WAV_data
 end;
 
 {$ENDIF} { NOT DEFINED(GO32V2) }

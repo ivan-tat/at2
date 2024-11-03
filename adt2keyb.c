@@ -19,6 +19,7 @@
 #include "SDL/SDL_keyboard_fix.h"
 #endif // USE_FPC
 #endif // !GO32
+#include "debug.h"
 #include "adt2ext2.h"
 #include "adt2keyb.h"
 #include "adt2unit.h"

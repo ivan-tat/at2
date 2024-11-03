@@ -6,11 +6,12 @@
 
 procedure update_playback_speed(speed_shift: Longint);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:update_playback_speed';
-{$ENDIF}
-  If (speed_shift = 0) then EXIT
+  _dbg_enter ({$I %FILE%}, 'update_playback_speed');
+
+  If (speed_shift = 0) then
+    begin
+      _dbg_leave; EXIT; //update_playback_speed
+    end
   else If (speed_shift > 0) and (IRQ_freq+playback_speed_shift+speed_shift > MAX_IRQ_FREQ) then
          While (IRQ_freq+IRQ_freq_shift+playback_speed_shift+speed_shift > MAX_IRQ_FREQ) do
            Dec(speed_shift)
@@ -19,4 +20,6 @@ begin
                 Inc(speed_shift);
   playback_speed_shift := playback_speed_shift+speed_shift;
   update_timer(tempo);
+
+  _dbg_leave; //EXIT //update_playback_speed
 end;

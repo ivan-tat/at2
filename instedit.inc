@@ -114,15 +114,13 @@ var
   ins: tADTRACK2_INS;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:INSTRUMENT_test:output_note';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'INSTRUMENT_test.output_note');
+
   note := board_pos+12*(current_octave-1);
   If NOT (note in [0..12*8+1]) then
     begin
       output_note := FALSE;
-      EXIT;
+      _dbg_leave; EXIT; //INSTRUMENT_test.output_note
     end;
 
   chan_handle[chan] := board_scancodes[board_pos];
@@ -192,14 +190,17 @@ begin
              macro_table[PRED(chan)].vib_table := 0;
            end;
     end;
+
+  _dbg_leave; //EXIT //INSTRUMENT_test.output_note
 end;
 
 begin { INSTRUMENT_test }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:INSTRUMENT_test';
-{$ENDIF}
-  If ctrl_pressed or alt_pressed or shift_pressed then EXIT;
+  _dbg_enter ({$I %FILE%}, 'INSTRUMENT_test');
+
+  If ctrl_pressed or alt_pressed or shift_pressed then
+    begin
+      _dbg_leave; EXIT; //INSTRUMENT_test
+    end;
 
   _1op_preview := _1op_preview_active;
   _4op_mode := NOT _1op_preview_active and (songdata.flag_4op <> 0) and (instr2 <> 0);
@@ -211,13 +212,18 @@ begin { INSTRUMENT_test }
         begin valid_key := TRUE; BREAK; end;
 
   If NOT valid_key or
-     NOT (temp+12*(current_octave-1)-1 in [0..12*8+1]) then EXIT;
+     NOT (temp+12*(current_octave-1)-1 in [0..12*8+1]) then
+    begin
+      _dbg_leave; EXIT; //INSTRUMENT_test
+    end;
 
   If (Empty(songdata.instr_data[instr],SizeOf(songdata.instr_data[instr])) and
       Empty(songdata.instr_macros[instr],SizeOf(songdata.instr_macros[instr]))) or
      (_4op_mode and Empty(songdata.instr_data[instr2],SizeOf(songdata.instr_data[instr2])) and
                     Empty(songdata.instr_macros[instr2],SizeOf(songdata.instr_macros[instr2]))) then
-    EXIT;
+    begin
+      _dbg_leave; EXIT; //INSTRUMENT_test
+    end;
 
   temp2 := temp;
   ins_trailing_flag := TRUE;
@@ -368,6 +374,8 @@ begin { INSTRUMENT_test }
   play_status := status_backup.play_status;
   ins_trailing_flag := FALSE;
   keyboard_reset_buffer;
+
+  _dbg_leave; //EXIT //INSTRUMENT_test
 end;
 
 var
@@ -499,7 +507,8 @@ var
   idx: Byte;
 
 begin
-  If NOT check_4op_flag(ins) then EXIT;
+  If NOT check_4op_flag(ins) then
+    EXIT; //reset_4op_flag
   temp_ins_4op_flags.num_4op := 0;
   idx := 1;
   While (idx <= songdata.ins_4op_flags.num_4op) and
@@ -519,6 +528,8 @@ begin
       Inc(idx);
     end;
   songdata.ins_4op_flags := temp_ins_4op_flags;
+
+  //EXIT //reset_4op_flag
 end;
 
 procedure set_4op_flag(ins: Byte);
@@ -528,7 +539,8 @@ var
   idx: Byte;
 
 begin
-  If (ins = 255) then EXIT;
+  If (ins = 255) then
+    EXIT; //set_4op_flag
   If check_4op_flag(ins) then
     reset_4op_flag(ins);
   If (ins > 1) and check_4op_flag(PRED(ins)) then
@@ -555,6 +567,8 @@ begin
       Inc(idx);
     end;
   songdata.ins_4op_flags := temp_ins_4op_flags;
+
+  //EXIT //set_4op_flag
 end;
 
 procedure update_4op_flag_marks;
@@ -589,10 +603,8 @@ var
   _status_shift_pos: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:INSTRUMENT_CONTROL_page_refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'INSTRUMENT_CONTROL_page_refresh');
+
   update_4op_flag_marks;
   If (ins_parameter(page,10) AND 1 <> 1) then
     For temp := 1 to 18 do
@@ -693,6 +705,8 @@ begin
            dialog_background+dialog_context);
 
   STATUS_LINE_refresh;
+
+  _dbg_leave; //EXIT //INSTRUMENT_CONTROL_page_refresh
 end;
 
 var
@@ -734,10 +748,8 @@ begin
 end;
 
 begin { _show_adsr }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:_show_adsr';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_show_adsr');
+
   fr_setting.update_area := FALSE;
   fr_setting.shadow_enabled := FALSE;
 
@@ -768,7 +780,10 @@ begin { _show_adsr }
   If (release <> 0) then
     release := min(ROUND(15/ln(15)*ln(release)),1);
 
-  If reset then EXIT;
+  If reset then
+    begin
+      _dbg_leave; EXIT; //_show_adsr
+    end;
   pos := 1;
   temp := 0;
 
@@ -882,6 +897,8 @@ begin { _show_adsr }
                          15-_conv(decay,16-decay)+
                          15-_conv(attack,16-attack),#250),
             attr_hi);
+
+  _dbg_leave; //EXIT //_show_adsr
 end;
 
 procedure INSTRUMENT_CONTROL_page_refresh_alt(page: Byte);
@@ -891,10 +908,8 @@ var
   temp_str: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:INSTRUMENT_CONTROL_page_refresh_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'INSTRUMENT_CONTROL_page_refresh_alt');
+
   update_4op_flag_marks;
   If (ins_parameter(page,10) AND 1 <> 1) then
     For temp := 1 to 18 do
@@ -967,6 +982,8 @@ begin
            ExpStrR(temp_str,21+1,#205),
            dialog_background+dialog_border,
            dialog_background+dialog_context);
+
+  _dbg_leave; //EXIT //INSTRUMENT_CONTROL_page_refresh_alt
 end;
 
 var
@@ -1104,10 +1121,8 @@ var
   _ftune_4op: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:INSTRUMENT_CONTROL_edit:page_build';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '(INSTRUMENT_CONTROL_edit)._page_build');
+
   ShowStr(ptr_temp_screen,xstart+45,ystart,
           byte2hex(instrum_page),
           instrument_bckg+instrument_title);
@@ -1579,6 +1594,8 @@ begin
                        instrument_bckg+_col_hi_mod);
        end;
   end;
+
+  _dbg_leave; //EXIT //(INSTRUMENT_CONTROL_edit)._page_build
 end;
 
 procedure _page_refresh;
@@ -1589,10 +1606,8 @@ var
   adsr_vpos: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:INSTRUMENT_CONTROL_edit:page_refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '(INSTRUMENT_CONTROL_edit)._page_refresh');
+
   x0 := xstart;
   y0 := ystart;
 
@@ -1817,6 +1832,8 @@ begin
                  adsr_bckg+instrument_hi_car,FALSE);
 
   move2screen_alt;
+
+  _dbg_leave; //EXIT //(INSTRUMENT_CONTROL_edit)._page_refresh
 end;
 
 procedure _sync_radio_buttons;
@@ -1928,13 +1945,13 @@ begin
   If (inst^.perc_voice in [2..5]) or
      (NOT (get_4op_to_test <> 0) and NOT (operator in [1..2])) or
      (NOT (operator in [1..4])) then
-    EXIT;
+    EXIT; //_set_operator_flag
 
   If NOT toggle then
     begin
       FillChar(_operator_enabled,SizeOf(_operator_enabled),FALSE);
       _operator_enabled[operator] := TRUE;
-      EXIT;
+      EXIT; //_set_operator_flag
     end;
 
   Move(_operator_enabled,_temp_operator_enabled,SizeOf(_temp_operator_enabled));
@@ -1954,6 +1971,8 @@ begin
                    (_temp_operator_enabled[4] = FALSE)) then
            Move(_temp_operator_enabled,_operator_enabled,SizeOf(_operator_enabled));
          end;
+
+  //EXIT //_set_operator_flag
 end;
 
 const
@@ -1964,10 +1983,8 @@ const
 label _jmp1,_end;
 
 begin { INSTRUMENT_CONTROL_edit }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:INSTRUMENT_CONTROL_edit';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'INSTRUMENT_CONTROL_edit');
+
   inst := Addr(songdata.instr_data[instrum_page]);
   FillChar(_operator_enabled,SizeOf(_operator_enabled),TRUE);
   If NOT (inst^.perc_voice in [2..5]) then
@@ -1996,7 +2013,10 @@ begin { INSTRUMENT_CONTROL_edit }
            vpos := min(get_bank_position('?instrument_editor?'+byte2hex(instrum_page)+'?modulator?vpos',-1),1);
          end;
 _jmp1:
-  If _force_program_quit then EXIT;
+  If _force_program_quit then
+    begin
+      _dbg_leave; EXIT; //INSTRUMENT_CONTROL_edit
+    end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
   HideCursor;
@@ -2900,6 +2920,8 @@ _end:
   move_to_screen_area[3] := xstart+71+2;
   move_to_screen_area[4] := ystart+24+INSEDIT_yshift+1;
   move2screen;
+
+  _dbg_leave; //EXIT //INSTRUMENT_CONTROL_edit
 end;
 
 procedure copy_object;
@@ -2908,10 +2930,8 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:copy_object';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'copy_object');
+
   Case clipboard.object_type of
     objInstrument:
       begin
@@ -2940,6 +2960,8 @@ begin
           clipboard.instrument.dis_fmreg_col[temp] := songdata.dis_fmreg_col[temp];
         end;
   end;
+
+  _dbg_leave; //EXIT //copy_object
 end;
 
 procedure paste_object(mode: Byte);
@@ -2948,10 +2970,8 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:paste_object';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'paste_object');
+
   Case clipboard.object_type of
     objInstrument:
       Case mode of
@@ -3024,6 +3044,8 @@ begin
                       clipboard.instrument.names[temp];
         end;
   end;
+
+  _dbg_leave; //EXIT //paste_object
 end;
 
 procedure instr_control_ai;
@@ -3034,10 +3056,8 @@ var
   istr: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:instr_control_ai';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'instr_control_ai');
+
   istr := '';
   For temp := 1 to 18 do
     iflag[temp] := ai_table[mn_environment.curr_page+temp-1];
@@ -3068,6 +3088,8 @@ begin
              dialog_background+instrument_ai_off,
              dialog_background+instrument_ai_on,
              dialog_background+instrument_ai_trig);
+
+  _dbg_leave; //EXIT //instr_control_ai
 end;
 
 procedure instr_control_proc;
@@ -3082,10 +3104,8 @@ var
                macros: tREGISTER_TABLE;
              end;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:instr_control_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'instr_control_proc');
+
   Case mn_environment.keystroke of
       kCtLEFT: If NOT debugging and (play_status = isPlaying) then
                  _rewind := TRUE;
@@ -3406,6 +3426,8 @@ begin
     If (get_4op_to_test <> 0) then
       INSTRUMENT_test(LO(get_4op_to_test),HI(get_4op_to_test),count_channel(pattern_hpos),mn_environment.keystroke,TRUE)
     else INSTRUMENT_test(instrum_page,0,count_channel(pattern_hpos),mn_environment.keystroke,TRUE);
+
+  _dbg_leave; //EXIT //instr_control_proc
 end;
 
 function INSTRUMENT_CONTROL: Byte;
@@ -3420,15 +3442,16 @@ var
 label _jmp1;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:INSTRUMENT_CONTROL';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'INSTRUMENT_CONTROL');
+
   update_4op_flag_marks;
   songdata_crc := Update32(songdata,SizeOf(songdata),0);
 
   _jmp1:
-  If _force_program_quit then EXIT;
+  If _force_program_quit then
+    begin
+      _dbg_leave; EXIT; //INSTRUMENT_CONTROL
+    end;
 
   keyboard_reset_buffer;
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
@@ -3638,19 +3661,21 @@ begin
 
   If (mn_environment.keystroke = kENTER) then INSTRUMENT_CONTROL := instrum_page
   else INSTRUMENT_CONTROL := 0;
+
+  _dbg_leave; //EXIT //INSTRUMENT_CONTROL
 end;
 
 procedure instr_control_proc_alt;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:instr_control_proc_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'instr_control_proc_alt');
+
   INSTRUMENT_CONTROL_page_refresh_alt(mn_environment.curr_pos);
   If NOT shift_pressed and NOT alt_pressed and NOT ctrl_pressed then
     If (get_4op_to_test <> 0) then
       INSTRUMENT_test(LO(get_4op_to_test),HI(get_4op_to_test),count_channel(pattern_hpos),mn_environment.keystroke,FALSE)
     else INSTRUMENT_test(mn_environment.curr_pos,0,count_channel(pattern_hpos),mn_environment.keystroke,FALSE);
+
+  _dbg_leave; //EXIT //instr_control_proc_alt
 end;
 
 function INSTRUMENT_CONTROL_alt(instr: Byte; title: String): Byte;
@@ -3659,10 +3684,8 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'INSTEDIT.INC:INSTRUMENT_CONTROL_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'INSTRUMENT_CONTROL_alt');
+
   keyboard_reset_buffer;
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
   mn_environment.v_dest := ptr_temp_screen;
@@ -3760,4 +3783,6 @@ begin
 
   If (mn_environment.keystroke = kENTER) then INSTRUMENT_CONTROL_alt := temp
   else INSTRUMENT_CONTROL_alt := 0;
+
+  _dbg_leave; //EXIT //INSTRUMENT_CONTROL_alt
 end;

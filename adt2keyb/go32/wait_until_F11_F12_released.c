@@ -14,4 +14,6 @@ void wait_until_F11_F12_released (void) {
     if (inportb (0x60) & 0x80)
       memset (keydown, 0, sizeof (keydown));
   } while (keydown[SC_F11] || keydown[SC_F12]);
+
+  DBG_LEAVE (); //wait_until_F11_F12_released
 }

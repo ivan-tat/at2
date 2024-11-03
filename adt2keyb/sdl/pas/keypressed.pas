@@ -16,7 +16,7 @@ begin
       begin
         _force_program_quit := TRUE;
         keypressed := TRUE;
-        EXIT;
+        EXIT; //keypressed
       end;
     If (SDL_PeepEvents(event,1,SDL_PEEKEVENT,SDL_MOUSEEVENTMASK) > 0) then
       begin
@@ -33,6 +33,6 @@ begin
         end
       else
         keypressed := TRUE;
-    EXIT;
+    EXIT; //keypressed
   until FALSE;
 end;

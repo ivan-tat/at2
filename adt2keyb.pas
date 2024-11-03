@@ -196,10 +196,12 @@ procedure screen_saver; cdecl; external;
 implementation
 
 uses
+  debug,
+  pascal
 {$IFNDEF GO32V2}
-  SDL_Events,
-  SDL_Keyboard,
+  ,SDL_Events
+  ,SDL_Keyboard
 {$ENDIF} // NOT DEFINED(GO32V2)
-  pascal;
+  ;
 
 end.

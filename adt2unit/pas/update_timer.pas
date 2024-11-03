@@ -6,11 +6,13 @@
 
 procedure update_timer(Hz: Word);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:update_timer';
-{$ENDIF}
-  If (Hz = 0) then begin TimerSetup(18); EXIT end
+  _dbg_enter ({$I %FILE%}, 'update_timer');
+
+  If (Hz = 0) then
+    begin
+      TimerSetup(18);
+      _dbg_leave; EXIT; //update_timer
+    end
   else tempo := Hz;
   If (tempo = 18) and timer_fix then IRQ_freq := TRUNC((tempo+0.2)*20)
   else IRQ_freq := 250;
@@ -23,4 +25,6 @@ begin
         (IRQ_freq_shift > 0) do
     Dec(IRQ_freq_shift);
   TimerSetup(max(IRQ_freq+IRQ_freq_shift+playback_speed_shift,MAX_IRQ_FREQ));
+
+  _dbg_leave; //EXIT //update_timer
 end;

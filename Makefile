@@ -60,6 +60,7 @@ SRCS=\
  adt2opl3.c\
  adt2unit.c\
  common.c\
+ debug.c\
  dialogio.c\
  go32/adt2vesa.c\
  go32/dpmi.c\
@@ -221,8 +222,9 @@ units/adt2data.ppu: $(srcdir)/adt2data.pas adt2data.o $(makefile) | units
 
 adt2keyb_ppu_deps=\
  $(srcdir)/adt2keyb.pas\
- adt2keyb.o\
- units/pascal.ppu
+ units/debug.ppu\
+ units/pascal.ppu\
+ adt2keyb.o
 
 ifneq ($(findstring $(OS_TARGET),Linux Windows),)
  adt2keyb_ppu_deps+=\
@@ -241,6 +243,16 @@ units/adt2vesa.ppu: $(srcdir)/go32/adt2vesa.pas go32/adt2vesa.o $(makefile) | un
 	 $< -o$@ -vnh >>$(buildlog)
 
 units/common.ppu: $(srcdir)/common.pas common.o $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
+debug_ppu_deps=\
+ $(srcdir)/debug.pas\
+ units/pascal.ppu\
+ debug.o
+
+units/debug.ppu: $(debug_ppu_deps) $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
@@ -347,25 +359,31 @@ adt2ext2_ppu_deps=\
  $(srcdir)/adt2ext2.pas\
  $(srcdir)/instedit.inc\
  $(srcdir)/ipattern.inc\
- $(srcdir)/ipattord.inc
+ $(srcdir)/ipattord.inc\
+ units/debug.ppu
 
 adt2ext3_ppu_deps=\
  $(srcdir)/adt2ext3.pas\
  $(srcdir)/go32/PIT/pas/PIT_consts.inc\
  $(srcdir)/iloaders.inc\
- $(srcdir)/iloadins.inc
+ $(srcdir)/iloadins.inc\
+ units/debug.ppu
 
 adt2ext4_ppu_deps=\
- $(srcdir)/adt2ext4.pas
+ $(srcdir)/adt2ext4.pas\
+ units/debug.ppu
 
 adt2ext5_ppu_deps=\
- $(srcdir)/adt2ext5.pas
+ $(srcdir)/adt2ext5.pas\
+ units/debug.ppu
 
 adt2extn_ppu_deps=\
- $(srcdir)/adt2extn.pas
+ $(srcdir)/adt2extn.pas\
+ units/debug.ppu
 
 adt2opl3_ppu_deps=\
  $(srcdir)/adt2opl3.pas\
+ units/debug.ppu\
  units/opl3emu.ppu\
  adt2opl3.o
 
@@ -384,13 +402,15 @@ endif
 
 adt2text_ppu_deps=\
  $(srcdir)/adt2text.pas\
- adt2ver.inc
+ adt2ver.inc\
+ units/debug.ppu
 
 adt2unit_ppu_deps=\
  $(srcdir)/adt2unit.pas\
  $(srcdir)/realtime.inc\
  $(srcdir)/typcons1.inc\
  $(srcdir)/typcons2.inc\
+ units/debug.ppu\
  adt2unit.o
 
 ifeq ($(FPC_OS_TARGET),go32v2)
@@ -404,16 +424,20 @@ depackio_ppu_deps=\
 
 dialogio_ppu_deps=\
  $(srcdir)/dialogio.pas\
+ units/debug.ppu\
  dialogio.o
 
 menulib1_ppu_deps=\
- $(srcdir)/menulib1.pas
+ $(srcdir)/menulib1.pas\
+ units/debug.ppu
 
 menulib2_ppu_deps=\
- $(srcdir)/menulib2.pas
+ $(srcdir)/menulib2.pas\
+ units/debug.ppu
 
 txtscrio_ppu_deps=\
  $(srcdir)/txtscrio.pas\
+ units/debug.ppu\
  txtscrio.o
 
 ifeq ($(FPC_OS_TARGET),go32v2)
@@ -456,6 +480,7 @@ adtrack2_bin_deps+=\
  units/adt2data.ppu\
  units/adt2keyb.ppu\
  units/common.ppu\
+ units/debug.ppu\
  units/parserio.ppu\
  units/pascal.ppu\
  units/stringio.ppu

@@ -33,10 +33,8 @@ var
   temps: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTORD.INC:pattern_list__proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'pattern_list__proc');
+
   Case mn_environment.keystroke of
     kSPACE:
       If ctrl_pressed then
@@ -222,6 +220,8 @@ begin
 
   mn_environment.do_refresh := TRUE;
   mn_environment.refresh;
+
+  _dbg_leave; //EXIT //pattern_list__proc
 end;
 
 procedure PATTERN_LIST(page: Byte);
@@ -238,10 +238,8 @@ var
 label _jmp1;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTORD.INC:PATTERN_LIST';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PATTERN_LIST');
+
   For temp := 0 to $7f do
     begin
       temp_marks[temp] := songdata.pattern_names[temp][1];
@@ -255,7 +253,10 @@ begin
     songdata.pattern_names[temp][1] := temp_marks[temp];
 
 _jmp1:
-  If _force_program_quit then EXIT;
+  If _force_program_quit then
+    begin
+      _dbg_leave; EXIT; //PATTERN_LIST
+    end;
 
   PATTERN_ORDER_page_refresh(pattord_page);
   PATTERN_page_refresh(pattern_page);
@@ -327,6 +328,8 @@ _jmp1:
 
   For temp := 0 to $7f do
     songdata.pattern_names[temp][1] := temp_marks[temp];
+
+  _dbg_leave; //EXIT //PATTERN_LIST
 end;
 
 function PATTERN_LIST_alt(page: Byte): Byte;
@@ -347,15 +350,13 @@ var
 label _jmp1;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTORD.INC:PATTERN_LIST_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PATTERN_LIST_alt');
+
   If NOT (clipboard.object_type in [objNote,objInstrumentDef,objEffect,objEffect2,
                                     objLine,objTrack,objPattern,objMarkedBlock]) then
     begin
       PATTERN_LIST_alt := BYTE_NULL;
-      EXIT;
+      _dbg_leave; EXIT; //PATTERN_LIST_alt
     end;
 
   _nm_patterns := 0;
@@ -368,7 +369,10 @@ begin
     else songdata.pattern_names[temp][9] := #14;
 
 _jmp1:
-  If _force_program_quit then EXIT;
+  If _force_program_quit then
+    begin
+      _dbg_leave; EXIT; //PATTERN_LIST_alt
+    end;
 
   mn_setting.center_box    := TRUE;
   mn_setting.cycle_moves   := FALSE;
@@ -389,6 +393,8 @@ _jmp1:
 
   If (mn_environment.keystroke <> kESC) then PATTERN_LIST_alt := pattern_list__page
   else PATTERN_LIST_alt := BYTE_NULL;
+
+  _dbg_leave; //EXIT //PATTERN_LIST_alt
 end;
 
 procedure PATTERN_ORDER_page_refresh(page: Byte); cdecl;
@@ -400,10 +406,8 @@ var
   xstart: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTORD.INC:PATTERN_ORDER_page_refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PATTERN_ORDER_page_refresh');
+
   show_str(25+6+PATTORD_xshift+(MAX_ORDER_COLS*7-1) DIV 2+(MAX_ORDER_COLS*7-1) MOD 2,02,
            byte2hex(pattord_vpos+4*(pattord_hpos+pattord_page-1)-1),
            order_background+order_border);
@@ -491,6 +495,8 @@ begin
                                  scrollbar_bckg+scrollbar_text,
                                  scrollbar_bckg+scrollbar_mark);
     end;
+
+  _dbg_leave; //EXIT //PATTERN_ORDER_page_refresh
 end;
 
 procedure PATTERN_ORDER_edit(var page,hpos,vpos: Byte);
@@ -504,10 +510,8 @@ var
 
 procedure copy_object;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTORD.INC:PATTERN_ORDER_edit:copy_object';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PATTERN_ORDER_edit.copy_object');
+
   Case clipboard.object_type of
     objPatternDef:
       clipboard.pattern_order[0] :=
@@ -517,14 +521,14 @@ begin
       Move(songdata.pattern_order,
            clipboard.pattern_order,SizeOf(songdata.pattern_order));
   end;
+
+  _dbg_leave; //EXIT //PATTERN_ORDER_edit.copy_object
 end;
 
 procedure paste_object;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTORD.INC:PATTERN_ORDER_edit:paste_object';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PATTERN_ORDER_edit.paste_object');
+
   Case clipboard.object_type of
     objPatternDef:
       begin
@@ -539,15 +543,15 @@ begin
       Move(clipboard.pattern_order,
            songdata.pattern_order,SizeOf(songdata.pattern_order));
   end;
+
+  _dbg_leave; //EXIT //PATTERN_ORDER_edit.paste_object
 end;
 
 label _end;
 
 begin { PATTERN_ORDER_edit }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTORD.INC:PATTERN_ORDER_edit';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PATTERN_ORDER_edit');
+
   songdata_crc_ord := Update32(songdata.pattern_order,
                                SizeOf(songdata.pattern_order),0);
   Repeat
@@ -1273,4 +1277,6 @@ _end:
       end;
   until (nope and ((fkey = kENTER) or (fkey = kESC) or (fkey = kF10))) or _force_program_quit;
   PATTERN_ORDER_page_refresh(page);
+
+  _dbg_leave; //EXIT //PATTERN_ORDER_edit
 end;

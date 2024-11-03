@@ -11,8 +11,10 @@ Begin
    With ISS_TimersData[Counter] Do Begin
      If TActive And (TProc=TimerProc) Then Begin
        ISS_GetTimerNumber:=Counter;
-       Exit;
+       Exit; //ISS_GetTimerNumber
       End;
     End;
   End;
+
+  //EXIT //ISS_GetTimerNumber
 End;

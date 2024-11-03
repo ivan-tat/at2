@@ -6,11 +6,11 @@
 
 #include "defines.h"
 #include <string.h>
+#include "debug.h"
 #if GO32
 #include <pc.h>
 #include <stdlib.h> // atexit()
 #include "go32/adt2dpmi.h"
-#include "adt2sys.h" // DBG_ENTER()
 #include "txtscrio.h"
 #else // !GO32
 //#include <math.h>

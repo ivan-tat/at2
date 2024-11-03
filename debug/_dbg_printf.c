@@ -4,11 +4,14 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-procedure keyboard_reset_buffer;
-begin
-  _dbg_enter ({$I %FILE%}, 'keyboard_reset_buffer');
+void _dbg_printf (const char *format, ...)
+{
+  va_list ap;
 
-  MEMW[0:$041c] := MEMW[0:$041a];
-
-  _dbg_leave; //EXIT //keyboard_reset_buffer
-end;
+  if (_debug_ && (_dbg_verbose >= 1))
+  {
+    va_start (ap, format);
+    vprintf (format, ap);
+    va_end (ap);
+  }
+}

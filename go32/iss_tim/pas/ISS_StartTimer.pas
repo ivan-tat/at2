@@ -17,7 +17,7 @@ Begin
  If TNumber=0 Then Begin
    ISS_TimerError:=ISS_TENoFree;
    ISS_StartTimer:=False;
-   Exit;
+   EXIT; //ISS_StartTimer
   End;
  If Not NewIRQActive Then Begin
    Lock_Data(ISS_TimersData,SizeOf(ISS_TimersData));
@@ -35,4 +35,6 @@ Begin
  ISS_TimersData[TNumber].TActive:=True;
  SetTimerSpeed(GetTimerSpeed);
  ISS_StartTimer:=True;
+
+  //EXIT //ISS_StartTimer
 End;

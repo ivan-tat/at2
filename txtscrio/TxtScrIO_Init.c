@@ -8,8 +8,9 @@ void TxtScrIO_Init (void) {
   uint8_t temp;
   int i;
 
-#if GO32
   DBG_ENTER ("TxtScrIO_Init");
+
+#if GO32
   program_screen_mode = screen_mode;
 #endif // GO32
 
@@ -267,4 +268,6 @@ void TxtScrIO_Init (void) {
     UTF8nstr_to_AT2 (s, 176, patt_win_tracks[temp][i]);
     StrToString (patt_win[i], (char *) s, 176);
   }
+
+  DBG_LEAVE (); //TxtScrIO_Init
 }

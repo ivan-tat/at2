@@ -6,11 +6,14 @@
 
 procedure wait_until_F11_F12_released;
 begin
-  _debug_str_ := 'ADT2KEYB.PAS:wait_until_F11_F12_released';
+  _dbg_enter ({$I %FILE%}, 'wait_until_F11_F12_released');
+
   Repeat
     draw_screen;
     SDL_PumpEvents;
     TranslateKeycodes;
   until NOT keydown[SC_F11] and NOT keydown[SC_F12];
   keyboard_reset_buffer;
+
+  _dbg_leave; //EXIT //wait_until_F11_F12_released
 end;

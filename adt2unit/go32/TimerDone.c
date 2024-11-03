@@ -15,4 +15,6 @@
   }
 
   ISS_EnableTimerIRQ ();
+
+  DBG_LEAVE (); //TimerDone
 }

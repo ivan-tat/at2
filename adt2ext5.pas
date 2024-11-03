@@ -39,6 +39,7 @@ procedure a2w_file_loader(loadFromFile: Boolean; loadMacros: Boolean; bankSelect
 implementation
 
 uses
+  debug,
 {$IFNDEF UNIX}
   CRT,
 {$ENDIF}
@@ -101,10 +102,8 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:import_old_instruments';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'import_old_instruments');
+
   For temp := instr to instr+PRED(count) do
     begin
       new_songdata^.instr_names[temp] := Copy(new_songdata^.instr_names[temp],1,9)+
@@ -114,6 +113,8 @@ begin
       new_songdata^.instr_data[temp].fine_tune := old_songdata^.instr_data[temp].fine_tune;
       new_songdata^.instr_data[temp].perc_voice := 0;
     end;
+
+  _dbg_leave; //EXIT //import_old_instruments
 end;
 
 function count_instruments: Byte;
@@ -122,16 +123,16 @@ var
   result: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:count_instruments';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'count_instruments');
+
   result := 255;
   While (result > 0) and
         Empty(temp_songdata.instr_data[result],INSTRUMENT_SIZE) and
         (CutStr(Copy(temp_songdata.instr_names[result],10,32)) = '') do
     Dec(result);
   count_instruments := result;
+
+  _dbg_leave; //EXIT //count_instruments
 end;
 
 function count_macros: Byte;
@@ -156,10 +157,8 @@ var
   free_flag: Boolean;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:get_free_arpeggio_table_idx';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'get_free_arpeggio_table_idx');
+
   result := 0;
   free_flag := FALSE;
 
@@ -182,6 +181,8 @@ begin
     until free_flag or (result = 0);
 
   get_free_arpeggio_table_idx := result;
+
+  _dbg_leave; //EXIT //get_free_arpeggio_table_idx
 end;
 
 function get_free_vibrato_table_idx(data: tVIBRATO_TABLE): Byte;
@@ -191,10 +192,8 @@ var
   free_flag: Boolean;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:get_free_vibrato_table_idx';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'get_free_vibrato_table_idx');
+
   result := 0;
   free_flag := FALSE;
 
@@ -217,6 +216,8 @@ begin
     until free_flag or (result = 0);
 
   get_free_vibrato_table_idx := result;
+
+  _dbg_leave; //EXIT //get_free_vibrato_table_idx
 end;
 
 function _gfx_bar_str(value: Byte; neg: Boolean): String;
@@ -353,10 +354,8 @@ var
   old_keys: array[1..3] of Word;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:a2b_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2b_file_loader');
+
   progress_num_steps := 0;
   progress_step := 0;
  {$i-}
@@ -369,7 +368,7 @@ begin
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2B LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2b_file_loader
     end;
 
   temp_songdata := songdata;
@@ -380,7 +379,7 @@ begin
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2B LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2b_file_loader
     end;
 
   If NOT (header.ffver in [1..FFVER_A2B]) then
@@ -389,7 +388,7 @@ begin
       Dialog('UNKNOWN FiLE FORMAT VERSiON$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2B LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2b_file_loader
     end;
 
   init_old_songdata;
@@ -403,7 +402,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2B LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2b_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -416,7 +415,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2B LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2b_file_loader
         end;
 
       Case header.ffver of
@@ -441,7 +440,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2B LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2b_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -454,7 +453,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2B LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2b_file_loader
         end;
 
       Case header.ffver of
@@ -476,7 +475,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2B LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2b_file_loader
         end;
 
       FillChar(buf1,SizeOf(buf1),0);
@@ -487,7 +486,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2B LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2b_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -500,7 +499,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2B LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2b_file_loader
         end;
 
       For temp := 1 to 255 do
@@ -523,7 +522,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2B LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2b_file_loader
         end;
 
       FillChar(buf1,SizeOf(buf1),0);
@@ -534,7 +533,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2B LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2b_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -547,7 +546,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2B LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2b_file_loader
         end;
 
       For temp := 1 to 255 do
@@ -574,7 +573,7 @@ begin
       songdata.instr_names := temp_songdata.instr_names;
       songdata.instr_data := temp_songdata.instr_data;
       load_flag := 1;
-      EXIT;
+      _dbg_leave; EXIT; //a2b_file_loader
     end;
 
   // init 4OP flags
@@ -781,6 +780,8 @@ begin
       load_flag_alt := BYTE_NULL;
     end;
   keyboard_reset_buffer;
+
+  _dbg_leave; //EXIT //a2b_file_loader
 end;
 
 procedure _macro_preview_refresh;
@@ -876,10 +877,8 @@ begin
 end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:_macro_preview_refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_macro_preview_refresh');
+
   // arpeggio preview
   ShowStr(centered_frame_vdest,xstart_arp+15,ystart_arp,
           #253,
@@ -977,6 +976,8 @@ begin
     else ShowVStr(centered_frame_vdest,xstart_vib+15+temp,ystart_vib+1,
                   ExpStrR('',6,' '),
                   macro_background+macro_text);
+
+  _dbg_leave; //EXIT //_macro_preview_refresh
 end;
 
 procedure a2w_macro_lister_external_proc;
@@ -990,10 +991,8 @@ var
   temps: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:a2w_macro_lister_external_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2w_macro_lister_external_proc');
+
   temps := Copy(mn_environment.curr_item,2,2);
   idx := Str2num(temps,16);
   If (idx = 0) then idx := 1;
@@ -1039,7 +1038,7 @@ begin
     kESC:    begin
                temp_songdata.instr_macros[current_inst].arpeggio_table := songdata.instr_macros[current_inst].arpeggio_table;
                temp_songdata.instr_macros[current_inst].vibrato_table := songdata.instr_macros[current_inst].vibrato_table;
-               EXIT;
+               _dbg_leave; EXIT; //a2w_macro_lister_external_proc
              end;
 
     kENTER:  begin
@@ -1047,7 +1046,7 @@ begin
                  songdata.instr_macros[current_inst].arpeggio_table := 0;
                If NOT vib_tab_selected and (temp_songdata.instr_macros[current_inst].vibrato_table = 0) then
                  songdata.instr_macros[current_inst].vibrato_table := 0;
-               EXIT;
+               _dbg_leave; EXIT; //a2w_macro_lister_external_proc
              end;
     kLEFT,
     kShLEFT: If shift_pressed then
@@ -1260,6 +1259,8 @@ begin
   _macro_preview_refresh;
   mn_environment.curr_pos := current_inst;
   a2w_macro_lister_external_proc_callback;
+
+  _dbg_leave; //EXIT //a2w_macro_lister_external_proc
 end;
 
 const
@@ -1566,10 +1567,8 @@ var
   dummy_str: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:fmreg_page_refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'fmreg_page_refresh');
+
   attr := LO(fmreg_def_attr(page AND $0fff));
   fmreg_str := _fmreg_str(page AND $0fff);
   fmreg_str2 := fmreg_str;
@@ -1596,35 +1595,37 @@ begin
             _str2(temps,31+window_xsize-82-_fmreg_add_prev_size)+'~',
             macro_background+macro_text,
             attr,
-            macro_background+macro_text_dis)
+            macro_background+macro_text_dis);
+
+  _dbg_leave; //EXIT //fmreg_page_refresh
 end;
 
 procedure _scroll_cur_left;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:_scroll_cur_left';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_scroll_cur_left');
+
   Repeat
     If (fmreg_cursor_pos > 1) then Dec(fmreg_cursor_pos)
     else Dec(fmreg_left_margin);
   until (fmreg_str[PRED(fmreg_left_margin+fmreg_cursor_pos-1)] = ' ') or
         (fmreg_left_margin+fmreg_cursor_pos-1 = 1);
   fmreg_cursor_pos := pos5[fmreg_hpos]-fmreg_left_margin+1;
+
+  _dbg_leave; //EXIT //_scroll_cur_left
 end;
 
 procedure _scroll_cur_right;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:_scroll_cur_right';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_scroll_cur_right');
+
   Repeat
     If (fmreg_cursor_pos < 31+window_xsize-82-_fmreg_add_prev_size) then Inc(fmreg_cursor_pos)
     else Inc(fmreg_left_margin);
   until (fmreg_str[SUCC(fmreg_left_margin+fmreg_cursor_pos-1)] = ' ') or
         (fmreg_left_margin+fmreg_cursor_pos-1 = 57);
   fmreg_cursor_pos := pos5[fmreg_hpos]-fmreg_left_margin+1;
+
+  _dbg_leave; //EXIT //_scroll_cur_right
 end;
 
 procedure _dec_fmreg_hpos;
@@ -1634,10 +1635,8 @@ var
   new_hpos_idx: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:_dec_fmreg_hpos';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_dec_fmreg_hpos');
+
   old_hpos_idx := pos5vw[fmreg_hpos];
   Repeat
     Dec(fmreg_hpos);
@@ -1650,6 +1649,8 @@ begin
         Dec(fmreg_hpos);
         _scroll_cur_left;
       end;
+
+  _dbg_leave; //EXIT //_dec_fmreg_hpos
 end;
 
 procedure _inc_fmreg_hpos;
@@ -1659,16 +1660,16 @@ var
   new_hpos_idx: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:_inc_fmreg_hpos';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_inc_fmreg_hpos');
+
   old_hpos_idx := pos5vw[fmreg_hpos];
   Repeat
     Inc(fmreg_hpos);
     new_hpos_idx := pos5vw[fmreg_hpos];
     _scroll_cur_right;
   until (fmreg_hpos = 35-1) or (old_hpos_idx <> new_hpos_idx);
+
+  _dbg_leave; //EXIT //_inc_fmreg_hpos
 end;
 
 function _fmreg_param(page,fmreg_hpos: Byte): Integer;
@@ -1716,10 +1717,8 @@ var
   d_factor: Real;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:_fmreg_macro_preview_refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_fmreg_macro_preview_refresh');
+
   ShowStr(centered_frame_vdest,xstart+10+(_fmreg_add_prev_size DIV 2),ystart,
           #253,
           macro_background+macro_topic2);
@@ -1824,6 +1823,8 @@ begin
         ShowVStr(centered_frame_vdest,xstart+10+temp+(_fmreg_add_prev_size DIV 2),ystart+1,
                  ExpStrL('',6,' '),
                  macro_background+macro_text);
+
+  _dbg_leave; //EXIT //_fmreg_macro_preview_refresh
 end;
 
 procedure a2w_lister_external_proc;
@@ -1835,10 +1836,8 @@ var
   attr: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:a2w_lister_external_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2w_lister_external_proc');
+
   Case mn_environment.keystroke of
     kUP:     If shift_pressed then
                If (fmreg_vpos > 1) then Dec(fmreg_vpos)
@@ -2035,6 +2034,8 @@ begin
       fmreg_page_refresh(xstart+44+_fmreg_add_prev_size,ystart+window_ysize-10+1+idx,fmreg_page+idx-1);
     end;
   a2w_lister_external_proc_callback;
+
+  _dbg_leave; //EXIT //a2w_lister_external_proc
 end;
 
 procedure a2w_file_loader(loadFromFile: Boolean; loadMacros: Boolean; bankSelector: Boolean;
@@ -2228,10 +2229,8 @@ end;
 label _jmp1,_jmp1e,_jmp2,_jmp2e,_end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:a2w_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2w_file_loader');
+
   arpvib_arpeggio_table_bak := arpvib_arpeggio_table;
   arpvib_vibrato_table_bak := arpvib_vibrato_table;
   songdata_bak := songdata;
@@ -2283,7 +2282,7 @@ begin
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2W LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2w_file_loader
     end;
 
   FillChar(buf1,SizeOf(buf1),0);
@@ -2295,7 +2294,7 @@ begin
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2W LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2w_file_loader
     end;
 
   If NOT (header.ffver in [1..FFVER_A2W]) then
@@ -2304,7 +2303,7 @@ begin
       Dialog('UNKNOWN FiLE FORMAT VERSiON$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2W LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2w_file_loader
     end;
 
   If (header.ffver = 1) then
@@ -2317,7 +2316,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -2328,7 +2327,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2339,7 +2338,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2352,7 +2351,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       SeekF(f,SizeOf(header2));
@@ -2362,7 +2361,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       BlockReadF(f,buf1,header2.b0len,temp);
@@ -2372,7 +2371,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       For temp := 1 to 255 do
@@ -2391,7 +2390,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       APACK_decompress(buf1,temp_songdata.macro_table);
@@ -2408,7 +2407,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2419,7 +2418,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2430,7 +2429,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2444,7 +2443,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       SeekF(f,SizeOf(header));
@@ -2454,7 +2453,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       BlockReadF(f,buf1,header.b0len,temp);
@@ -2464,7 +2463,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       For temp := 1 to 255 do
@@ -2483,7 +2482,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       APACK_decompress(buf1,temp_songdata.macro_table);
@@ -2494,7 +2493,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       APACK_decompress(buf1,temp_songdata.dis_fmreg_col);
@@ -2510,7 +2509,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2521,7 +2520,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2532,7 +2531,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2546,7 +2545,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       SeekF(f,SizeOf(header));
@@ -2556,7 +2555,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       BlockReadF(f,buf1,header.b0len,temp);
@@ -2566,7 +2565,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       For temp := 1 to 255 do
@@ -2593,7 +2592,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       LZH_decompress(buf1,temp_songdata.macro_table,header.b1len);
@@ -2604,7 +2603,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2W LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2w_file_loader
         end;
 
       LZH_decompress(buf1,temp_songdata.dis_fmreg_col,header.b2len);
@@ -3435,6 +3434,8 @@ _end:
 {$IFDEF GO32V2}
   keyboard_reset_buffer_alt;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //a2w_file_loader
 end;
 
 type
@@ -3491,10 +3492,8 @@ var
 
 procedure import_instrument_from_data_record;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:import_instrument_from_data_record';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'import_instrument_from_data_record');
+
   FillChar(temp_instrument,SizeOf(temp_instrument),0);
   With temp_instrument.fm_data do
     begin
@@ -3549,6 +3548,8 @@ begin
 
   If (data_record.voice_num in [6..10]) then
     temp_instrument.perc_voice := data_record.voice_num-5;
+
+  _dbg_leave; //EXIT //import_instrument_from_data_record
 end;
 
 procedure bnk_file_loader_alt(instr: Word);
@@ -3559,10 +3560,8 @@ var
   temp: Longint;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:bnk_file_loader_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'bnk_file_loader_alt');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -3570,20 +3569,20 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //bnk_file_loader_alt
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
   If (temp <> SizeOf(header)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //bnk_file_loader_alt
     end;
 
   If NOT ((header.fver_major = 1) and (header.fver_minor = 0)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //bnk_file_loader_alt
     end;
 
   If (instr > max(header.total_entries,MAX_TIMBRES)) or
@@ -3591,40 +3590,42 @@ begin
      (header.total_entries < header.entries_used) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //bnk_file_loader_alt
     end;
 
   SeekF(f,header.name_offset+PRED(instr)*SizeOf(name_record));
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //bnk_file_loader_alt
     end;
 
   BlockReadF(f,name_record,SizeOf(name_record),temp);
   If (temp <> SizeOf(name_record)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //bnk_file_loader_alt
     end;
 
   SeekF(f,header.data_offset+name_record.data_index*SizeOf(data_record));
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //bnk_file_loader_alt
     end;
 
   BlockReadF(f,data_record,SizeOf(data_record),temp);
   If (temp <> SizeOf(data_record)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //bnk_file_loader_alt
     end;
 
   import_instrument_from_data_record;
   CloseF(f);
   load_flag_alt := 1;
+
+  _dbg_leave; //EXIT //bnk_file_loader_alt
 end;
 
 type
@@ -3653,10 +3654,8 @@ var
   instrument_data: tFIN_DATA;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:fib_file_loader_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'fib_file_loader_alt');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -3664,7 +3663,7 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //fib_file_loader_alt
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -3672,33 +3671,43 @@ begin
      (header.ident <> id) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //fib_file_loader_alt
     end;
 
   SeekF(f,SizeOf(header)+header.nmins*SizeOf(instrument_data));
-  If (IOresult <> 0) then EXIT;
+  If (IOresult <> 0) then
+    begin
+      CloseF(f);
+      _dbg_leave; EXIT; //fib_file_loader_alt
+    end;
 
   BlockReadF(f,ident,SizeOf(ident),temp);
   If (temp <> SizeOf(ident)) or
      (ident <> id) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //fib_file_loader_alt
     end;
 
   SeekF(f,SizeOf(header)+PRED(instr)*SizeOf(instrument_data));
-  If (IOresult <> 0) then EXIT;
+  If (IOresult <> 0) then
+    begin
+      CloseF(f);
+      _dbg_leave; EXIT; //fib_file_loader_alt
+    end;
 
   BlockReadF(f,instrument_data,SizeOf(instrument_data),temp);
   If (temp <> SizeOf(instrument_data)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //fib_file_loader_alt
     end;
 
   import_standard_instrument_alt(instrument_data.idata);
   CloseF(f);
   load_flag_alt := 1;
+
+  _dbg_leave; //EXIT //fib_file_loader_alt
 end;
 
 var
@@ -3707,10 +3716,8 @@ var
 
 procedure import_sbi_instrument_alt(var data);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:import_sbi_instrument_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'import_sbi_instrument_alt');
+
   FillChar(temp_instrument,SizeOf(temp_instrument),0);
   With temp_instrument do
     begin
@@ -3729,6 +3736,8 @@ begin
 
   temp_instrument.panning := 0;
   temp_instrument.fine_tune := 0;
+
+  _dbg_leave; //EXIT //import_sbi_instrument_alt
 end;
 
 procedure ibk_file_loader_alt(instr: Word);
@@ -3746,10 +3755,8 @@ var
                    end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:ibk_file_loader_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'ibk_file_loader_alt');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -3757,7 +3764,7 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //ibk_file_loader_alt
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -3765,22 +3772,28 @@ begin
      (header <> id) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //ibk_file_loader_alt
     end;
 
   SeekF(f,$004+PRED(instr)*SizeOf(instrument_data));
-  If (IOresult <> 0) then EXIT;
+  If (IOresult <> 0) then
+    begin
+      CloseF(f);
+      _dbg_leave; EXIT; //ibk_file_loader_alt
+    end;
 
   BlockReadF(f,instrument_data,SizeOf(instrument_data),temp);
   If (temp <> SizeOf(instrument_data)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //ibk_file_loader_alt
     end;
 
   import_sbi_instrument_alt(instrument_data);
   CloseF(f);
   load_flag_alt := 1;
+
+  _dbg_leave; //EXIT //ibk_file_loader_alt
 end;
 
 procedure bnk_file_loader;
@@ -3802,23 +3815,21 @@ var
 
 procedure _restore;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:bnk_file_loader:_restore';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'bnk_file_loader._restore');
+
   move_to_screen_data := ptr_screen_backup;
   move_to_screen_area[1] := xstart;
   move_to_screen_area[2] := ystart;
   move_to_screen_area[3] := xstart+43+2+1;
   move_to_screen_area[4] := ystart+3+1;
   move2screen;
+
+  _dbg_leave; //EXIT //bnk_file_loader._restore
 end;
 
 begin { bnk_file_loader }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:bnk_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'bnk_file_loader');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -3829,7 +3840,7 @@ begin { bnk_file_loader }
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' BNK LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //bnk_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -3839,7 +3850,7 @@ begin { bnk_file_loader }
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' BNK LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //bnk_file_loader
     end;
 
   If NOT ((header.fver_major = 1) and (header.fver_minor = 0)) then
@@ -3848,7 +3859,7 @@ begin { bnk_file_loader }
       Dialog('UNKNOWN FiLE FORMAT VERSiON$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' BNK LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //bnk_file_loader
     end;
 
   If (header.signature <> bnk_id) or
@@ -3858,7 +3869,7 @@ begin { bnk_file_loader }
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' BNK LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //bnk_file_loader
     end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
@@ -3917,7 +3928,7 @@ begin { bnk_file_loader }
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' BNK LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //bnk_file_loader
         end;
 
       BlockReadF(f,name_record,SizeOf(name_record),temp);
@@ -3928,7 +3939,7 @@ begin { bnk_file_loader }
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' BNK LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //bnk_file_loader
         end;
 
       SeekF(f,header.data_offset+name_record.data_index*SizeOf(data_record));
@@ -3939,7 +3950,7 @@ begin { bnk_file_loader }
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' BNK LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //bnk_file_loader
         end;
 
       BlockReadF(f,data_record,SizeOf(data_record),temp);
@@ -3950,7 +3961,7 @@ begin { bnk_file_loader }
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' BNK LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //bnk_file_loader
         end;
 
       import_instrument_from_data_record;
@@ -4023,7 +4034,10 @@ begin { bnk_file_loader }
   SDL_Delay(200);
   {$ENDIF}
   _restore;
-  If (nm_valid = 0) then EXIT;
+  If (nm_valid = 0) then
+    begin
+      _dbg_leave; EXIT; //bnk_file_loader
+    end;
 
   If (index = header.total_entries) and
      (bnk_skip = 0) then
@@ -4067,6 +4081,8 @@ begin { bnk_file_loader }
             Copy(bnk_queue[3+index],5,8);
         end;
     end;
+
+  _dbg_leave; //EXIT //bnk_file_loader
 end;
 
 procedure fib_file_loader;
@@ -4090,23 +4106,21 @@ var
 
 procedure _restore;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:fib_file_loader:_restore';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'fib_file_loader._restore');
+
   move_to_screen_data := ptr_screen_backup;
   move_to_screen_area[1] := xstart;
   move_to_screen_area[2] := ystart;
   move_to_screen_area[3] := xstart+43+2+1;
   move_to_screen_area[4] := ystart+3+1;
   move2screen;
+
+_dbg_leave; //EXIT //fib_file_loader._restore
 end;
 
 begin { fib_file_loader }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:fib_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'fib_file_loader');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -4117,7 +4131,7 @@ begin { fib_file_loader }
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' FiB LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //fib_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -4128,7 +4142,7 @@ begin { fib_file_loader }
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' FiB LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //fib_file_loader
     end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
@@ -4187,7 +4201,7 @@ begin { fib_file_loader }
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FiB LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //fib_file_loader
         end;
 
       import_standard_instrument_alt(instrument_data.idata);
@@ -4246,7 +4260,7 @@ begin { fib_file_loader }
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' FiB LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //fib_file_loader
     end;
 
   BlockReadF(f,ident,SizeOf(ident),temp);
@@ -4258,7 +4272,7 @@ begin { fib_file_loader }
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' FiB LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //fib_file_loader
     end;
 
   CloseF(f);
@@ -4271,7 +4285,10 @@ begin { fib_file_loader }
   {$ENDIF}
   _restore;
 
-  If (nm_valid = 0) then EXIT;
+  If (nm_valid = 0) then
+    begin
+      _dbg_leave; EXIT; //fib_file_loader
+    end;
   If (index = header.nmins) and (bnk_skip = 0) then
     mn_environment.context := '~[~'+Num2str(nm_valid,10)+'~/'+
                                     Num2str(index,10)+']~'
@@ -4318,6 +4335,8 @@ begin { fib_file_loader }
               Copy(bnk_queue[3+index],5,8)
         end;
     end;
+
+  _dbg_leave; //EXIT //fib_file_loader
 end;
 
 procedure ibk_file_loader;
@@ -4344,23 +4363,21 @@ var
 
 procedure _restore;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:ibk_file_loader:_restore';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'ibk_file_loader._restore');
+
   move_to_screen_data := ptr_screen_backup;
   move_to_screen_area[1] := xstart;
   move_to_screen_area[2] := ystart;
   move_to_screen_area[3] := xstart+43+2+1;
   move_to_screen_area[4] := ystart+3+1;
   move2screen;
+
+  _dbg_leave; //EXIT //ibk_file_loader._restore
 end;
 
 begin { ibk_file_loader }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:ibk_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'ibk_file_loader');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -4371,7 +4388,7 @@ begin { ibk_file_loader }
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' iBK LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //ibk_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -4382,7 +4399,7 @@ begin { ibk_file_loader }
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' iBK LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //ibk_file_loader
     end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
@@ -4441,7 +4458,7 @@ begin { ibk_file_loader }
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' iBK LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //ibk_file_loader
         end;
 
       BlockReadF(f,instrument_data,SizeOf(instrument_data),temp);
@@ -4452,7 +4469,7 @@ begin { ibk_file_loader }
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' iBK LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //ibk_file_loader
         end;
 
       SeekF(f,$804+PRED(index)*SizeOf(instrument_name));
@@ -4463,7 +4480,7 @@ begin { ibk_file_loader }
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' iBK LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //ibk_file_loader
         end;
 
       BlockReadF(f,instrument_name,SizeOf(instrument_name),temp);
@@ -4474,7 +4491,7 @@ begin { ibk_file_loader }
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' iBK LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //ibk_file_loader
         end;
 
       import_sbi_instrument_alt(instrument_data);
@@ -4533,7 +4550,10 @@ begin { ibk_file_loader }
   {$ENDIF}
   _restore;
 
-  If (nm_valid = 0) then EXIT;
+  If (nm_valid = 0) then
+    begin
+      _dbg_leave; EXIT; //ibk_file_loader
+    end;
   If (index = 128) and (ibk_skip = 0) then
     mn_environment.context := '~[~'+Num2str(nm_valid,10)+'~/'+
                                     Num2str(index,10)+']~'
@@ -4575,6 +4595,8 @@ begin { ibk_file_loader }
             Copy(ibk_queue[3+index],5,8);
         end;
     end;
+
+  _dbg_leave; //EXIT //ibk_file_loader
 end;
 
 procedure a2b_lister_external_proc_callback;
@@ -4585,10 +4607,8 @@ var
   curr_inst: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:a2b_lister_external_proc_callback';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2b_lister_external_proc_callback');
+
   If (get_4op_to_test_temp <> 0) then
     begin
       test_ins1 := LO(get_4op_to_test_temp);
@@ -4597,7 +4617,10 @@ begin
   else
     begin
       curr_inst := mn_environment.curr_pos;
-      If NOT (curr_inst in [1..255]) then EXIT;
+      If NOT (curr_inst in [1..255]) then
+        begin
+          _dbg_leave; EXIT; //a2b_lister_external_proc_callback
+        end;
       test_ins1 := curr_inst;
       test_ins2 := 0;
     end;
@@ -4606,6 +4629,8 @@ begin
                         mn_environment.keystroke,
                         FALSE,TRUE,FALSE, // test instrument from bank, without any macros
                         test_ins1,test_ins2);
+
+  _dbg_leave; //EXIT //a2b_lister_external_proc_callback
 end;
 
 procedure a2w_lister_external_proc_callback;
@@ -4616,10 +4641,8 @@ var
   curr_inst: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:a2w_lister_external_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2w_lister_external_proc');
+
   If (get_4op_to_test_temp <> 0) then
     begin
       test_ins1 := LO(get_4op_to_test_temp);
@@ -4628,7 +4651,10 @@ begin
   else
     begin
       curr_inst := mn_environment.curr_pos;
-      If NOT (curr_inst in [1..255]) then EXIT;
+      If NOT (curr_inst in [1..255]) then
+        begin
+          _dbg_leave; EXIT; //a2w_lister_external_proc
+        end;
       test_ins1 := curr_inst;
       test_ins2 := 0;
     end;
@@ -4637,6 +4663,8 @@ begin
                         mn_environment.keystroke,
                         TRUE,TRUE,FALSE,      // test instrument from bank, with chosen FM-data and macro
                         test_ins1,test_ins2); // and current Arp./Vib. macro tables
+
+  _dbg_leave; //EXIT //a2w_lister_external_proc
 end;
 
 procedure a2w_macro_lister_external_proc_callback;
@@ -4647,10 +4675,8 @@ var
   curr_inst: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:a2w_macro_lister_external_proc_callback';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2w_macro_lister_external_proc_callback');
+
   If (get_4op_to_test_temp <> 0) then
     begin
       test_ins1 := LO(get_4op_to_test_temp);
@@ -4659,7 +4685,10 @@ begin
   else
     begin
       curr_inst := mn_environment.curr_pos;
-      If NOT (curr_inst in [1..255]) then EXIT;
+      If NOT (curr_inst in [1..255]) then
+        begin
+          _dbg_leave; EXIT; //a2w_macro_lister_external_proc_callback
+        end;
       test_ins1 := curr_inst;
       test_ins2 := 0;
     end;
@@ -4668,45 +4697,47 @@ begin
                         mn_environment.keystroke,
                         FALSE,FALSE,TRUE,     // test current instr, with current FM-data and macro
                         test_ins1,test_ins2); // and chosen Arp./Vib. macro tables from bank
+
+  _dbg_leave; //EXIT //a2w_macro_lister_external_proc_callback
 end;
 
 procedure bnk_lister_external_proc;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:bnk_lister_external_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'bnk_lister_external_proc');
+
   mn_environment.curr_item :=
     Num2str(mn_environment.curr_pos+bnk_skip,10)+'.bnk';
   If NOT shift_pressed and NOT alt_pressed and NOT ctrl_pressed then
     test_instrument_alt2(count_channel(pattern_hpos),
                          mn_environment.keystroke);
+
+  _dbg_leave; //EXIT //bnk_lister_external_proc
 end;
 
 procedure fib_lister_external_proc;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:fib_lister_external_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'fib_lister_external_proc');
+
   mn_environment.curr_item :=
     Num2str(mn_environment.curr_pos+bnk_skip,10)+'.fib';
   If NOT shift_pressed and NOT alt_pressed and NOT ctrl_pressed then
     test_instrument_alt2(count_channel(pattern_hpos),
                          mn_environment.keystroke);
+
+  _dbg_leave; //EXIT //fib_lister_external_proc
 end;
 
 procedure ibk_lister_external_proc;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT5.PAS:ibk_lister_external_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'ibk_lister_external_proc');
+
   mn_environment.curr_item :=
     Num2str(mn_environment.curr_pos+ibk_skip,10)+'.ibk';
   If NOT shift_pressed and NOT alt_pressed and NOT ctrl_pressed then
     test_instrument_alt2(count_channel(pattern_hpos),
                          mn_environment.keystroke);
+
+  _dbg_leave; //EXIT //ibk_lister_external_proc
 end;
 
 end.

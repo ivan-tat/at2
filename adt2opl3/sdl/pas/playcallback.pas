@@ -59,7 +59,7 @@ begin
   If (play_status = isStopped) then
     begin
       wav_buffer_len := 0;
-      EXIT;
+      EXIT; //playcallback
     end;
 
   // calculate cache buffer size
@@ -89,4 +89,6 @@ begin
           Move(opl3_sample_buffer_chan_ptr[idx]^,wav_buffer[idx][wav_buffer_len],len);
         Inc(wav_buffer_len,len);
       end;
+
+  //EXIT //playcallback
 end;

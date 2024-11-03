@@ -99,6 +99,7 @@ procedure show_progress(value,refresh_dif: Longint); overload;
 implementation
 
 uses
+  debug,
 {$IFNDEF UNIX}
   CRT,
 {$ENDIF}
@@ -169,10 +170,8 @@ var
                    play_status: tPLAY_STATUS;
                  end;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:transpose_custom_area';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'transpose_custom_area');
+
   status_backup.replay_forbidden := replay_forbidden;
   status_backup.play_status := play_status;
   replay_forbidden := TRUE;
@@ -633,14 +632,14 @@ begin
   PATTERN_position_preview(BYTE_NULL,BYTE_NULL,BYTE_NULL,BYTE_NULL);
   replay_forbidden := status_backup.replay_forbidden;
   play_status := status_backup.play_status;
+
+  _dbg_leave; //EXIT //transpose_custom_area
 end;
 
 procedure transpose__control_proc;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:transpose__control_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'transpose__control_proc');
+
   If (mn_environment.curr_pos in [1..8]) then
     begin
       If (mn_environment.curr_pos in [1..4]) then
@@ -712,6 +711,8 @@ begin
 
   mn_environment.do_refresh := TRUE;
   mn_environment.refresh;
+
+  _dbg_leave; //EXIT //transpose__control_proc
 end;
 
 procedure TRANSPOSE;
@@ -725,10 +726,8 @@ const
   factor: array[1..17] of Byte = (1,12,1,12,1,12,1,12,BYTE_NULL,
                                   1,12,1,12,1,12,1,12);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:TRANSPOSE';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'TRANSPOSE');
+
   old_text_attr := mn_setting.text_attr;
   mn_setting.text_attr := dialog_background+dialog_text;
   mn_setting.cycle_moves := TRUE;
@@ -848,6 +847,8 @@ begin
   mn_environment.context := '';
   mn_environment.ext_proc := NIL;
   mn_setting.text_attr := old_text_attr;
+
+  _dbg_leave; //EXIT //TRANSPOSE
 end;
 
 function cstr2str(str: String): String;
@@ -869,10 +870,8 @@ var
 
 procedure _remap_refresh_proc;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:_remap_refresh_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_remap_refresh_proc');
+
   If (_remap_pos = 1) then
     ShowStr(centered_frame_vdest,_remap_xstart+8,_remap_ystart+1,'CURRENT iNSTRUMENT ('+
             byte2hex(MenuLib1_mn_environment.curr_pos)+')',
@@ -933,14 +932,14 @@ begin
             else
               ShowStr(centered_frame_vdest,_remap_xstart+46,_remap_ystart+_remap_inst_page_len+4,' BLOCK ',
                       dialog_background+dialog_item_dis);
+
+  _dbg_leave; //EXIT //_remap_refresh_proc
 end;
 
 procedure REMAP_instr_control_proc;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:REMAP_instr_control_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'REMAP_instr_control_proc');
+
   _remap_refresh_proc;
   If (remap_mtype = 1) then
     INSTRUMENT_test(MenuLib1_mn_environment.curr_pos,BYTE_NULL,count_channel(pattern_hpos),
@@ -948,6 +947,8 @@ begin
   else
     INSTRUMENT_test(MenuLib2_mn_environment.curr_pos,BYTE_NULL,count_channel(pattern_hpos),
                     MenuLib2_mn_environment.keystroke,TRUE);
+
+  _dbg_leave; //EXIT //REMAP_instr_control_proc
 end;
 
 procedure REMAP;
@@ -967,10 +968,7 @@ var
 
 procedure reset_screen;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:REMAP:reset_screen';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'REMAP.reset_screen');
 
   MenuLib1_mn_environment.ext_proc := NIL;
   MenuLib2_mn_environment.ext_proc := NIL;
@@ -981,6 +979,8 @@ begin
   move_to_screen_area[3] := _remap_xstart+71+2;
   move_to_screen_area[4] := _remap_ystart+_remap_inst_page_len+5+1;
   move2screen;
+
+  _dbg_leave; //EXIT //REMAP.reset_screen
 end;
 
 procedure override_frame(dest: tSCREEN_MEM_PTR; x,y: Byte; frame: String; attr: Byte);
@@ -1056,10 +1056,8 @@ var
 label _jmp1;
 
 begin { REMAP }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:REMAP';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'REMAP');
+
   If (remap_selection = 4) and NOT marking then remap_selection := 1;
   _remap_pos := 1;
   _remap_inst_page_len := MAX_PATTERN_ROWS;
@@ -1069,7 +1067,10 @@ begin { REMAP }
   MenuLib2_mn_setting.menu_attr := dialog_background+dialog_text;
 
 _jmp1:
-  If _force_program_quit then EXIT;
+  If _force_program_quit then
+    begin
+      _dbg_leave; EXIT; //REMAP
+    end;
 
   For temp := 1 to 255 do
     temp_instr_names[temp] := ' '+Copy(cstr2str(songdata.instr_names[temp]),2,31);
@@ -1331,6 +1332,8 @@ _jmp1:
 
   PATTERN_ORDER_page_refresh(pattord_page);
   PATTERN_page_refresh(pattern_page);
+
+  _dbg_leave; //EXIT //REMAP
 end;
 
 const
@@ -1352,10 +1355,7 @@ var
   attr: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:_rearrange_refresh_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_rearrange_refresh_proc');
 
   If (_rearrange_pos <> 1) then attr := dialog_sel_itm_bck+dialog_sel_itm
   else attr := dialog_hi_text SHL 4;
@@ -1391,6 +1391,8 @@ begin
        else
          ShowStr(centered_frame_vdest,_rearrange_xstart+13,_rearrange_ystart+_rearrange_nm_tracks+2,' SONG ',
                  dialog_background+dialog_text);
+
+  _dbg_leave; //EXIT //_rearrange_refresh_proc
 end;
 
 procedure REARRANGE;
@@ -1411,25 +1413,23 @@ var
 
 procedure reset_screen;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:REARRANGE:reset_screen';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'REARRANGE.reset_screen');
+
   move_to_screen_data := ptr_screen_backup;
   move_to_screen_area[1] := _rearrange_xstart;
   move_to_screen_area[2] := _rearrange_ystart;
   move_to_screen_area[3] := _rearrange_xstart+20+2;
   move_to_screen_area[4] := _rearrange_ystart+_rearrange_nm_tracks+3+1;
   move2screen;
+
+  _dbg_leave; //EXIT //REARRANGE.reset_screen
 end;
 
 label _jmp1;
 
 begin { REARRANGE }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:REARRANGE';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'REARRANGE');
+
   If (_rearrange_track_pos > songdata.nm_tracks) then _rearrange_track_pos := 1;
   If (rearrange_selection = 4) and NOT marking then rearrange_selection := 1;
   _rearrange_pos := 1;
@@ -1455,7 +1455,10 @@ begin { REARRANGE }
     _rearrange_tracklist[temp] := ' '+ExpStrL(Num2str(_rearrange_tracklist_idx[temp],10),2,' ')+' ';
 
 _jmp1:
-  If _force_program_quit then EXIT;
+  If _force_program_quit then
+    begin
+      _dbg_leave; EXIT; //REARRANGE
+    end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
   HideCursor;
@@ -1603,6 +1606,8 @@ _jmp1:
 
   PATTERN_ORDER_page_refresh(pattord_page);
   PATTERN_page_refresh(pattern_page);
+
+  _dbg_leave; //EXIT //REARRANGE
 end;
 
 procedure REPLACE;
@@ -1644,10 +1649,8 @@ var
 
 procedure refresh;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:REPLACE:refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'REPLACE.refresh');
+
   If (pos in [1..11]) then
     ShowStr(centered_frame_vdest,xstart+2,ystart+1,
             'NOTE,iNSTRUMENT,FX N'#249'1/N'#249'2 TO FiND',
@@ -1733,14 +1736,14 @@ begin
             else
               ShowStr(centered_frame_vdest,xstart+30,ystart+9,' BLOCK ',
                       dialog_background+dialog_item_dis);
+
+  _dbg_leave; //EXIT //REPLACE.refresh
 end;
 
 procedure reset_screen;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:REPLACE:reset_screen';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'REPLACE.reset_screen');
+
   HideCursor;
   move_to_screen_data := ptr_screen_backup;
   move_to_screen_area[1] := xstart;
@@ -1748,6 +1751,8 @@ begin
   move_to_screen_area[3] := xstart+38+2;
   move_to_screen_area[4] := ystart+10+1;
   move2screen;
+
+  _dbg_leave; //EXIT //REPLACE.reset_screen
 end;
 
 function _find_note(layout: String; old_note: Byte): BYTE;
@@ -1844,17 +1849,18 @@ var
 label _jmp1;
 
 begin { REPLACE }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:REPLACE';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'REPLACE');
+
   If (replace_selection = 4) and NOT marking then replace_selection := 1;
   pos := min(get_bank_position('?replace_window?pos',-1),1);
   qflag := FALSE;
   _charset[1] := ['A',UpCase(b_note),'C'..'G'];
 
 _jmp1:
-  If _force_program_quit then EXIT;
+  If _force_program_quit then
+    begin
+      _dbg_leave; EXIT; //REPLACE
+    end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
   HideCursor;
@@ -2382,14 +2388,13 @@ _jmp1:
 
   PATTERN_ORDER_page_refresh(pattord_page);
   PATTERN_page_refresh(pattern_page);
+
+  _dbg_leave; //EXIT //REPLACE
 end;
 
 procedure POSITIONS_reset;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:POSITIONS_reset';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'POSITIONS_reset');
 
   pattord_page := 0; pattord_hpos := 1; pattord_vpos := 1;
   instrum_page := 1;
@@ -2401,6 +2406,8 @@ begin
   chan_pos := 1;
   PATTERN_ORDER_page_refresh(0);
   PATTERN_page_refresh(0);
+
+  _dbg_leave; //EXIT //POSITIONS_reset
 end;
 
 const
@@ -2682,10 +2689,8 @@ var
 label _jmp1;
 
 begin { DEBUG_INFO }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:DEBUG_INFO';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'DEBUG_INFO');
+
   _ctrl_alt_flag := ctrl_pressed AND alt_pressed;
   _win_attr[FALSE] := debug_info_bckg+debug_info_border2;
   _win_attr[TRUE] := debug_info_bckg+debug_info_border;
@@ -3518,6 +3523,8 @@ _jmp1:
         no_step_debugging := FALSE;
         If NOT _force_program_quit then GOTO _jmp1;
       end;
+
+  _dbg_leave; //EXIT //DEBUG_INFO
 end;
 
 procedure _show_bpm_callback_LMS;
@@ -3536,10 +3543,8 @@ var
   old_bpm_proc: procedure;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:LINE_MARKING_SETUP';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'LINE_MARKING_SETUP');
+
   old_bpm_proc := _show_bpm_realtime_proc;
   _show_bpm_realtime_proc := _show_bpm_callback_LMS;
   dl_setting.all_enabled := TRUE;
@@ -3549,18 +3554,20 @@ begin
   dl_setting.all_enabled := FALSE;
   _IRQFREQ_update_event := FALSE;
   _show_bpm_realtime_proc := old_bpm_proc;
+
+  _dbg_leave; //EXIT //LINE_MARKING_SETUP
 end;
 
 procedure OCTAVE_CONTROL;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:OCTAVE_CONTROL';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'OCTAVE_CONTROL');
+
   current_octave := Dialog('USE CURSOR KEYS OR DiRECTLY PRESS HOTKEY '+
                            'TO CHANGE OCTAVE$',
                            '~1~$~2~$~3~$~4~$~5~$~6~$~7~$~8~$',
                            ' OCTAVE CONTROL ',current_octave);
+
+  _dbg_leave; //EXIT //OCTAVE_CONTROL
 end;
 
 var
@@ -3871,10 +3878,8 @@ end;
 label _jmp1,_end;
 
 begin { SONG_VARIABLES }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:SONG_VARIABLES';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'SONG_VARIABLES');
+
   songdata_crc := Update32(songdata,SizeOf(songdata),0);
   count_order(temp1);
   count_patterns(temp2);
@@ -3889,7 +3894,10 @@ begin { SONG_VARIABLES }
     end;
 
 _jmp1:
-  If _force_program_quit then EXIT;
+  If _force_program_quit then
+    begin
+      _dbg_leave; EXIT; //SONG_VARIABLES
+    end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
   HideCursor;
@@ -4948,6 +4956,8 @@ _end:
       LINE_MARKING_SETUP;
       GOTO _jmp1;
     end;
+
+  _dbg_leave; //EXIT //SONG_VARIABLES
 end;
 
 procedure NUKE;
@@ -4956,10 +4966,8 @@ var
   temp,temp1,temp2: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:NUKE';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'NUKE');
+
   temp1 := Dialog('SO YOU THiNK iT REALLY SUCKS, DON''T YOU?$'+
                   'WHAT DO YOU WANT TO BE NUKED?$',
                   '~O~RDER$~P~ATTERNS$iNSTR [$~N~AMES$~R~EGS$~M~ACROS$]$ARP/~V~iB$~A~LL$',
@@ -5115,6 +5123,8 @@ begin
         end
       else module_archived := FALSE;
     end;
+
+  _dbg_leave; //EXIT //NUKE
 end;
 
 procedure MESSAGE_BOARD;
@@ -5137,18 +5147,22 @@ var
 label _jmp1;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:MESSAGE_BOARD';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MESSAGE_BOARD');
+
   p_mb := Addr(songdata.reserved_data);
   If Empty(songdata.reserved_data,SizeOf(songdata.reserved_data)) then
     p_mb^.signature := MB_SIGNATURE
-  else If (p_mb^.signature <> MB_SIGNATURE) then EXIT;
+  else If (p_mb^.signature <> MB_SIGNATURE) then
+         begin
+           _dbg_leave; EXIT; //MESSAGE_BOARD
+         end;
  is_environment.insert_mode := TRUE;
 
 _jmp1:
-  If _force_program_quit then EXIT;
+  If _force_program_quit then
+    begin
+      _dbg_leave; EXIT; //MESSAGE_BOARD
+    end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
   HideCursor;
@@ -5448,6 +5462,8 @@ _jmp1:
       HELP('message_board');
       GOTO _jmp1;
     end;
+
+  _dbg_leave; //EXIT //MESSAGE_BOARD
 end;
 
 procedure QUIT_request;
@@ -5456,14 +5472,12 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:QUIT_request';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'QUIT_request');
+
   If _force_program_quit then
     begin
       fkey := kESC;
-      EXIT;
+      _dbg_leave; EXIT; //QUIT_request
     end;
 
   temp := Dialog('...AND YOU WiLL KNOW MY NAME iS THE LORD, WHEN i LAY$'+
@@ -5477,17 +5491,19 @@ begin
       _force_program_quit := TRUE;
     end
   else fkey := kENTER;
+
+  _dbg_leave; //EXIT //QUIT_request
 end;
 
 procedure show_progress(value: Longint);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:show_progress';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'show_progress@1');
+
   If (progress_num_steps = 0) or
      (progress_value = 0) then
-    EXIT;
+    begin
+      _dbg_leave; EXIT; //show_progress@1
+    end;
   If (value <> DWORD_NULL) then
     begin
       If (progress_num_steps = 1) then
@@ -5523,17 +5539,19 @@ begin
          realtime_gfx_poll_proc;
          draw_screen;
        end;
+
+  _dbg_leave; //EXIT //show_progress@1
 end;
 
 procedure show_progress(value,refresh_dif: Longint);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:show_progress';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'show_progress@2');
+
   If (progress_num_steps = 0) or
      (progress_value = 0) then
-    EXIT;
+    begin
+      _dbg_leave; EXIT; //show_progress@2
+    end;
   If (value <> DWORD_NULL) then
     begin
       If (progress_num_steps = 1) then
@@ -5570,6 +5588,8 @@ begin
          realtime_gfx_poll_proc;
          draw_screen;
        end;
+
+  _dbg_leave; //EXIT //show_progress@2
 end;
 
 const
@@ -5593,25 +5613,23 @@ var
 
 procedure _restore;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:FILE_open:_restore';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'FILE_open._restore');
+
   move_to_screen_data := ptr_screen_backup;
   move_to_screen_area[1] := xstart;
   move_to_screen_area[2] := ystart;
   move_to_screen_area[3] := xstart+43+2+1;
   move_to_screen_area[4] := ystart+3+1;
   move2screen;
+
+  _dbg_leave; //EXIT //FILE_open._restore
 end;
 
 label _jmp1;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:FILE_open';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'FILE_open');
+
   flag := BYTE_NULL;
   old_play_status := play_status;
   old_tracing := tracing;
@@ -5625,7 +5643,10 @@ begin
     temp_marks2[index] := songdata.pattern_names[index][1];
 
 _jmp1:
-  If _force_program_quit then EXIT;
+  If _force_program_quit then
+    begin
+      _dbg_leave; EXIT; //FILE_open
+    end;
 
   old_songdata_source := songdata_source;
   If NOT quick_cmd then
@@ -5641,7 +5662,10 @@ _jmp1:
       last_file[mpos] := fs_environment.last_file;
       last_dir[mpos]  := fs_environment.last_dir;
 
-      If (mn_environment.keystroke <> kENTER) then EXIT
+      If (mn_environment.keystroke <> kENTER) then
+        begin
+          _dbg_leave; EXIT; //FILE_open
+        end
       else If (mpos = 1) then songdata_source := fname
            else instdata_source := fname;
     end
@@ -6012,6 +6036,8 @@ _jmp1:
   FillChar(ai_table,SizeOf(ai_table),0);
   no_status_refresh := FALSE;
   FILE_open := flag;
+
+  _dbg_leave; //EXIT //FILE_open
 end;
 
 function _a2m_saver: Byte;
@@ -6038,10 +6064,8 @@ var
 
 procedure _restore;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:_a2m_saver:_restore';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_a2m_saver._restore');
+
   move_to_screen_data := ptr_screen_backup;
   move_to_screen_area[1] := xstart;
   move_to_screen_area[2] := ystart;
@@ -6050,13 +6074,13 @@ begin
   move2screen;
   progress_num_steps := 0;
   progress_value := 0;
+
+  _dbg_leave; //EXIT //_a2m_saver._restore
 end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:_a2m_saver';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_a2m_saver');
+
   _a2m_saver := 0;
   {$i-}
   Assign(f,songdata_source);
@@ -6064,16 +6088,27 @@ begin
   {$i+}
   If (IOresult = 0) and NOT quick_cmd then
     begin
-      If (dl_environment.keystroke = kESC) then EXIT;
+      If (dl_environment.keystroke = kESC) then
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2m_saver
+        end;
         temp := Dialog('FiLE "'+iCASE(NameOnly(songdata_source))+
                        '" ALREADY EXiSTS iN DESTiNATiON DiRECTORY$',
                        '~O~VERWRiTE$~R~ENAME$~C~ANCEL$',' A2M SAVER ',1);
 
       If ((dl_environment.keystroke <> kESC) and (temp = 3)) or
           (dl_environment.keystroke = kESC) then
-        begin CloseF(f); EXIT; end
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2m_saver
+        end
       else If (dl_environment.keystroke <> kESC) and (temp = 2) then
-             begin CloseF(f); _a2m_saver := BYTE_NULL; EXIT; end;
+             begin
+               CloseF(f);
+               _a2m_saver := BYTE_NULL;
+               _dbg_leave; EXIT; //_a2m_saver
+             end;
     end
   else If (IOresult <> 0) then
          begin
@@ -6081,7 +6116,7 @@ begin
            Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
                   'SAViNG STOPPED$',
                   '~O~KAY$',' A2M SAVER ',1);
-           EXIT;
+           _dbg_leave; EXIT; //_a2m_saver
          end;
   {$i-}
   RewriteF(f);
@@ -6092,7 +6127,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2M SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2m_saver
     end;
 
   FillChar(songdata.songname[SUCC(Length(songdata.songname))],
@@ -6138,7 +6173,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2M SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2m_saver
     end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
@@ -6199,7 +6234,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2M SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2m_saver
     end;
 
   header.crc32 := Update32(buf1,header.b0len,header.crc32);
@@ -6214,7 +6249,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2M SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2m_saver
     end;
 
   header.crc32 := Update32(buf1,header.b1len[0],header.crc32);
@@ -6232,7 +6267,7 @@ begin
             Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
                    'SAViNG STOPPED$',
                    '~O~KAY$',' A2M SAVER ',1);
-            EXIT;
+            _dbg_leave; EXIT; //_a2m_saver
           end;
         header.crc32 := Update32(buf1,header.b1len[index],header.crc32);
       end;
@@ -6251,7 +6286,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2M SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2m_saver
     end;
 
   CloseF(f);
@@ -6261,6 +6296,8 @@ begin
   songdata_crc_ord := Update32(songdata.pattern_order,
                                SizeOf(songdata.pattern_order),0);
   module_archived := TRUE;
+
+  _dbg_leave; //EXIT //_a2m_saver
 end;
 
 function _a2t_saver: Byte;
@@ -6299,10 +6336,8 @@ var
 
 procedure _restore;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:_a2t_saver:_restore';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_a2t_saver._restore');
+
   move_to_screen_data := ptr_screen_backup;
   move_to_screen_area[1] := xstart;
   move_to_screen_area[2] := ystart;
@@ -6311,13 +6346,13 @@ begin
   move2screen;
   progress_num_steps := 0;
   progress_value := 0;
+
+  _dbg_leave; //EXIT //_a2t_saver._restore
 end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:_a2t_saver';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_a2t_saver');
+
   _a2t_saver := 0;
   {$i-}
   Assign(f,songdata_source);
@@ -6325,16 +6360,27 @@ begin
   {$i+}
   If (IOresult = 0) and NOT quick_cmd then
     begin
-      If (dl_environment.keystroke = kESC) then EXIT;
+      If (dl_environment.keystroke = kESC) then
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2t_saver
+        end;
         temp := Dialog('FiLE "'+iCASE(NameOnly(songdata_source))+
                        '" ALREADY EXiSTS iN DESTiNATiON DiRECTORY$',
                        '~O~VERWRiTE$~R~ENAME$~C~ANCEL$',' A2T SAVER ',1);
 
       If ((dl_environment.keystroke <> kESC) and (temp = 3)) or
           (dl_environment.keystroke = kESC) then
-        begin CloseF(f); EXIT; end
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2t_saver
+        end
       else If (dl_environment.keystroke <> kESC) and (temp = 2) then
-             begin CloseF(f); _a2t_saver := BYTE_NULL; EXIT; end;
+             begin
+               CloseF(f);
+               _a2t_saver := BYTE_NULL;
+               _dbg_leave; EXIT; //_a2t_saver
+             end;
     end
   else If (IOresult <> 0) then
          begin
@@ -6342,7 +6388,7 @@ begin
            Dialog('ERROR WRiTiNG DATA - DiSK ERROR?'+
                   'SAViNG STOPPED$',
                   '~O~KAY$',' A2T SAVER ',1);
-           EXIT;
+           _dbg_leave; EXIT; //_a2t_saver
          end;
   {$i-}
   RewriteF(f);
@@ -6353,7 +6399,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2T SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2t_saver
     end;
 
   FillChar(header,SizeOf(header),0);
@@ -6388,7 +6434,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2T SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2t_saver
     end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
@@ -6435,7 +6481,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2T SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2t_saver
     end;
 
   header.crc32 := Update32(buf1,header.b0len,header.crc32);
@@ -6456,7 +6502,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2T SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2t_saver
     end;
 
   header.crc32 := Update32(buf1,header.b1len,header.crc32);
@@ -6477,7 +6523,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2T SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2t_saver
     end;
 
   header.crc32 := Update32(buf1,header.b2len,header.crc32);
@@ -6498,7 +6544,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2T SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2t_saver
     end;
 
   header.crc32 := Update32(buf1,header.b3len,header.crc32);
@@ -6514,7 +6560,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2T SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2t_saver
     end;
 
   header.crc32 := Update32(buf1,header.b4len,header.crc32);
@@ -6532,7 +6578,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2T SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2t_saver
     end;
 
   header.crc32 := Update32(buf1,header.b5len[0],header.crc32);
@@ -6553,7 +6599,7 @@ begin
             Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
                    'SAViNG STOPPED$',
                    '~O~KAY$',' A2T SAVER ',1);
-            EXIT;
+            _dbg_leave; EXIT; //_a2t_saver
           end;
         header.crc32 := Update32(buf1,header.b5len[index],header.crc32);
       end;
@@ -6577,7 +6623,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2T SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2t_saver
     end;
 
   CloseF(f);
@@ -6587,6 +6633,8 @@ begin
   songdata_crc_ord := Update32(songdata.pattern_order,
                                SizeOf(songdata.pattern_order),0);
   module_archived := TRUE;
+
+  _dbg_leave; //EXIT //_a2t_saver
 end;
 
 function _a2i_saver: Byte;
@@ -6610,10 +6658,8 @@ var
   temp_str: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:_a2i_saver';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_a2i_saver');
+
   _a2i_saver := 0;
   {$i-}
   Assign(f,instdata_source);
@@ -6621,16 +6667,27 @@ begin
   {$i+}
   If (IOresult = 0) and NOT quick_cmd then
     begin
-      If (dl_environment.keystroke = kESC) then EXIT;
+      If (dl_environment.keystroke = kESC) then
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2i_saver
+        end;
         temp := Dialog('FiLE "'+iCASE(NameOnly(instdata_source))+
                        '" ALREADY EXiSTS iN DESTiNATiON DiRECTORY$',
                        '~O~VERWRiTE$~R~ENAME$~C~ANCEL$',' A2i SAVER ',1);
 
       If ((dl_environment.keystroke <> kESC) and (temp = 3)) or
           (dl_environment.keystroke = kESC) then
-        begin CloseF(f); EXIT; end
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2i_saver
+        end
       else If (dl_environment.keystroke <> kESC) and (temp = 2) then
-             begin CloseF(f); _a2i_saver := BYTE_NULL; EXIT; end;
+             begin
+               CloseF(f);
+               _a2i_saver := BYTE_NULL;
+               _dbg_leave; EXIT; //_a2i_saver
+             end;
     end
   else If (IOresult <> 0) then
          begin
@@ -6638,7 +6695,7 @@ begin
            Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
                   'SAViNG STOPPED$',
                   '~O~KAY$',' A2i SAVER ',1);
-           EXIT;
+           _dbg_leave; EXIT; //_a2i_saver
          end;
   {$i-}
   RewriteF(f);
@@ -6649,7 +6706,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2i SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2i_saver
     end;
 
   progress_num_steps := 0;
@@ -6664,7 +6721,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2i SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2i_saver
     end;
 
   temp3 := 0;
@@ -6704,7 +6761,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2i SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2i_saver
     end;
 
   header.b0len := temp;
@@ -6722,10 +6779,12 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2i SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2i_saver
     end;
 
   CloseF(f);
+
+  _dbg_leave; //EXIT //_a2i_saver
 end;
 
 function _a2f_saver: Byte;
@@ -6748,10 +6807,8 @@ var
   temp_str: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:_a2f_saver';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_a2f_saver');
+
   _a2f_saver := 0;
   {$i-}
   Assign(f,instdata_source);
@@ -6759,16 +6816,27 @@ begin
   {$i+}
   If (IOresult = 0) and NOT quick_cmd then
     begin
-      If (dl_environment.keystroke = kESC) then EXIT;
+      If (dl_environment.keystroke = kESC) then
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2f_saver
+        end;
         temp := Dialog('FiLE "'+iCASE(NameOnly(instdata_source))+
                        '" ALREADY EXiSTS iN DESTiNATiON DiRECTORY$',
                        '~O~VERWRiTE$~R~ENAME$~C~ANCEL$',' A2F SAVER ',1);
 
       If ((dl_environment.keystroke <> kESC) and (temp = 3)) or
           (dl_environment.keystroke = kESC) then
-        begin CloseF(f); EXIT; end
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2f_saver
+        end
       else If (dl_environment.keystroke <> kESC) and (temp = 2) then
-             begin CloseF(f); _a2f_saver := BYTE_NULL; EXIT; end;
+             begin
+               CloseF(f);
+               _a2f_saver := BYTE_NULL;
+               _dbg_leave; EXIT; //_a2f_saver
+             end;
     end
   else If (IOresult <> 0) then
          begin
@@ -6776,7 +6844,7 @@ begin
            Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
                   'SAViNG STOPPED$',
                   '~O~KAY$',' A2F SAVER ',1);
-           EXIT;
+           _dbg_leave; EXIT; //_a2f_saver
          end;
   {$i-}
   RewriteF(f);
@@ -6787,7 +6855,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2F SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2f_saver
     end;
 
   progress_num_steps := 0;
@@ -6802,7 +6870,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2F SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2f_saver
     end;
 
   temp3 := 0;
@@ -6878,7 +6946,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2F SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2f_saver
     end;
 
   header.b0len := temp;
@@ -6895,10 +6963,12 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2F SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2f_saver
     end;
 
   CloseF(f);
+
+  _dbg_leave; //EXIT //_a2f_saver
 end;
 
 function _a2p_saver: Byte;
@@ -6920,10 +6990,8 @@ var
   temp_str: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:_a2p_saver';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_a2p_saver');
+
   _a2p_saver := 0;
   {$i-}
   Assign(f,songdata_source);
@@ -6931,16 +6999,27 @@ begin
   {$i+}
   If (IOresult = 0) and NOT quick_cmd then
     begin
-      If (dl_environment.keystroke = kESC) then EXIT;
+      If (dl_environment.keystroke = kESC) then
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2p_saver
+        end;
         temp := Dialog('FiLE "'+iCASE(NameOnly(songdata_source))+
                        '" ALREADY EXiSTS iN DESTiNATiON DiRECTORY$',
                        '~O~VERWRiTE$~R~ENAME$~C~ANCEL$',' A2P SAVER ',1);
 
       If ((dl_environment.keystroke <> kESC) and (temp = 3)) or
           (dl_environment.keystroke = kESC) then
-        begin CloseF(f); EXIT; end
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2p_saver
+        end
       else If (dl_environment.keystroke <> kESC) and (temp = 2) then
-             begin CloseF(f); _a2p_saver := BYTE_NULL; EXIT; end;
+             begin
+               CloseF(f);
+               _a2p_saver := BYTE_NULL;
+               _dbg_leave; EXIT; //_a2p_saver
+             end;
     end
   else If (IOresult <> 0) then
          begin
@@ -6948,7 +7027,7 @@ begin
            Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
                   'SAViNG STOPPED$',
                   '~O~KAY$',' A2P SAVER ',1);
-           EXIT;
+           _dbg_leave; EXIT; //_a2p_saver
          end;
   {$i-}
   RewriteF(f);
@@ -6959,7 +7038,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2P SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2p_saver
     end;
 
   progress_num_steps := 0;
@@ -6991,7 +7070,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2P SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2p_saver
     end;
 
   temp2 := PATTERN_SIZE+30+1;
@@ -7005,7 +7084,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2P SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2p_saver
     end;
 
   header.crc32 := Update32(buf1,header.b0len,header.crc32);
@@ -7020,10 +7099,12 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2P SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2p_saver
     end;
 
   CloseF(f);
+
+  _dbg_leave; //EXIT //_a2p_saver
 end;
 
 function _a2b_saver: Byte;
@@ -7046,10 +7127,8 @@ var
   temp_marks: array[1..255] of Char;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:_a2b_saver';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_a2b_saver');
+
   _a2b_saver := 0;
   {$i-}
   Assign(f,instdata_source);
@@ -7057,16 +7136,27 @@ begin
   {$i+}
   If (IOresult = 0) and NOT quick_cmd then
     begin
-      If (dl_environment.keystroke = kESC) then EXIT;
+      If (dl_environment.keystroke = kESC) then
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2b_saver
+        end;
         temp := Dialog('FiLE "'+iCASE(NameOnly(instdata_source))+
                        '" ALREADY EXiSTS iN DESTiNATiON DiRECTORY$',
                        '~O~VERWRiTE$~R~ENAME$~C~ANCEL$',' A2B SAVER ',1);
 
       If ((dl_environment.keystroke <> kESC) and (temp = 3)) or
           (dl_environment.keystroke = kESC) then
-        begin CloseF(f); EXIT; end
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2b_saver
+        end
       else If (dl_environment.keystroke <> kESC) and (temp = 2) then
-             begin CloseF(f); _a2b_saver := BYTE_NULL; EXIT; end;
+             begin
+               CloseF(f);
+               _a2b_saver := BYTE_NULL;
+               _dbg_leave; EXIT; //_a2b_saver
+             end;
     end
   else If (IOresult <> 0) then
          begin
@@ -7074,7 +7164,7 @@ begin
            Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
                   'SAViNG STOPPED$',
                   '~O~KAY$',' A2B SAVER ',1);
-           EXIT;
+           _dbg_leave; EXIT; //_a2b_saver
          end;
   {$i-}
   RewriteF(f);
@@ -7085,7 +7175,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2B SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2b_saver
     end;
 
   progress_num_steps := 0;
@@ -7100,7 +7190,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2B SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2b_saver
     end;
 
   For temp := 1 to 255 do
@@ -7130,7 +7220,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2B SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2b_saver
     end;
 
   header.b0len := temp;
@@ -7148,10 +7238,12 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2B SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2b_saver
     end;
 
   CloseF(f);
+
+  _dbg_leave; //EXIT //_a2b_saver
 end;
 
 function _a2w_saver: Byte;
@@ -7177,10 +7269,8 @@ var
 
 procedure _restore;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:_a2w_saver:_restore';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_a2w_saver._restore');
+
   move_to_screen_data := ptr_screen_backup;
   move_to_screen_area[1] := xstart;
   move_to_screen_area[2] := ystart;
@@ -7189,13 +7279,13 @@ begin
   move2screen;
   progress_num_steps := 0;
   progress_value := 0;
+
+  _dbg_leave; //EXIT //_a2w_saver._restore
 end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:_a2w_saver';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, '_a2w_saver');
+
   _a2w_saver := 0;
   {$i-}
   Assign(f,instdata_source);
@@ -7203,16 +7293,27 @@ begin
   {$i+}
   If (IOresult = 0) and NOT quick_cmd then
     begin
-      If (dl_environment.keystroke = kESC) then EXIT;
+      If (dl_environment.keystroke = kESC) then
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2w_saver
+        end;
         temp := Dialog('FiLE "'+iCASE(NameOnly(instdata_source))+
                        '" ALREADY EXiSTS iN DESTiNATiON DiRECTORY$',
                        '~O~VERWRiTE$~R~ENAME$~C~ANCEL$',' A2W SAVER ',1);
 
       If ((dl_environment.keystroke <> kESC) and (temp = 3)) or
           (dl_environment.keystroke = kESC) then
-        begin CloseF(f); EXIT; end
+        begin
+          CloseF(f);
+          _dbg_leave; EXIT; //_a2w_saver
+        end
       else If (dl_environment.keystroke <> kESC) and (temp = 2) then
-             begin CloseF(f); _a2w_saver := BYTE_NULL; EXIT; end;
+             begin
+               CloseF(f);
+               _a2w_saver := BYTE_NULL;
+               _dbg_leave; EXIT; //_a2w_saver
+             end;
     end
   else If (IOresult <> 0) then
          begin
@@ -7220,7 +7321,7 @@ begin
            Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
                   'SAViNG STOPPED$',
                   '~O~KAY$',' A2W SAVER ',1);
-           EXIT;
+           _dbg_leave; EXIT; //_a2w_saver
          end;
   {$i-}
   RewriteF(f);
@@ -7231,7 +7332,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK ERROR?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2W SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2w_saver
     end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
@@ -7266,7 +7367,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2W SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2w_saver
     end;
 
   For temp := 1 to 255 do
@@ -7298,7 +7399,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2W SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2w_saver
     end;
 
   header.crc32 := Update32(buf1,header.b0len,header.crc32);
@@ -7312,7 +7413,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2W SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2w_saver
     end;
 
   header.crc32 := Update32(buf1,header.b1len,header.crc32);
@@ -7326,7 +7427,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2W SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2w_saver
     end;
 
   header.crc32 := Update32(buf1,header.b2len,header.crc32);
@@ -7343,7 +7444,7 @@ begin
       Dialog('ERROR WRiTiNG DATA - DiSK FULL?$'+
              'SAViNG STOPPED$',
              '~O~KAY$',' A2W SAVER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //_a2w_saver
     end;
 
   CloseF(f);
@@ -7360,6 +7461,8 @@ begin
   SDL_Delay(200);
 {$ENDIF}
   _restore;
+
+  _dbg_leave; //EXIT //_a2w_saver
 end;
 
 procedure FILE_save(ext: String);
@@ -7374,10 +7477,8 @@ var
 label _jmp1,_jmp2;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXTN.PAS:FILE_save';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'FILE_save');
+
   old_songdata_source := songdata_source;
   old_instdata_source := instdata_source;
 
@@ -7461,7 +7562,7 @@ _jmp1:
       begin
         songdata_source := old_songdata_source;
         instdata_source := old_instdata_source;
-        EXIT;
+        _dbg_leave; EXIT; //FILE_save
       end;
 
     If (dl_environment.keystroke = kENTER) then
@@ -7554,7 +7655,7 @@ _jmp1:
     begin
       songdata_source := old_songdata_source;
       instdata_source := old_instdata_source;
-      EXIT;
+      _dbg_leave; EXIT; //FILE_save
     end;
 
 _jmp2:
@@ -7573,6 +7674,8 @@ _jmp2:
   If (Lower_filename(ext) = 'a2w') then temp := _a2w_saver;
 
   If (temp = BYTE_NULL) then GOTO _jmp1;
+
+  _dbg_leave; //EXIT //FILE_save
 end;
 
 end.

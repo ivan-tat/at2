@@ -8,7 +8,8 @@ procedure opl3exp(data: Word);
 begin
   if (_opl_regs_cache[(data AND $ff) OR $100] <> data SHR 8) then
     _opl_regs_cache[(data AND $ff) OR $100] := data SHR 8
-  else EXIT;
+  else
+    EXIT; //opl3exp
 
   asm
         mov     ax,data
@@ -25,4 +26,6 @@ begin
 @@2:    in      al,dx
         loop    @@2
   end;
+
+  //EXIT //opl3exp
 end;

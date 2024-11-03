@@ -12,9 +12,7 @@ String_t InputStr (const String *s, uint8_t x, uint8_t y, uint8_t ln,
   uint8_t cloc, xloc, xint, attr;
   uint16_t key;
 
-#if GO32
   DBG_ENTER ("InputStr");
-#endif // GO32
 
   r = Copy (s, 1, ln);
 
@@ -409,5 +407,6 @@ String_t InputStr (const String *s, uint8_t x, uint8_t y, uint8_t ln,
   is_environment.keystroke = key;
   is_environment.insert_mode = ins;
 
+  DBG_LEAVE (); //InputStr
   return r;
 }

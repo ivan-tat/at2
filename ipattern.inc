@@ -93,11 +93,12 @@ var
   attr: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTERN.INC:STATUS_LINE_refresh';
-{$ENDIF}
-  If really_no_status_refresh then EXIT;
+  _dbg_enter ({$I %FILE%}, 'STATUS_LINE_refresh');
+
+  If really_no_status_refresh then
+    begin
+      _dbg_leave; EXIT; //STATUS_LINE_refresh
+    end;
 
   If (get_4op_to_test <> 0) then
     show_cstr(40,MAX_PATTERN_ROWS+12,'~[~'+byte2hex(HI(get_4op_to_test))+'~+~'+byte2hex(LO(get_4op_to_test))+'~]~',
@@ -160,6 +161,8 @@ begin
   If jump_mark_mode then
     show_str(MAX_COLUMNS-15,MAX_PATTERN_ROWS+12,#23,main_background+main_behavior)
   else show_str(MAX_COLUMNS-15,MAX_PATTERN_ROWS+12,#23,main_background+main_behavior_dis);
+
+  _dbg_leave; //EXIT //STATUS_LINE_refresh
 end;
 
 function last_chan_pos: Byte;
@@ -215,10 +218,8 @@ begin
 end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTERN.INC:PATTERN_page_refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PATTERN_page_refresh');
+
   For temp := SUCC(songdata.nm_tracks) to MAX_TRACKS do
     begin
       show_str(08+(temp-1)*15,10,patt_tab_str[0],
@@ -779,14 +780,14 @@ begin
                                  scrollbar_bckg+scrollbar_text,
                                  scrollbar_bckg+scrollbar_mark);
     end;
+
+  _dbg_leave; //EXIT //PATTERN_page_refresh
 end;
 
 procedure PATTERN_position_preview(pattern,line,channel,mode: Byte);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTERN.INC:PATTERN_position_preview';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PATTERN_position_preview');
+
   If (mode = 0) then
     begin
       old_pattern_patt := pattern_patt;
@@ -830,6 +831,8 @@ begin
                 PATTERN_ORDER_page_refresh(pattord_page);
                 PATTERN_page_refresh(pattern_page);
               end;
+
+  _dbg_leave; //EXIT //PATTERN_position_preview
 end;
 
 function PATTERN_trace: Word;
@@ -861,11 +864,12 @@ end;
 label _end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTERN.INC:PATTERN_trace';
-{$ENDIF}
-  If (play_status = isStopped) then EXIT;
+  _dbg_enter ({$I %FILE%}, 'PATTERN_trace');
+
+  If (play_status = isStopped) then
+    begin
+      _dbg_leave; EXIT; //PATTERN_trace
+    end;
   _traceprc_last_order := BYTE_NULL;
   _traceprc_last_pattern := BYTE_NULL;
   _traceprc_last_line := BYTE_NULL;
@@ -1679,7 +1683,10 @@ _end:
   until (nope or (play_status = isStopped)) or _force_program_quit;
 
   PATTERN_trace := fkey2;
-  If (fkey2 = kF10) or _force_program_quit then EXIT;
+  If (fkey2 = kF10) or _force_program_quit then
+    begin
+      _dbg_leave; EXIT; //PATTERN_trace
+    end;
   If use_large_cursor then WideCursor
   else ThinCursor;
   tracing := FALSE;
@@ -1698,6 +1705,8 @@ _end:
   debugging := FALSE;
   PATTERN_ORDER_page_refresh(pattord_page);
   PATTERN_page_refresh(pattern_page);
+
+  _dbg_leave; //EXIT //PATTERN_trace
 end;
 
 procedure _save_pattern_to_undo;
@@ -1742,10 +1751,8 @@ var
   result: Boolean;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTERN.INC:PATTERN_edit:correct_range';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'correct_range');
+
   result := FALSE;
   Case fxdef of
     ef_Arpeggio,
@@ -1863,6 +1870,8 @@ begin
                                  end;
   end;
   correct_range := result;
+
+  _dbg_leave; //EXIT //correct_range
 end;
 
 procedure copy_object;
@@ -1874,10 +1883,8 @@ var
   chunk: tCHUNK;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTERN.INC:PATTERN_edit:copy_object';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PATTERN_edit.copy_object');
+
   chan := count_channel(hpos);
 
   If clipboard.object_type in [
@@ -1939,6 +1946,8 @@ begin
             end;
       end;
   end;
+
+  _dbg_leave; //EXIT //PATTERN_edit.copy_object
 end;
 
 procedure paste_object;
@@ -1949,10 +1958,8 @@ var
   chunk: tCHUNK;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTERN.INC:PATTERN_edit:paste_object';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PATTERN_edit.paste_object');
+
   _save_pattern_to_undo;
   chan := count_channel(hpos);
 
@@ -2087,6 +2094,8 @@ begin
               put_chunk(pattern,temp2,temp1,
                         clipboard.pattern[SUCC(temp1-chan)][temp2-page]);
   end;
+
+  _dbg_leave; //EXIT //PATTERN_edit.paste_object
 end;
 
 procedure paste_object_alt(pattern: Byte);
@@ -2096,10 +2105,8 @@ var
   chunk: tCHUNK;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTERN.INC:PATTERN_edit:paste_object_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PATTERN_edit.paste_object_alt');
+
   Case clipboard.object_type of
     objNote:
       begin
@@ -2156,6 +2163,8 @@ begin
             put_chunk(pattern,temp2,temp1,
                       clipboard.pattern[SUCC(temp1-chan)][temp2-page]);
   end;
+
+  _dbg_leave; //EXIT //PATTERN_edit.paste_object_alt
 end;
 
 function FX(chr: Char): Byte;
@@ -2182,13 +2191,13 @@ begin
                 Inc(chunk.effect,shift)
               else begin
                      update_block_volume := FALSE;
-                     EXIT;
+                     EXIT; //update_block_volume
                    end
             else If (chunk.effect+shift >= 0) then
                    Inc(chunk.effect,shift)
                   else begin
                          update_block_volume := FALSE;
-                         EXIT;
+                         EXIT; //update_block_volume
                        end;
           end;
         If (chunk.effect_def2 in volume_commands) then
@@ -2199,19 +2208,21 @@ begin
                 Inc(chunk.effect2,shift)
               else begin
                      update_block_volume := FALSE;
-                     EXIT;
+                     EXIT; //update_block_volume
                    end
             else If (chunk.effect2+shift >= 0) then
                    Inc(chunk.effect2,shift)
                   else begin
                          update_block_volume := FALSE;
-                         EXIT;
+                         EXIT; //update_block_volume
                        end;
           end;
         If update_values then
           put_chunk(pattern,temp2,temp1,chunk);
       end;
   update_block_volume := fx_found_flag;
+
+  //EXIT //update_block_volume
 end;
 
 procedure enter_debug_mode(pattern,page: Byte);
@@ -2269,10 +2280,8 @@ end;
 label _end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'IPATTERN.INC:PATTERN_edit';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PATTERN_edit');
+
   fkey_X := WORD_NULL;
   chan := count_channel(hpos);
 
@@ -5131,4 +5140,6 @@ _end:
 
   PATTERN_ORDER_page_refresh(pattord_page);
   PATTERN_page_refresh(page);
+
+  _dbg_leave; //EXIT //PATTERN_edit
 end;

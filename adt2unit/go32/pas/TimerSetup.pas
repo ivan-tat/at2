@@ -6,8 +6,8 @@
 
 procedure TimerSetup(Hz: Longint);
 begin
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:TimerSetup';
+  _dbg_enter ({$I %FILE%}, 'TimerSetup');
+
   If (Hz < PIT_FREQ_MIN) then Hz := PIT_FREQ_MIN;
   If (Hz > PIT_FREQ_MAX) then Hz := PIT_FREQ_MAX;
   ISS_DisableTimerIRQ;
@@ -15,4 +15,6 @@ begin
   timer_poll_proc_ptr := @timer_poll_proc;
   ISS_StartTimer(timer_poll_proc_ptr,ISS_TimerSpeed DIV Hz);
   ISS_EnableTimerIRQ;
+
+  _dbg_leave; //EXIT //TimerSetup
 end;

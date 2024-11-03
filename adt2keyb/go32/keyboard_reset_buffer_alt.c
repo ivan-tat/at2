@@ -15,4 +15,6 @@ void keyboard_reset_buffer_alt (void) {
   -   BDA_get_keyboard_buffer_head () > 5)
     BDA_set_keyboard_buffer_tail (BDA_get_keyboard_buffer_head ());
   _farsetsel (orig_fs);
+
+  DBG_LEAVE (); //keyboard_reset_buffer_alt
 }

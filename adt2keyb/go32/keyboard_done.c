@@ -13,4 +13,6 @@ void keyboard_done (void) {
   lock_SysKeyboardUserProc (false);
 
   keyboard_reset_buffer ();
+
+  DBG_LEAVE (); //keyboard_done
 }

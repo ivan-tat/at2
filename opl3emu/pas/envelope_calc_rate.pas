@@ -13,7 +13,7 @@ begin
   If (reg_rate = 0) then
     begin
       envelope_calc_rate := 0;
-      EXIT;
+      EXIT; //envelope_calc_rate
     end;
 
   rate := (reg_rate SHL 2);
@@ -22,4 +22,6 @@ begin
   else
     Inc(rate,(p_slot^.p_chan^.ksr SHR 2));
   envelope_calc_rate := limit_value(rate,0,60);
+
+  //EXIT //envelope_calc_rate
 end;

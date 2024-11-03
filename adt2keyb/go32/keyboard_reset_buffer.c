@@ -13,4 +13,6 @@ void keyboard_reset_buffer (void) {
   _farsetsel (_dos_ds);
   BDA_set_keyboard_buffer_tail (BDA_get_keyboard_buffer_head ());
   _farsetsel (orig_fs);
+
+  DBG_LEAVE (); //keyboard_reset_buffer
 }

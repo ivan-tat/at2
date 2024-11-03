@@ -7,8 +7,10 @@
 void update_playback_speed (int32_t speed_shift) {
   DBG_ENTER ("update_playback_speed");
 
-  if (!speed_shift)
+  if (!speed_shift) {
+    DBG_LEAVE (); //update_playback_speed
     return;
+  }
 
   if ((speed_shift > 0)
   &&  (IRQ_freq + playback_speed_shift + speed_shift
@@ -27,4 +29,6 @@ void update_playback_speed (int32_t speed_shift) {
 
   playback_speed_shift += speed_shift;
   update_timer (tempo);
+
+  DBG_LEAVE (); //update_playback_speed
 }

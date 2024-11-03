@@ -1408,7 +1408,7 @@ begin
       dec_ptr := SUCC(dec_ptr) AND PRED(DIC_SIZE);
       Inc(idx2);
       If (idx2 = count) then
-        EXIT;
+        EXIT; //DecodeBuffer
       Dec(dec_counter);
     end;
   Repeat
@@ -1418,7 +1418,7 @@ begin
         buffer^[idx2] := idx;
         Inc(idx2);
         If (idx2 = count) then
-          EXIT;
+          EXIT; //DecodeBuffer
       end
     else begin
            dec_counter := idx-(256-THRESHOLD);
@@ -1430,7 +1430,7 @@ begin
                dec_ptr := SUCC(dec_ptr) AND PRED(DIC_SIZE);
                Inc(idx2);
                If (idx2 = count) then
-                 EXIT;
+                 EXIT; //DecodeBuffer
                Dec(dec_counter);
              end;
          end;

@@ -62,10 +62,8 @@ var
   speedup_factor,speedown_factor: Real;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'REALTIME.INC:decay_bars_refresh';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'decay_bars_refresh');
+
   show_bar(1,overall_volume,05,1,2,
            analyzer_ovrllvol+analyzer_ovrllvol SHL 4);
   show_bar(1,global_volume,MAX_COLUMNS-7,1,2,
@@ -145,6 +143,8 @@ begin
                  analyzer+analyzer_carrier SHL 4);
       Inc(chan);
     end;
+
+  _dbg_leave; //EXIT //decay_bars_refresh
 end;
 
 function _vol_bar_str(value: Byte): String;
@@ -180,17 +180,18 @@ var
   bpm: Real;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'REALTIME.INC:status_refresh:1/4';
-{$ENDIF}
-  If really_no_status_refresh then EXIT;
+  _dbg_enter ({$I %FILE%}, 'status_refresh');
+  _dbg_label ('1/4'); //status_refresh
+
+  If really_no_status_refresh then
+    begin
+      _dbg_leave; EXIT; //status_refresh
+    end;
   show_str(21,06,status_layout[play_status][8]+status_layout[play_status][9],
            status_background+status_play_state);
 
-{$IFDEF GO32V2}
-  _debug_str_ := 'REALTIME.INC:status_refresh:2/4';
-{$ENDIF}
+  _dbg_label ('2/4'); //status_refresh
+
   If no_status_refresh then
     begin
       chan := chan_pos;
@@ -202,12 +203,11 @@ begin
                      pattern_bckg+pattern_border);
           Inc(chan);
         end;
-      EXIT;
+      _dbg_leave; EXIT; //status_refresh
     end;
 
-{$IFDEF GO32V2}
-  _debug_str_ := 'REALTIME.INC:status_refresh:3/4';
-{$ENDIF}
+  _dbg_label ('3/4'); //status_refresh
+
   temps := status_layout[play_status];
   show_str(14,06,ExpStrR(temps,10,' '),
            status_background+status_play_state);
@@ -218,10 +218,12 @@ begin
     show_str(02,01,ExpStrR('',12,#196),
              main_background+main_border);
 
-  If single_play then EXIT;
-{$IFDEF GO32V2}
-  _debug_str_ := 'REALTIME.INC:status_refresh:4/4';
-{$ENDIF}
+  If single_play then
+    begin
+      _dbg_leave; EXIT; //status_refresh
+    end;
+
+  _dbg_label ('4/4'); //status_refresh
 
   If play_single_patt then
     show_str(20,03,byte2hex(current_pattern)+'  ',
@@ -713,14 +715,14 @@ begin
            end;
       Inc(chan);
     end;
+
+  _dbg_leave; //EXIT //status_refresh
 end;
 
 procedure trace_update_proc;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'REALTIME.INC:trace_update_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'trace_update_proc');
+
   space_pressed := scankey(SC_SPACE);
   If (play_status = isPlaying) then
     If (_traceprc_last_order <> current_order) or
@@ -750,4 +752,6 @@ begin
         PATTERN_ORDER_page_refresh(pattord_page);
         PATTERN_page_refresh(pattern_page);
       end;
+
+  _dbg_leave; //EXIT //trace_update_proc
 end;

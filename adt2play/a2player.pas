@@ -129,6 +129,7 @@ const
 implementation
 
 uses
+  debug,
   DOS,
   GO32,
   ISS_TIM,
@@ -263,7 +264,8 @@ procedure opl2out_proc(reg,data: Word);
 begin
   If (_opl_regs_cache[reg] <> data) then
     _opl_regs_cache[reg] := data
-  else EXIT;
+  else
+    EXIT; //opl2out_proc
 
   asm
         mov     ax,reg
@@ -283,13 +285,16 @@ begin
 @@3:    in      al,dx
         loop    @@3
   end;
+
+  //EXIT //opl2out_proc
 end;
 
 procedure opl3out_proc(reg,data: Word);
 begin
   If (_opl_regs_cache[reg] <> data) then
     _opl_regs_cache[reg] := data
-  else EXIT;
+  else
+    EXIT; //opl3out_proc
 
   asm
         mov     ax,reg
@@ -306,13 +311,16 @@ begin
 @@2:    in      al,dx
         loop    @@2
   end;
+
+  //EXIT //opl3out_proc
 end;
 
 procedure opl3exp_proc(data: Word);
 begin
   if (_opl_regs_cache[(data AND $ff) OR $100] <> data SHR 8) then
     _opl_regs_cache[(data AND $ff) OR $100] := data SHR 8
-  else EXIT;
+  else
+    EXIT; //opl3exp_proc
 
   asm
         mov     ax,data
@@ -329,6 +337,8 @@ begin
 @@2:    in      al,dx
         loop    @@2
   end;
+
+  //EXIT //opl3exp_proc
 end;
 
 const
@@ -671,7 +681,11 @@ procedure TimerSetup(Hz: Longint); forward;
 
 procedure update_timer(Hz: Word);
 begin
-  If (Hz = 0) then begin TimerSetup(18); EXIT end
+  If (Hz = 0) then
+    begin
+      TimerSetup(18);
+      EXIT; //update_timer
+    end
   else tempo := Hz;
   If (tempo = 18) and timer_fix then IRQ_freq := TRUNC((tempo+0.2)*20)
   else IRQ_freq := 250;
@@ -684,11 +698,14 @@ begin
         (IRQ_freq_shift > 0) do
     Dec(IRQ_freq_shift);
   TimerSetup(max(IRQ_freq+IRQ_freq_shift+playback_speed_shift,MAX_IRQ_FREQ));
+
+  //EXIT //update_timer
 end;
 
 procedure update_playback_speed(speed_shift: Longint);
 begin
-  If (speed_shift = 0) then EXIT
+  If (speed_shift = 0) then
+    EXIT //update_playback_speed
   else If (speed_shift > 0) and (IRQ_freq+playback_speed_shift+speed_shift > MAX_IRQ_FREQ) then
          While (IRQ_freq+IRQ_freq_shift+playback_speed_shift+speed_shift > MAX_IRQ_FREQ) do
            Dec(speed_shift)
@@ -697,6 +714,8 @@ begin
                 Inc(speed_shift);
   playback_speed_shift := playback_speed_shift+speed_shift;
   update_timer(tempo);
+
+  //EXIT //update_playback_speed
 end;
 
 procedure key_on(chan: Byte);
@@ -1163,7 +1182,8 @@ var
   freq: Word;
 
 begin
-  If (note = 0) and (ftune_table[chan] = 0) then EXIT;
+  If (note = 0) and (ftune_table[chan] = 0) then
+    EXIT; //output_note
   If NOT (note in [1..12*8+1]) then freq := freq_table[chan]
   else begin
          freq := nFreq(note-1)+SHORTINT(ins_parameter(ins,12));
@@ -1222,6 +1242,8 @@ begin
              init_macro_table(chan,note,ins,freq)
            else macro_table[chan].arpg_note := note;
     end;
+
+  //EXIT //output_note
 end;
 
 procedure generate_custom_vibrato(value: Byte);
@@ -1314,7 +1336,8 @@ begin
 end;
 
 begin
-  _debug_str_ := 'A2PLAYER.PAS:play_line';
+  _dbg_enter ({$I %FILE%}, 'play_line');
+
   If (current_line = 0) and
      (current_order = calc_following_order(0)) then
     time_playing := 0;
@@ -2823,6 +2846,8 @@ begin
          time_playing := time_playing+1/tempo*speed;
          If (time_playing > 3600-1) then time_playing := 0;
        end;
+
+  _dbg_leave; //EXIT //play_line
 end;
 
 procedure portamento_up(chan: Byte; slide: Word; limit: Word);
@@ -2831,10 +2856,13 @@ var
   freq: Word;
 
 begin
-  If (freq_table[chan] AND $1fff = 0) then EXIT;
+  If (freq_table[chan] AND $1fff = 0) then
+    EXIT; //portamento_up
   freq := calc_freq_shift_up(freq_table[chan] AND $1fff,slide);
   If (freq <= limit) then change_frequency(chan,freq)
   else change_frequency(chan,limit);
+
+  //EXIT //portamento_up
 end;
 
 procedure portamento_down(chan: Byte; slide: Word; limit: Word);
@@ -2843,10 +2871,13 @@ var
   freq: Word;
 
 begin
-  If (freq_table[chan] AND $1fff = 0) then EXIT;
+  If (freq_table[chan] AND $1fff = 0) then
+    EXIT; //portamento_down
   freq := calc_freq_shift_down(freq_table[chan] AND $1fff,slide);
   If (freq >= limit) then change_frequency(chan,freq)
   else change_frequency(chan,limit);
+
+  //EXIT //portamento_down
 end;
 
 procedure macro_vibrato__porta_up(chan: Byte; depth: Byte);
@@ -3766,7 +3797,8 @@ var
   index,jump_count: Byte;
 
 begin
-  _debug_str_ := 'A2PLAYER.PAS:calc_following_order';
+  _dbg_enter ({$I %FILE%}, 'calc_following_order');
+
   result := -1;
   index := order;
   jump_count := 0;
@@ -3781,6 +3813,8 @@ begin
         (result <> -1);
 
   calc_following_order := result;
+
+  _dbg_leave; //EXIT //calc_following_order
 end;
 
 function calc_order_jump: Integer;
@@ -3790,7 +3824,8 @@ var
   result: Integer;
 
 begin
-  _debug_str_ := 'A2PLAYER.PAS:calc_order_jump';
+  _dbg_enter ({$I %FILE%}, 'calc_order_jump');
+
   result := 0;
   temp := 0;
 
@@ -3802,6 +3837,8 @@ begin
 
   If (temp > $7f) then begin stop_playing; result := -1; end;
   calc_order_jump := result;
+
+  _dbg_leave; //EXIT //calc_order_jump
 end;
 
 procedure update_song_position;
@@ -3810,7 +3847,8 @@ var
   temp: Byte;
 
 begin
-  _debug_str_ := 'A2PLAYER.PAS:update_song_position';
+  _dbg_enter ({$I %FILE%}, 'update_song_position');
+
   If (current_line < PRED(songdata.patt_len)) and NOT pattern_break then Inc(current_line)
   else begin
          If NOT (pattern_break and (next_line AND $0f0 = pattern_loop_flag)) and
@@ -3839,7 +3877,10 @@ begin
                      current_order := 0;
 
          If (songdata.pattern_order[current_order] > $7f) then
-           If (calc_order_jump = -1) then EXIT;
+           If (calc_order_jump = -1) then
+             begin
+               _dbg_leave; EXIT; //update_song_position
+             end;
 
          current_pattern := songdata.pattern_order[current_order];
          If NOT pattern_break then current_line := 0
@@ -3862,6 +3903,8 @@ begin
       speed := songdata.speed;
       update_timer(tempo);
     end;
+
+  _dbg_leave; //EXIT //update_song_position
 end;
 
 procedure poll_proc;
@@ -3869,18 +3912,17 @@ procedure poll_proc;
 var
   temp: Byte;
 
-var
-  _debug_str_bak_: String;
-
 begin
-  _debug_str_bak_ := _debug_str_;
-  _debug_str_ := 'A2PLAYER.PAS:_poll_proc';
+  _dbg_enter ({$I %FILE%}, '_poll_proc');
 
   If (NOT pattern_delay and (ticks-tick0+1 >= speed)) or
      fast_forward then
     begin
       If (songdata.pattern_order[current_order] > $7f) then
-        If (calc_order_jump = -1) then EXIT;
+        If (calc_order_jump = -1) then
+          begin
+            _dbg_leave; EXIT; //_poll_proc
+          end;
 
       current_pattern := songdata.pattern_order[current_order];
       play_line;
@@ -3932,7 +3974,8 @@ begin
       update_extra_fine_effects;
       Dec(tickXF,4);
     end;
-  _debug_str_ := _debug_str_bak_;
+
+  _dbg_leave; //EXIT //_poll_proc
 end;
 
 procedure macro_poll_proc;
@@ -3945,12 +3988,9 @@ var
   chan: Byte;
   finished_flag: Word;
 
-var
-  _debug_str_bak_: String;
-
 begin
-  _debug_str_bak_ := _debug_str_;
-  _debug_str_ := 'A2PLAYER.PAS:macro_poll_proc';
+  _dbg_enter ({$I %FILE%}, 'macro_poll_proc');
+
   For chan := 1 to songdata.nm_tracks do
     begin
       If NOT keyoff_loop[chan] then finished_flag := FINISHED
@@ -4214,17 +4254,13 @@ begin
               else Inc(vib_count);
         end;
     end;
-  _debug_str_ := _debug_str_bak_;
+
+  _dbg_leave; //EXIT //macro_poll_proc
 end;
 
 procedure timer_poll_proc;
-
-var
-  _debug_str_bak_: String;
-
 begin
-  _debug_str_bak_ := _debug_str_;
-  _debug_str_ := 'A2PLAYER.PAS:timer_poll_proc';
+  _dbg_enter ({$I %FILE%}, 'timer_poll_proc');
 
   If (timer_200hz_counter < (IRQ_freq+IRQ_freq_shift+playback_speed_shift) DIV 200) then
     Inc(timer_200hz_counter)
@@ -4290,7 +4326,7 @@ begin
         macro_ticklooper := 0;
     end;
 
-  _debug_str_ := _debug_str_bak_;
+  _dbg_leave; //EXIT //timer_poll_proc
 end;
 
 const
@@ -4300,7 +4336,8 @@ procedure ___IRQ_CODE_END___; begin end;
 
 procedure TimerSetup(Hz: Longint);
 begin
-  _debug_str_ := 'A2PLAYER.PAS:TimerSetup';
+  _dbg_enter ({$I %FILE%}, 'TimerSetup');
+
   If (Hz < PIT_FREQ_MIN) then Hz := PIT_FREQ_MIN;
   If (Hz > PIT_FREQ_MAX) then Hz := PIT_FREQ_MAX;
   ISS_DisableTimerIRQ;
@@ -4308,31 +4345,48 @@ begin
   timer_poll_proc_ptr := @timer_poll_proc;
   ISS_StartTimer(timer_poll_proc_ptr,ISS_TimerSpeed DIV Hz);
   ISS_EnableTimerIRQ;
+
+  _dbg_leave; //EXIT //TimerSetup
 end;
 
 procedure TimerDone;
 begin
-  _debug_str_ := 'A2PLAYER.PAS:TimerDone';
+  _dbg_enter ({$I %FILE%}, 'TimerDone');
+
   ISS_DisableTimerIRQ;
   If (timer_poll_proc_ptr <> NIL) then ISS_StopTimer(timer_poll_proc_ptr);
   timer_poll_proc_ptr := NIL;
   ISS_EnableTimerIRQ;
+
+  _dbg_leave; //EXIT //TimerDone
 end;
 
 procedure init_timer_proc;
 begin
-  _debug_str_ := 'A2PLAYER.PAS:init_time_proc';
-  If timer_initialized then EXIT;
+  _dbg_enter ({$I %FILE%}, 'init_timer_proc');
+
+  If timer_initialized then
+    begin
+      _dbg_leave; EXIT; //init_timer_proc
+    end;
   timer_initialized := TRUE;
   TimerSetup(50);
+
+  _dbg_leave; //EXIT //init_timer_proc
 end;
 
 procedure done_timer_proc;
 begin
-  _debug_str_ := 'A2PLAYER.PAS:done_timer_proc';
-  If NOT timer_initialized then EXIT;
+  _dbg_enter ({$I %FILE%}, 'done_timer_proc');
+
+  If NOT timer_initialized then
+    begin
+      _dbg_leave; EXIT; //done_timer_proc
+    end;
   timer_initialized := FALSE;
   TimerDone;
+
+  _dbg_leave; //EXIT //done_timer_proc
 end;
 
 function calc_pattern_pos(pattern: Byte): Byte;
@@ -4342,7 +4396,8 @@ var
   jump_count,pattern_pos: Byte;
 
 begin
-  _debug_str_ := 'A2PLAYER.PAS:calc_pattern_pos';
+  _dbg_enter ({$I %FILE%}, 'calc_pattern_pos');
+
   pattern_pos := BYTE_NULL;
   jump_count := 0;
   index := calc_following_order(0);
@@ -4359,6 +4414,8 @@ begin
            BREAK;
          end;
   calc_pattern_pos := pattern_pos;
+
+  _dbg_leave; //EXIT //calc_pattern_pos
 end;
 
 procedure init_buffers;
@@ -4367,7 +4424,8 @@ var
   temp: Byte;
 
 begin
-  _debug_str_ := 'A2PLAYER.PAS:init_buffers';
+  _dbg_enter ({$I %FILE%}, 'init_buffers');
+
   FillChar(fmpar_table,SizeOf(fmpar_table),0);
   FillChar(pan_lock,SizeOf(pan_lock),BYTE(panlock));
   FillChar(volume_table,SizeOf(volume_table),0);
@@ -4429,6 +4487,8 @@ begin
 
   For temp := 1 to 20 do
     volslide_type[temp] := songdata.lock_flags[temp] SHR 2 AND 3;
+
+  _dbg_leave; //EXIT //init_buffers
 end;
 
 procedure init_player;
@@ -4437,7 +4497,8 @@ var
   temp: Byte;
 
 begin
-  _debug_str_ := 'A2PLAYER.PAS:init_player';
+  _dbg_enter ({$I %FILE%}, 'init_player');
+
   opl2out($01,0);
 
   For temp := 1 to 18 do opl2out($0b0+_chan_n[temp],0);
@@ -4493,6 +4554,8 @@ begin
       arpgg_table[temp].state := 1;
       voice_table[temp] := temp;
     end;
+
+  _dbg_leave; //EXIT //init_player
 end;
 
 procedure stop_playing;
@@ -4501,7 +4564,8 @@ var
   temp: Byte;
 
 begin
-  _debug_str_ := 'A2PLAYER.PAS:stop_playing';
+  _dbg_enter ({$I %FILE%}, 'stop_playing');
+
   play_status := isStopped;
   replay_forbidden := TRUE;
   global_volume := 63;
@@ -4521,19 +4585,25 @@ begin
   opl3exp($0004);
   opl3exp($0005);
   init_buffers;
+
+  _dbg_leave; //EXIT //stop_playing
 end;
 
 procedure init_old_songdata;
 begin
-  _debug_str_ := 'A2PLAYER.PAS:init_old_songdata';
+  _dbg_enter ({$I %FILE%}, 'init_old_songdata');
+
   FillChar(old_songdata,SizeOf(old_songdata),0);
   FillChar(old_songdata.pattern_order,SizeOf(old_songdata.pattern_order),$080);
   FillChar(old_songdata.instr_data,SizeOf(old_songdata.instr_data),0);
+
+  _dbg_leave; //EXIT //init_old_songdata
 end;
 
 procedure init_songdata;
 begin
-  _debug_str_ := 'A2PLAYER.PAS:init_songdata';
+  _dbg_enter ({$I %FILE%}, 'init_songdata');
+
   If (play_status <> isStopped) then stop_playing
   else init_buffers;
 
@@ -4569,18 +4639,27 @@ begin
       _chan_m := _chpm_m;
       _chan_c := _chpm_c;
     end;
+
+  _dbg_leave; //EXIT //init_songdata
 end;
 
 procedure start_playing;
 begin
-  _debug_str_ := 'A2PLAYER.PAS:start_playing';
+  _dbg_enter ({$I %FILE%}, 'start_playing');
+
   stop_playing;
-  If (error_code <> 0) then EXIT
+  If (error_code <> 0) then
+    begin
+      _dbg_leave; EXIT; //start_playing
+    end
   else init_player;
 
   current_order := 0;
   If (songdata.pattern_order[current_order] > $7f) then
-    If (calc_order_jump = -1) then EXIT;
+    If (calc_order_jump = -1) then
+      begin
+        _dbg_leave; EXIT; //start_playing
+      end;
 
   current_pattern := songdata.pattern_order[current_order];
   current_line := 0;
@@ -4604,6 +4683,8 @@ begin
   playback_speed_shift := 0;
 
   update_timer(songdata.tempo);
+
+  _dbg_leave; //EXIT //start_playing
 end;
 
 procedure get_chunk(pattern,line,chan: Byte; var chunk: tCHUNK);
@@ -4699,7 +4780,8 @@ var
   index2: Byte;
 
 begin
-  _debug_str_ := 'A2PLAYER.PAS:count_order';
+  _dbg_enter ({$I %FILE%}, 'count_order');
+
   index := 0;
   index2 := 0;
 
@@ -4719,6 +4801,8 @@ begin
   until (index > $7f);
 
   entries := index;
+
+  _dbg_leave; //EXIT //count_order
 end;
 
 var

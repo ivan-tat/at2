@@ -19,11 +19,12 @@ program AdLib_Tracker_II;
 {$I adtrack2.inc}
 
 uses
+  common,
+  debug,
   pascal,
 {$IFDEF GO32V2}
   CRT,
   GO32,
-  common,
   VGA,
   AdT2vesa,
   AdT2opl3,
@@ -35,7 +36,6 @@ uses
   AdT2keyb,
 {$ELSE}
   SDL_Timer,
-  common,
   AdT2sys,
   AdT2keyb,
   AdT2opl3,
@@ -130,8 +130,7 @@ begin
       WriteLn(prog_exception_title);
       WriteLn('PROGRAM VERSION: ',at2ver,' from ',at2date,', ',at2link);
       WriteLn('ERROR_ID #'+Num2str(ExitCode,10)+' at '+ExpStrL(Num2str(LONGINT(ErrorAddr),16),8,'0'));
-      WriteLn('STEP #1 -> ',_last_debug_str_);
-      WriteLn('STEP #2 -> ',_debug_str_);
+      _dbg_dump_callstack;
       WriteLn;
       WriteLn('Please send this information with brief description what you were doing');
       WriteLn('when you encountered this error to following email address:');
@@ -169,6 +168,8 @@ var
 {$ENDIF}
 
 begin { MAIN }
+  _dbg_enter ({$I %FILE%}, 'main');
+
 {$IFDEF GO32V2}
 
   @old_exit_proc := ExitProc;
@@ -593,7 +594,8 @@ begin { MAIN }
 {$ENDIF}
 
   { main loop }
-  _debug_str_ := 'redirecting to main loop';
+  _dbg_label ('main loop'); //main
+
   do_synchronize := TRUE;
   fkey := kENTER;
   Repeat
@@ -737,4 +739,5 @@ begin { MAIN }
 
 {$ENDIF}
 
+  _dbg_leave; //EXIT //main
 end.

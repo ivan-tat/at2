@@ -6,16 +6,21 @@
 
 procedure init_timer_proc;
 begin
+  _dbg_enter ({$I %FILE%}, 'init_timer_proc');
+
 {$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:init_timer_proc';
   scroll_ticks := 0;
 {$ENDIF}
   Randomize;
-  If timer_initialized then EXIT;
+  If timer_initialized then
+    begin
+      _dbg_leave; EXIT; //init_timer_proc
+    end;
   timer_initialized := TRUE;
 {$IFNDEF GO32V2}
   TimerInstallHandler(@timer_poll_proc);
 {$ENDIF}
   TimerSetup(50);
+
+  _dbg_leave; //EXIT //init_timer_proc
 end;

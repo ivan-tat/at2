@@ -6,10 +6,12 @@
 
 procedure TimerDone;
 begin
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:TimerDone';
+  _dbg_enter ({$I %FILE%}, 'TimerDone');
+
   ISS_DisableTimerIRQ;
   If (timer_poll_proc_ptr <> NIL) then ISS_StopTimer(timer_poll_proc_ptr);
   timer_poll_proc_ptr := NIL;
   ISS_EnableTimerIRQ;
+
+  _dbg_leave; //EXIT //TimerDone
 end;

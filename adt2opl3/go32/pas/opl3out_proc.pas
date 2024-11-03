@@ -8,7 +8,8 @@ procedure opl3out_proc(reg,data: Word);
 begin
   If (_opl_regs_cache[reg] <> data) then
     _opl_regs_cache[reg] := data
-  else EXIT;
+  else
+    EXIT; //opl3out_proc
 
   asm
         mov     ax,reg
@@ -25,4 +26,6 @@ begin
 @@2:    in      al,dx
         loop    @@2
   end;
+
+  //EXIT //opl3out_proc
 end;

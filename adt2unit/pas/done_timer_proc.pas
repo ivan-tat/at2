@@ -6,12 +6,15 @@
 
 procedure done_timer_proc;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2UNIT.PAS:done_timer_proc';
-{$ENDIF}
-  If NOT timer_initialized then EXIT;
+  _dbg_enter ({$I %FILE%}, 'done_timer_proc');
+
+  If NOT timer_initialized then
+    begin
+      _dbg_leave; EXIT; //done_timer_proc
+    end;
   timer_initialized := FALSE;
   TimerDone;
   TimerRemoveHandler;
+
+  _dbg_leave; //EXIT //done_timer_proc
 end;

@@ -21,7 +21,7 @@ begin
           begin
             _force_program_quit := TRUE;
             getkey_proc := kESC;
-            EXIT;
+            EXIT; //GetKey.getkey_proc
           end;
         // skip all other event except key presses
         If (event.eventtype <> SDL_KEYDOWN) then CONTINUE
@@ -42,10 +42,10 @@ begin
                         If (symtab[j*10+4] > BYTE_NULL) then
                           begin
                             getkey_proc := symtab[j*10+4];
-                            EXIT;
+                            EXIT; //GetKey.getkey_proc
                           end;
                         getkey_proc := (symtab[j*10] SHL 8) OR symtab[j*10+4];
-                        EXIT;
+                        EXIT; //GetKey.getkey_proc
                       end;
                     { CTRL }
                     If (keydown[SC_LCTRL] = TRUE) or (keydown[SC_RCTRL] = TRUE) then
@@ -55,10 +55,10 @@ begin
                         If (symtab[j*10+3] > BYTE_NULL) then
                           begin
                             getkey_proc := symtab[j*10+3];
-                            EXIT;
+                            EXIT; //GetKey.getkey_proc
                           end;
                         getkey_proc := (symtab[j*10] SHL 8) OR symtab[j*10+3];
-                        EXIT;
+                        EXIT; //GetKey.getkey_proc
                       end;
                     { SHIFT }
                     If (keydown[SC_LSHIFT] = TRUE) or (keydown[SC_RSHIFT] = TRUE) then
@@ -70,7 +70,7 @@ begin
                         If (symtab[j*10+i] = WORD_NULL) then CONTINUE;
                         If (symtab[j*10+i] > BYTE_NULL) then getkey_proc := symtab[j*10+i]
                         else getkey_proc := (symtab[j*10] SHL 8) OR symtab[j*10+i];
-                        EXIT;
+                        EXIT; //GetKey.getkey_proc
                       end;
                     { normal ASCII }
                     i := 1;
@@ -80,7 +80,7 @@ begin
                     If (symtab[j*10+i] = WORD_NULL) then CONTINUE;
                     If (symtab[j*10+i] > BYTE_NULL) then getkey_proc := symtab[j*10+i]
                     else getkey_proc := (symtab[j*10] SHL 8) OR symtab[j*10+i]; // (scancode << 8) + ASCII
-                    EXIT;
+                    EXIT; //GetKey.getkey_proc
                   end;
               end;
           end;

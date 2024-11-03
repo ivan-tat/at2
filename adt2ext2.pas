@@ -67,6 +67,8 @@ procedure update_4op_flag_marks;
 implementation
 
 uses
+  debug,
+  pascal,
 {$IFNDEF UNIX}
   CRT,
 {$ENDIF}
@@ -75,7 +77,6 @@ uses
 {$ELSE}
   SDL_Timer,
 {$ENDIF}
-  pascal,
   StrUtils,
   AdT2opl3,
   AdT2unit,
@@ -121,7 +122,7 @@ begin
     begin
       sdl_opl3_emulator := 0;
       opl3_channel_recording_mode := FALSE;
-      EXIT;
+      EXIT; //FADE_OUT_RECORDING
     end;
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
@@ -224,6 +225,7 @@ begin
 
 {$ENDIF}
 
+  //EXIT //FADE_OUT_RECORDING
 end;
 
 procedure FADE_IN_RECORDING;
@@ -243,7 +245,8 @@ var
 label _end;
 
 begin
-  If (sdl_opl3_emulator = 1) or (calc_following_order(0) = -1) then EXIT;
+  If (sdl_opl3_emulator = 1) or (calc_following_order(0) = -1) then
+    EXIT; //FADE_IN_RECORDING
   If (play_status = isStopped) then smooth_fadeOut := FALSE
   else smooth_fadeOut := TRUE;
 
@@ -361,6 +364,7 @@ begin
 
 {$ENDIF}
 
+  //EXIT //FADE_IN_RECORDING
 end;
 
 procedure process_global_keys; cdecl;
@@ -501,10 +505,8 @@ var
   temp: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT2.PAS:PROGRAM_SCREEN_init';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'PROGRAM_SCREEN_init');
+
   fr_setting.shadow_enabled := FALSE;
   Frame(screen_ptr,01,MAX_PATTERN_ROWS+12,MAX_COLUMNS,MAX_PATTERN_ROWS+22,
         main_background+main_border,'',
@@ -593,6 +595,8 @@ begin
 
   ShowStr(screen_ptr,02,11+MAX_PATTERN_ROWS,patt_win[5],
           pattern_bckg+pattern_border);
+
+  _dbg_leave; //EXIT //PROGRAM_SCREEN_init
 end;
 
 procedure process_config_file;
@@ -608,10 +612,8 @@ var
   result: Longint;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT2.PAS:check_number';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'process_config_file.check_number');
+
   result := default;
 
   temp2 := 1000000000;
@@ -633,6 +635,8 @@ begin
     end;
 
   check_number := result;
+
+  _dbg_leave; //EXIT //process_config_file.check_number
 end;
 
 function validate_number(var num: Longint; str: String; base: Byte; limit1,limit2: Longint): Boolean;
@@ -643,10 +647,8 @@ var
   result: Boolean;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT2.PAS:validate_number';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'process_config_file.validate_number');
+
   result := FALSE;
 
   temp2 := 1000000000;
@@ -670,6 +672,8 @@ begin
     result := TRUE;
 
   validate_number := result;
+
+  _dbg_leave; //EXIT //process_config_file.validate_number
 end;
 
 type
@@ -681,10 +685,8 @@ var
   result: Boolean;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT2.PAS:process_config_file:check_boolean';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'process_config_file.check_boolean');
+
   result := default;
   If SameName(str+'=???',data) and
      (Length(data) < Length(str)+5) then
@@ -693,6 +695,8 @@ begin
       If (Copy(data,Length(str)+2,3) = 'off') then result := FALSE;
     end;
   check_boolean := result;
+
+  _dbg_leave; //EXIT //process_config_file.check_boolean
 end;
 
 procedure check_rgb(str: String; var default: tRGB);
@@ -701,10 +705,8 @@ var
   result: tRGB;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT2.PAS:process_config_file:check_rgb';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'process_config_file.check_rgb');
+
   If SameName(str+'=??,??,??',data) and
      (Length(data) < Length(str)+10) then
     begin
@@ -721,6 +723,8 @@ begin
 {$ENDIF}
         end;
     end;
+
+  _dbg_leave; //EXIT //process_config_file.check_rgb
 end;
 
 procedure check_option_data;
@@ -732,11 +736,9 @@ var
 {$ENDIF}
 
 begin
+  _dbg_enter ({$I %FILE%}, 'process_config_file.check_option_data');
 
 {$IFDEF GO32V2}
-
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT2.PAS:check_option_data';
 
   opl3port :=
     check_number('adlib_port',16,1,$0ffff,opl3port);
@@ -1662,6 +1664,8 @@ begin
 
   For temp := 0 to 15 do
     check_rgb('color'+ExpStrL(Num2str(temp,10),2,'0'),rgb_color[temp]);
+
+  _dbg_leave; //EXIT //process_config_file.check_option_data
 end;
 
 var
@@ -1670,10 +1674,8 @@ var
   config_found_flag: Boolean;
 
 begin { process_config_file }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2EXT2.PAS:process_config_file';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'process_config_file');
+
   config_found_flag := FALSE;
   Write('Reading configuration file ... ');
   {$i-}
@@ -1736,6 +1738,8 @@ begin { process_config_file }
             check_option_data;
           end;
       end;
+
+  _dbg_leave; //EXIT //process_config_file
 end;
 
 end.

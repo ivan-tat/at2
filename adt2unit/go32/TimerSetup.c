@@ -21,4 +21,6 @@ void TimerSetup (uint32_t Hz) {
   ISS_StartTimer (timer_poll_proc_ptr, ISS_TimerSpeed / Hz);
 
   ISS_EnableTimerIRQ ();
+
+  DBG_LEAVE (); //TimerSetup
 }

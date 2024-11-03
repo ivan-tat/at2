@@ -542,7 +542,7 @@ begin
                       chunk.effect := LO(cmd);
                       put_chunk(patt,temp2,temp3,chunk);
                       insert_command := TRUE;
-                      EXIT;
+                      EXIT; //insert_command
                     end
                   else If (chunk.effect_def2+chunk.effect2 = 0) or
                           (chunk.effect_def2 SHL 8 + chunk.effect2 = cmd2) or
@@ -552,7 +552,7 @@ begin
                            chunk.effect2 := LO(cmd);
                            put_chunk(patt,temp2,temp3,chunk);
                            insert_command := TRUE;
-                           EXIT;
+                           EXIT; //insert_command
                          end
                        else
                 else If ((chunk.effect_def+chunk.effect = 0) or
@@ -568,13 +568,15 @@ begin
                          chunk.effect2 := LO(cmd2);
                          put_chunk(patt,temp2,temp3,chunk);
                          insert_command := TRUE;
-                         EXIT;
+                         EXIT; //insert_command
                        end;
             end;
         Inc(order);
         patts := patts+CHR(patt);
       end;
   until (patt >= patterns) or (order > $7f);
+
+  //EXIT //insert_command
 end;
 
 procedure a2m_file_loader;
@@ -620,12 +622,8 @@ var
   xlen: array[0..6] of Word;
 
 begin
-{$IFNDEF ADT2PLAY}
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:a2m_file_loader';
-{$ENDIF}
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2m_file_loader');
+
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -638,7 +636,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //a2m_file_loader
     end;
 
   FillChar(buf1,SizeOf(buf1),0);
@@ -651,7 +649,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //a2m_file_loader
     end;
 
 {$IFDEF ADT2PLAY}
@@ -665,7 +663,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //a2m_file_loader
     end;
 
 {$IFNDEF ADT2PLAY}
@@ -690,7 +688,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       xlen[0] := header2.b2len;
@@ -706,7 +704,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -719,7 +717,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -732,7 +730,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -748,7 +746,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2m_file_loader
               end;
             crc := Update32(buf1,temp,crc);
           end;
@@ -767,7 +765,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       init_songdata;
@@ -786,7 +784,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       BlockReadF(f,buf1,header2.b0len,temp);
@@ -798,7 +796,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       Case header2.ffver of
@@ -820,7 +818,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       Case header2.ffver of
@@ -843,7 +841,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2m_file_loader
               end;
 
             Case header2.ffver of
@@ -871,7 +869,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       xlen[0] := header2.b2len;
@@ -892,7 +890,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -905,7 +903,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -921,7 +919,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2m_file_loader
               end;
             crc := Update32(buf1,temp,crc);
           end;
@@ -940,7 +938,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       init_songdata;
@@ -959,7 +957,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       BlockReadF(f,buf1,header2.b0len,temp);
@@ -971,7 +969,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       Case header2.ffver of
@@ -990,7 +988,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       Case header2.ffver of
@@ -1013,7 +1011,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2m_file_loader
               end;
 
             Case header2.ffver of
@@ -1039,7 +1037,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1052,7 +1050,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1068,7 +1066,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2m_file_loader
               end;
             crc := Update32(buf1,temp,crc);
           end;
@@ -1085,7 +1083,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       init_songdata;
@@ -1100,7 +1098,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       BlockReadF(f,buf1,header.b0len,temp);
@@ -1112,7 +1110,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       APACK_decompress(buf1,songdata);
@@ -1125,7 +1123,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       If (header.ffver = 9) then
@@ -1157,7 +1155,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2m_file_loader
               end;
 
             If (temp2*8+8 <= max_patterns) then
@@ -1178,7 +1176,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1191,7 +1189,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1207,7 +1205,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2m_file_loader
               end;
             crc := Update32(buf1,temp,crc);
           end;
@@ -1224,7 +1222,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       init_songdata;
@@ -1239,7 +1237,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
       BlockReadF(f,buf1,header.b0len,temp);
@@ -1251,7 +1249,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
 {$IFNDEF ADT2PLAY}
@@ -1270,7 +1268,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2m_file_loader
         end;
 
 {$IFNDEF ADT2PLAY}
@@ -1301,7 +1299,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2M LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2m_file_loader
               end;
 
             If (temp2*8+8 <= max_patterns) then
@@ -1337,6 +1335,8 @@ begin
 
   load_flag := 1;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //a2m_file_loader
 end;
 
 procedure a2t_file_loader;
@@ -1450,12 +1450,8 @@ var
   xlen: array[0..6] of Word;
 
 begin
-{$IFNDEF ADT2PLAY}
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:a2t_file_loader';
-{$ENDIF}
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2t_file_loader');
+
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -1468,7 +1464,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //a2t_file_loader
     end;
 
   FillChar(buf1,SizeOf(buf1),0);
@@ -1481,7 +1477,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //a2t_file_loader
     end;
 
 {$IFDEF ADT2PLAY}
@@ -1495,7 +1491,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //a2t_file_loader
     end;
 
   init_old_songdata;
@@ -1512,7 +1508,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       xlen[0] := header2.b3len;
@@ -1529,7 +1525,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1542,7 +1538,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1555,7 +1551,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1571,7 +1567,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2t_file_loader
               end;
             crc := Update32(buf1,temp,crc);
           end;
@@ -1591,7 +1587,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       init_songdata;
@@ -1610,7 +1606,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       BlockReadF(f,buf1,header2.b0len,temp);
@@ -1622,7 +1618,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       old_songdata.tempo := header2.tempo;
@@ -1647,7 +1643,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       Case header2.ffver of
@@ -1666,7 +1662,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       FillChar(old_hash_buffer,SizeOf(old_hash_buffer),0);
@@ -1690,7 +1686,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2t_file_loader
               end;
 
             FillChar(old_hash_buffer,SizeOf(old_hash_buffer),0);
@@ -1719,7 +1715,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       xlen[0] := header3.b3len;
@@ -1740,7 +1736,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1753,7 +1749,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1766,7 +1762,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1782,7 +1778,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2t_file_loader
               end;
             crc := Update32(buf1,temp,crc);
           end;
@@ -1802,7 +1798,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       init_songdata;
@@ -1821,7 +1817,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       BlockReadF(f,buf1,header3.b0len,temp);
@@ -1833,7 +1829,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       old_songdata.tempo := header3.tempo;
@@ -1856,7 +1852,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       Case header3.ffver of
@@ -1875,7 +1871,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       FillChar(hash_buffer,SizeOf(hash_buffer),0);
@@ -1899,7 +1895,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2t_file_loader
               end;
 
             FillChar(hash_buffer,SizeOf(hash_buffer),0);
@@ -1926,7 +1922,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -1939,7 +1935,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1952,7 +1948,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1965,7 +1961,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1978,7 +1974,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -1991,7 +1987,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2007,7 +2003,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2t_file_loader
               end;
             crc := Update32(buf1,temp,crc);
           end;
@@ -2028,7 +2024,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       init_songdata;
@@ -2043,7 +2039,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       BlockReadF(f,buf1,header4.b0len,temp);
@@ -2055,7 +2051,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,songdata.instr_data);
@@ -2068,7 +2064,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,songdata.instr_macros);
@@ -2081,7 +2077,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,songdata.macro_table);
@@ -2094,7 +2090,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       songdata.tempo := header4.tempo;
@@ -2115,7 +2111,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,pattdata^[0]);
@@ -2131,7 +2127,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2t_file_loader
               end;
 
             If (temp2*8+8 <= max_patterns) then
@@ -2152,7 +2148,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -2165,7 +2161,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2178,7 +2174,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2191,7 +2187,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2204,7 +2200,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2217,7 +2213,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2233,7 +2229,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2t_file_loader
               end;
             crc := Update32(buf1,temp,crc);
           end;
@@ -2254,7 +2250,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       init_songdata;
@@ -2269,7 +2265,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       BlockReadF(f,buf1,header5.b0len,temp);
@@ -2281,7 +2277,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,songdata.instr_data);
@@ -2294,7 +2290,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,songdata.instr_macros);
@@ -2307,7 +2303,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,songdata.macro_table);
@@ -2320,7 +2316,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       songdata.tempo := header5.tempo;
@@ -2342,7 +2338,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,pattdata^[0]);
@@ -2358,7 +2354,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2t_file_loader
               end;
 
             If (temp2*8+8 <= max_patterns) then
@@ -2379,7 +2375,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2392,7 +2388,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2405,7 +2401,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2418,7 +2414,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2431,7 +2427,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2444,7 +2440,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2460,7 +2456,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2t_file_loader
               end;
             crc := Update32(buf1,temp,crc);
           end;
@@ -2482,7 +2478,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       init_songdata;
@@ -2497,7 +2493,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       BlockReadF(f,buf1,header.b0len,temp);
@@ -2509,7 +2505,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,songdata.instr_data);
@@ -2522,7 +2518,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,songdata.instr_macros);
@@ -2535,7 +2531,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,songdata.macro_table);
@@ -2548,7 +2544,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,songdata.dis_fmreg_col);
@@ -2561,7 +2557,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       songdata.tempo := header.tempo;
@@ -2583,7 +2579,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       APACK_decompress(buf1,pattdata^[0]);
@@ -2599,7 +2595,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2t_file_loader
               end;
 
             If (temp2*8+8 <= max_patterns) then
@@ -2620,7 +2616,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2633,7 +2629,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2646,7 +2642,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2659,7 +2655,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2672,7 +2668,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2685,7 +2681,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -2701,7 +2697,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2t_file_loader
               end;
             crc := Update32(buf1,temp,crc);
           end;
@@ -2723,7 +2719,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       init_songdata;
@@ -2738,7 +2734,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       BlockReadF(f,buf1,header.b0len,temp);
@@ -2750,7 +2746,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
 {$IFNDEF ADT2PLAY}
@@ -2782,7 +2778,7 @@ begin
                      'LOADiNG STOPPED$',
                      '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-              EXIT;
+              _dbg_leave; EXIT; //a2t_file_loader
             end;
 
           LZH_decompress(buf1,songdata.instr_macros,header.b1len);
@@ -2802,7 +2798,7 @@ begin
                      'LOADiNG STOPPED$',
                      '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-              EXIT;
+              _dbg_leave; EXIT; //a2t_file_loader
             end;
 
           LZH_decompress(buf1,songdata.macro_table,header.b2len);
@@ -2822,7 +2818,7 @@ begin
                      'LOADiNG STOPPED$',
                      '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-              EXIT;
+              _dbg_leave; EXIT; //a2t_file_loader
             end;
 
           LZH_decompress(buf1,songdata.dis_fmreg_col,header.b3len);
@@ -2840,7 +2836,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       songdata.tempo := header.tempo;
@@ -2865,7 +2861,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //a2t_file_loader
         end;
 
       LZH_decompress(buf1,pattdata^[0],header.b5len[0]);
@@ -2884,7 +2880,7 @@ begin
                        'LOADiNG STOPPED$',
                        '~O~KAY$',' A2T LOADER ',1);
 {$ENDIF}
-                EXIT;
+                _dbg_leave; EXIT; //a2t_file_loader
               end;
 
             If (temp2*8+8 <= max_patterns) then
@@ -2920,6 +2916,8 @@ begin
 
   load_flag := 1;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //a2t_file_loader
 end;
 
 {$IFNDEF ADT2PLAY}
@@ -2960,10 +2958,8 @@ var
   _pattern: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:a2p_file_loader';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2p_file_loader');
+
   If (pattern2use <> BYTE_NULL) then _pattern := pattern2use
   else _pattern := pattern_patt;
 
@@ -2977,7 +2973,7 @@ begin
       Dialog('ERROR READiNG DATA - DiSK ERROR?$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2P LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2p_file_loader
     end;
 
   FillChar(buf1,SizeOf(buf1),0);
@@ -2988,7 +2984,7 @@ begin
       Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2P LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2p_file_loader
     end;
 
   If NOT (header.ffver in [1..FFVER_A2P]) then
@@ -2997,7 +2993,7 @@ begin
       Dialog('UNKNOWN FiLE FORMAT VERSiON$'+
              'LOADiNG STOPPED$',
              '~O~KAY$',' A2P LOADER ',1);
-      EXIT;
+      _dbg_leave; EXIT; //a2p_file_loader
     end;
 
   If (play_status <> isStopped) then
@@ -3018,7 +3014,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -3030,7 +3026,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       Case header.ffver of
@@ -3074,7 +3070,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -3086,7 +3082,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       Case header.ffver of
@@ -3130,7 +3126,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -3141,7 +3137,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -3153,7 +3149,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       If (pattern2use <> BYTE_NULL) and (_patts_marked <> 0) then
@@ -3183,7 +3179,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -3194,7 +3190,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -3206,7 +3202,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       If (pattern2use <> BYTE_NULL) and (_patts_marked <> 0) then
@@ -3254,7 +3250,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       crc := DWORD_NULL;
@@ -3265,7 +3261,7 @@ begin
           Dialog('ERROR READiNG DATA - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       crc := Update32(buf1,temp,crc);
@@ -3277,7 +3273,7 @@ begin
           Dialog('CRC FAiLED - FiLE CORRUPTED$'+
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' A2P LOADER ',1);
-          EXIT;
+          _dbg_leave; EXIT; //a2p_file_loader
         end;
 
       progress_num_steps := 0;
@@ -3318,6 +3314,8 @@ begin
 
   CloseF(f);
   load_flag := 1;
+
+  _dbg_leave; //EXIT //a2p_file_loader
 end;
 {$ENDIF}
 
@@ -3604,12 +3602,8 @@ begin
 end;
 
 begin
-{$IFNDEF ADT2PLAY}
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:amd_file_loader';
-{$ENDIF}
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'amd_file_loader');
+
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -3622,7 +3616,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' '+iCASE(ExtOnly(songdata_source))+' LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //amd_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -3635,7 +3629,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' '+iCASE(ExtOnly(songdata_source))+' LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //amd_file_loader
     end;
 
 {$IFDEF ADT2PLAY}
@@ -3649,7 +3643,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' '+iCASE(ExtOnly(songdata_source))+' LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //amd_file_loader
     end;
 
 {$IFNDEF ADT2PLAY}
@@ -3670,7 +3664,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' '+iCASE(ExtOnly(songdata_source))+' LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //amd_file_loader
     end;
 
   tmp2 := WORD_NULL;
@@ -3686,7 +3680,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' '+iCASE(ExtOnly(songdata_source))+' LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //amd_file_loader
         end;
     end;
 
@@ -3742,6 +3736,8 @@ begin
 {$ELSE}
   load_flag := 1;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //amd_file_loader
 end;
 
 procedure import_hsc_instrument(inst: Byte; var data); forward;
@@ -4115,11 +4111,14 @@ end;
 
 procedure expand__cff_dictionary(str: tSTRING);
 begin
-  If (str[0] >= $0f0) then EXIT;
+  If (str[0] >= $0f0) then
+    EXIT; //expand__cff_dictionary
   Move(str,buf3[_cff_heap_length],str[0]+1);
   _cff_dictionary[_cff_dictionary_length] := Addr(buf3[_cff_heap_length]);
   Inc(_cff_dictionary_length);
   Inc(_cff_heap_length,str[0]+1);
+
+  //EXIT //expand__cff_dictionary
 end;
 
 begin
@@ -4197,12 +4196,8 @@ begin
 end;
 
 begin
-{$IFNDEF ADT2PLAY}
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:cff_file_loader';
-{$ENDIF}
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'cff_file_loader');
+
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -4215,7 +4210,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' CFF LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //cff_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -4228,7 +4223,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' CFF LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //cff_file_loader
     end;
 
 {$IFNDEF ADT2PLAY}
@@ -4253,7 +4248,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' CFF LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //cff_file_loader
         end;
 
       CloseF(f);
@@ -4268,7 +4263,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' CFF LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //cff_file_loader
         end;
 
       FillChar(buf1,SizeOf(buf1),0);
@@ -4286,7 +4281,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' CFF LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //cff_file_loader
         end;
 
       FillChar(buf1,SizeOf(buf1),0);
@@ -4299,7 +4294,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' CFF LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //cff_file_loader
         end;
       CloseF(f);
     end;
@@ -4342,6 +4337,8 @@ begin
 {$ELSE}
   load_flag := 1;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //cff_file_loader
 end;
 
 procedure import_standard_instrument(inst: Byte; var data);
@@ -4481,12 +4478,8 @@ begin
 end;
 
 begin
-{$IFNDEF ADT2PLAY}
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:dfm_file_loader';
-{$ENDIF}
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'dfm_file_loader');
+
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -4499,7 +4492,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' DFM LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //dfm_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -4511,7 +4504,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' DFM LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //dfm_file_loader
     end;
 
 {$IFNDEF ADT2PLAY}
@@ -4533,7 +4526,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' DFM LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //dfm_file_loader
     end;
 
   init_songdata;
@@ -4586,7 +4579,7 @@ begin
                'LOADiNG STOPPED$',
                '~O~KAY$',' DFM LOADER ',1);
 {$ENDIF}
-        EXIT;
+        _dbg_leave; EXIT; //dfm_file_loader
       end;
 
     Inc(temp2);
@@ -4604,7 +4597,7 @@ begin
                      'LOADiNG STOPPED$',
                      '~O~KAY$',' DFM LOADER ',1);
 {$ENDIF}
-              EXIT;
+              _dbg_leave; EXIT; //dfm_file_loader
             end
           else Inc(temp2);
 
@@ -4626,6 +4619,8 @@ begin
 {$ELSE}
   load_flag := 1;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //dfm_file_loader
 end;
 
 type
@@ -4851,16 +4846,13 @@ var
   temp,temp2,temp3: Longint;
 
 begin
-{$IFNDEF ADT2PLAY}
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:hsc_file_loader';
-{$ENDIF}
-{$ELSE}
+  _dbg_enter ({$I %FILE%}, 'hsc_file_loader');
+
+{$IFDEF ADT2PLAY}
   If (Lower(ExtOnly(songdata_source)) <> 'hsc') then
     begin
       load_flag := $7f;
-      EXIT;
+      _dbg_leave; EXIT; //hsc_file_loader
     end;
 {$ENDIF}
 
@@ -4876,7 +4868,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' HSC LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //hsc_file_loader
     end;
 
 {$IFNDEF ADT2PLAY}
@@ -4897,7 +4889,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' HSC LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //hsc_file_loader
     end;
 
   For temp2 := 0 to $31 do
@@ -4963,6 +4955,8 @@ begin
 {$ELSE}
   load_flag := 1;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //hsc_file_loader
 end;
 
 type
@@ -4997,12 +4991,8 @@ var
             data_size: Word;
           end;
 begin
-{$IFNDEF ADT2PLAY}
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:mtk_file_loader';
-{$ENDIF}
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'mtk_file_loader');
+
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -5015,7 +5005,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' MTK LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //mtk_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -5027,7 +5017,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' MTK LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //mtk_file_loader
     end;
 
 {$IFNDEF ADT2PLAY}
@@ -5052,7 +5042,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' MTK LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //mtk_file_loader
     end;
 
   FillChar(buffer2,SizeOf(buffer2),0);
@@ -5065,7 +5055,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' MTK LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //mtk_file_loader
     end;
 
   init_songdata;
@@ -5124,6 +5114,8 @@ begin
 {$ELSE}
   load_flag := 1;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //mtk_file_loader
 end;
 
 procedure rad_file_loader;
@@ -5331,7 +5323,8 @@ begin
   temp2 := 0;
   For temp := 1 to 22 do
     If (truncate_string(desc[temp]) <> '') then Inc(temp2);
-  If (temp2 = 0) then EXIT;
+  If (temp2 = 0) then
+    EXIT; //list_rad_description
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
   centered_frame_vdest := screen_ptr;
@@ -5358,16 +5351,14 @@ begin
   move_to_screen_area[4] := ystart+24+1;
   move2screen;
   no_status_refresh := TRUE;
+
+  //EXIT //list_rad_description
 end;
 {$ENDIF}
 
 begin
-{$IFNDEF ADT2PLAY}
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:rad_file_loader';
-{$ENDIF}
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'rad_file_loader');
+
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -5380,7 +5371,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' RAD LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //rad_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -5392,7 +5383,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' RAD LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //rad_file_loader
     end;
 
   If (header.rmver <> $10) then
@@ -5403,7 +5394,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' RAD LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //rad_file_loader
     end;
 
 {$IFNDEF ADT2PLAY}
@@ -5425,7 +5416,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' RAD LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //rad_file_loader
     end;
 
   temp2 := 0;
@@ -5442,7 +5433,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' RAD LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //rad_file_loader
         end;
 
       Inc(offs0,temp2+1);
@@ -5543,6 +5534,8 @@ begin
 {$ELSE}
   load_flag := 1;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //rad_file_loader
 end;
 
 const
@@ -6243,7 +6236,7 @@ begin
                                  (_freq[SUCC(temp)]-_freq[temp])*
                                  (freq-Round(_freq[temp]*factor)));
               find_scale_factor := scaler*12+PRED(temp);
-              EXIT;
+              EXIT; //find_scale_factor
             end
           else
             begin
@@ -6252,12 +6245,14 @@ begin
                                  (freq-Round(_freq[SUCC(temp)]*factor)));
               If (temp <> 12) then find_scale_factor := scaler*12+temp
               else find_scale_factor := SUCC(scaler)*12;
-              EXIT;
+              EXIT; //find_scale_factor
             end;
       end;
 
   find_scale_factor := -127;
   fine_tune := 0;
+
+  //EXIT //find_scale_factor
 end;
 
 (*  // another method -- it's hard to say whether more or less accurate :)
@@ -6299,7 +6294,7 @@ begin
               fine_tune := Round((freq-Round(_freq[temp]*factor))/
                                   Round(16/_finetune_factor[scaler]));
               find_scale_factor := scaler*12+PRED(temp);
-              EXIT;
+              EXIT; //find_scale_factor
             end
           else
             begin
@@ -6308,22 +6303,20 @@ begin
                                   Round(16/_finetune_factor[scaler]));
               If (temp = 12) then temp := 0;
               find_scale_factor := scaler*12+temp;
-              EXIT;
+              EXIT; //find_scale_factor
             end;
       end;
 
   find_scale_factor := -127;
   fine_tune := 0;
+
+  //EXIT //find_scale_factor
 end;
 *)
 
 begin
-{$IFNDEF ADT2PLAY}
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:s3m_file_loader';
-{$ENDIF}
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 's3m_file_loader');
+
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -6336,7 +6329,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' S3M LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //s3m_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -6348,7 +6341,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' S3M LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //s3m_file_loader
     end;
 
 {$IFDEF ADT2PLAY}
@@ -6362,7 +6355,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' S3M LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //s3m_file_loader
     end;
 
 {$IFNDEF ADT2PLAY}
@@ -6382,7 +6375,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' S3M LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //s3m_file_loader
     end;
 
   BlockReadF(f,paraptr_ins,header.insnum*2,temp);
@@ -6394,7 +6387,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' S3M LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //s3m_file_loader
     end;
 
   BlockReadF(f,paraptr_pat,header.patnum*2,temp);
@@ -6406,7 +6399,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' S3M LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //s3m_file_loader
     end;
 
   init_songdata;
@@ -6456,7 +6449,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' S3M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //s3m_file_loader
         end;
 
       BlockReadF(f,insdata,SizeOf(insdata),temp2);
@@ -6468,7 +6461,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' S3M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //s3m_file_loader
         end;
 
       If (truncate_string(insdata.smpname) <> '') then
@@ -6490,7 +6483,7 @@ begin
                      'LOADiNG STOPPED$',
                      '~O~KAY$',' S3M LOADER ',1);
 {$ENDIF}
-              EXIT;
+              _dbg_leave; EXIT; //s3m_file_loader
             end;
 
           import_standard_instrument(temp,insdata.fmdata);
@@ -6513,7 +6506,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' S3M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //s3m_file_loader
         end;
 
       BlockReadF(f,patlen,SizeOf(patlen),temp2);
@@ -6525,7 +6518,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' S3M LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //s3m_file_loader
         end;
 
       If (patlen = 0) then CONTINUE;
@@ -6589,6 +6582,8 @@ begin
 {$ELSE}
   load_flag := 1;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //s3m_file_loader
 end;
 
 procedure fix_fmk_commands(patterns: Byte);
@@ -6996,7 +6991,8 @@ begin
   temp2 := 0;
   For temp := 1 to rows do
     If (truncate_string(desc[temp]) <> '') then Inc(temp2);
-  If (temp2 = 0) then EXIT;
+  If (temp2 = 0) then
+    EXIT; //list_fmk_description
 
   ScreenMemCopy(screen_ptr,ptr_screen_backup);
   centered_frame_vdest := screen_ptr;
@@ -7023,6 +7019,8 @@ begin
   move_to_screen_area[4] := ystart+26+1;
   move2screen;
   no_status_refresh := TRUE;
+
+  //EXIT //list_fmk_description
 end;
 {$ENDIF}
 
@@ -7288,12 +7286,8 @@ begin
 end;
 
 begin
-{$IFNDEF ADT2PLAY}
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:fmk_file_loader';
-{$ENDIF}
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'fmk_file_loader');
+
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -7306,7 +7300,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //fmk_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -7318,7 +7312,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //fmk_file_loader
     end;
 
 {$IFDEF ADT2PLAY}
@@ -7332,7 +7326,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //fmk_file_loader
     end;
 
 {$IFNDEF ADT2PLAY}
@@ -7354,7 +7348,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //fmk_file_loader
         end;
     end;
 
@@ -7369,7 +7363,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //fmk_file_loader
         end;
     end;
 
@@ -7382,7 +7376,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //fmk_file_loader
     end;
 
   fpos_bak := FilePos(f);
@@ -7397,7 +7391,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //fmk_file_loader
         end;
 
       BlockReadF(f,desc_rows,SizeOf(desc_rows),temp);
@@ -7409,7 +7403,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //fmk_file_loader
         end;
 
       If (desc_rows <> 0) then
@@ -7423,7 +7417,7 @@ begin
                      'LOADiNG STOPPED$',
                      '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-              EXIT;
+              _dbg_leave; EXIT; //fmk_file_loader
             end;
         end;
 
@@ -7443,7 +7437,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //fmk_file_loader
     end;
 
   If (header.insnum <> 0) then
@@ -7457,7 +7451,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //fmk_file_loader
         end;
     end;
 
@@ -7472,7 +7466,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //fmk_file_loader
         end;
     end;
 
@@ -7560,7 +7554,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //fmk_file_loader
         end;
 
       BlockReadF(f,insdata,SizeOf(insdata),temp2);
@@ -7572,7 +7566,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //fmk_file_loader
         end;
 
       If (truncate_string(insdata.iname) <> '') then
@@ -7598,7 +7592,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //fmk_file_loader
         end;
 
       If (paraptr_pat[pat] = 0) then CONTINUE;
@@ -7611,7 +7605,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' FMK LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //fmk_file_loader
         end;
 
       If (patlen = 0) then CONTINUE;
@@ -7674,6 +7668,8 @@ begin
 {$ELSE}
   load_flag := 1;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //fmk_file_loader
 end;
 
 procedure import_sat_instrument(inst: Byte; var data);
@@ -7810,12 +7806,8 @@ begin
 end;
 
 begin
-{$IFNDEF ADT2PLAY}
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:sat_file_loader';
-{$ENDIF}
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'sat_file_loader');
+
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -7828,7 +7820,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' SAT LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //sat_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -7840,7 +7832,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' SAT LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //sat_file_loader
     end;
 
   If NOT (header.vernm in [1,5,6]) then
@@ -7851,7 +7843,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' SAT LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //sat_file_loader
     end;
 
 {$IFDEF ADT2PLAY}
@@ -7869,7 +7861,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' SAT LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //sat_file_loader
         end;
 
       BlockReadF(f,headr2,SizeOf(headr2),temp);
@@ -7881,7 +7873,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' SAT LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //sat_file_loader
         end;
     end;
 
@@ -7904,7 +7896,7 @@ begin
              'LOADiNG STOPPED$',
              '~O~KAY$',' SAT LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //sat_file_loader
     end;
 
   tmp2 := WORD_NULL;
@@ -7920,7 +7912,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' SAT LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //sat_file_loader
         end;
     end;
 
@@ -7937,7 +7929,7 @@ begin
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' SAT LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //sat_file_loader
         end;
     end;
 
@@ -8032,6 +8024,8 @@ begin
 {$ELSE}
   load_flag := 1;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //sat_file_loader
 end;
 
 function _sal(op1,op2: Integer): Byte;
@@ -8227,12 +8221,8 @@ begin
 end;
 
 begin { sa2_file_loader }
-{$IFNDEF ADT2PLAY}
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADERS.INC:sa2_file_loader';
-{$ENDIF}
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'sa2_file_loader');
+
   {$i-}
   Assign(f,songdata_source);
   ResetF(f);
@@ -8245,7 +8235,7 @@ begin { sa2_file_loader }
              'LOADiNG STOPPED$',
              '~O~KAY$',' SA2 LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //sa2_file_loader
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -8257,7 +8247,7 @@ begin { sa2_file_loader }
              'LOADiNG STOPPED$',
              '~O~KAY$',' SA2 LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //sa2_file_loader
     end;
 
   If NOT (header.vernm in [8,9]) then
@@ -8268,7 +8258,7 @@ begin { sa2_file_loader }
              'LOADiNG STOPPED$',
              '~O~KAY$',' SA2 LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //sa2_file_loader
     end;
 
 {$IFNDEF ADT2PLAY}
@@ -8292,7 +8282,7 @@ begin { sa2_file_loader }
                  'LOADiNG STOPPED$',
                  '~O~KAY$',' SA2 LOADER ',1);
 {$ENDIF}
-          EXIT;
+          _dbg_leave; EXIT; //sa2_file_loader
         end;
     end;
 
@@ -8306,7 +8296,7 @@ begin { sa2_file_loader }
              'LOADiNG STOPPED$',
              '~O~KAY$',' SA2 LOADER ',1);
 {$ENDIF}
-      EXIT;
+      _dbg_leave; EXIT; //sa2_file_loader
     end;
 
   init_songdata;
@@ -8378,4 +8368,6 @@ begin { sa2_file_loader }
 {$ELSE}
   load_flag := 1;
 {$ENDIF}
+
+  _dbg_leave; //EXIT //sa2_file_loader
 end;

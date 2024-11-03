@@ -103,6 +103,9 @@ procedure MenuLib1_Init;
 
 implementation
 
+uses
+  debug;
+
 type
   tDBUFFR = array[1.. 100] of Record
                                 str: String;
@@ -151,13 +154,13 @@ var
   temp: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'MENULIB1.PAS:pstr';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'pstr');
+
   Move(pBYTE(mnu_data)[(item-1)*(mnu_len+1)],temp,mnu_len+1);
   If NOT solid then pstr := ExpStrR(temp,mnu_len-2,' ')
   else pstr := ExpStrR(temp,mnu_len,' ');
+
+  _dbg_leave; //EXIT //pstr
 end;
 
 function pdes(item: Word): String;
@@ -166,14 +169,14 @@ var
   temp: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'MENULIB1.PAS:pdes';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'pdes');
+
   If (mn_environment.descr <> NIL) then
     Move(pBYTE(mn_environment.descr)[(item-1)*(mn_environment.descr_len+1)],temp,mn_environment.descr_len+1)
   else temp := '';
   pdes := ExpStrR(temp,mn_environment.descr_len,' ');
+
+  _dbg_leave; //EXIT //pdes
 end;
 
 procedure refresh;
@@ -185,14 +188,12 @@ var
   highlighted: Boolean;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'MENULIB1.PAS:refresh:ShowCStr_clone';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'refresh.ShowCStr_clone');
+
   If NOT (MenuLib1_mn_setting.fixed_len <> 0) then
     begin
       ShowCStr(dest,x,y,str,atr1,atr2);
-      EXIT;
+      _dbg_leave; EXIT; //refresh.ShowCStr_clone
     end;
 
   highlighted := FALSE;
@@ -213,14 +214,17 @@ begin
                Inc(len);
              end
          end;
+
+  _dbg_leave; //EXIT //refresh.ShowCStr_clone
 end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'MENULIB1.PAS:refresh';
-{$ENDIF}
-  If (page = opage) and (idx2 = opos) and NOT MenuLib1_mn_environment.do_refresh then EXIT
+  _dbg_enter ({$I %FILE%}, 'refresh');
+
+  If (page = opage) and (idx2 = opos) and NOT MenuLib1_mn_environment.do_refresh then
+    begin
+      _dbg_leave; EXIT; //refresh
+    end
   else begin
          opage := page;
          opos  := idx2;
@@ -252,6 +256,8 @@ begin
   vscrollbar_pos :=
     VScrollBar(MenuLib1_mn_environment.v_dest,mnu_x+max+1,mnu_y+1,temp2,mnu_count,idx2+page-1,
                vscrollbar_pos,MenuLib1_mn_setting.menu_attr,MenuLib1_mn_setting.menu_attr);
+
+  _dbg_leave; //EXIT //refresh
 end;
 
 function MenuLib1_Menu(var data; x,y: Byte; spos: Word;
@@ -319,10 +325,8 @@ var
   temp: String;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'MENULIB1.PAS:MenuLib1_Menu:edit_contents';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MenuLib1_Menu.edit_contents');
+
   is_setting.append_enabled := TRUE;
   is_setting.character_set  := [#32..#255];
   is_environment.locate_pos := 1;
@@ -352,17 +356,17 @@ begin
            ExpStrR(pstr(item),max+(Length(pstr(item)))-
            CStrLen(pstr(item)),' '),
            MenuLib1_mn_setting.text2_attr,MenuLib1_mn_setting.short2_attr);
+
+  _dbg_leave; //EXIT //MenuLib1_Menu.edit_contents
 end;
 
 begin { MenuLib1_Menu }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'MENULIB1.PAS:MenuLib1_Menu';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MenuLib1_Menu');
+
   If (count = 0) then
     begin
       MenuLib1_Menu := 0;
-      EXIT;
+      _dbg_leave; EXIT; //MenuLib1_Menu
     end;
 
   max := Length(title);
@@ -373,7 +377,10 @@ begin { MenuLib1_Menu }
   If NOT MenuLib1_mn_environment.unpolite then
     ScreenMemCopy(MenuLib1_mn_environment.v_dest,ptr_scr_backup);
 
-  If (count < 1) then EXIT;
+  If (count < 1) then
+    begin
+      _dbg_leave; EXIT; //MenuLib1_Menu
+    end;
   vscrollbar_pos := BYTE_NULL;
 
   If NOT MenuLib1_mn_environment.preview then HideCursor;
@@ -542,14 +549,13 @@ begin { MenuLib1_Menu }
     end;
 
   MenuLib1_Menu := idx2+page-1;
+
+  _dbg_leave; //EXIT //MenuLib1_Menu
 end;
 
 procedure MenuLib1_Init;
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'MENULIB1.PAS:MenuLib1_Init';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'MenuLib1_Init');
 
   MenuLib1_mn_setting.frame_type     := frame_single;
   MenuLib1_mn_setting.center_box     := FALSE;
@@ -583,6 +589,8 @@ begin
   MenuLib1_mn_environment.preview    := FALSE;
   MenuLib1_mn_environment.descr_len  := 0;
   MenuLib1_mn_environment.descr      := NIL;
+
+  _dbg_leave; //EXIT //MenuLib1_Init
 end;
 
 end.

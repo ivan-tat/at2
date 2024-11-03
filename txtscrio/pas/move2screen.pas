@@ -10,10 +10,8 @@ var
   screen_ptr_backup: Pointer;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'TXTSCRIO.PAS:move2screen';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'move2screen');
+
   HideCursor;
   screen_ptr_backup := screen_ptr;
   screen_ptr := move_to_screen_data;
@@ -33,4 +31,6 @@ begin
   ScreenMemCopy(screen_ptr,screen_ptr_backup);
   screen_ptr := screen_ptr_backup;
   SetCursor(cursor_backup);
+
+  _dbg_leave; //EXIT //move2screen
 end;

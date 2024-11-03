@@ -14,4 +14,6 @@ void wait_until_F11_F12_released (void) {
   } while (keydown[SC_F11] || keydown[SC_F12]);
 
   keyboard_reset_buffer ();
+
+  DBG_LEAVE (); //wait_until_F11_F12_released
 }

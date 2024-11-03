@@ -35,10 +35,8 @@
 
 procedure import_standard_instrument_alt(var data);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:import_standard_instrument_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'import_standard_instrument_alt');
+
   With temp_instrument do
     begin
       fm_data.AM_VIB_EG_modulator := pBYTE(@data)[0];
@@ -56,14 +54,14 @@ begin
 
   temp_instrument.panning := 0;
   temp_instrument.fine_tune := 0;
+
+  _dbg_leave; //EXIT //import_standard_instrument_alt
 end;
 
 procedure import_fin_instrument_alt(var data);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:import_fin_instrument_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'import_fin_instrument_alt');
+
   With temp_instrument do
     begin
       fm_data.AM_VIB_EG_modulator := pBYTE(@data)[0];
@@ -81,14 +79,14 @@ begin
 
   temp_instrument.panning := 0;
   temp_instrument.fine_tune := 0;
+
+  _dbg_leave; //EXIT //import_fin_instrument_alt
 end;
 
 procedure import_hsc_instrument_alt(var data);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:import_hsc_instrument_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'import_hsc_instrument_alt');
+
   With temp_instrument do
     begin
       fm_data.AM_VIB_EG_carrier   := pBYTE(@data)[0];
@@ -106,14 +104,14 @@ begin
 
   temp_instrument.panning := 0;
   temp_instrument.fine_tune := pBYTE(@data)[11] SHR 4;
+
+  _dbg_leave; //EXIT //import_hsc_instrument_alt
 end;
 
 procedure import_sat_instrument_alt(var data);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:import_sat_instrument_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'import_sat_instrument_alt');
+
   With temp_instrument do
     begin
       fm_data.FEEDBACK_FM         := pBYTE(@data)[0] AND $0f;
@@ -131,6 +129,8 @@ begin
 
   temp_instrument.panning := 0;
   temp_instrument.fine_tune := 0;
+
+  _dbg_leave; //EXIT //import_sat_instrument_alt
 end;
 
 procedure a2i_file_loader_alt(fname: String);
@@ -160,10 +160,8 @@ var
   crc: Word;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:a2i_file_loader_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2i_file_loader_alt');
+
   FillChar(temp_instrument,SizeOf(temp_instrument),0);
   {$i-}
   Assign(f,fname);
@@ -172,20 +170,20 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //a2i_file_loader_alt
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
   If NOT ((temp = SizeOf(header)) and (header.ident = id)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //a2i_file_loader_alt
     end;
 
   If NOT (header.ffver in [1..FFVER_A2I]) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //a2i_file_loader_alt
     end;
 
   If (header.ffver in [1..4]) then
@@ -194,7 +192,7 @@ begin
       If NOT (temp = header.b0len) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader_alt
         end;
 
       crc := WORD_NULL;
@@ -204,7 +202,7 @@ begin
       If (crc <> header.crc16) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader_alt
         end;
 
       Case header.ffver of
@@ -224,7 +222,7 @@ begin
       If NOT (temp = header.b0len) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader_alt
         end;
 
       crc := WORD_NULL;
@@ -234,7 +232,7 @@ begin
       If (crc <> header.crc16) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader_alt
         end;
 
       Case header.ffver of
@@ -254,14 +252,14 @@ begin
       If NOT ((temp = SizeOf(header2)) and (header2.ident = id)) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader_alt
         end;
 
       BlockReadF(f,buf2,header2.b0len,temp);
       If NOT (temp = header2.b0len) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader_alt
         end;
 
       crc := WORD_NULL;
@@ -271,7 +269,7 @@ begin
       If (crc <> header2.crc16) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader_alt
         end;
 
       APACK_decompress(buf2,buf3);
@@ -285,14 +283,14 @@ begin
       If NOT ((temp = SizeOf(header2)) and (header2.ident = id)) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader_alt
         end;
 
       BlockReadF(f,buf2,header2.b0len,temp);
       If NOT (temp = header2.b0len) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader_alt
         end;
 
       crc := WORD_NULL;
@@ -302,7 +300,7 @@ begin
       If (crc <> header2.crc16) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2i_file_loader_alt
         end;
 
       progress_num_steps := 0;
@@ -321,6 +319,8 @@ begin
 
   CloseF(f);
   load_flag_alt := 1;
+
+  _dbg_leave; //EXIT //a2i_file_loader_alt
 end;
 
 procedure a2f_file_loader_alt(fname: String);
@@ -341,10 +341,8 @@ var
   crc,temp,temp2: Longint;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:a2f_file_loader_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'a2f_file_loader_alt');
+
   FillChar(temp_instrument,SizeOf(temp_instrument),0);
   FillChar(temp_instrument_macro,SizeOf(temp_instrument_macro),0);
   FillChar(temp_instrument_dis_fmreg_col,SizeOf(temp_instrument_dis_fmreg_col),0);
@@ -355,20 +353,20 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //a2f_file_loader_alt
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
   If NOT ((temp = SizeOf(header)) and (header.ident = id)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //a2f_file_loader_alt
     end;
 
   If NOT (header.ffver in [1..FFVER_A2F]) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //a2f_file_loader_alt
     end;
 
   If (header.ffver = 1) then
@@ -377,7 +375,7 @@ begin
       If NOT (temp = header.b0len) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2f_file_loader_alt
         end;
 
       crc := DWORD_NULL;
@@ -387,7 +385,7 @@ begin
       If (crc <> header.crc32) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2f_file_loader_alt
         end;
 
       APACK_decompress(buf2,buf3);
@@ -410,7 +408,7 @@ begin
       If NOT (temp = header.b0len) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2f_file_loader_alt
         end;
 
       crc := DWORD_NULL;
@@ -420,7 +418,7 @@ begin
       If (crc <> header.crc32) then
         begin
           CloseF(f);
-          EXIT;
+          _dbg_leave; EXIT; //a2f_file_loader_alt
         end;
 
       progress_num_steps := 0;
@@ -453,6 +451,8 @@ begin
 
   CloseF(f);
   load_flag_alt := 1;
+
+  _dbg_leave; //EXIT //a2f_file_loader_alt
 end;
 
 procedure cif_file_loader_alt(fname: String);
@@ -477,10 +477,8 @@ const
                  SizeOf(buffer.idata)+
                  SizeOf(buffer.resrv);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:cif_file_loader_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'cif_file_loader_alt');
+
   FillChar(temp_instrument,SizeOf(temp_instrument),0);
   {$i-}
   Assign(f,fname);
@@ -489,20 +487,22 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //cif_file_loader_alt
     end;
 
   BlockReadF(f,buffer,SizeOf(buffer),temp);
   If NOT ((temp >= MIN_CIF_SIZE) and (buffer.ident = id)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //cif_file_loader_alt
     end;
 
   import_hsc_instrument_alt(buffer.idata);
   temp_instrument.fine_tune := 0;
   CloseF(f);
   load_flag_alt := 1;
+
+  _dbg_leave; //EXIT //cif_file_loader_alt
 end;
 
 type
@@ -520,10 +520,8 @@ var
   temp: Longint;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:fin_file_loader_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'fin_file_loader_alt');
+
   FillChar(temp_instrument,SizeOf(temp_instrument),0);
   {$i-}
   Assign(f,fname);
@@ -532,19 +530,21 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //fin_file_loader_alt
     end;
 
   BlockReadF(f,buffer,SizeOf(buffer),temp);
   If (temp <> SizeOf(buffer)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //fin_file_loader_alt
     end;
 
   import_fin_instrument_alt(buffer.idata);
   CloseF(f);
   load_flag_alt := 1;
+
+  _dbg_leave; //EXIT //fin_file_loader_alt
 end;
 
 procedure ins_file_loader_alt(fname: String);
@@ -566,10 +566,8 @@ var
   result: Boolean;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:ins_file_loader_alt:correct_ins';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'ins_file_loader_alt.correct_ins');
+
   result := TRUE;
   If NOT (tADTRACK2_INS(data).fm_data.WAVEFORM_modulator in [0..3]) then
     result := FALSE;
@@ -578,13 +576,13 @@ begin
   If NOT (tADTRACK2_INS(data).fm_data.FEEDBACK_FM in [0..15]) then
     result := FALSE;
   correct_ins := result;
+
+  _dbg_leave; //EXIT //ins_file_loader_alt.correct_ins
 end;
 
 begin { ins_file_loader_alt }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:ins_file_loader_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'ins_file_loader_alt');
+
   FillChar(temp_instrument,SizeOf(temp_instrument),0);
   {$i-}
   Assign(f,fname);
@@ -593,20 +591,20 @@ begin { ins_file_loader_alt }
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //ins_file_loader_alt
     end;
 
   If (FileSize(f) > SizeOf(buffer)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //ins_file_loader_alt
     end;
 
   BlockReadF(f,buffer,FileSize(f),temp);
   If (temp <> FileSize(f)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //ins_file_loader_alt
     end;
 
   Case force_ins of
@@ -626,6 +624,8 @@ begin { ins_file_loader_alt }
 
   CloseF(f);
   load_flag_alt := 1;
+
+  _dbg_leave; //EXIT //ins_file_loader_alt
 end;
 
 procedure sbi_file_loader_alt(fname: String);
@@ -646,10 +646,8 @@ var
   temp: Longint;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:sbi_file_loader_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'sbi_file_loader_alt');
+
   FillChar(temp_instrument,SizeOf(temp_instrument),0);
   {$i-}
   Assign(f,fname);
@@ -658,19 +656,21 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //sbi_file_loader_alt
     end;
 
   BlockReadF(f,buffer,SizeOf(buffer),temp);
   If NOT ((temp = SizeOf(buffer)) and (buffer.ident = id)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //sbi_file_loader_alt
     end;
 
   import_standard_instrument_alt(buffer.idata);
   CloseF(f);
   load_flag_alt := 1;
+
+  _dbg_leave; //EXIT //sbi_file_loader_alt
 end;
 
 procedure sgi_file_loader_alt(fname: String);
@@ -711,10 +711,8 @@ var
 
 procedure import_sgi_instrument(inst: Byte; var data);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:sgi_file_loader_alt:import_sgi_instrument';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'sgi_file_loader_alt.import_sgi_instrument');
+
   FillChar(temp_instrument,SizeOf(temp_instrument),0);
   With temp_instrument do
     begin
@@ -745,13 +743,13 @@ begin
       fm_data.FEEDBACK_FM         := (pBYTE(@data)[25] AND 1)+
                                      (pBYTE(@data)[24] AND 7) SHL 1;
     end;
+
+  _dbg_leave; //EXIT //sgi_file_loader_alt.import_sgi_instrument
 end;
 
 begin { sgi_file_loader_alt }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:sgi_file_loader_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'sgi_file_loader_alt');
+
   FillChar(temp_instrument,SizeOf(temp_instrument),0);
   {$i-}
   Assign(f,fname);
@@ -760,27 +758,27 @@ begin { sgi_file_loader_alt }
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //sgi_file_loader_alt
     end;
 
   BlockReadF(f,buffer,SizeOf(buffer),temp);
   If (temp <> SizeOf(buffer)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //sgi_file_loader_alt
     end;
 
   import_sgi_instrument(current_inst,buffer);
   CloseF(f);
   load_flag_alt := 1;
+
+  _dbg_leave; //EXIT //sgi_file_loader_alt
 end;
 
 procedure import_sbi_instrument_alt(var data);
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:import_sbi_instrument_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'import_sbi_instrument_alt');
+
   FillChar(temp_instrument,SizeOf(temp_instrument),0);
   With temp_instrument do
     begin
@@ -799,6 +797,8 @@ begin
 
   temp_instrument.panning := 0;
   temp_instrument.fine_tune := 0;
+
+  _dbg_leave; //EXIT //import_sbi_instrument_alt
 end;
 
 procedure ibk_file_loader_alt(instr: Word);
@@ -816,10 +816,8 @@ var
                    end;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:ibk_file_loader_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'ibk_file_loader_alt');
+
   {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -827,7 +825,7 @@ begin
   If (IOresult <> 0) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //ibk_file_loader_alt
     end;
 
   BlockReadF(f,header,SizeOf(header),temp);
@@ -835,22 +833,28 @@ begin
      (header <> id) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //ibk_file_loader_alt
     end;
 
   SeekF(f,$004+PRED(instr)*SizeOf(instrument_data));
-  If (IOresult <> 0) then EXIT;
+  If (IOresult <> 0) then
+    begin
+      CloseF(f);
+      _dbg_leave; EXIT; //ibk_file_loader_alt
+    end;
 
   BlockReadF(f,instrument_data,SizeOf(instrument_data),temp);
   If (temp <> SizeOf(instrument_data)) then
     begin
       CloseF(f);
-      EXIT;
+      _dbg_leave; EXIT; //ibk_file_loader_alt
     end;
 
   import_sbi_instrument_alt(instrument_data);
   CloseF(f);
   load_flag_alt := 1;
+
+  _dbg_leave; //EXIT //ibk_file_loader_alt
 end;
 
 var
@@ -877,15 +881,13 @@ var
   freq: Word;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:test_instrument_alt:output_note';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'test_instrument_alt.output_note');
+
   note := board_pos+12*(current_octave-1);
   If NOT (note in [0..12*8+1]) then
     begin
       output_note := FALSE;
-      EXIT;
+      _dbg_leave; EXIT; //test_instrument_alt.output_note
     end;
 
   chan_handle[chan] := board_scancodes[board_pos];
@@ -917,13 +919,15 @@ begin
          freqtable2[PRED(chan)] := freq;
          init_macro_table(PRED(chan),note,test_ins2,freq);
        end;
+
+  output_note := true;
+
+  _dbg_leave; //EXIT //test_instrument_alt.output_note
 end;
 
 begin { test_instrument_alt }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:test_instrument_alt';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'test_instrument_alt');
+
   valid_key := FALSE;
   For temp := 1 to 29 do
     If NOT shift_pressed then
@@ -937,7 +941,10 @@ begin { test_instrument_alt }
     For temp := 1 to 20 do reset_chan_data(temp);
 
   If NOT valid_key or
-     NOT (temp+12*(current_octave-1)-1 in [0..12*8+1]) then EXIT;
+     NOT (temp+12*(current_octave-1)-1 in [0..12*8+1]) then
+    begin
+      _dbg_leave; EXIT; //test_instrument_alt
+    end;
 
   If NOT percussion_mode then channels := 18
   else channels := 15;
@@ -1044,7 +1051,10 @@ begin { test_instrument_alt }
 {$IFDEF GO32V2}
       keyboard_toggle_sleep;
 {$ENDIF}
-      If (load_flag_alt = BYTE_NULL) then EXIT;
+      If (load_flag_alt = BYTE_NULL) then
+        begin
+          _dbg_leave; EXIT; //test_instrument_alt
+        end;
     end;
 
   If (test_ins2 <> 0) and Empty(temp_instrument2,SizeOf(temp_instrument2)) and
@@ -1102,7 +1112,9 @@ begin { test_instrument_alt }
       Empty(temp_instrument_macro,SizeOf(temp_instrument_macro))) or
      ((test_ins2 <> 0) and Empty(temp_instrument2,SizeOf(temp_instrument2)) and
                            Empty(temp_instrument_macro2,SizeOf(temp_instrument_macro2))) then
-    EXIT;
+    begin
+      _dbg_leave; EXIT; //test_instrument_alt
+    end;
 
   ins_trailing_flag := TRUE;
   status_backup.replay_forbidden := replay_forbidden;
@@ -1343,6 +1355,8 @@ begin { test_instrument_alt }
   play_status := status_backup.play_status;
   ins_trailing_flag := FALSE;
   keyboard_reset_buffer;
+
+  _dbg_leave; //EXIT //test_instrument_alt
 end;
 
 procedure test_instrument_alt2(chan: Byte; fkey: Word);
@@ -1360,15 +1374,13 @@ var
   freq: Word;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:test_instrument_alt2:output_note';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'test_instrument_alt2.output_note');
+
   note := board_pos+12*(current_octave-1);
   If NOT (note in [0..12*8+1]) then
     begin
       output_note := FALSE;
-      EXIT;
+      _dbg_leave; EXIT; //test_instrument_alt2.output_note
     end;
 
   chan_handle[chan] := board_scancodes[board_pos];
@@ -1392,13 +1404,14 @@ begin
   freq_table[chan] := freq;
   freqtable2[chan] := freq;
   init_macro_table(chan,note,current_inst,freq);
+  output_note := true;
+
+  _dbg_leave; //EXIT //test_instrument_alt2.output_note
 end;
 
 begin { test_instrument_alt2 }
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:test_instrument_alt2';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'test_instrument_alt2');
+
   valid_key := FALSE;
   For temp := 1 to 29 do
     If NOT shift_pressed then
@@ -1412,7 +1425,10 @@ begin { test_instrument_alt2 }
     For temp := 1 to 20 do reset_chan_data(temp);
 
   If NOT valid_key or
-     NOT (temp+12*(current_octave-1)-1 in [0..12*8+1]) then EXIT;
+     NOT (temp+12*(current_octave-1)-1 in [0..12*8+1]) then
+    begin
+      _dbg_leave; EXIT; //test_instrument_alt2
+    end;
 
   If NOT percussion_mode then channels := 18
   else channels := 15;
@@ -1421,7 +1437,10 @@ begin { test_instrument_alt2 }
   temps := mn_environment.curr_item;
   load_flag_alt := BYTE_NULL;
 
-  If Empty(temp_instrument,SizeOf(temp_instrument)) then EXIT;
+  If Empty(temp_instrument,SizeOf(temp_instrument)) then
+    begin
+      _dbg_leave; EXIT; //test_instrument_alt2
+    end;
 {$IFDEF GO32V2}
   keyboard_toggle_sleep;
 {$ENDIF}
@@ -1435,7 +1454,10 @@ begin { test_instrument_alt2 }
 {$IFDEF GO32V2}
   keyboard_toggle_sleep;
 {$ENDIF}
-  If (load_flag_alt = BYTE_NULL) then EXIT;
+  If (load_flag_alt = BYTE_NULL) then
+    begin
+      _dbg_leave; EXIT; //test_instrument_alt2
+    end;
 
   ins_trailing_flag := TRUE;
   status_backup.replay_forbidden := replay_forbidden;
@@ -1569,6 +1591,8 @@ begin { test_instrument_alt2 }
   play_status := status_backup.play_status;
   ins_trailing_flag := FALSE;
   keyboard_reset_buffer;
+
+  _dbg_leave; //EXIT //test_instrument_alt2
 end;
 
 procedure fselect_external_proc;
@@ -1578,10 +1602,8 @@ var
   test_ins2: Byte;
 
 begin
-{$IFDEF GO32V2}
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ILOADINS.INC:fselect_external_proc';
-{$ENDIF}
+  _dbg_enter ({$I %FILE%}, 'fselect_external_proc');
+
   If (songdata.flag_4op <> 0) then
     begin
       If (current_inst < 255) then
@@ -1599,4 +1621,6 @@ begin
                         mn_environment.keystroke,
                         FALSE,FALSE,FALSE,
                         test_ins1,test_ins2);
+
+  _dbg_leave; //EXIT //fselect_external_proc
 end;

@@ -6,8 +6,8 @@
 
 procedure keyboard_init;
 begin
-  _last_debug_str_ := _debug_str_;
-  _debug_str_ := 'ADT2KEYB.PAS:keyboard_init';
+  _dbg_enter ({$I %FILE%}, 'keyboard_init');
+
   FillChar(keydown,SizeOf(keydown),FALSE);
   user_proc_ptr := @int09_user_proc;
   lock_data(user_proc_ptr,SizeOf(user_proc_ptr));
@@ -18,4 +18,6 @@ begin
   newint09_handler.segment := get_cs;
   get_pm_interrupt($09,oldint09_handler);
   set_pm_interrupt($09,newint09_handler);
+
+  _dbg_leave; //EXIT //keyboard_init
 end;

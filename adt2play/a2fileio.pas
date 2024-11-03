@@ -19,9 +19,6 @@ unit A2fileIO;
 interface
 
 const
-  _debug_str_: String = '';
-
-const
   GENERIC_IO_BUFFER_SIZE = 1500*1024; // 1.5 MB I/O Buffer
 
 type
@@ -65,6 +62,7 @@ procedure CloseF(var f: File);
 implementation
 
 uses
+  debug,
   DOS,
   A2player,
   A2depack,
@@ -80,38 +78,50 @@ var
   fattr: Word;
 
 begin
-  _debug_str_:= 'ADT2SYS.PAS:ResetF_RW';
+  _dbg_enter ({$I %FILE%}, 'ResetF_RW');
+
   GetFAttr(f,fattr);
   If (fattr AND ReadOnly = ReadOnly) then FileMode := 0;
   {$i-}
   Reset(f,1);
   {$i+}
+
+  _dbg_leave; //EXIT //ResetF_RW
 end;
 
 procedure BlockReadF(var f: File; var data; size: Longint; var bytes_read: Longint);
 begin
-  _debug_str_:= 'ADT2SYS.PAS:BlockReadF';
+  _dbg_enter ({$I %FILE%}, 'BlockReadF');
+
   {$i-}
   BlockRead(f,data,size,bytes_read);
   {$i+}
   If (IOresult <> 0) then bytes_read := 0;
+
+  _dbg_leave; //EXIT //BlockReadF
 end;
 
 procedure SeekF(var f: File; fpos: Longint);
 begin
-  _debug_str_:= 'ADT2SYS.PAS:SeekF';
+  _dbg_enter ({$I %FILE%}, 'SeekF');
+
   {$i-}
   Seek(f,fpos);
   {$i+}
+
+  _dbg_leave; //EXIT //SeekF
 end;
 
 procedure CloseF(var f: File);
 begin
-  _debug_str_:= 'ADT2SYS.PAS:CloseF';
+  _dbg_enter ({$I %FILE%}, 'CloseF');
+
   {$i-}
   Close(f);
   {$i+}
   If (IOresult <> 0) then ;
+
+  _dbg_leave; //EXIT //CloseF
 end;
 
 end.
