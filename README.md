@@ -141,6 +141,10 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 * [VGA Signal Timing](http://tinyvga.com/vga-timing)
 * [Hardware Level VGA and SVGA Video Programming Information](http://www.osdever.net/FreeVGA/vga/vga.htm)
 * [Keyboard scancodes](https://www.win.tue.nl/~aeb/linux/kbd/scancodes.html)
+* [Yamaha OPL](https://en.wikipedia.org/wiki/Yamaha_OPL#OPL3)
+* [Programming the AdLib/Sound Blaster FM Music Chips](https://bochs.sourceforge.io/techspec/adlib_sb.txt) (text)
+* [AdLib Functions](https://cosmodoc.org/topics/adlib-functions/)
+* [Yamaha YMF262 (OPL3) emulator using YMF262 die shot](https://github.com/nukeykt/YMF262-LLE)
 
 ### Documentation
 
