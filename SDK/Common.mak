@@ -284,8 +284,23 @@ GCCFLAGS+=-DUSE_FPC=1\
  -fno-ident\
  -fno-pie
 
+# FPC compatibility for 32-bits x86 target
+ifneq ($(findstring $(GCC_CPU_TARGET),i386 i486 i586 i686),)
+ # Preserve EBX, ESI and EDI registers across function calls
+ GCCFLAGS+=\
+  -fno-caller-saves\
+  -fcall-used-ebx\
+  -fcall-used-esi\
+  -fcall-used-edi\
+  -fcall-saved-ebx\
+  -fcall-saved-esi\
+  -fcall-saved-edi
+endif
+
 ifneq ($(DEBUG),0)
- GCCFLAGS+=-g -DDEBUG
+ # -g                Produce debugging information in the operating system's native format
+ # -gdwarf-version   Produce debugging information in DWARF format. The value of version may be either 2, 3, 4 or 5.
+ GCCFLAGS+=-DDEBUG -g -gdwarf-3
 endif
 
 # Setup Free Pascal compiler (target)
@@ -303,7 +318,11 @@ ifeq ($(FPCFLAGS_CPU),)
 endif
 
 ifneq ($(DEBUG),0)
- FPCFLAGS+=-g -gh -gl -dDEBUG
+ # -g     Generate debug information (default format for target)
+ # -gh    Use heaptrace unit (for memory leak/corruption debugging)
+ # -gl    Use line info unit (show more info with backtraces)
+ # -gw3   Generate DWARFv3 debug information
+ FPCFLAGS+=-dDEBUG -g -gh -gl -gw3
 endif
 
 ifeq ($(OS_HOST),Linux)

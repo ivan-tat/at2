@@ -336,8 +336,8 @@ function  vscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
 procedure centered_frame(var xstart,ystart: Byte; hsize,vsize: Byte;
                          name: String; atr1,atr2: Byte; border: String);
 
-procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK);
-procedure put_chunk(pattern,line,channel: Byte; chunk: tCHUNK);
+procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
+procedure put_chunk(pattern,line,channel: Byte; chunk: tCHUNK); cdecl; external;
 
 function  get_chanpos(var data; channels,scancode: Byte): Byte;
 function  get_chanpos2(var data; channels,scancode: Byte): Byte;
@@ -4621,92 +4621,8 @@ begin
         atr1,name,atr2,border);
 end;
 
-procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK);
-begin
-  asm
-        mov     esi,[pattdata]
-        mov     edi,[chunk]
-        mov     al,pattern
-        inc     al
-        cmp     al,max_patterns
-        jbe     @@1
-        mov     ecx,CHUNK_SIZE
-        xor     al,al
-        rep     stosb
-        jmp     @@2
-@@1:    xor     eax,eax
-        mov     al,line
-        mov     ebx,CHUNK_SIZE
-        mul     ebx
-        mov     ecx,eax
-        xor     eax,eax
-        mov     al,channel
-        dec     eax
-        mov     ebx,256*CHUNK_SIZE
-        mul     ebx
-        add     ecx,eax
-        xor     eax,eax
-        mov     al,pattern
-        mov     ebx,8
-        div     ebx
-        push    eax
-        mov     eax,edx
-        mov     ebx,20*256*CHUNK_SIZE
-        mul     ebx
-        add     ecx,eax
-        pop     eax
-        mov     ebx,8*20*256*CHUNK_SIZE
-        mul     ebx
-        add     ecx,eax
-        add     esi,ecx
-        mov     ecx,CHUNK_SIZE
-        rep     movsb
-@@2:
-  end;
-end;
-
-procedure put_chunk(pattern,line,channel: Byte; chunk: tCHUNK);
-begin
-  asm
-        lea     esi,[chunk]
-        mov     edi,[pattdata]
-        mov     al,pattern
-        inc     al
-        cmp     al,max_patterns
-        jbe     @@1
-        mov     limit_exceeded,TRUE
-        jmp     @@2
-@@1:    xor     eax,eax
-        mov     al,line
-        mov     ebx,CHUNK_SIZE
-        mul     ebx
-        mov     ecx,eax
-        xor     eax,eax
-        mov     al,channel
-        dec     eax
-        mov     ebx,256*CHUNK_SIZE
-        mul     ebx
-        add     ecx,eax
-        xor     eax,eax
-        mov     al,pattern
-        mov     ebx,8
-        div     ebx
-        push    eax
-        mov     eax,edx
-        mov     ebx,20*256*CHUNK_SIZE
-        mul     ebx
-        add     ecx,eax
-        pop     eax
-        mov     ebx,8*20*256*CHUNK_SIZE
-        mul     ebx
-        add     ecx,eax
-        add     edi,ecx
-        mov     ecx,CHUNK_SIZE
-        rep     movsb
-        mov     module_archived,FALSE
-@@2:
-  end;
-end;
+//get_chunk
+//put_chunk
 
 function get_chanpos(var data; channels,scancode: Byte): Byte;
 

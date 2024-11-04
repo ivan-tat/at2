@@ -366,6 +366,8 @@ int32_t _interval = 1000 / 50; // 1000 ms / Hz
 
 #include "adt2unit/init_timer_proc.c"
 #include "adt2unit/done_timer_proc.c"
+#include "adt2unit/get_chunk.c"
+#include "adt2unit/put_chunk.c"
 
 //#include "realtime.c"
 

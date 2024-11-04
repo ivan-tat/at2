@@ -318,8 +318,8 @@ void done_timer_proc (void);
 //procedure centered_frame(var xstart,ystart: Byte; hsize,vsize: Byte;
 //                         name: String; atr1,atr2: Byte; border: String);
 //
-//procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK);
-//procedure put_chunk(pattern,line,channel: Byte; chunk: tCHUNK);
+void get_chunk (uint8_t pattern, uint8_t line, uint8_t channel, tCHUNK *chunk);
+void put_chunk (uint8_t pattern, uint8_t line, uint8_t channel, const tCHUNK *chunk);
 //
 //function  get_chanpos(var data; channels,scancode: Byte): Byte;
 //function  get_chanpos2(var data; channels,scancode: Byte): Byte;
