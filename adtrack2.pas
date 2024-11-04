@@ -163,7 +163,7 @@ end;
 {$ELSE}
 
 var
-  temp: Longint;
+  temp,index: Longint;
 
 {$ENDIF}
 
@@ -261,6 +261,9 @@ begin { MAIN }
 
   { init system things }
   sys_init;
+
+  For index := 1 to ParamCount do
+    If (Lower(ParamStr(index)) = '/debug') then _debug_ := TRUE;
 
   { read and process adtrack2.ini file }
   If _debug_ then WriteLn('--- updating user configuration');

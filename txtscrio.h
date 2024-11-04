@@ -171,6 +171,11 @@ extern tFRAME_SETTING fr_setting;
 void Frame (tSCREEN_MEM *dest, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2,
             uint8_t attr1, const String *title, uint8_t attr2,
             const String *border);
+
+void centered_frame (uint8_t *xstart, uint8_t *ystart,
+                     uint8_t hsize, uint8_t vsize, const String *name,
+                     uint8_t attr1, uint8_t attr2, const String *border);
+
 #endif // !ADT2PLAY
 
 uint8_t WhereX (void);

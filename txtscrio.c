@@ -158,6 +158,7 @@ tFRAME_SETTING fr_setting = {
 };
 
 #include "txtscrio/Frame.c"
+#include "txtscrio/centered_frame.c"
 #endif // !ADT2PLAY
 
 #include "txtscrio/WhereX.c"

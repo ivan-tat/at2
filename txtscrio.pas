@@ -157,6 +157,8 @@ var
 
 procedure Frame(dest: tSCREEN_MEM_PTR; x1,y1,x2,y2,atr1: Byte;
                 title: String; atr2: Byte; border: String); cdecl; external;
+procedure centered_frame(var xstart,ystart: Byte; hsize,vsize: Byte;
+                         name: String; atr1,atr2: Byte; border: String); cdecl; external;
 {$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 function  WhereX: Byte; cdecl; external;

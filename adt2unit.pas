@@ -333,11 +333,8 @@ function  hscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
 function  vscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
                       atr1,atr2: Byte): Byte;
 
-procedure centered_frame(var xstart,ystart: Byte; hsize,vsize: Byte;
-                         name: String; atr1,atr2: Byte; border: String);
-
 procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
-procedure put_chunk(pattern,line,channel: Byte; chunk: tCHUNK); cdecl; external;
+procedure put_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
 
 function  get_chanpos(var data; channels,scancode: Byte): Byte;
 function  get_chanpos2(var data; channels,scancode: Byte): Byte;
@@ -4609,16 +4606,6 @@ begin
   vscroll_bar := pos;
 
   //EXIT //vscroll_bar
-end;
-
-procedure centered_frame(var xstart,ystart: Byte; hsize,vsize: Byte;
-                         name: String; atr1,atr2: Byte; border: String);
-begin
-  xstart := (work_MaxCol-hsize) DIV 2;
-  ystart := (work_MaxLn -vsize) DIV 2+(work_MaxLn-vsize) MOD 2;
-
-  Frame(centered_frame_vdest,xstart,ystart,xstart+hsize,ystart+vsize,
-        atr1,name,atr2,border);
 end;
 
 //get_chunk
