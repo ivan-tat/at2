@@ -310,14 +310,6 @@ void done_timer_proc (void);
 //procedure status_refresh; cdecl;
 //procedure trace_update_proc;
 //
-//function  hscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
-//                      atr1,atr2: Byte): Byte;
-//function  vscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
-//                      atr1,atr2: Byte): Byte;
-//
-//procedure centered_frame(var xstart,ystart: Byte; hsize,vsize: Byte;
-//                         name: String; atr1,atr2: Byte; border: String);
-//
 void get_chunk (uint8_t pattern, uint8_t line, uint8_t channel, tCHUNK *chunk);
 void put_chunk (uint8_t pattern, uint8_t line, uint8_t channel, const tCHUNK *chunk);
 //

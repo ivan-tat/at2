@@ -158,7 +158,12 @@ tFRAME_SETTING fr_setting = {
 };
 
 #include "txtscrio/Frame.c"
+#include "txtscrio/_partial.c" // static
+#include "txtscrio/HScrollBar.c"
+#include "txtscrio/VScrollBar.c"
 #include "txtscrio/centered_frame.c"
+#include "txtscrio/hscroll_bar.c"
+#include "txtscrio/vscroll_bar.c"
 #endif // !ADT2PLAY
 
 #include "txtscrio/WhereX.c"

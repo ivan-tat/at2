@@ -220,10 +220,7 @@ function Dialog(text,keys,title: String; spos: Byte): Byte;
 function Menu(var data; x,y: Byte; spos: Word;
               len,len2: Byte; count: Word; title: String): Word;
 function Fselect(mask: String): String;
-function HScrollBar(dest: tSCREEN_MEM_PTR; x,y: Byte; size: Byte; len1,len2,pos: Word;
-                    atr1,atr2: Byte): Word;
-function VScrollBar(dest: tSCREEN_MEM_PTR; x,y: Byte; size: Byte; len1,len2,pos: Word;
-                    atr1,atr2: Byte): Word;
+
 procedure DialogIO_Init;
 
 implementation
@@ -1872,90 +1869,6 @@ _jmp1:
   If (mn_environment.keystroke = kESC) then Fselect := '';
 
   _dbg_leave; //EXIT //Fselect
-end;
-
-function _partial(max,val: Word; base: Byte): Word;
-
-var
-  temp1,temp2: Real;
-  temp3: Word;
-
-begin
-  temp1 := max/base;
-  temp2 := (max/base)/2;
-  temp3 := 0;
-  While (temp2 < val) do
-    begin
-      temp2 := temp2+temp1;
-      Inc(temp3);
-    end;
-  _partial := temp3;
-end;
-
-function HScrollBar(dest: tSCREEN_MEM_PTR; x,y: Byte; size: Byte; len1,len2,pos: Word;
-                    atr1,atr2: Byte): Word;
-var
-  temp: Word;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'HScrollBar');
-
-  If (size > work_MaxCol-x) then size := work_MaxCol-x;
-  If (size < 5) then size := 5;
-
-  If (size-2-1 < 10) then temp := _partial(len1,len2,size-2-1)
-  else temp := _partial(len1,len2,size-2-1-2);
-
-  If (pos = temp) then
-    begin
-      HScrollBar := temp;
-      _dbg_leave; EXIT; //HScrollBar
-    end;
-
-  If (size < len1) then
-    begin
-      pos := temp;
-      ShowStr(dest,x,y,#17+ExpStrL('',size-2,#176)+#16,atr1);
-      If (size-2-1 < 10) then ShowStr(dest,x+1+temp,y,#178,atr2)
-      else ShowStr(dest,x+1+temp,y,#178#178#178,atr2);
-    end
-  else ShowCStr(dest,x,y,'~'#17'~'+ExpStrL('',size-2,#177)+'~'#16'~',atr2,atr1);
-  HScrollBar := pos;
-
-  _dbg_leave; //EXIT //HScrollBar
-end;
-
-function VScrollBar(dest: tSCREEN_MEM_PTR; x,y: Byte; size: Byte; len1,len2,pos: Word;
-                    atr1,atr2: Byte): Word;
-var
-  temp: Word;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'VScrollBar');
-
-  If (size > work_MaxLn-y) then size := work_MaxLn-y;
-  If (size < 5) then size := 5;
-
-  If (size-2-1 < 10) then temp := _partial(len1,len2,size-2-1)
-  else temp := _partial(len1,len2,size-2-1-2);
-
-  If (pos = temp) then
-    begin
-      VScrollBar := temp;
-      _dbg_leave; EXIT; //VScrollBar
-    end;
-
-  If (size < len1) then
-    begin
-      pos := temp;
-      ShowVStr(dest,x,y,#30+ExpStrL('',size-2,#176)+#31,atr1);
-      If (size-2-1 < 10) then ShowStr(dest,x,y+1+temp,#178,atr2)
-      else ShowVStr(dest,x,y+1+temp,#178#178#178,atr2);
-    end
-  else ShowVCStr(dest,x,y,'~'#30'~'+ExpStrL('',size-2,#177)+'~'#31'~',atr2,atr1);
-  VScrollBar := pos;
-
-  _dbg_leave; //EXIT //VScrollBar
 end;
 
 procedure DialogIO_Init;

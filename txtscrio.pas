@@ -157,8 +157,17 @@ var
 
 procedure Frame(dest: tSCREEN_MEM_PTR; x1,y1,x2,y2,atr1: Byte;
                 title: String; atr2: Byte; border: String); cdecl; external;
+function  HScrollBar(dest: tSCREEN_MEM_PTR; x,y: Byte; size: Byte; len1,len2,pos: Word;
+                     atr1,atr2: Byte): Word; cdecl; external;
+function  VScrollBar(dest: tSCREEN_MEM_PTR; x,y: Byte; size: Byte; len1,len2,pos: Word;
+                     atr1,atr2: Byte): Word; cdecl; external;
+
 procedure centered_frame(var xstart,ystart: Byte; hsize,vsize: Byte;
                          name: String; atr1,atr2: Byte; border: String); cdecl; external;
+function  hscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
+                      atr1,atr2: Byte): Byte; cdecl; external;
+function  vscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
+                      atr1,atr2: Byte): Byte; cdecl; external;
 {$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 function  WhereX: Byte; cdecl; external;

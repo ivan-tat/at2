@@ -171,10 +171,22 @@ extern tFRAME_SETTING fr_setting;
 void Frame (tSCREEN_MEM *dest, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2,
             uint8_t attr1, const String *title, uint8_t attr2,
             const String *border);
+uint16_t HScrollBar (tSCREEN_MEM *dest, uint8_t x, uint8_t y, uint8_t size,
+                     uint16_t len1, uint16_t len2, uint16_t pos,
+                     uint8_t attr1, uint8_t attr2);
+uint16_t VScrollBar (tSCREEN_MEM *dest, uint8_t x, uint8_t y, uint8_t size,
+                     uint16_t len1, uint16_t len2, uint16_t pos,
+                     uint8_t attr1, uint8_t attr2);
 
 void centered_frame (uint8_t *xstart, uint8_t *ystart,
                      uint8_t hsize, uint8_t vsize, const String *name,
                      uint8_t attr1, uint8_t attr2, const String *border);
+uint8_t hscroll_bar (uint8_t x, uint8_t y, uint8_t size,
+                     uint16_t len1, uint16_t len2, uint16_t pos,
+                     uint8_t attr1, uint8_t attr2);
+uint8_t vscroll_bar (uint8_t x, uint8_t y, uint8_t size,
+                     uint16_t len1, uint16_t len2, uint16_t pos,
+                     uint8_t attr1, uint8_t attr2);
 
 #endif // !ADT2PLAY
 

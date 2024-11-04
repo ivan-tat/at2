@@ -328,11 +328,6 @@ procedure decay_bars_refresh; cdecl;
 procedure status_refresh; cdecl;
 procedure trace_update_proc;
 
-function  hscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
-                      atr1,atr2: Byte): Byte;
-function  vscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
-                      atr1,atr2: Byte): Byte;
-
 procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
 procedure put_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
 
@@ -4526,86 +4521,6 @@ begin
   update_timer(songdata.tempo);
 
   _dbg_leave; //EXIT //stop_playing
-end;
-
-function _partial(max,val: Byte; base: Byte): Byte;
-
-var
-  temp1,temp2: Real;
-  temp3: Byte;
-
-begin
-  temp1 := max/base;
-  temp2 := (max/base)/2;
-  temp3 := 0;
-  While (temp2 < val) do
-    begin
-      temp2 := temp2+temp1;
-      Inc(temp3);
-    end;
-  _partial := temp3;
-end;
-
-function hscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
-                     atr1,atr2: Byte): Byte;
-var
-  temp: Byte;
-
-begin
-  If (size > work_MaxCol-x) then size := work_MaxCol-x;
-  If (size < 5) then size := 5;
-
-  If (size-2-1 < 10) then temp := _partial(len1,len2,size-2-1)
-  else temp := _partial(len1,len2,size-2-1-2);
-
-  If (pos = temp) and NOT force_scrollbars then
-    begin
-      hscroll_bar := temp;
-      EXIT; //hscroll_bar
-    end;
-
-  If (size < len1*4) and (len1 > 4) then
-    begin
-      pos := temp;
-      show_str(x,y,#17+ExpStrL('',size-2,#176)+#16,atr1);
-      If (size-2-1 < 10) then show_str(x+1+temp,y,#178,atr2)
-      else show_str(x+1+temp,y,#178#178#178,atr2);
-    end
-  else show_Str(x,y,#17+ExpStrL('',size-2,#177)+#16,atr1);
-  hscroll_bar := pos;
-
-  //EXIT //hscroll_bar
-end;
-
-function vscroll_bar(x,y: Byte; size: Byte; len1,len2,pos: Word;
-                     atr1,atr2: Byte): Byte;
-var
-  temp: Byte;
-
-begin
-  If (size > work_MaxLn-y) then size := work_MaxLn-y;
-  If (size < 5) then size := 5;
-
-  If (size-2-1 < 10) then temp := _partial(len1,len2,size-2-1)
-  else temp := _partial(len1,len2,size-2-1-2);
-
-  If (pos = temp) and NOT force_scrollbars then
-    begin
-      vscroll_bar := temp;
-      EXIT; //vscroll_bar
-    end;
-
-  If (size < len1*4) and (len1 > 5) then
-    begin
-      pos := temp;
-      show_vstr(x,y,#30+ExpStrL('',size-2,#176)+#31,atr1);
-      If (size-2-1 < 10) then show_str(x,y+1+temp,#178,atr2)
-      else show_vstr(x,y+1+temp,#178#178#178,atr2);
-    end
-  else show_vstr(x,y,#30+ExpStrL('',size-2,#177)+#31,atr1);
-  vscroll_bar := pos;
-
-  //EXIT //vscroll_bar
 end;
 
 //get_chunk
