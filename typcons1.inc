@@ -268,10 +268,6 @@ const
 var
   status_layout: array[tPLAY_STATUS] of String[10]; cvar; external;
 
-var
-  PATHSEP: Char; cvar; external;
-  WILDCARD_ASTERISK: String; cvar; external; // HINT: (FPC) READ ONLY, size is 2 or 4 (not 256!)
-
 const
   inst_vpos_max = 21;
   inst_hpos_max = 7;

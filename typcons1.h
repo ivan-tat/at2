@@ -272,9 +272,6 @@ typedef uint8_t tByteSet[32]; // HINT: (FPC) set of byte
 
 extern String status_layout[3][10+1]; // HINT: (FPC) start index 0 (see tPLAY_STATUS)
 
-extern const char PATHSEP;
-extern const String WILDCARD_ASTERISK[];
-
 #define inst_vpos_max 21
 #define inst_hpos_max 7
 

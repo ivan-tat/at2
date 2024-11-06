@@ -226,6 +226,7 @@ procedure DialogIO_Init;
 implementation
 
 uses
+  platform,
   debug;
 
 type

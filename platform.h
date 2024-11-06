@@ -10,11 +10,7 @@
 #define PLATFORM_H
 
 #include "defines.h"
-#if GO32
-#if USE_FPC
 #include "pascal.h"
-#endif // USE_FPC
-#endif // GO32
 
 #if GO32
 
@@ -64,5 +60,12 @@
 #define MAX_DIR_LEN  MAX_FILENAME_LEN
 #define MAX_NAME_LEN MAX_FILENAME_LEN
 #define MAX_EXT_LEN  MAX_FILENAME_LEN
+
+#if !ADT2PLAY
+
+extern const char PATHSEP;
+extern const String WILDCARD_ASTERISK[4];
+
+#endif // !ADT2PLAY
 
 #endif // !defined(PLATFORM_H)

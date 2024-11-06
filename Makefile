@@ -76,6 +76,7 @@ SRCS=\
  pascal/stdlib.c\
  pascal/string.c\
  pascal/time.c\
+ platform.c\
  stringio.c\
  txtscrio.c
 
@@ -326,6 +327,11 @@ units/pascal.ppu: $(pascal_ppu_deps) $(makefile) | units
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
+units/platform.ppu: $(srcdir)/platform.pas platform.o $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
 PIT_ppu_deps=\
  $(srcdir)/go32/PIT.pas\
  $(srcdir)/go32/PIT/pas/PIT_consts.inc
@@ -360,7 +366,8 @@ adt2ext2_ppu_deps=\
  $(srcdir)/instedit.inc\
  $(srcdir)/ipattern.inc\
  $(srcdir)/ipattord.inc\
- units/debug.ppu
+ units/debug.ppu\
+ units/platform.ppu
 
 adt2ext3_ppu_deps=\
  $(srcdir)/adt2ext3.pas\
@@ -411,6 +418,7 @@ adt2unit_ppu_deps=\
  $(srcdir)/typcons1.inc\
  $(srcdir)/typcons2.inc\
  units/debug.ppu\
+ units/platform.ppu\
  adt2unit.o
 
 ifeq ($(FPC_OS_TARGET),go32v2)
@@ -425,6 +433,7 @@ depackio_ppu_deps=\
 dialogio_ppu_deps=\
  $(srcdir)/dialogio.pas\
  units/debug.ppu\
+ units/platform.ppu\
  dialogio.o
 
 menulib1_ppu_deps=\

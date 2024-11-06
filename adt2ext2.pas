@@ -67,6 +67,7 @@ procedure update_4op_flag_marks;
 implementation
 
 uses
+  platform,
   debug,
   pascal,
 {$IFNDEF UNIX}

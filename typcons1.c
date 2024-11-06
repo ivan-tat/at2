@@ -10,15 +10,6 @@ String status_layout[3][10+1] = {
   "\x0A" "STOPPED   "
 };
 
-const char PATHSEP = DIR_SEP;
-const String WILDCARD_ASTERISK[] = {
-#if linux||unix
-  "\x01" "*"
-#else // !(linux||unix)
-  "\x03" "*.*"
-#endif // !(linux||unix)
-};
-
 uint8_t inst_hpos[inst_vpos_max][inst_hpos_max] = {
   { 15,  0,  0,  0,  0,  0,  0 }, //0
   { 15, 52,  0,  0,  0,  0,  0 }, //1
