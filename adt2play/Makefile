@@ -59,7 +59,8 @@ SRCS=\
  txtscrio.c
 
 SRCS1=\
- a2data.c
+ a2data.c\
+ a2player.c
 
 DEPS=$(patsubst %.c,_deps_/%.d,$(SRCS) $(SRCS1))
 
@@ -302,8 +303,9 @@ a2fileio_ppu_deps=\
 a2player_ppu_deps=\
  $(srcdir1)/a2player.pas\
  $(srcdir)/go32/PIT/pas/PIT_consts.inc\
- $(srcdir1)/typconst.inc\
- units/debug.ppu
+ $(srcdir)/typcons1.inc\
+ units/debug.ppu\
+ a2player.o
 
 a2scrio_ppu_deps=\
  $(srcdir1)/a2scrio.pas\

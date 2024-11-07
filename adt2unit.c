@@ -32,6 +32,7 @@
 // HINT: (FPC) B-: Complete boolean evaluation (off)
 // HINT: (FPC) X+: Extended syntax (ON)
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
+#pragma pack(push, 1)
 
 #if GO32
 static const char ___ADT2UNIT_CONST_START___ = 0;
@@ -123,8 +124,10 @@ bool       peak_lock    [20];
 bool       pan_lock     [20];
 uint8_t    modulator_vol[20];
 uint8_t    carrier_vol  [20];
+#if !ADT2PLAY
 tDECAY_BAR decay_bar    [20];
 tVOLUM_BAR volum_bar    [20];
+#endif // !ADT2PLAY
 bool       channel_flag [20];
 tCHUNK     event_table  [20];
 uint8_t    voice_table  [20];
@@ -372,3 +375,5 @@ int32_t _interval = 1000 / 50; // 1000 ms / Hz
 //#include "realtime.c"
 
 #include "adt2unit/calc_pattern_pos.c"
+
+#pragma pack(pop)

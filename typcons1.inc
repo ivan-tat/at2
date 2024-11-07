@@ -28,12 +28,14 @@ const
   FFVER_A2B = 10;
   FFVER_A2W = 3;
 
+{$IFNDEF ADT2PLAY}
 const
   GENERIC_IO_BUFFER_SIZE = 1500*1024; // 1.5MB I/O Buffer
 
 type
   pGENERIC_IO_BUFFER = ^tGENERIC_IO_BUFFER;
   tGENERIC_IO_BUFFER = array[0..PRED(GENERIC_IO_BUFFER_SIZE)] of Byte;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 type
   tFM_INST_DATA = Record
@@ -204,6 +206,8 @@ type
 type
   tPATTERN_DATA = array[0..15] of tVARIABLE_DATA;
 
+{$IFNDEF ADT2PLAY}
+
 type
   tCOPY_OBJECT = (objNone,
                   objPatternDef,objPatternTable,
@@ -235,6 +239,19 @@ type
                  fmtab_def_typ: Byte;
                  _string:       String;
                end;
+
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
+
+{$IFDEF ADT2PLAY}
+
+type
+  tDECAY_BAR = Record
+                  dir: Integer;
+                  lvl,max_lvl: Real;
+                end;
+
+{$ELSE} // NOT DEFINED(ADT2PLAY)
+
 type
   tDECAY_BAR = Record
                   dir1: Integer;
@@ -242,20 +259,22 @@ type
                   lvl1: Real;
                   lvl2: Real;
                 end;
+
 type
   tVOLUM_BAR = Record
                   dir: Integer;
                   lvl: Real;
                 end;
+
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
+
 type
   tPLAY_STATUS = (isPlaying,isPaused,isStopped);
 
-type
-{$IFDEF GO32V2}
-  tRGB = Record r,g,b: Byte end;
-{$ELSE}
-  tRGB = Record r,g,b,a: Byte end;
-{$ENDIF}
+{$IFNDEF ADT2PLAY}
+var
+  status_layout: array[tPLAY_STATUS] of String[10]; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 type
   tByteSet = Set of Byte;
@@ -264,81 +283,6 @@ const
   INSTRUMENT_SIZE = SizeOf(tADTRACK2_INS);
   CHUNK_SIZE = SizeOf(tCHUNK);
   PATTERN_SIZE = 20*256*CHUNK_SIZE;
-
-var
-  status_layout: array[tPLAY_STATUS] of String[10]; cvar; external;
-
-const
-  inst_vpos_max = 21;
-  inst_hpos_max = 7;
-
-var
-  inst_hpos: array[1..inst_vpos_max,1..inst_hpos_max] of Byte; cvar; external;
-  inst_hpos_ext_2op: array[1..6,1..inst_hpos_max] of Byte; cvar; external;
-  inst_hpos_ext_perc: array[1..6,1..inst_hpos_max] of Byte; cvar; external;
-  inst_hpos_ext_4op: array[1..6,1..inst_hpos_max] of Byte; cvar; external;
-  inst_vpos: array[1..inst_vpos_max] of Byte; cvar; external;
-
-  note_layout: array[0..12*8+1] of String[3]; cvar; external;
-
-  board_scancodes: array[1..29] of Byte; cvar; external;
-
-  fx_digits: array[0..47] of Char; cvar; external;
-
-const
-  NM_FX_DIGITS = SizeOf(fx_digits);
-
-var
-  b_note: Char; cvar; external;
-  connection_str: array[0..1] of String[2]; cvar; external;
-  macro_retrig_str: array[0..7] of String[1]; cvar; external;
-
-  pos1: array[1..22] of Byte; cvar; external;
-  pos2: array[1..13] of Byte; cvar; external;
-  pos3: array[1..44] of Byte; cvar; external;
-  pos4: array[1..110] of Byte; cvar; external;
-  pos5: array[1..35] of Byte; cvar; external;
-  pos5vw: array[1..35] of Byte; cvar; external;
-  pos6: array[1..11] of Byte; cvar; external;
-
-  _valid_characters: Set of Char; cvar; external;
-  _valid_characters_fname: Set of Char; cvar; external;
-
-  _panning: array[0..2] of Byte; cvar; external;
-
-  _instr_data_ofs: array[1..13] of Byte; cvar; external;
-  _instr:  array[0..11] of Byte; cvar; external;
-
-type
-  tTRACK_ADDR = array[1..20] of Word;
-
-var
-  _chmm_n: tTRACK_ADDR; cvar; external;
-  _chmm_m: tTRACK_ADDR; cvar; external;
-  _chmm_c: tTRACK_ADDR; cvar; external;
-
-  _chpm_n: tTRACK_ADDR; cvar; external;
-  _chpm_m: tTRACK_ADDR; cvar; external;
-  _chpm_c: tTRACK_ADDR; cvar; external;
-
-  _4op_tracks_hi: Set Of Byte; cvar; external;
-  _4op_tracks_lo: Set Of Byte; cvar; external;
-
-  _4op_main_chan: array[1..6] of Byte; cvar; external;
-  _perc_sim_chan: array[19..20] of Byte; cvar; external;
-
-  _chan_n: tTRACK_ADDR; cvar; external;
-  _chan_m: tTRACK_ADDR; cvar; external;
-  _chan_c: tTRACK_ADDR; cvar; external;
-  _ch_tmp: tTRACK_ADDR; cvar; external;
-
-  fade_delay_tab: array[0..63] of Byte; cvar; external;
-
-  tracing:     Boolean; cvar; external;
-  track_notes: Boolean; cvar; external;
-  marking:     Boolean; cvar; external;
-  debugging:   Boolean; cvar; external;
-  quick_cmd:   Boolean; cvar; external;
 
 const
   ef_Arpeggio           = 0;
@@ -463,37 +407,130 @@ const
   ef_fix1 = $80;
   ef_fix2 = $90;
 
+{$IFNDEF ADT2PLAY}
+
+const
+  inst_vpos_max = 21;
+  inst_hpos_max = 7;
+
 var
+  inst_hpos: array[1..inst_vpos_max,1..inst_hpos_max] of Byte; cvar; external;
+  inst_hpos_ext_2op: array[1..6,1..inst_hpos_max] of Byte; cvar; external; //const
+  inst_hpos_ext_perc: array[1..6,1..inst_hpos_max] of Byte; cvar; external; //const
+  inst_hpos_ext_4op: array[1..6,1..inst_hpos_max] of Byte; cvar; external; //const
+  inst_vpos: array[1..inst_vpos_max] of Byte; cvar; external; //const
+
+  note_layout: array[0..12*8+1] of String[3]; cvar; external;
+
+  board_scancodes: array[1..29] of Byte; cvar; external; // const
+
+  fx_digits: array[0..47] of Char; cvar; external; //const
+
+const
+  NM_FX_DIGITS = SizeOf(fx_digits);
+
+var
+  b_note: Char; cvar; external;
+  connection_str: array[0..1] of String[2]; cvar; external; //const
+  macro_retrig_str: array[0..7] of String[1]; cvar; external; //const
+
+  pos1: array[1..22] of Byte; cvar; external; //const
+  pos2: array[1..13] of Byte; cvar; external; //const
+  pos3: array[1..44] of Byte; cvar; external; //const
+  pos4: array[1..110] of Byte; cvar; external; //const
+  pos5: array[1..35] of Byte; cvar; external; //const
+  pos5vw: array[1..35] of Byte; cvar; external; //const
+  pos6: array[1..11] of Byte; cvar; external; //const
+
+  _valid_characters: Set of Char; cvar; external;
+  _valid_characters_fname: Set of Char; cvar; external;
+
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
+
+var
+  _panning: array[0..2] of Byte; cvar; external; //const
+
+  _instr_data_ofs: array[1..13] of Byte; cvar; external; //const
+  _instr:  array[0..11] of Byte; cvar; external; //const
+
+type
+  tTRACK_ADDR = array[1..20] of Word;
+
+var
+  _chmm_n: tTRACK_ADDR; cvar; external; //const
+  _chmm_m: tTRACK_ADDR; cvar; external; //const
+  _chmm_c: tTRACK_ADDR; cvar; external; //const
+
+  _chpm_n: tTRACK_ADDR; cvar; external; //const
+  _chpm_m: tTRACK_ADDR; cvar; external; //const
+  _chpm_c: tTRACK_ADDR; cvar; external; //const
+
+  _4op_tracks_hi: Set of Byte; cvar; external; //const
+  _4op_tracks_lo: Set of Byte; cvar; external; //const
+
+  _4op_main_chan: array[1..6] of Byte; cvar; external; //const
+{$IFNDEF ADT2PLAY}
+  _perc_sim_chan: array[19..20] of Byte; cvar; external; //const
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
+
+  _chan_n: tTRACK_ADDR; cvar; external;
+  _chan_m: tTRACK_ADDR; cvar; external;
+  _chan_c: tTRACK_ADDR; cvar; external;
+{$IFNDEF ADT2PLAY}
+  _ch_tmp: tTRACK_ADDR; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
+
+{$IFNDEF ADT2PLAY}
+
+var
+  fade_delay_tab: array[0..63] of Byte; cvar; external; //const
+
+  tracing:     Boolean; cvar; external;
+  track_notes: Boolean; cvar; external;
+  marking:     Boolean; cvar; external;
+  debugging:   Boolean; cvar; external;
+  quick_cmd:   Boolean; cvar; external;
+
   home_dir_path:      String; cvar; external;
-  a2b_default_path:   String; cvar; external;
-  a2f_default_path:   String; cvar; external;
-  a2i_default_path:   String; cvar; external;
   a2m_default_path:   String; cvar; external;
-  a2p_default_path:   String; cvar; external;
   a2t_default_path:   String; cvar; external;
+  a2i_default_path:   String; cvar; external;
+  a2f_default_path:   String; cvar; external;
+  a2p_default_path:   String; cvar; external;
+  a2b_default_path:   String; cvar; external;
   a2w_default_path:   String; cvar; external;
+
 {$IFDEF GO32V2}
+
   screen_mode:        Byte; cvar; external;
   comp_text_mode:     Byte; cvar; external;
   custom_svga_mode:   Boolean; cvar; external;
   fps_down_factor:    Byte; cvar; external;
-  typematic_rate:     Byte; cvar; external;
+
   typematic_delay:    Byte; cvar; external;
+  typematic_rate:     Byte; cvar; external;
+
   mouse_disabled:     Boolean; cvar; external;
   mouse_hspeed:       Word; cvar; external;
   mouse_vspeed:       Word; cvar; external;
   mouse_threshold:    Word; cvar; external;
-{$ELSE}
+
+{$ELSE} // NOT DEFINED(GO32V2)
+
   sdl_screen_mode:     Byte; cvar; external;
   sdl_frame_rate:      Byte; cvar; external;
+
   sdl_typematic_delay: Longint; cvar; external;
   sdl_typematic_rate:  Longint; cvar; external;
+
   sdl_opl3_emulator:   Byte; cvar; external;
   sdl_sample_rate:     Longint; cvar; external;
   sdl_sample_buffer:   Longint; cvar; external;
   sdl_timer_slowdown:  Byte; cvar; external;
   sdl_wav_directory:   String; cvar; external;
-{$ENDIF}
+
+{$ENDIF} // NOT DEFINED(GO32V2)
+
   init_tempo:         Byte; cvar; external;
   init_speed:         Byte; cvar; external;
   init_macro_speedup: Word; cvar; external;
@@ -531,12 +568,14 @@ var
   use_large_cursor:   Boolean; cvar; external;
   accurate_conv:      Boolean; cvar; external;
   fix_c_note_bug:     Boolean; cvar; external;
+
   analyzer_bckg:      Byte; cvar; external;
   analyzer:           Byte; cvar; external;
   analyzer_ovrllvol:  Byte; cvar; external;
   analyzer_volumelvl: Byte; cvar; external;
   analyzer_modulator: Byte; cvar; external;
   analyzer_carrier:   Byte; cvar; external;
+
   pattern_bckg:       Byte; cvar; external;
   pattern_border:     Byte; cvar; external;
   pattern_pos_indic:  Byte; cvar; external;
@@ -591,6 +630,7 @@ var
   pattern_input_bckg: Byte; cvar; external;
   pattern_input:      Byte; cvar; external;
   pattern_input_warn: Byte; cvar; external;
+
   debug_info_bckg:    Byte; cvar; external;
   debug_info_bckg2:   Byte; cvar; external;
   debug_info_border:  Byte; cvar; external;
@@ -607,6 +647,7 @@ var
   debug_info_4op:     Byte; cvar; external;
   debug_info_perc:    Byte; cvar; external;
   debug_info_bpm:     Byte; cvar; external;
+
   help_background:    Byte; cvar; external;
   help_title:         Byte; cvar; external;
   help_border:        Byte; cvar; external;
@@ -615,6 +656,7 @@ var
   help_hi_text:       Byte; cvar; external;
   help_keys:          Byte; cvar; external;
   help_indicators:    Byte; cvar; external;
+
   dialog_background:  Byte; cvar; external;
   dialog_title:       Byte; cvar; external;
   dialog_border:      Byte; cvar; external;
@@ -641,6 +683,7 @@ var
   dialog_mod_text:    Byte; cvar; external;
   dialog_car_text:    Byte; cvar; external;
   dialog_misc_indic:  Byte; cvar; external;
+
   macro_background:   Byte; cvar; external;
   macro_title:        Byte; cvar; external;
   macro_border:       Byte; cvar; external;
@@ -673,10 +716,12 @@ var
   macro_sel_short:    Byte; cvar; external;
   macro_context:      Byte; cvar; external;
   macro_context_dis:  Byte; cvar; external;
+
   scrollbar_bckg:     Byte; cvar; external;
   scrollbar_text:     Byte; cvar; external;
   scrollbar_mark:     Byte; cvar; external;
   scrollbar_2nd_mark: Byte; cvar; external;
+
   main_background:    Byte; cvar; external;
   main_title:         Byte; cvar; external;
   main_border:        Byte; cvar; external;
@@ -685,12 +730,14 @@ var
   main_dis_stat_line: Byte; cvar; external;
   main_behavior:      Byte; cvar; external;
   main_behavior_dis:  Byte; cvar; external;
+
   status_background:  Byte; cvar; external;
   status_border:      Byte; cvar; external;
   status_static_txt:  Byte; cvar; external;
   status_dynamic_txt: Byte; cvar; external;
   status_play_state:  Byte; cvar; external;
   status_text_dis:    Byte; cvar; external;
+
   order_background:   Byte; cvar; external;
   order_hi_bckg:      Byte; cvar; external;
   order_border:       Byte; cvar; external;
@@ -704,6 +751,7 @@ var
   order_input_bckg:   Byte; cvar; external;
   order_input:        Byte; cvar; external;
   order_input_warn:   Byte; cvar; external;
+
   instrument_bckg:    Byte; cvar; external;
   instrument_title:   Byte; cvar; external;
   instrument_border:  Byte; cvar; external;
@@ -723,7 +771,31 @@ var
   instrument_ai_on:   Byte; cvar; external;
   instrument_ai_trig: Byte; cvar; external;
 
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
+
+type
+{$IFDEF ADT2PLAY}
+  tCHAR8x8  = array[char] of array[0..7] of Byte;
+  tCHAR8x16 = array[char] of array[0..15] of Byte;
+{$ENDIF} // DEFINED(ADT2PLAY)
+
+{$IFDEF GO32V2}
+  tRGB = Record r,g,b: Byte end;
+{$ELSE} // NOT DEFINED(GO32V2)
+  tRGB = Record r,g,b,a: Byte end;
+{$ENDIF} // NOT DEFINED(GO32V2)
+
+{$IFDEF ADT2PLAY}
+
+type
+  tRGB_PALETTE = array[0..255] of tRGB;
+
+{$ELSE} // NOT DEFINED(ADT2PLAY)
+
+var
   rgb_color: array[0..15] of tRGB; cvar; external;
 {$IFNDEF GO32V2}
-  vga_rgb_color: array[0..15] of tRGB; cvar; external;
+  vga_rgb_color: array[0..15] of tRGB; cvar; external; //const
 {$ENDIF} // NOT DEFINED(GO32V2)
+
+{$ENDIF} // NOT DEFINED(ADT2PLAY)

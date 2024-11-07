@@ -17,6 +17,9 @@
 #endif // USE_FPC
 #include "common.h"
 
+// HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
+#pragma pack(push, 1)
+
 #define MIN_IRQ_FREQ 50
 #define MAX_IRQ_FREQ 1000
 
@@ -64,7 +67,6 @@ extern uint8_t vibtrem_speed_factor;
 extern uint8_t vibtrem_table_size;
 extern uint8_t vibtrem_table[256]; // HINT: (FPC) start index 0
 
-#pragma pack(push, 1)
 typedef struct {
   uint8_t pos;
   uint8_t dir;
@@ -72,7 +74,6 @@ typedef struct {
   uint8_t depth;
   bool fine;
 } tVIBRATO_TREMOLO_TABLE[20]; // HINT: (FPC) start index 1
-#pragma pack(pop)
 
 extern tVIBRATO_TREMOLO_TABLE vibr_table;
 extern tVIBRATO_TREMOLO_TABLE vibr_table2;
@@ -90,7 +91,6 @@ extern bool    really_no_status_refresh;
 #define pattern_loop_flag  0xE0
 #define pattern_break_flag 0xF0
 
-#pragma pack(push, 1)
 extern tFM_PARAMETER_TABLE
                   fmpar_table  [20]; // HINT: (FPC) start index 1
 extern bool       volume_lock  [20]; // HINT: (FPC) start index 1
@@ -101,8 +101,10 @@ extern bool       peak_lock    [20]; // HINT: (FPC) start index 1
 extern bool       pan_lock     [20]; // HINT: (FPC) start index 1
 extern uint8_t    modulator_vol[20]; // HINT: (FPC) start index 1
 extern uint8_t    carrier_vol  [20]; // HINT: (FPC) start index 1
+#if !ADT2PLAY
 extern tDECAY_BAR decay_bar    [20]; // HINT: (FPC) start index 1
 extern tVOLUM_BAR volum_bar    [20]; // HINT: (FPC) start index 1
+#endif // !ADT2PLAY
 extern bool       channel_flag [20]; // HINT: (FPC) start index 1
 extern tCHUNK     event_table  [20]; // HINT: (FPC) start index 1
 extern uint8_t    voice_table  [20]; // HINT: (FPC) start index 1
@@ -145,7 +147,6 @@ extern struct macro_table_t {
   uint8_t  arpg_note;
   uint16_t vib_freq;
 }                 macro_table  [20]; // HINT: (FPC) start index 1
-#pragma pack(pop)
 extern uint8_t    loopbck_table[20]; // HINT: (FPC) start index 1
 extern uint8_t    loop_table   [20][256]; // HINT: (FPC) start index 1,0
 
@@ -265,12 +266,10 @@ extern bool     peak_lock_backup    [20]; // HINT: (FPC) start index 1
 extern uint8_t  panning_table_backup[20]; // HINT: (FPC) start index 1
 extern uint8_t  voice_table_backup  [20]; // HINT: (FPC) start index 1
 extern uint8_t  flag_4op_backup;
-#pragma pack(push, 1)
 extern struct status_backup_t {
   bool replay_forbidden;
   tPLAY_STATUS play_status;
 } status_backup;
-#pragma pack(pop)
 
 uint16_t nFreq (uint8_t note);
 void     change_freq (uint8_t chan, uint16_t freq);
@@ -348,7 +347,7 @@ extern int32_t macro_ticklooper;
 #endif // !GO32
 
 extern int32_t bank_position_list_size;
-#pragma pack(push, 1)
+
 extern struct bank_position_list_t {
 #if GO32
   String bank_name[50+1];
@@ -358,12 +357,13 @@ extern struct bank_position_list_t {
   int32_t bank_size;
   int32_t bank_position;
 } bank_position_list[MAX_NUM_BANK_POSITIONS]; // HINT: (FPC) start index 1
-#pragma pack(pop)
+
+void realtime_gfx_poll_proc (void);
 
 #if GO32
 void init_adt2unit (void);
 #endif // GO32
 
-void realtime_gfx_poll_proc (void);
+#pragma pack(pop)
 
 #endif // !defined(ADT2UNIT_H)

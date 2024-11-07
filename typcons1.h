@@ -4,6 +4,8 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+// This file is included in `adt2unit.h'
+
 #define UINT8_NULL 0xFF
 #define UINT16_NULL 0xFFFF
 #define UINT32_NULL 0xFFFFFFFF
@@ -22,11 +24,13 @@
 #define FFVER_A2B 10
 #define FFVER_A2W 3
 
+#if !ADT2PLAY
+
 #define GENERIC_IO_BUFFER_SIZE 1500*1024 // 1.5MB I/O Buffer
 
 typedef uint8_t tGENERIC_IO_BUFFER[GENERIC_IO_BUFFER_SIZE]; // HINT: (FPC) start index 0
 
-#pragma pack(push, 1)
+#endif // !ADT2PLAY
 
 typedef struct {
   uint8_t AM_VIB_EG_modulator;
@@ -76,7 +80,7 @@ typedef struct {
 
 typedef struct {
   tFM_INST_DATA fm_data;
-  int8_t freq_slide;
+  int16_t freq_slide;
   uint8_t panning;
   uint8_t duration;
 } tREGISTER_TABLE_DEF;
@@ -122,7 +126,7 @@ typedef struct {
   String composer[42+1];
   String instr_names[250][32+1]; // HINT: (FPC) start index 1
   tOLD_ADTRACK2_INS instr_data[250]; // HINT: (FPC) start index 1
-  uint8_t pattern_order[128]; // HINT: (FPC) start index 0
+  uint8_t pattern_order[0x80]; // HINT: (FPC) start index 0
   uint8_t tempo;
   uint8_t speed;
   uint8_t common_flag;
@@ -187,6 +191,8 @@ typedef tCHUNK tVARIABLE_DATA[8][20][0x100]; // HINT: (FPC) start index 0,1,0
 
 typedef tVARIABLE_DATA tPATTERN_DATA[16]; // HINT: (FPC) start index 0
 
+#if !ADT2PLAY
+
 typedef enum {
   objNone,
   objPatternDef,
@@ -235,6 +241,17 @@ typedef struct {
   String _string[255+1];
 } tCLIPBOARD;
 
+#endif // !ADT2PLAY
+
+#if ADT2PLAY
+
+typedef struct {
+  int16_t dir;
+  double lvl, max_lvl;
+} tDECAY_BAR;
+
+#else // !ADT2PLAY
+
 typedef struct {
   int16_t dir1;
   int16_t dir2;
@@ -247,6 +264,8 @@ typedef struct {
   double lvl;
 } tVOLUM_BAR;
 
+#endif // !ADT2PLAY
+
 typedef enum {
   isPlaying,
   isPaused,
@@ -254,90 +273,15 @@ typedef enum {
 } PLAY_STATUS_enum;
 typedef uint8_t tPLAY_STATUS; // holds PLAY_STATUS_enum
 
-typedef struct {
-#if GO32
-  uint8_t r, g, b;
-#else // !GO32
-  uint8_t r, g, b, a;
-#endif // !GO32
-} tRGB;
+#if !ADT2PLAY
+extern String status_layout[3][10+1]; // HINT: (FPC) start index 0 (see tPLAY_STATUS)
+#endif // !ADT2PLAY
 
 typedef uint8_t tByteSet[32]; // HINT: (FPC) set of byte
 
 #define INSTRUMENT_SIZE (sizeof (tADTRACK2_INS))
 #define CHUNK_SIZE (sizeof (tCHUNK))
 #define PATTERN_SIZE (20 * 256 * CHUNK_SIZE)
-
-#pragma pack(pop)
-
-extern String status_layout[3][10+1]; // HINT: (FPC) start index 0 (see tPLAY_STATUS)
-
-#define inst_vpos_max 21
-#define inst_hpos_max 7
-
-extern uint8_t inst_hpos[inst_vpos_max][inst_hpos_max]; // HINT: (FPC) start index 1,1
-extern const uint8_t inst_hpos_ext_2op[6][inst_hpos_max]; // HINT: (FPC) start index 1,1
-extern const uint8_t inst_hpos_ext_perc[6][inst_hpos_max]; // HINT: (FPC) start index 1,1
-extern const uint8_t inst_hpos_ext_4op[6][inst_hpos_max]; // HINT: (FPC) start index 1,1
-extern const uint8_t inst_vpos[inst_vpos_max]; // HINT: (FPC) start index 1
-
-extern String note_layout[12*8+2][3+1]; // HINT: (FPC) start index 0
-
-// TODO: replace scancodes (GO32-only) in `board_scancodes' with keys (all)
-extern const uint8_t board_scancodes[29]; // HINT: (FPC) start index 1
-
-extern const char fx_digits[48]; // HINT: (FPC) start index 0
-
-#define NM_FX_DIGITS (sizeof (fx_digits))
-
-extern char b_note;
-extern const String connection_str[2][2+1]; // HINT: (FPC) start index 0
-extern const String macro_retrig_str[8][1+1]; // HINT: (FPC) start index 0, original string size was 255
-
-extern const uint8_t pos1[22]; // HINT: (FPC) start index 1
-extern const uint8_t pos2[13]; // HINT: (FPC) start index 1
-extern const uint8_t pos3[44]; // HINT: (FPC) start index 1
-extern const uint8_t pos4[110]; // HINT: (FPC) start index 1
-extern const uint8_t pos5[35]; // HINT: (FPC) start index 1
-extern const uint8_t pos5vw[35]; // HINT: (FPC) start index 1
-extern const uint8_t pos6[11]; // HINT: (FPC) start index 1
-
-extern CharSet_t _valid_characters; // HINT: (FPC) set of char
-extern CharSet_t _valid_characters_fname; // HINT: (FPC) set of char
-
-extern const uint8_t _panning[3]; // HINT: (FPC) start index 0
-
-extern const uint8_t _instr_data_ofs[13]; // HINT: (FPC) start index 1
-extern const uint8_t _instr[12]; // HINT: (FPC) start index 0
-
-typedef uint16_t tTRACK_ADDR[20]; // HINT: (FPC) start index 1
-
-extern const tTRACK_ADDR _chmm_n; // HINT: (FPC) start index 1
-extern const tTRACK_ADDR _chmm_m; // HINT: (FPC) start index 1
-extern const tTRACK_ADDR _chmm_c; // HINT: (FPC) start index 1
-
-extern const tTRACK_ADDR _chpm_n; // HINT: (FPC) start index 1
-extern const tTRACK_ADDR _chpm_m; // HINT: (FPC) start index 1
-extern const tTRACK_ADDR _chpm_c; // HINT: (FPC) start index 1
-
-extern const uint8_t _4op_tracks_hi[256/8]; // HINT: (FPC) set of byte
-extern const uint8_t _4op_tracks_lo[256/8]; // HINT: (FPC) set of byte
-
-extern const uint8_t _4op_main_chan[6]; // HINT: (FPC) start index 1
-extern const uint8_t _perc_sim_chan[2]; // HINT: (FPC) start index 19
-
-extern tTRACK_ADDR _chan_n; // HINT: (FPC) start index 1
-extern tTRACK_ADDR _chan_m; // HINT: (FPC) start index 1
-extern tTRACK_ADDR _chan_c; // HINT: (FPC) start index 1
-extern tTRACK_ADDR _ch_tmp; // HINT: (FPC) start index 1
-
-extern const uint8_t fade_delay_tab[64]; // HINT: (FPC) start index 0
-
-extern bool tracing;
-extern bool track_notes;
-extern bool marking;
-extern bool debugging;
-extern bool quick_cmd;
 
 #define ef_Arpeggio           0
 #define ef_FSlideUp           1
@@ -460,6 +404,83 @@ extern bool quick_cmd;
 #define ef_fix1 0x80
 #define ef_fix2 0x90
 
+#if !ADT2PLAY
+
+#define inst_vpos_max 21
+#define inst_hpos_max 7
+
+extern uint8_t inst_hpos[inst_vpos_max][inst_hpos_max]; // HINT: (FPC) start index 1,1
+extern const uint8_t inst_hpos_ext_2op[6][inst_hpos_max]; // HINT: (FPC) start index 1,1
+extern const uint8_t inst_hpos_ext_perc[6][inst_hpos_max]; // HINT: (FPC) start index 1,1
+extern const uint8_t inst_hpos_ext_4op[6][inst_hpos_max]; // HINT: (FPC) start index 1,1
+extern const uint8_t inst_vpos[inst_vpos_max]; // HINT: (FPC) start index 1
+
+extern String note_layout[12*8+2][3+1]; // HINT: (FPC) start index 0
+
+// TODO: replace scancodes (GO32-only) in `board_scancodes' with keys (all)
+extern const uint8_t board_scancodes[29]; // HINT: (FPC) start index 1
+
+extern const char fx_digits[48]; // HINT: (FPC) start index 0
+
+#define NM_FX_DIGITS (sizeof (fx_digits))
+
+extern char b_note;
+extern const String connection_str[2][2+1]; // HINT: (FPC) start index 0
+extern const String macro_retrig_str[8][1+1]; // HINT: (FPC) start index 0, original string size was 255
+
+extern const uint8_t pos1[22]; // HINT: (FPC) start index 1
+extern const uint8_t pos2[13]; // HINT: (FPC) start index 1
+extern const uint8_t pos3[44]; // HINT: (FPC) start index 1
+extern const uint8_t pos4[110]; // HINT: (FPC) start index 1
+extern const uint8_t pos5[35]; // HINT: (FPC) start index 1
+extern const uint8_t pos5vw[35]; // HINT: (FPC) start index 1
+extern const uint8_t pos6[11]; // HINT: (FPC) start index 1
+
+extern CharSet_t _valid_characters; // HINT: (FPC) set of char
+extern CharSet_t _valid_characters_fname; // HINT: (FPC) set of char
+
+#endif // !ADT2PLAY
+
+extern const uint8_t _panning[3]; // HINT: (FPC) start index 0
+
+extern const uint8_t _instr_data_ofs[13]; // HINT: (FPC) start index 1
+extern const uint8_t _instr[12]; // HINT: (FPC) start index 0
+
+typedef uint16_t tTRACK_ADDR[20]; // HINT: (FPC) start index 1
+
+extern const tTRACK_ADDR _chmm_n; // HINT: (FPC) start index 1
+extern const tTRACK_ADDR _chmm_m; // HINT: (FPC) start index 1
+extern const tTRACK_ADDR _chmm_c; // HINT: (FPC) start index 1
+
+extern const tTRACK_ADDR _chpm_n; // HINT: (FPC) start index 1
+extern const tTRACK_ADDR _chpm_m; // HINT: (FPC) start index 1
+extern const tTRACK_ADDR _chpm_c; // HINT: (FPC) start index 1
+
+extern const uint8_t _4op_tracks_hi[256/8]; // HINT: (FPC) set of byte, chan: 1..20
+extern const uint8_t _4op_tracks_lo[256/8]; // HINT: (FPC) set of byte, chan: 1..20
+
+extern const uint8_t _4op_main_chan[6]; // HINT: (FPC) start index 1
+#if !ADT2PLAY
+extern const uint8_t _perc_sim_chan[2]; // HINT: (FPC) start index 19
+#endif // !ADT2PLAY
+
+extern tTRACK_ADDR _chan_n; // HINT: (FPC) start index 1
+extern tTRACK_ADDR _chan_m; // HINT: (FPC) start index 1
+extern tTRACK_ADDR _chan_c; // HINT: (FPC) start index 1
+#if !ADT2PLAY
+extern tTRACK_ADDR _ch_tmp; // HINT: (FPC) start index 1
+#endif // !ADT2PLAY
+
+#if !ADT2PLAY
+
+extern const uint8_t fade_delay_tab[64]; // HINT: (FPC) start index 0
+
+extern bool tracing;
+extern bool track_notes;
+extern bool marking;
+extern bool debugging;
+extern bool quick_cmd;
+
 extern String   home_dir_path[255+1];
 extern String   a2b_default_path[255+1];
 extern String   a2f_default_path[255+1];
@@ -476,8 +497,8 @@ extern uint8_t  comp_text_mode;
 extern bool     custom_svga_mode;
 extern uint8_t  fps_down_factor;
 
-extern uint8_t  typematic_rate;
 extern uint8_t  typematic_delay;
+extern uint8_t  typematic_rate;
 
 extern bool     mouse_disabled;
 extern uint16_t mouse_hspeed;
@@ -740,8 +761,31 @@ extern uint8_t  instrument_ai_off;
 extern uint8_t  instrument_ai_on;
 extern uint8_t  instrument_ai_trig;
 
+#endif // !ADT2PLAY
+
+#if ADT2PLAY
+typedef uint8_t tCHAR8x8 [0x100][ 8]; // HINT: (FPC) start index 0,0
+typedef uint8_t tCHAR8x16[0x100][16]; // HINT: (FPC) start index 0,0
+#endif // ADT2PLAY
+
+typedef struct {
+#if GO32
+  uint8_t r, g, b;
+#else // !GO32
+  uint8_t r, g, b, a;
+#endif // !GO32
+} tRGB;
+
+#if ADT2PLAY
+
+typedef tRGB tRGB_PALETTE[0x100]; // HINT: (FPC) start index 0
+
+#else // !ADT2PLAY
+
 extern tRGB rgb_color[16]; // HINT: (FPC) start index 0
 
 #if !GO32
 extern const tRGB vga_rgb_color[16]; // HINT: (FPC) start index 0
 #endif // !GO32
+
+#endif // !ADT2PLAY

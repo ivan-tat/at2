@@ -111,8 +111,10 @@ var
   pan_lock:      array[1..20] of Boolean; cvar; external;
   modulator_vol: array[1..20] of Byte; cvar; external;
   carrier_vol:   array[1..20] of Byte; cvar; external;
+{$IFNDEF ADT2PLAY}
   decay_bar:     array[1..20] of tDECAY_BAR; cvar; external;
   volum_bar:     array[1..20] of tVOLUM_BAR; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   channel_flag:  array[1..20] of Boolean; cvar; external;
   event_table:   array[1..20] of tCHUNK; cvar; external;
   voice_table:   array[1..20] of Byte; cvar; external;

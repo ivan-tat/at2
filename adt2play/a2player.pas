@@ -16,6 +16,8 @@
 unit A2player;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$MODESWITCH CVAR}
+{$L a2player.o}
 interface
 
 const
@@ -27,7 +29,7 @@ const
   timer_poll_proc_ptr: Pointer = NIL;
   timer_initialized: Boolean = FALSE;
 
-{$i typconst.inc}
+{$I typcons1.inc}
 
 const
   opl3port: Word = $388;
@@ -86,11 +88,6 @@ const
   replay_forbidden: Boolean = TRUE;
   force_macro_keyon: Boolean = FALSE;
 
-type
-  tDECAY_BAR = Record
-                  dir: Integer;
-                  lvl,max_lvl: Real;
-                end;
 var
   decay_bar: array[1..96] of tDECAY_BAR;
 
