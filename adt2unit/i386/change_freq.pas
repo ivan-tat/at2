@@ -9,7 +9,9 @@ begin
   If is_4op_chan(chan) and (chan in _4op_tracks_hi) then
     begin
       freq_table[SUCC(chan)] := freq_table[chan];
+{$IFNDEF ADT2PLAY}
       freqtable2[SUCC(chan)] := freqtable2[chan];
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
       chan := SUCC(chan);
     end;
 
@@ -24,11 +26,13 @@ begin
         and     dx,NOT 1fffh
         add     ax,dx
         mov     word ptr [freq_table+ebx],ax
+{$IFNDEF ADT2PLAY}
         mov     word ptr [freqtable2+ebx],ax
         shr     ebx,1
         cmp     byte ptr [channel_flag+ebx],TRUE
         jnz     @@1
         shl     ebx,1
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
         xor     edx,edx
         mov     dx,word ptr [_chan_n+ebx]
         add     dx,0a0h
@@ -50,6 +54,8 @@ begin
   If is_4op_chan(chan) then
     begin
       freq_table[PRED(chan)] := freq_table[chan];
+{$IFNDEF ADT2PLAY}
       freqtable2[PRED(chan)] := freqtable2[chan];
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
     end;
 end;

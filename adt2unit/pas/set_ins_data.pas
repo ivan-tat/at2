@@ -78,5 +78,7 @@ begin
 
   If NOT volume_lock[chan] or (ins <> old_ins) then
     reset_ins_volume(chan);
+{$IFNDEF ADT2PLAY}
   ai_table[ins] := 1;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 end;

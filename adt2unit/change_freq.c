@@ -8,23 +8,25 @@
 void change_freq (uint8_t chan, uint16_t freq) {
   uint16_t x;
 
-  if (is_4op_chan (chan) && bit_test (_4op_tracks_hi, chan)) {
-    freq_table[chan - 1 + 1] = freq_table[chan - 1];
-    freqtable2[chan - 1 + 1] = freqtable2[chan - 1];
+  chan--;
+
+  if (is_4op_chan (chan + 1) && bit_test (_4op_tracks_hi, chan + 1)) {
+    freq_table[chan + 1] = freq_table[chan];
+    freqtable2[chan + 1] = freqtable2[chan];
     chan++;
   }
 
-  x = (freq & 0x1FFF) + (freq_table[chan - 1] & ~0x1FFF);
-  freq_table[chan - 1] = x;
-  freqtable2[chan - 1] = x;
+  x = (freq & 0x1FFF) + (freq_table[chan] & ~0x1FFF);
+  freq_table[chan] = x;
+  freqtable2[chan] = x;
 
-  if (channel_flag[chan - 1]) {
-    opl3out (_chan_n[chan - 1] + 0xA0, x & 0xFF);
-    opl3out (_chan_n[chan - 1] + 0xB0, x >> 8);
+  if (channel_flag[chan]) {
+    opl3out (_chan_n[chan] + 0xA0, x & 0xFF);
+    opl3out (_chan_n[chan] + 0xB0, x >> 8);
   }
 
-  if (is_4op_chan (chan)) {
-    freq_table[chan - 1 - 1] = freq_table[chan - 1];
-    freqtable2[chan - 1 - 1] = freqtable2[chan - 1];
+  if (is_4op_chan (chan + 1)) {
+    freq_table[chan - 1] = freq_table[chan];
+    freqtable2[chan - 1] = freqtable2[chan];
   }
 }

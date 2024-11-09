@@ -42,7 +42,9 @@ begin
         add     edi,ecx
         mov     ecx,CHUNK_SIZE
         rep     movsb
+{$IFNDEF ADT2PLAY}
         mov     module_archived,FALSE
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 @@2:
   end;
 end;

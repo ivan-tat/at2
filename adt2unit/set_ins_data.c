@@ -78,5 +78,7 @@ void set_ins_data (uint8_t ins, uint8_t chan) {
   if ((!volume_lock[chan - 1]) || (ins != old_ins))
     reset_ins_volume (chan);
 
+#if !ADT2PLAY
   ai_table[ins - 1] = 1;
+#endif // !ADT2PLAY
 }

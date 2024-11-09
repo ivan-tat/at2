@@ -14,7 +14,9 @@ begin
     end;
   timer_initialized := FALSE;
   TimerDone;
+{$IFNDEF ADT2PLAY}
   TimerRemoveHandler;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
   _dbg_leave; //EXIT //done_timer_proc
 end;

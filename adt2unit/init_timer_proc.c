@@ -7,17 +7,21 @@
 void init_timer_proc (void) {
   DBG_ENTER ("init_timer_proc");
 
+#if !ADT2PLAY
 #if GO32
   scroll_ticks = 0;
 #endif // GO32
 
   srand (time (NULL));
+#endif // !ADT2PLAY
 
   if (!timer_initialized) {
     timer_initialized = true;
+#if !ADT2PLAY
 #if !GO32
     TimerInstallHandler (timer_poll_proc);
 #endif // !GO32
+#endif // !ADT2PLAY
     TimerSetup (50);
   }
 

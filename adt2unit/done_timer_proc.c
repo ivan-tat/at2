@@ -10,7 +10,9 @@ void done_timer_proc (void) {
   if (timer_initialized) {
     timer_initialized = false;
     TimerDone ();
+#if !ADT2PLAY
     TimerRemoveHandler ();
+#endif // !ADT2PLAY
   }
 
   DBG_LEAVE (); //done_timer_proc
