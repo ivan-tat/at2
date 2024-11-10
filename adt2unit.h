@@ -214,8 +214,8 @@ extern uint8_t last_order;
 
 extern tGENERIC_IO_BUFFER buf1;
 extern tGENERIC_IO_BUFFER buf2;
-extern uint8_t buf3[0x10000];
-extern uint8_t buf4[0x10000];
+extern uint8_t buf3[0x10000]; // HINT: (FPC) start index 0
+extern uint8_t buf4[0x10000]; // HINT: (FPC) start index 0
 
 extern tPATTERN_DATA *pattdata;
 
@@ -325,6 +325,15 @@ bool    is_4op_chan (uint8_t chan);
 
 #include "realtime.h"
 
+//procedure count_order(var entries: Byte);
+//procedure count_patterns(var patterns: Byte);
+//procedure count_instruments(var instruments: Byte);
+//procedure init_old_songdata;
+//procedure init_songdata;
+//procedure update_instr_data(ins: Byte);
+//procedure load_instrument(var data; chan: Byte);
+//procedure output_note(note,ins,chan: Byte; restart_macro,restart_adsr: Boolean);
+
 int32_t min (int32_t value, int32_t minimum);
 int32_t max (int32_t value, int32_t maximum);
 void    TimerSetup (uint32_t Hz);
@@ -336,6 +345,9 @@ extern uint8_t block_x0;
 extern uint8_t block_y0;
 extern uint8_t block_x1;
 extern uint8_t block_y1;
+
+//function  is_in_block(x0,y0,x1,y1: Byte): Boolean;
+//procedure fade_out_playback(fade_screen: Boolean);
 
 extern int32_t ticklooper;
 extern int32_t macro_ticklooper;
@@ -357,6 +369,9 @@ extern struct bank_position_list_t {
   int32_t bank_size;
   int32_t bank_position;
 } bank_position_list[MAX_NUM_BANK_POSITIONS]; // HINT: (FPC) start index 1
+
+//function  get_bank_position(bank_name: String; bank_size: Longint): Longint;
+//procedure add_bank_position(bank_name: String; bank_size: Longint; bank_position: Longint);
 
 void realtime_gfx_poll_proc (void);
 

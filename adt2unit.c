@@ -51,6 +51,13 @@ uint8_t  tempo             = 50;
 uint8_t  speed             = 6;
 uint16_t macro_speedup     = 1;
 bool     timer_initialized = false;
+#if GO32
+static void (*timer_poll_proc_ptr) (void) = NULL;
+#else // !GO32
+/*static*/ void (*timer_handler) (void) = NULL;
+/*static*/ SDL_TimerID TimerID = NULL;
+/*static*/ int32_t _interval = 1000 / 50; // 1000 ms / Hz
+#endif // !GO32
 bool     repeat_pattern    = false;
 bool     fast_forward      = false;
 bool     _rewind           = false;
@@ -288,20 +295,15 @@ struct status_backup_t status_backup;
 #include "adt2unit/calc_freq_shift_up.c" // HINT: static
 #include "adt2unit/calc_freq_shift_down.c" // HINT: static
 #include "adt2unit/calc_vibtrem_shift.c" // HINT: static
-#include "adt2unit/is_data_empty.c" // HINT: static
 #include "adt2unit/change_freq.c"
-#include "adt2unit/synchronize_song_timer.c" // HINT: static
-#include "adt2unit/concw.c"
 #include "adt2unit/ins_parameter.c"
 #include "adt2unit/is_chan_adsr_data_empty.c"
 #include "adt2unit/is_ins_adsr_data_empty.c"
-
-#include "adt2unit/is_4op_chan.c"
-
-#include "realtime.c"
-
+#include "adt2unit/is_data_empty.c" // HINT: static
 #include "adt2unit/min.c"
 #include "adt2unit/max.c"
+#include "adt2unit/concw.c"
+#include "adt2unit/synchronize_song_timer.c" // HINT: static
 #include "adt2unit/change_frequency.c"
 #include "adt2unit/update_timer.c"
 #include "adt2unit/update_playback_speed.c" // HINT: static
@@ -312,51 +314,67 @@ struct status_backup_t status_backup;
 #include "adt2unit/_4op_data_flag.c" // HINT: static
 #include "adt2unit/_4op_vol_valid_chan.c" // HINT: static
 #include "adt2unit/set_ins_volume.c"
-#include "adt2unit/set_volume.c" // HINT: static
+#include "adt2unit/set_volume.c" // HINT: static (used in `set_ins_volume_4op')
 #include "adt2unit/set_ins_volume_4op.c" // HINT: static
 #include "adt2unit/reset_ins_volume.c" // HINT: static
 #include "adt2unit/set_ins_data.c"
 #include "adt2unit/update_modulator_adsrw.c"
 #include "adt2unit/update_carrier_adsrw.c"
-
-uint8_t block_xstart = 1;
-uint8_t block_ystart = 0;
-
-uint8_t block_x0 = 0;
-uint8_t block_y0 = 1;
-uint8_t block_x1 = 0;
-uint8_t block_y1 = 1;
-
-int32_t ticklooper = 0;
-int32_t macro_ticklooper = 0;
-
-int32_t bank_position_list_size = 0;
-struct bank_position_list_t bank_position_list[MAX_NUM_BANK_POSITIONS];
-
+//procedure update_fmpar(chan: Byte);
+//procedure reset_chan_data(chan: Byte);
+//procedure init_macro_table(chan,note,ins: Byte; freq: Word);
+//procedure output_note(note,ins,chan: Byte; restart_macro,restart_adsr: Boolean);
+//procedure generate_custom_vibrato(value: Byte);
+//procedure update_fine_effects(chan: Byte); forward;
+//procedure play_line;
+//procedure portamento_up(chan: Byte; slide: Word; limit: Word);
+//procedure portamento_down(chan: Byte; slide: Word; limit: Word);
+//procedure macro_vibrato__porta_up(chan: Byte; depth: Byte);
+//procedure macro_vibrato__porta_down(chan: Byte; depth: Byte);
+//procedure tone_portamento(chan: Byte);
+//procedure tone_portamento2(chan: Byte);
+//procedure slide_carrier_volume_up(chan: Byte; slide,limit: Byte);
+//procedure slide_modulator_volume_up(chan: Byte; slide,limit: Byte);
+//procedure slide_volume_up(chan,slide: Byte);
+//procedure slide_carrier_volume_down(chan: Byte; slide: Byte);
+//procedure slide_modulator_volume_down(chan: Byte; slide: Byte);
+//procedure slide_volume_down(chan,slide: Byte);
+//procedure volume_slide(chan,up_speed,down_speed: Byte);
+//procedure global_volume_slide(up_speed,down_speed: Byte);
+//procedure arpeggio(chan: Byte);
+//procedure arpeggio2(chan: Byte);
+//procedure vibrato(chan: Byte);
+//procedure vibrato2(chan: Byte);
+//procedure tremolo(chan: Byte);
+//procedure tremolo2(chan: Byte);
+//procedure update_effects;
+//procedure update_fine_effects(chan: Byte);
+//procedure update_extra_fine_effects;
+//function calc_following_order(order: Byte): Integer;
+//function calc_order_jump: Integer;
+//procedure update_song_position;
+//procedure poll_proc;
+//procedure macro_poll_proc;
+//procedure set_global_volume;
+#if GO32
+//procedure update_mouse_position;
+#endif // GO32
+//procedure synchronize_screen;
 #include "adt2unit/_macro_speedup.c"
 
 #if GO32
 
-static const char ___ADT2UNIT_CONST_END___ = 0;
-static char       ___ADT2UNIT_DATA_END___ = 0;
-static char       ___ADT2UNIT_BSS_END___;
+/*static*/ extern void timer_poll_proc (void); // TODO: port to C
+
 static __NO_REORDER __ALIGNED_(1) __NAKED_RELAXED void
                   ___ADT2UNIT_CODE_END___ (void) { }
-
-/*static*/ extern void timer_poll_proc (void); // TODO: port to C
-static void (*timer_poll_proc_ptr) (void) = NULL;
 
 #include "adt2unit/go32/TimerSetup.c"
 #include "adt2unit/go32/TimerDone.c" // HINT: static
 #include "adt2unit/go32/TimerInstallHandler.c" // HINT: static
 #include "adt2unit/go32/TimerRemoveHandler.c" // HINT: static
-#include "adt2unit/go32/init_adt2unit.c"
 
 #else // !GO32
-
-void (*timer_handler) (void) = NULL;
-SDL_TimerID TimerID = NULL;
-int32_t _interval = 1000 / 50; // 1000 ms / Hz
 
 /*static*/ extern void timer_poll_proc (void); // TODO: port to C
 
@@ -369,11 +387,64 @@ int32_t _interval = 1000 / 50; // 1000 ms / Hz
 
 #include "adt2unit/init_timer_proc.c"
 #include "adt2unit/done_timer_proc.c"
-#include "adt2unit/get_chunk.c"
-#include "adt2unit/put_chunk.c"
 
-//#include "realtime.c"
+#include "realtime.c"
 
 #include "adt2unit/calc_pattern_pos.c"
+//procedure calibrate_player(order,line: Byte; status_filter: Boolean; line_dependent: Boolean);
+//procedure init_buffers;
+//procedure init_player;
+//procedure reset_player;
+//procedure start_playing;
+//procedure stop_playing;
+#include "adt2unit/get_chunk.c"
+#include "adt2unit/put_chunk.c"
+//function get_chanpos(var data; channels,scancode: Byte): Byte;
+//function get_chanpos2(var data; channels,scancode: Byte): Byte;
+//function count_channel(hpos: Byte): Byte;
+//function count_pos(hpos: Byte): Byte;
+//procedure count_order(var entries: Byte);
+//procedure count_patterns(var patterns: Byte);
+//procedure count_instruments(var instruments: Byte);
+//function calc_max_speedup(tempo: Byte): Word;
+//function calc_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
+//function calc_realtime_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
+//procedure init_old_songdata;
+//procedure init_songdata;
+//procedure update_instr_data(ins: Byte);
+//procedure load_instrument(var data; chan: Byte);
+#include "adt2unit/is_4op_chan.c"
+
+uint8_t block_xstart = 1;
+uint8_t block_ystart = 0;
+
+uint8_t block_x0 = 0;
+uint8_t block_y0 = 1;
+uint8_t block_x1 = 0;
+uint8_t block_y1 = 1;
+
+//function is_in_block(x0,y0,x1,y1: Byte): Boolean;
+//procedure fade_out_playback(fade_screen: Boolean);
+
+int32_t ticklooper = 0;
+int32_t macro_ticklooper = 0;
+
+//procedure realtime_gfx_poll_proc;
+
+int32_t bank_position_list_size = 0;
+struct bank_position_list_t bank_position_list[MAX_NUM_BANK_POSITIONS];
+
+//function get_bank_position(bank_name: String; bank_size: Longint): Longint;
+//procedure add_bank_position(bank_name: String; bank_size: Longint; bank_position: Longint);
+
+#if GO32
+static const char ___ADT2UNIT_CONST_END___ = 0;
+static char       ___ADT2UNIT_DATA_END___ = 0;
+static char       ___ADT2UNIT_BSS_END___;
+#endif // GO32
+
+#if GO32
+#include "adt2unit/go32/init_adt2unit.c"
+#endif // GO32
 
 #pragma pack(pop)

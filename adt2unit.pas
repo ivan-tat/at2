@@ -446,6 +446,7 @@ const
   FreqEnd   = $2ae;
   FreqRange = FreqEnd-FreqStart;
 
+//nFreq
 function calc_freq_shift_up(freq,shift: Word): Word; cdecl; external;
 function calc_freq_shift_down(freq,shift: Word): Word; cdecl; external;
 function calc_vibtrem_shift(chan: Byte; var table_data): Word; cdecl; external;

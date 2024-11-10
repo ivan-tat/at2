@@ -205,7 +205,86 @@ typedef struct {
 
 // adt2opl3 {
 /*st*/ uint16_t _opl_regs_cache[0x10000]; // HINT: (FPC) start index 0
+
+//#include "adt2opl3/go32/opl2out.c"
+//#include "adt2opl3/go32/opl3out_proc.c"
+//#include "adt2opl3/go32/opl3exp.c"
 // } adt2opl3
+
+//#include "stringio/asciiz_string.c"
+
+#define FreqStart 0x156
+#define FreqEnd   0x2AE
+#define FreqRange (FreqEnd - FreqStart)
+
+//#include "adt2unit/nFreq.c"
+//#include "adt2unit/calc_freq_shift_up.c"
+//#include "adt2unit/calc_freq_shift_down.c"
+//#include "adt2unit/calc_vibtrem_shift.c"
+//#include "adt2unit/change_freq.c"
+//#include "adt2unit/ins_parameter.c"
+//#include "adt2unit/is_chan_adsr_data_empty.c"
+//#include "adt2unit/is_ins_adsr_data_empty.c"
+//#include "adt2unit/is_data_empty.c"
+//#include "adt2unit/min.c"
+//#include "adt2unit/max.c"
+//#include "adt2unit/concw.c"
+//#include "adt2unit/synchronize_song_timer.c"
+//#include "adt2unit/change_frequency.c"
+//#include "adt2unit/_macro_speedup.c"
+//procedure TimerSetup(Hz: Longint); forward;
+//#include "adt2unit/update_timer.c"
+//#include "adt2unit/update_playback_speed.c"
+//#include "adt2unit/key_on.c"
+//#include "adt2unit/key_off.c"
+//#include "adt2unit/release_sustaining_sound.c"
+//#include "adt2unit/scale_volume.c"
+//#include "adt2unit/_4op_data_flag.c"
+//#include "adt2unit/_4op_vol_valid_chan.c"
+//#include "adt2unit/set_ins_volume.c"
+//#include "adt2unit/set_ins_volume_4op.c"
+//#include "adt2unit/reset_ins_volume.c"
+//procedure set_global_volume;
+//procedure set_overall_volume(level: Byte);
+//procedure init_macro_table(chan,note,ins: Byte; freq: Word);
+//#include "adt2unit/set_ins_data.c"
+//#include "adt2unit/update_modulator_adsrw.c"
+//#include "adt2unit/update_carrier_adsrw.c"
+//procedure update_fmpar(chan: Byte);
+//#include "adt2unit/is_4op_chan.c"
+//procedure output_note(note,ins,chan: Byte; restart_macro,restart_adsr: Boolean);
+//procedure generate_custom_vibrato(value: Byte);
+//procedure update_fine_effects(chan: Byte); forward;
+//procedure play_line;
+//procedure portamento_up(chan: Byte; slide: Word; limit: Word);
+//procedure portamento_down(chan: Byte; slide: Word; limit: Word);
+//procedure macro_vibrato__porta_up(chan: Byte; depth: Byte);
+//procedure macro_vibrato__porta_down(chan: Byte; depth: Byte);
+//procedure tone_portamento(chan: Byte);
+//procedure tone_portamento2(chan: Byte);
+//procedure slide_carrier_volume_up(chan: Byte; slide,limit: Byte);
+//procedure slide_modulator_volume_up(chan: Byte; slide,limit: Byte);
+//procedure slide_volume_up(chan,slide: Byte);
+//procedure slide_carrier_volume_down(chan: Byte; slide: Byte);
+//procedure slide_modulator_volume_down(chan: Byte; slide: Byte);
+//procedure slide_volume_down(chan,slide: Byte);
+//procedure volume_slide(chan,up_speed,down_speed: Byte);
+//procedure global_volume_slide(up_speed,down_speed: Byte);
+//procedure arpeggio(chan: Byte);
+//procedure arpeggio2(chan: Byte);
+//procedure vibrato(chan: Byte);
+//procedure vibrato2(chan: Byte);
+//procedure tremolo(chan: Byte);
+//procedure tremolo2(chan: Byte);
+//procedure update_effects;
+//procedure update_fine_effects(chan: Byte);
+//procedure update_extra_fine_effects;
+//function calc_following_order(order: Byte): Integer;
+//function calc_order_jump: Integer;
+//procedure update_song_position;
+//procedure poll_proc;
+//procedure macro_poll_proc;
+//procedure timer_poll_proc;
 
 #if GO32
 static const char ___A2PLAYER_CONST_END___ = 0;
@@ -214,6 +293,21 @@ static char       ___A2PLAYER_BSS_END___;
 static __NO_REORDER __ALIGNED_(1) __NAKED_RELAXED void
                   ___A2PLAYER_CODE_END___ (void) { }
 #endif // GO32
+
+//procedure TimerSetup(Hz: Longint);
+//procedure TimerDone;
+//#include "adt2unit/init_timer_proc.c"
+//#include "adt2unit/done_timer_proc.c"
+//#include "adt2unit/calc_pattern_pos.c"
+//procedure init_buffers;
+//procedure init_player;
+//procedure stop_playing;
+//procedure init_old_songdata;
+//procedure init_songdata;
+//procedure start_playing;
+//#include "adt2unit/get_chunk.c"
+//#include "adt2unit/put_chunk.c"
+//procedure count_order(var entries: Byte);
 
 #if GO32
 #include "a2player/go32/init_a2player.c"
