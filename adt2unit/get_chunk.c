@@ -9,8 +9,10 @@
 // channel: 1..20
 void get_chunk (uint8_t pattern, uint8_t line, uint8_t channel, tCHUNK *chunk)
 {
+  channel--;
+
   if (pattern < max_patterns)
-    *chunk = (*pattdata)[pattern / 8][pattern % 8][channel - 1][line];
+    *chunk = (*pattdata)[pattern / 8][pattern % 8][channel][line];
   else
     *chunk = (tCHUNK) { 0, };
 }

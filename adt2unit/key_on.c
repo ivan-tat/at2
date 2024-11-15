@@ -6,8 +6,10 @@
 
 // chan: 1..20
 void key_on (uint8_t chan) {
-  if (is_4op_chan (chan) && bit_test (_4op_tracks_hi, chan))
-    opl3out (0xB0 + _chan_n[chan - 1 + 1], 0);
-  else
-    opl3out (0xB0 + _chan_n[chan - 1], 0);
+  chan--;
+
+  if (is_4op_chan (chan + 1) && bit_test (_4op_tracks_hi, chan + 1))
+    chan++;
+
+  opl3out (0xB0 + _chan_n[chan], 0);
 }

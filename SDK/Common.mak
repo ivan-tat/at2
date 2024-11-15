@@ -286,8 +286,12 @@ GCCFLAGS+=-DUSE_FPC=1\
 
 # FPC compatibility for 32-bits x86 target
 ifneq ($(findstring $(GCC_CPU_TARGET),i386 i486 i586 i686),)
+ # Do not put into `.bss' section initialized with zero variables
+ # Do not reorder variables and functions
  # Preserve EBX, ESI and EDI registers across function calls
  GCCFLAGS+=\
+  -fno-zero-initialized-in-bss\
+  -fno-toplevel-reorder\
   -fno-caller-saves\
   -fcall-used-ebx\
   -fcall-used-esi\

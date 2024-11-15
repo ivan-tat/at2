@@ -5,13 +5,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // chan: 1..20
-void update_modulator_adsrw (uint8_t chan) {
-  opl3out (_instr[4] + _chan_m[chan - 1],
-           (fmpar_table[chan - 1].adsrw_mod.attck << 4)
-           + fmpar_table[chan - 1].adsrw_mod.dec);
-  opl3out (_instr[6] + _chan_m[chan - 1],
-           (fmpar_table[chan - 1].adsrw_mod.sustn << 4)
-           + fmpar_table[chan - 1].adsrw_mod.rel);
-  opl3out (_instr[8] + _chan_m[chan - 1],
-           fmpar_table[chan - 1].adsrw_mod.wform);
+void update_modulator_adsrw (uint8_t chan)
+{
+  chan--;
+
+  opl3out (_instr[4] + _chan_m[chan],
+           ( fmpar_table[chan].adsrw_mod.attck << 4)
+           + fmpar_table[chan].adsrw_mod.dec);
+  opl3out (_instr[6] + _chan_m[chan],
+           ( fmpar_table[chan].adsrw_mod.sustn << 4)
+           + fmpar_table[chan].adsrw_mod.rel);
+  opl3out (_instr[8] + _chan_m[chan],
+           fmpar_table[chan].adsrw_mod.wform);
 }

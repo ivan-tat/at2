@@ -35,12 +35,12 @@
 #pragma pack(push, 1)
 
 #if GO32
-static const char ___ADT2UNIT_CONST_START___ = 0;
-static char       ___ADT2UNIT_DATA_START___ = 0;
-static char       ___ADT2UNIT_BSS_START___;
-static __NO_REORDER __ALIGNED_(1) __NAKED_RELAXED void
-                  ___ADT2UNIT_CODE_START___ (void) { }
-#endif // GO32
+#define __PAREA ADT2UNIT
+__PAREA_START (CONST)
+__PAREA_START (DATA)
+__PAREA_START (BSS)
+__PAREA_START (CODE)
+#endif // !GO32
 
 #include "typcons1.c"
 #include "typcons2.c"
@@ -107,7 +107,7 @@ const uint8_t def_vibtrem_table[256] = {
 };
 
 uint8_t vibtrem_speed_factor;
-uint8_t vibtrem_table_size;
+uint8_t vibtrem_table_size; // FIXME: 256 is truncated to 0
 uint8_t vibtrem_table[256];
 
 tVIBRATO_TREMOLO_TABLE vibr_table;
@@ -320,11 +320,11 @@ struct status_backup_t status_backup;
 #include "adt2unit/set_ins_data.c"
 #include "adt2unit/update_modulator_adsrw.c"
 #include "adt2unit/update_carrier_adsrw.c"
-//procedure update_fmpar(chan: Byte);
+#include "adt2unit/update_fmpar.c"
 //procedure reset_chan_data(chan: Byte);
-//procedure init_macro_table(chan,note,ins: Byte; freq: Word);
-//procedure output_note(note,ins,chan: Byte; restart_macro,restart_adsr: Boolean);
-//procedure generate_custom_vibrato(value: Byte);
+#include "adt2unit/init_macro_table.c"
+#include "adt2unit/output_note.c"
+#include "adt2unit/generate_custom_vibrato.c" // HINT: static
 //procedure update_fine_effects(chan: Byte); forward;
 //procedure play_line;
 //procedure portamento_up(chan: Byte; slide: Word; limit: Word);
@@ -355,7 +355,7 @@ struct status_backup_t status_backup;
 //procedure update_song_position;
 //procedure poll_proc;
 //procedure macro_poll_proc;
-//procedure set_global_volume;
+#include "adt2unit/set_global_volume.c"
 #if GO32
 //procedure update_mouse_position;
 #endif // GO32
@@ -366,8 +366,7 @@ struct status_backup_t status_backup;
 
 /*static*/ extern void timer_poll_proc (void); // TODO: port to C
 
-static __NO_REORDER __ALIGNED_(1) __NAKED_RELAXED void
-                  ___ADT2UNIT_CODE_END___ (void) { }
+__PAREA_END (CODE)
 
 #include "adt2unit/go32/TimerSetup.c"
 #include "adt2unit/go32/TimerDone.c" // HINT: static
@@ -403,7 +402,7 @@ static __NO_REORDER __ALIGNED_(1) __NAKED_RELAXED void
 //function get_chanpos2(var data; channels,scancode: Byte): Byte;
 //function count_channel(hpos: Byte): Byte;
 //function count_pos(hpos: Byte): Byte;
-//procedure count_order(var entries: Byte);
+#include "adt2unit/count_order.c"
 //procedure count_patterns(var patterns: Byte);
 //procedure count_instruments(var instruments: Byte);
 //function calc_max_speedup(tempo: Byte): Word;
@@ -438,9 +437,9 @@ struct bank_position_list_t bank_position_list[MAX_NUM_BANK_POSITIONS];
 //procedure add_bank_position(bank_name: String; bank_size: Longint; bank_position: Longint);
 
 #if GO32
-static const char ___ADT2UNIT_CONST_END___ = 0;
-static char       ___ADT2UNIT_DATA_END___ = 0;
-static char       ___ADT2UNIT_BSS_END___;
+__PAREA_END (CONST)
+__PAREA_END (DATA)
+__PAREA_END (BSS)
 #endif // GO32
 
 #if GO32

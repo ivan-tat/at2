@@ -7,10 +7,10 @@
 static void lock_adt2unit (bool lock) {
   LOCK_DECL (lock, v, f);
 
-  LOCK_DATA (v, &___ADT2UNIT_CONST_START___, (ptrdiff_t) &___ADT2UNIT_CONST_END___ - (ptrdiff_t) &___ADT2UNIT_CONST_START___);
-  LOCK_DATA (v, &___ADT2UNIT_DATA_START___,  (ptrdiff_t) &___ADT2UNIT_DATA_END___  - (ptrdiff_t) &___ADT2UNIT_DATA_START___);
-  LOCK_DATA (v, &___ADT2UNIT_BSS_START___,   (ptrdiff_t) &___ADT2UNIT_BSS_END___   - (ptrdiff_t) &___ADT2UNIT_BSS_START___);
-  LOCK_CODE (f, (uintptr_t) ___ADT2UNIT_CODE_START___, (ptrdiff_t) ___ADT2UNIT_CODE_END___ - (ptrdiff_t) ___ADT2UNIT_CODE_START___);
+  LOCK_DATA (v, &__PAREA_LABEL (CONST, START), __PAREA_SIZE (CONST));
+  LOCK_DATA (v, &__PAREA_LABEL (DATA,  START), __PAREA_SIZE (DATA));
+  LOCK_DATA (v, &__PAREA_LABEL (BSS,   START), __PAREA_SIZE (BSS));
+  LOCK_CODE (f, (uintptr_t) __PAREA_LABEL (CODE, START), __PAREA_SIZE (CODE));
 }
 
 static void done_adt2unit (void);

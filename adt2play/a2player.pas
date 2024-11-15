@@ -87,38 +87,40 @@ var
   replay_forbidden: Boolean; cvar; external;
   force_macro_keyon: Boolean; cvar; external;
 
-  decay_bar: array[1..96] of tDECAY_BAR; cvar; external;
+const
+  DECAY_BARS = 25;
+
+var
+  decay_bar: array[1..DECAY_BARS] of tDECAY_BAR; cvar; external;
 
 procedure start_playing;
-procedure set_overall_volume(level: Byte);
+procedure set_overall_volume(level: Byte); cdecl; external;
 procedure stop_playing;
 procedure init_old_songdata;
 procedure init_songdata;
 procedure init_timer_proc;
 procedure done_timer_proc;
-procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK);
-procedure put_chunk(pattern,line,channel: Byte; chunk: tCHUNK);
-procedure count_order(var entries: Byte);
-procedure timer_poll_proc;
+procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
+procedure put_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
+procedure count_order(var entries: Byte); cdecl; external;
+procedure timer_poll_proc; cdecl;
 function  calc_following_order(order: Byte): Integer;
-function  is_4op_chan(chan: Byte): Boolean;
-function  min(value: Longint; minimum: Longint): Longint;
-function  max(value: Longint; maximum: Longint): Longint;
-function  asciiz_string(str: String): String;
+function  is_4op_chan(chan: Byte): Boolean; cdecl; external;
+function  min(value: Longint; minimum: Longint): Longint; cdecl; external;
+function  max(value: Longint; maximum: Longint): Longint; cdecl; external;
 
 // adt2opl3 {
 var
   opl3port: Word; cvar; external;
 
 type
-  tOPLOUT_proc = procedure(reg,data: Word);
+  tOPLOUT_proc = procedure(reg,data: Word); cdecl;
 
-procedure opl2out(reg,data: Word);
-procedure opl3out_proc(reg,data: Word);
-procedure opl3exp(data: Word);
+procedure opl2out(reg,data: Word); cdecl; external;
+procedure opl3exp(data: Word); cdecl; external;
 
-const
-  opl3out: tOPLOUT_proc = opl3out_proc;
+var
+  opl3out: tOPLOUT_proc; cvar; external;
 // } adt2opl3
 
 const
@@ -127,6 +129,7 @@ const
 implementation
 
 uses
+  pascal,
   debug,
   DOS,
   GO32,
@@ -241,251 +244,49 @@ var
   last_order: Byte; cvar; external;
   reset_chan: array[1..20] of Boolean; cvar; external;
 
-// adt2opl3 {
-var
-  _opl_regs_cache: array[WORD] of Word; cvar; external;
-
-{$I adt2opl3/go32/pas/opl2out.pas}
-{$I adt2opl3/go32/pas/opl3out_proc.pas}
-{$I adt2opl3/go32/pas/opl3exp.pas}
-// } adt2opl3
-
-{$I stringio/pas/asciiz_string.pas}
-
 const
   FreqStart = $156;
   FreqEnd   = $2ae;
   FreqRange = FreqEnd-FreqStart;
 
-{$I adt2unit/i386/nFreq.pas}
-{$I adt2unit/i386/calc_freq_shift_up.pas}
-{$I adt2unit/i386/calc_freq_shift_down.pas}
-{$I adt2unit/i386/calc_vibtrem_shift.pas}
-{$I adt2unit/i386/change_freq.pas}
-{$I adt2unit/i386/ins_parameter.pas}
-{$I adt2unit/pas/is_chan_adsr_data_empty.pas}
-{$I adt2unit/pas/is_ins_adsr_data_empty.pas}
-{$I adt2unit/i386/is_data_empty.pas}
-{$I adt2unit/pas/min.pas}
-{$I adt2unit/pas/max.pas}
+function nFreq(note: Byte): Word; cdecl; external;
+function calc_freq_shift_up(freq,shift: Word): Word; cdecl; external;
+function calc_freq_shift_down(freq,shift: Word): Word; cdecl; external;
+function calc_vibtrem_shift(chan: Byte; var table_data): Word; cdecl; external;
+procedure change_freq(chan: Byte; freq: Word); cdecl; external;
+function ins_parameter(ins,param: Byte): Byte; cdecl; external;
+function is_chan_adsr_data_empty(chan: Byte): Boolean; cdecl; external;
+function is_ins_adsr_data_empty(ins: Byte): Boolean; cdecl; external;
+function is_data_empty(var buf; size: Longint): Boolean; cdecl; external;
+//min
+//max
 {$I adt2unit/pas/concw.pas}
-{$I adt2unit/pas/synchronize_song_timer.pas}
-{$I adt2unit/pas/change_frequency.pas}
-{$I adt2unit/pas/_macro_speedup.pas}
-procedure TimerSetup(Hz: Longint); forward;
-{$I adt2unit/pas/update_timer.pas}
-{$I adt2unit/pas/update_playback_speed.pas}
-{$I adt2unit/pas/key_on.pas}
-{$I adt2unit/pas/key_off.pas}
-{$I adt2unit/pas/release_sustaining_sound.pas}
-{$I adt2unit/pas/scale_volume.pas}
-{$I adt2unit/pas/_4op_data_flag.pas}
-{$I adt2unit/pas/_4op_vol_valid_chan.pas}
-{$I adt2unit/pas/set_ins_volume.pas}
-{$I adt2unit/pas/set_ins_volume_4op.pas}
-{$I adt2unit/pas/reset_ins_volume.pas}
-
-procedure set_global_volume;
-
-var
-  chan: Byte;
-
-begin
-  For chan := 1 to songdata.nm_tracks do
-    If _4op_vol_valid_chan(chan) then
-      set_ins_volume_4op(BYTE_NULL,chan)
-    else If NOT ((carrier_vol[chan] = 0) and
-                 (modulator_vol[chan] = 0)) then
-           If (ins_parameter(voice_table[chan],10) AND 1 = 0) then
-             set_ins_volume(BYTE_NULL,HI(volume_table[chan]),chan)
-           else set_ins_volume(LO(volume_table[chan]),HI(volume_table[chan]),chan);
-end;
-
-procedure set_overall_volume(level: Byte);
-begin
-  overall_volume := max(level,63);
-  set_global_volume;
-end;
-
-procedure init_macro_table(chan,note,ins: Byte; freq: Word);
-begin
-  macro_table[chan].fmreg_count := 1;
-  macro_table[chan].fmreg_pos := 0;
-  macro_table[chan].fmreg_duration := 0;
-  macro_table[chan].fmreg_table := ins;
-  macro_table[chan].arpg_count := 1;
-  macro_table[chan].arpg_pos := 0;
-  macro_table[chan].arpg_table := songdata.instr_macros[ins].arpeggio_table;
-  macro_table[chan].arpg_note := note;
-  macro_table[chan].vib_count := 1;
-  macro_table[chan].vib_paused := FALSE;
-  macro_table[chan].vib_pos := 0;
-  macro_table[chan].vib_table := songdata.instr_macros[ins].vibrato_table;
-  macro_table[chan].vib_freq := freq;
-  macro_table[chan].vib_delay := songdata.macro_table[macro_table[chan].vib_table].vibrato.delay;
-  zero_fq_table[chan] := 0;
-end;
-
-{$I adt2unit/pas/set_ins_data.pas}
-{$I adt2unit/pas/update_modulator_adsrw.pas}
-{$I adt2unit/pas/update_carrier_adsrw.pas}
-
-procedure update_fmpar(chan: Byte);
-begin
-  opl3out(_instr[00]+_chan_m[chan],fmpar_table[chan].multipM+
-                                   fmpar_table[chan].ksrM  SHL 4+
-                                   fmpar_table[chan].sustM SHL 5+
-                                   fmpar_table[chan].vibrM SHL 6+
-                                   fmpar_table[chan].tremM SHL 7);
-  opl3out(_instr[01]+_chan_c[chan],fmpar_table[chan].multipC+
-                                   fmpar_table[chan].ksrC  SHL 4+
-                                   fmpar_table[chan].sustC SHL 5+
-                                   fmpar_table[chan].vibrC SHL 6+
-                                   fmpar_table[chan].tremC SHL 7);
-
-  opl3out(_instr[10]+_chan_n[chan],(fmpar_table[chan].connect+
-                                    fmpar_table[chan].feedb SHL 1) OR
-                                   _panning[panning_table[chan]]);
-
-  vscale_table[chan] := concw(fmpar_table[chan].kslM SHL 6,
-                              fmpar_table[chan].kslC SHL 6);
-  set_ins_volume(LO(volume_table[chan]),
-                 HI(volume_table[chan]),chan);
-end;
-
-{$I adt2unit/i386/is_4op_chan.pas}
-
+procedure synchronize_song_timer; cdecl; external;
+procedure change_frequency(chan: Byte; freq: Word); cdecl; external;
+function _macro_speedup: Word; cdecl; external;
+procedure TimerSetup(Hz: Longint); cdecl; forward;
+procedure update_timer(Hz: Word); cdecl; external;
+procedure update_playback_speed(speed_shift: Longint); cdecl; external;
+procedure key_on(chan: Byte); cdecl; external;
+procedure key_off(chan: Byte); cdecl; external;
+procedure release_sustaining_sound(chan: Byte); cdecl; external;
+function scale_volume(volume,scale_factor: Byte): Byte; cdecl; external;
+function _4op_data_flag(chan: Byte): Dword; cdecl; external;
+function _4op_vol_valid_chan(chan: Byte): Boolean; cdecl; external;
+procedure set_ins_volume(modulator,carrier,chan: Byte); cdecl; external;
+procedure set_ins_volume_4op(volume,chan: Byte); cdecl; external;
+procedure reset_ins_volume(chan: Byte); cdecl; external;
+procedure set_global_volume; cdecl; external;
+//set_overall_volume
+procedure init_macro_table(chan,note,ins: Byte; freq: Word); cdecl; external;
+procedure set_ins_data(ins,chan: Byte); cdecl; external;
+procedure update_modulator_adsrw(chan: Byte); cdecl; external;
+procedure update_carrier_adsrw(chan: Byte); cdecl; external;
+procedure update_fmpar(chan: Byte); cdecl; external;
+//is_4op_chan
 procedure output_note(note,ins,chan: Byte;
-                      restart_macro,restart_adsr: Boolean);
-var
-  pos: Byte;
-  freq: Word;
-
-begin
-  If (note = 0) and (ftune_table[chan] = 0) then
-    EXIT; //output_note
-  If NOT (note in [1..12*8+1]) then freq := freq_table[chan]
-  else begin
-         freq := nFreq(note-1)+SHORTINT(ins_parameter(ins,12));
-         If restart_adsr then key_on(chan);
-
-         freq_table[chan] := concw(LO(freq_table[chan]),
-                                   HI(freq_table[chan]) OR $20);
-
-         pos := Round(25/(12*8+1)*note);
-         If (decay_bar[pos].lvl <> 0) then
-           If (pos > 1) and
-              (decay_bar[pos-1].dir <> 1) then
-             Dec(pos)
-           else If (pos < 25) and
-                   (decay_bar[pos+1].lvl <> 1) then
-                  Inc(pos);
-
-         If is_4op_chan(chan) then
-           begin
-             decay_bar[pos].dir := 1;
-             If (ins_parameter(voice_table[chan],10) AND 1 = 0) then
-               decay_bar[pos].max_lvl :=
-                 (carrier_vol[PRED(chan)]+carrier_vol[chan]) DIV 2
-             else decay_bar[pos].max_lvl :=
-                    (carrier_vol[PRED(chan)]+modulator_vol[PRED(chan)]+
-                     carrier_vol[chan]+modulator_vol[chan]) DIV 4;
-           end
-         else
-           begin
-             decay_bar[pos].dir := 1;
-             If (ins_parameter(voice_table[chan],10) AND 1 = 0) then
-               decay_bar[pos].max_lvl :=
-                 carrier_vol[chan]
-             else decay_bar[pos].max_lvl :=
-                    (carrier_vol[chan]+modulator_vol[chan]) DIV 2;
-           end;
-       end;
-
-  If (ftune_table[chan] = -127) then ftune_table[chan] := 0;
-  freq := freq+ftune_table[chan];
-  change_frequency(chan,freq);
-
-  If (note <> 0) then
-    begin
-      event_table[chan].note := note;
-      If is_4op_chan(chan) then
-        event_table[PRED(chan)].note := note;
-      If restart_macro then
-        With event_table[chan] do
-           If NOT (((effect_def = ef_Extended) and
-                   (effect DIV 16 = ef_ex_ExtendedCmd2) and
-                   (effect MOD 16 = ef_ex_cmd2_NoRestart)) or
-                  ((effect_def2 = ef_Extended) and
-                   (effect2 DIV 16 = ef_ex_ExtendedCmd2) and
-                   (effect2 MOD 16 = ef_ex_cmd2_NoRestart))) then
-             init_macro_table(chan,note,ins,freq)
-           else macro_table[chan].arpg_note := note;
-    end;
-
-  //EXIT //output_note
-end;
-
-procedure generate_custom_vibrato(value: Byte);
-
-const
-  vibtab_size: array[0..15] of Byte = (
-    16,16,16,16,32,32,32,32,64,64,64,64,128,128,128,128);
-
-var
-  mul_r: Real;
-  mul_b: Byte;
-  idx,idx2: Byte;
-
-function min0(value: Longint): Longint;
-begin
-  If (value >= 0) then min0 := value
-  else min0 := 0;
-end;
-
-begin
-  Case value of
-    // set default speed table
-    0: begin
-         vibtrem_table_size := def_vibtrem_table_size;
-         Move(def_vibtrem_table,vibtrem_table,SizeOf(vibtrem_table));
-       end;
-
-    // set custom speed table (fixed size = 32)
-    1..239:
-       begin
-         vibtrem_table_size := def_vibtrem_table_size;
-         mul_r := value/16;
-         For idx2 := 0 to 7 do
-          begin
-            vibtrem_table[idx2*32] := 0;
-            For idx := 1 to 16 do
-              vibtrem_table[idx2*32+idx] := ROUND(idx*mul_r);
-            For idx := 17 to 31 do
-              vibtrem_table[idx2*32+idx] := ROUND((32-idx)*mul_r);
-          end;
-       end;
-
-    // set custom speed table (speed factor = 1-4)
-    240..255:
-       begin
-         vibtrem_speed_factor := SUCC((value-240) MOD 4);
-         vibtrem_table_size := 2*vibtab_size[value-240];
-         mul_b := 256 DIV (vibtab_size[value-240]);
-         For idx2 := 0 to PRED(128 DIV vibtab_size[value-240]) do
-           begin
-             vibtrem_table[2*vibtab_size[value-240]*idx2] := 0;
-             For idx := 1 to vibtab_size[value-240] do
-               vibtrem_table[2*vibtab_size[value-240]*idx2+idx] :=
-                 min0(idx*mul_b-1);
-             For idx := vibtab_size[value-240]+1 to
-                        2*vibtab_size[value-240]-1 do
-               vibtrem_table[2*vibtab_size[value-240]*idx2+idx] :=
-                 min0((2*vibtab_size[value-240]-idx)*mul_b-1);
-           end;
-       end;
-  end;
-end;
+                      restart_macro,restart_adsr: Boolean); cdecl; external;
+procedure generate_custom_vibrato(value: Byte); cdecl; external;
 
 procedure update_fine_effects(chan: Byte); forward;
 
@@ -3438,7 +3239,8 @@ begin
   _dbg_leave; //EXIT //macro_poll_proc
 end;
 
-procedure timer_poll_proc;
+procedure timer_poll_proc; cdecl;
+public name PUBLIC_PREFIX + 'timer_poll_proc';
 begin
   _dbg_enter ({$I %FILE%}, 'timer_poll_proc');
 
@@ -3514,32 +3316,8 @@ const
 
 procedure ___IRQ_CODE_END___; begin end;
 
-procedure TimerSetup(Hz: Longint);
-begin
-  _dbg_enter ({$I %FILE%}, 'TimerSetup');
-
-  If (Hz < PIT_FREQ_MIN) then Hz := PIT_FREQ_MIN;
-  If (Hz > PIT_FREQ_MAX) then Hz := PIT_FREQ_MAX;
-  ISS_DisableTimerIRQ;
-  If (timer_poll_proc_ptr <> NIL) then ISS_StopTimer(timer_poll_proc_ptr);
-  timer_poll_proc_ptr := @timer_poll_proc;
-  ISS_StartTimer(timer_poll_proc_ptr,ISS_TimerSpeed DIV Hz);
-  ISS_EnableTimerIRQ;
-
-  _dbg_leave; //EXIT //TimerSetup
-end;
-
-procedure TimerDone;
-begin
-  _dbg_enter ({$I %FILE%}, 'TimerDone');
-
-  ISS_DisableTimerIRQ;
-  If (timer_poll_proc_ptr <> NIL) then ISS_StopTimer(timer_poll_proc_ptr);
-  timer_poll_proc_ptr := NIL;
-  ISS_EnableTimerIRQ;
-
-  _dbg_leave; //EXIT //TimerDone
-end;
+procedure TimerSetup(Hz: Longint); cdecl; external;
+procedure TimerDone; cdecl; external;
 
 {$I adt2unit/pas/init_timer_proc.pas}
 {$I adt2unit/pas/done_timer_proc.pas}
@@ -3814,40 +3592,9 @@ begin
   _dbg_leave; //EXIT //start_playing
 end;
 
-{$I adt2unit/i386/get_chunk.pas}
-{$I adt2unit/i386/put_chunk.pas}
-
-procedure count_order(var entries: Byte);
-
-var
-  index,
-  index2: Byte;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'count_order');
-
-  index := 0;
-  index2 := 0;
-
-  Repeat
-    If (songdata.pattern_order[index] <> $80) then
-      begin
-        If (songdata.pattern_order[index] > $80) then
-          If (songdata.pattern_order[index]-$80 <> index2) then
-            begin
-              index := songdata.pattern_order[index]-$80;
-              index2 := index;
-            end
-          else BREAK;
-      end
-    else BREAK;
-    If (index < $80) then Inc(index);
-  until (index > $7f);
-
-  entries := index;
-
-  _dbg_leave; //EXIT //count_order
-end;
+//get_chunk
+//put_chunk
+//count_order
 
 procedure init_a2player; cdecl; external;
 
@@ -3864,9 +3611,6 @@ end;
 
 begin
   init_a2player;
-// adt2opl3 {
-  FillWord(_opl_regs_cache,SizeOf(_opl_regs_cache) DIV SizeOf(WORD),NOT 0);
-// } adt2opl3
   Lock_Data(___UNIT_DATA_START___,DWORD(Addr(___UNIT_DATA_END___))-DWORD(Addr(___UNIT_DATA_START___)));
   Lock_Data(___IRQ_DATA_START___,DWORD(Addr(___IRQ_DATA_END___))-DWORD(Addr(___IRQ_DATA_START___)));
   Lock_Code(@___IRQ_CODE_START___,DWORD(@___IRQ_CODE_END___)-DWORD(@___IRQ_CODE_START___));

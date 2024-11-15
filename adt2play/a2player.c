@@ -5,9 +5,18 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <stdlib.h>
+#include <math.h>
 #include "common.h"
+#include "debug.h"
+#if GO32
 #include "go32/adt2dpmi.h"
+#include "go32/iss_tim.h"
+#endif // !GO32
+#include "go32/PIT/PIT_consts.h"
 #include "a2player.h"
+// adt2opl3 {
+#include <pc.h>
+// } adt2opl3
 
 // HINT: (FPC) S-: Stack checking (off)
 // HINT: (FPC) Q-: Overflow checking (off)
@@ -19,14 +28,14 @@
 #pragma pack(push, 1)
 
 #if GO32
-static const char ___A2PLAYER_CONST_START___ = 0;
-static char       ___A2PLAYER_DATA_START___ = 0;
-static char       ___A2PLAYER_BSS_START___;
-static __NO_REORDER __ALIGNED_(1) __NAKED_RELAXED void
-                  ___A2PLAYER_CODE_START___ (void) { }
-#endif // GO32
+#define __PAREA A2PLAYER
+__PAREA_START (CONST)
+__PAREA_START (DATA)
+__PAREA_START (BSS)
+__PAREA_START (CODE)
+#endif // !GO32
 
-void *timer_poll_proc_ptr = NULL;
+void (*timer_poll_proc_ptr) (void) = NULL;
 bool  timer_initialized = false;
 
 #include "typcons1.c"
@@ -82,12 +91,17 @@ tPLAY_STATUS play_status = isStopped;
 bool     replay_forbidden = true;
 bool     force_macro_keyon = false;
 
-tDECAY_BAR decay_bar[96]; // HINT: (FPC) start index 1
+tDECAY_BAR decay_bar[DECAY_BARS]; // HINT: (FPC) start index 1
 
 // adt2opl3 {
 uint16_t opl3port = 0x388;
+/*st*/ uint16_t _opl_regs_cache[0x10000]; // HINT: (FPC) start index 0
 
-//tOPLOUT_proc *opl3out = opl3out_proc;
+#include "adt2opl3/go32/opl2out.c"
+#include "adt2opl3/go32/opl3out_proc.c" // static
+#include "adt2opl3/go32/opl3exp.c"
+
+tOPLOUT_proc *opl3out = opl3out_proc;
 // } adt2opl3
 
 /* Static data */
@@ -203,57 +217,48 @@ typedef struct {
 /*st*/ uint8_t  last_order;
 /*st*/ bool     reset_chan[20]; // HINT: (FPC) start index 1
 
-// adt2opl3 {
-/*st*/ uint16_t _opl_regs_cache[0x10000]; // HINT: (FPC) start index 0
-
-//#include "adt2opl3/go32/opl2out.c"
-//#include "adt2opl3/go32/opl3out_proc.c"
-//#include "adt2opl3/go32/opl3exp.c"
-// } adt2opl3
-
-//#include "stringio/asciiz_string.c"
-
 #define FreqStart 0x156
 #define FreqEnd   0x2AE
 #define FreqRange (FreqEnd - FreqStart)
 
-//#include "adt2unit/nFreq.c"
-//#include "adt2unit/calc_freq_shift_up.c"
-//#include "adt2unit/calc_freq_shift_down.c"
-//#include "adt2unit/calc_vibtrem_shift.c"
-//#include "adt2unit/change_freq.c"
-//#include "adt2unit/ins_parameter.c"
-//#include "adt2unit/is_chan_adsr_data_empty.c"
-//#include "adt2unit/is_ins_adsr_data_empty.c"
-//#include "adt2unit/is_data_empty.c"
-//#include "adt2unit/min.c"
-//#include "adt2unit/max.c"
+#include "adt2unit/nFreq.c"
+#include "adt2unit/calc_freq_shift_up.c" // HINT: static
+#include "adt2unit/calc_freq_shift_down.c" // HINT: static
+#include "adt2unit/calc_vibtrem_shift.c" // HINT: static
+#include "adt2unit/change_freq.c"
+#include "adt2unit/ins_parameter.c"
+#include "adt2unit/is_chan_adsr_data_empty.c"
+#include "adt2unit/is_ins_adsr_data_empty.c"
+#include "adt2unit/is_data_empty.c" // HINT: static
+#include "adt2unit/min.c"
+#include "adt2unit/max.c"
 //#include "adt2unit/concw.c"
-//#include "adt2unit/synchronize_song_timer.c"
-//#include "adt2unit/change_frequency.c"
-//#include "adt2unit/_macro_speedup.c"
-//procedure TimerSetup(Hz: Longint); forward;
-//#include "adt2unit/update_timer.c"
-//#include "adt2unit/update_playback_speed.c"
-//#include "adt2unit/key_on.c"
-//#include "adt2unit/key_off.c"
-//#include "adt2unit/release_sustaining_sound.c"
-//#include "adt2unit/scale_volume.c"
-//#include "adt2unit/_4op_data_flag.c"
-//#include "adt2unit/_4op_vol_valid_chan.c"
-//#include "adt2unit/set_ins_volume.c"
-//#include "adt2unit/set_ins_volume_4op.c"
-//#include "adt2unit/reset_ins_volume.c"
-//procedure set_global_volume;
-//procedure set_overall_volume(level: Byte);
-//procedure init_macro_table(chan,note,ins: Byte; freq: Word);
-//#include "adt2unit/set_ins_data.c"
-//#include "adt2unit/update_modulator_adsrw.c"
-//#include "adt2unit/update_carrier_adsrw.c"
-//procedure update_fmpar(chan: Byte);
-//#include "adt2unit/is_4op_chan.c"
-//procedure output_note(note,ins,chan: Byte; restart_macro,restart_adsr: Boolean);
-//procedure generate_custom_vibrato(value: Byte);
+#include "adt2unit/synchronize_song_timer.c" // HINT: static
+#include "adt2unit/change_frequency.c"
+#include "adt2unit/_macro_speedup.c"
+void TimerSetup (uint32_t Hz); // forward
+#include "adt2unit/update_timer.c"
+#include "adt2unit/update_playback_speed.c" // HINT: static
+#include "adt2unit/key_on.c"
+#include "adt2unit/key_off.c"
+#include "adt2unit/release_sustaining_sound.c"
+#include "adt2unit/scale_volume.c"
+#include "adt2unit/_4op_data_flag.c" // HINT: static
+#include "adt2unit/_4op_vol_valid_chan.c" // HINT: static
+#include "adt2unit/set_ins_volume.c"
+#include "adt2unit/set_volume.c" // static (used in `set_ins_volume_4op')
+#include "adt2unit/set_ins_volume_4op.c" // HINT: static
+#include "adt2unit/reset_ins_volume.c" // HINT: static
+#include "adt2unit/set_global_volume.c"
+#include "adt2unit/set_overall_volume.c"
+#include "adt2unit/init_macro_table.c"
+#include "adt2unit/set_ins_data.c"
+#include "adt2unit/update_modulator_adsrw.c"
+#include "adt2unit/update_carrier_adsrw.c"
+#include "adt2unit/update_fmpar.c"
+#include "adt2unit/is_4op_chan.c"
+#include "adt2unit/output_note.c"
+#include "adt2unit/generate_custom_vibrato.c" // HINT: static
 //procedure update_fine_effects(chan: Byte); forward;
 //procedure play_line;
 //procedure portamento_up(chan: Byte; slide: Word; limit: Word);
@@ -287,15 +292,16 @@ typedef struct {
 //procedure timer_poll_proc;
 
 #if GO32
-static const char ___A2PLAYER_CONST_END___ = 0;
-static char       ___A2PLAYER_DATA_END___ = 0;
-static char       ___A2PLAYER_BSS_END___;
-static __NO_REORDER __ALIGNED_(1) __NAKED_RELAXED void
-                  ___A2PLAYER_CODE_END___ (void) { }
+__PAREA_END (CONST)
+__PAREA_END (DATA)
+__PAREA_END (BSS)
+__PAREA_END (CODE)
 #endif // GO32
 
-//procedure TimerSetup(Hz: Longint);
-//procedure TimerDone;
+#if GO32
+#include "adt2unit/go32/TimerSetup.c"
+#include "adt2unit/go32/TimerDone.c" // HINT: static
+#endif // GO32
 //#include "adt2unit/init_timer_proc.c"
 //#include "adt2unit/done_timer_proc.c"
 //#include "adt2unit/calc_pattern_pos.c"
@@ -305,9 +311,9 @@ static __NO_REORDER __ALIGNED_(1) __NAKED_RELAXED void
 //procedure init_old_songdata;
 //procedure init_songdata;
 //procedure start_playing;
-//#include "adt2unit/get_chunk.c"
-//#include "adt2unit/put_chunk.c"
-//procedure count_order(var entries: Byte);
+#include "adt2unit/get_chunk.c"
+#include "adt2unit/put_chunk.c"
+#include "adt2unit/count_order.c"
 
 #if GO32
 #include "a2player/go32/init_a2player.c"

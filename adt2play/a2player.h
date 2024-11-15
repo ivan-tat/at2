@@ -18,7 +18,7 @@
 #define MAX_IRQ_FREQ 1000
 #define MIN_IRQ_FREQ 50
 
-extern void *timer_poll_proc_ptr;
+extern void (*timer_poll_proc_ptr) (void);
 extern bool  timer_initialized;
 
 #include "typcons1.h"
@@ -74,38 +74,37 @@ extern tPLAY_STATUS play_status;
 extern bool     replay_forbidden;
 extern bool     force_macro_keyon;
 
-extern tDECAY_BAR decay_bar[96]; // HINT: (FPC) start index 1
+// TODO: rename `decay_bar' into `spectrum_bar'
+
+#define DECAY_BARS 25 // to map playing note into the range 1..DECAY_BARS
+
+extern tDECAY_BAR decay_bar[DECAY_BARS]; // HINT: (FPC) start index 1
 
 //void     start_playing (void);
-//void     set_overall_volume (uint8_t level);
+void     set_overall_volume (uint8_t level);
 //void     stop_playing (void);
 //void     init_old_songdata (void);
 //void     init_songdata (void);
 //void     init_timer_proc (void);
 //void     done_timer_proc (void);
-//void     get_chunk (uint8_t pattern, uint8_t line, uint8_t chan, const tCHUNK *chunk);
-//void     put_chunk (uint8_t pattern, uint8_t line, uint8_t chan, tCHUNK *chunk);
-//void     count_order (uint8_t *entries);
-//void     timer_poll_proc (void);
-//void     opl2out_proc (uint16_t reg, uint16_t data);
-//void     opl3out_proc (uint16_t reg, uint16_t data);
-//void     opl3exp_proc (uint16_t data);
+void     get_chunk (uint8_t pattern, uint8_t line, uint8_t chan, tCHUNK *chunk);
+void     put_chunk (uint8_t pattern, uint8_t line, uint8_t chan, const tCHUNK *chunk);
+void     count_order (uint8_t *entries);
+void     timer_poll_proc (void);
 //int16_t  calc_following_order (uint8_t order);
-//bool     is_4op_chan (uint8_t chan);
-//int32_t  min (int32_t value, int32_t minimum);
-//int32_t  max (int32_t value, int32_t maximum);
-//String_t asciiz_string (String *str);
+bool     is_4op_chan (uint8_t chan);
+int32_t  min (int32_t value, int32_t minimum);
+int32_t  max (int32_t value, int32_t maximum);
 
 // adt2opl3 {
 extern uint16_t opl3port;
 
 typedef void tOPLOUT_proc (uint16_t reg, uint16_t data);
 
-//void opl2out (uint16_t reg, uint16_t data);
-//void opl3out_proc (uint16_t reg, uint16_t data);
-//void opl3exp (uint16_t data);
+void opl2out (uint16_t reg, uint16_t data);
+void opl3exp (uint16_t data);
 
-//extern tOPLOUT_proc *opl3out;
+extern tOPLOUT_proc *opl3out;
 // } adt2opl3
 
 #if GO32

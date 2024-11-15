@@ -6,23 +6,13 @@
 
 // chan: 1..20
 bool is_4op_chan (uint8_t chan) {
-  if ((songdata.flag_4op & (1 << 0)) && ((chan == 1) || (chan == 2)))
-    return true;
+  chan--;
 
-  if ((songdata.flag_4op & (1 << 1)) && ((chan == 3) || (chan == 4)))
-    return true;
-
-  if ((songdata.flag_4op & (1 << 2)) && ((chan == 5) || (chan == 6)))
-    return true;
-
-  if ((songdata.flag_4op & (1 << 3)) && ((chan == 10) || (chan == 11)))
-    return true;
-
-  if ((songdata.flag_4op & (1 << 4)) && ((chan == 12) || (chan == 13)))
-    return true;
-
-  if ((songdata.flag_4op & (1 << 5)) && ((chan == 14) || (chan == 15)))
-    return true;
-
-  return false;
+  return (        (songdata.flag_4op & 0x3F)
+          && (   ((songdata.flag_4op & (1 << 0)) && ((chan ==  0) || (chan ==  1)))
+              || ((songdata.flag_4op & (1 << 1)) && ((chan ==  2) || (chan ==  3)))
+              || ((songdata.flag_4op & (1 << 2)) && ((chan ==  4) || (chan ==  5)))
+              || ((songdata.flag_4op & (1 << 3)) && ((chan ==  9) || (chan == 10)))
+              || ((songdata.flag_4op & (1 << 4)) && ((chan == 11) || (chan == 12)))
+              || ((songdata.flag_4op & (1 << 5)) && ((chan == 13) || (chan == 14)))));
 }

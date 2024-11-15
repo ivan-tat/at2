@@ -5,65 +5,70 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // chan: 1..20
-void set_ins_volume (uint8_t modulator, uint8_t carrier, uint8_t chan) {
+void set_ins_volume (uint8_t modulator, uint8_t carrier, uint8_t chan)
+{
+  chan--;
+
 #if !GO32
   // ** OPL3 emulation workaround **
   // Force muted instrument volume with missing channel ADSR data
   // when there is additionally no FM-reg macro defined for this instrument
-  if (is_chan_adsr_data_empty (chan)
-     && !songdata.instr_macros[voice_table[chan - 1] - 1].length) {
+  if (is_chan_adsr_data_empty (chan + 1)
+     && !songdata.instr_macros[voice_table[chan] - 1].length)
+  {
     modulator = 63;
     carrier = 63;
   }
 #endif // !GO32
 
-  if (modulator != BYTE_NULL) {
+  if (modulator != BYTE_NULL)
+  {
+    bool flag = ((ins_parameter (voice_table[chan], 10) & 1)
+                 || (percussion_mode && (chan >= 16) && (chan <= 19)));
     uint8_t temp = modulator;
+    uint8_t vol;
+    uint8_t data;
 
-    if ((ins_parameter (voice_table[chan - 1], 10) & 1)
-        || (percussion_mode && (17 <= chan) && (chan <= 20))) {
-      if (volume_scaling)
-        modulator = scale_volume (ins_parameter (voice_table[chan - 1], 2) & 0x3F,
-                                  modulator);
+    if (volume_scaling && flag)
+      modulator = scale_volume (ins_parameter (voice_table[chan], 2) & 0x3F,
+                                modulator);
 
-      opl3out (_instr[2] + _chan_m[chan - 1],
-              scale_volume (scale_volume (modulator,
-                                          scale_volume (63 - global_volume,
-                                                        63 - fade_out_volume)),
-                            63 - overall_volume)
-              + (vscale_table[chan - 1] & 0xFF));
-    } else
-      opl3out (_instr[2] + _chan_m[chan - 1], temp + (vscale_table[chan - 1] & 0xFF));
-
-    volume_table[chan - 1] = concw (temp, (volume_table[chan - 1] >> 8) & 0xFF);
-
-    if ((ins_parameter (voice_table[chan - 1], 10) & 1)
-        || (percussion_mode && (17 <= chan) && (chan <= 20)))
-      modulator_vol[chan - 1] = 63 - scale_volume (modulator,
-                                                   scale_volume (63 - global_volume,
-                                                                 63 - fade_out_volume));
+    if (flag)
+    {
+      vol = scale_volume (modulator,
+                          scale_volume (63 - global_volume,
+                                        63 - fade_out_volume));
+      data = scale_volume (vol, 63 - overall_volume);
+    }
     else
-      modulator_vol[chan - 1] = 63 - modulator;
+    {
+      vol = modulator;
+      data = temp;
+    }
+
+    opl3out (_instr[2] + _chan_m[chan], data + (vscale_table[chan] & 0xFF));
+
+    volume_table[chan] = temp + (volume_table[chan] & 0xFF00);
+    modulator_vol[chan] = 63 - vol;
   }
 
-  if (carrier != BYTE_NULL) {
+  if (carrier != BYTE_NULL)
+  {
     uint8_t temp = carrier;
+    uint8_t vol;
 
     if (volume_scaling)
-      carrier = scale_volume (ins_parameter (voice_table[chan - 1], 3) & 0x3F,
+      carrier = scale_volume (ins_parameter (voice_table[chan], 3) & 0x3F,
                               carrier);
 
-    opl3out (_instr[3] + _chan_c[chan - 1],
-             scale_volume (scale_volume (carrier,
-                                         scale_volume (63 - global_volume,
-                                                       63 - fade_out_volume)),
-                           63 - overall_volume)
-             + ((vscale_table[chan - 1] >> 8) & 0xFF));
+    vol = scale_volume (carrier, scale_volume (63 - global_volume,
+                                               63 - fade_out_volume));
 
-    volume_table[chan - 1] = concw (volume_table[chan - 1] & 0xFF, temp);
+    opl3out (_instr[3] + _chan_c[chan],
+             scale_volume (vol, 63 - overall_volume)
+             + ((vscale_table[chan] >> 8) & 0xFF));
 
-    carrier_vol[chan - 1] = 63 - scale_volume (carrier,
-                                               scale_volume (63 - global_volume,
-                                                             63 - fade_out_volume));
+    volume_table[chan] = (volume_table[chan] & 0x00FF) + (temp << 8);
+    carrier_vol[chan] = 63 - vol;
   }
 }

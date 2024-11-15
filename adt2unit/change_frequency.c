@@ -6,25 +6,22 @@
 
 // chan: 1..20
 void change_frequency (uint8_t chan, uint16_t freq) {
-  macro_table[chan - 1].vib_paused = true;
-  change_freq (chan, freq);
+  chan--;
 
-  if (is_4op_chan (chan)) {
-    if (bit_test (_4op_tracks_hi, chan)) {
-        macro_table[chan - 1 + 1].vib_count = 1;
-        macro_table[chan - 1 + 1].vib_pos = 0;
-        macro_table[chan - 1 + 1].vib_freq = freq;
-        macro_table[chan - 1 + 1].vib_paused = false;
-    } else {
-        macro_table[chan - 1 - 1].vib_count = 1;
-        macro_table[chan - 1 - 1].vib_pos = 0;
-        macro_table[chan - 1 - 1].vib_freq = freq;
-        macro_table[chan - 1 - 1].vib_paused = false;
-    }
+  macro_table[chan].vib_paused = true;
+  change_freq (chan + 1, freq);
+
+  if (is_4op_chan (chan + 1)) {
+    uint8_t i = bit_test (_4op_tracks_hi, chan + 1) ? chan + 1 : chan - 1;
+
+    macro_table[i].vib_count = 1;
+    macro_table[i].vib_pos = 0;
+    macro_table[i].vib_freq = freq;
+    macro_table[i].vib_paused = false;
   }
 
-  macro_table[chan - 1].vib_count = 1;
-  macro_table[chan - 1].vib_pos = 0;
-  macro_table[chan - 1].vib_freq = freq;
-  macro_table[chan - 1].vib_paused = false;
+  macro_table[chan].vib_count = 1;
+  macro_table[chan].vib_pos = 0;
+  macro_table[chan].vib_freq = freq;
+  macro_table[chan].vib_paused = false;
 }

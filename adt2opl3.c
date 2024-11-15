@@ -33,11 +33,11 @@ static void opl3out_proc (uint16_t reg, uint16_t data);
 
 // IRQ/library data/code start {
 
-static const char ___ADT2OPL3_CONST_START___ = 0;
-static char       ___ADT2OPL3_DATA_START___ = 0;
-static char       ___ADT2OPL3_BSS_START___;
-static __NO_REORDER __ALIGNED_(1) __NAKED_RELAXED void
-                  ___ADT2OPL3_CODE_START___ (void) { }
+#define __PAREA ADT2OPL3
+__PAREA_START (CONST)
+__PAREA_START (DATA)
+__PAREA_START (BSS)
+__PAREA_START (CODE)
 
 uint16_t opl3port = 0;
 uint8_t  opl_latency = 0;
@@ -88,11 +88,10 @@ tOPL3OUT_proc *opl3out = opl3out_proc;
 
 #if GO32
 
-static const char ___ADT2OPL3_CONST_END___ = 0;
-static char       ___ADT2OPL3_DATA_END___ = 0;
-static char       ___ADT2OPL3_BSS_END___;
-static __NO_REORDER __ALIGNED_(1) __NAKED_RELAXED void
-                  ___ADT2OPL3_CODE_END___ (void) { }
+__PAREA_END (CONST)
+__PAREA_END (DATA)
+__PAREA_END (BSS)
+__PAREA_END (CODE)
 
 // } IRQ/library data/code end
 

@@ -289,7 +289,7 @@ void init_macro_table (uint8_t chan, uint8_t note, uint8_t ins, uint16_t freq);
 void set_ins_volume (uint8_t modulator, uint8_t carrier, uint8_t chan);
 void update_modulator_adsrw (uint8_t chan);
 void update_carrier_adsrw (uint8_t chan);
-//procedure update_fmpar(chan: Byte);
+void update_fmpar (uint8_t chan);
 //procedure reset_chan_data(chan: Byte);
 void poll_proc (void);
 void macro_poll_proc (void);
@@ -300,7 +300,7 @@ void macro_poll_proc (void);
 //procedure stop_playing;
 //procedure update_song_position;
 void change_frequency (uint8_t chan, uint16_t freq);
-//procedure set_global_volume;
+void set_global_volume (void);
 void set_ins_data (uint8_t ins, uint8_t chan);
 void init_timer_proc (void);
 void done_timer_proc (void);
@@ -325,14 +325,15 @@ bool    is_4op_chan (uint8_t chan);
 
 #include "realtime.h"
 
-//procedure count_order(var entries: Byte);
+void count_order (uint8_t *entries);
 //procedure count_patterns(var patterns: Byte);
 //procedure count_instruments(var instruments: Byte);
 //procedure init_old_songdata;
 //procedure init_songdata;
 //procedure update_instr_data(ins: Byte);
 //procedure load_instrument(var data; chan: Byte);
-//procedure output_note(note,ins,chan: Byte; restart_macro,restart_adsr: Boolean);
+void output_note (uint8_t note, uint8_t ins, uint8_t chan,
+                  bool restart_macro, bool restart_adsr);
 
 int32_t min (int32_t value, int32_t minimum);
 int32_t max (int32_t value, int32_t maximum);

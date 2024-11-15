@@ -305,6 +305,7 @@ a2player_ppu_deps=\
  $(srcdir)/go32/PIT/pas/PIT_consts.inc\
  $(srcdir)/typcons1.inc\
  units/debug.ppu\
+ units/pascal.ppu\
  a2player.o
 
 a2scrio_ppu_deps=\

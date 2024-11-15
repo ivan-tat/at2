@@ -145,6 +145,7 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 * [Programming the AdLib/Sound Blaster FM Music Chips](https://bochs.sourceforge.io/techspec/adlib_sb.txt) (text)
 * [AdLib Functions](https://cosmodoc.org/topics/adlib-functions/)
 * [Yamaha YMF262 (OPL3) emulator using YMF262 die shot](https://github.com/nukeykt/YMF262-LLE)
+* [OPL2/3 Frequency - The 1Hz-ish Difference](http://nerdlypleasures.blogspot.com/2018/01/opl23-frequency-1hz-ish-difference.html)
 
 ### Documentation
 

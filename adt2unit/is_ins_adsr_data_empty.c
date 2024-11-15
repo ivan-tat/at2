@@ -5,12 +5,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 bool is_ins_adsr_data_empty (uint8_t ins) {
-  return ((ins_parameter (ins, 5) >> 4) == 0)
-         && ((ins_parameter (ins, 4) >> 4) == 0)
-         && ((ins_parameter (ins, 5) & 0x0F) == 0)
-         && ((ins_parameter (ins, 4) & 0x0F) == 0)
-         && ((ins_parameter (ins, 7) >> 4) == 0)
-         && ((ins_parameter (ins, 6) >> 4) == 0)
-         && ((ins_parameter (ins, 7) & 0x0F) == 0)
-         && ((ins_parameter (ins, 6) & 0x0F) == 0);
+  ins--;
+
+  return ((ins_parameter (ins + 1, 5) >> 4) == 0)
+      && ((ins_parameter (ins + 1, 4) >> 4) == 0)
+      && ((ins_parameter (ins + 1, 5) & 0x0F) == 0)
+      && ((ins_parameter (ins + 1, 4) & 0x0F) == 0)
+      && ((ins_parameter (ins + 1, 7) >> 4) == 0)
+      && ((ins_parameter (ins + 1, 6) >> 4) == 0)
+      && ((ins_parameter (ins + 1, 7) & 0x0F) == 0)
+      && ((ins_parameter (ins + 1, 6) & 0x0F) == 0);
 }

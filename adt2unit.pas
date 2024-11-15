@@ -306,11 +306,11 @@ procedure update_timer(Hz: Word); cdecl; external;
 procedure key_on(chan: Byte); cdecl; external;
 procedure key_off(chan: Byte); cdecl; external;
 procedure release_sustaining_sound(chan: Byte); cdecl; external;
-procedure init_macro_table(chan,note,ins: Byte; freq: Word); cdecl;
+procedure init_macro_table(chan,note,ins: Byte; freq: Word); cdecl; external;
 procedure set_ins_volume(modulator,carrier,chan: Byte); cdecl; external;
 procedure update_modulator_adsrw(chan: Byte); cdecl; external;
 procedure update_carrier_adsrw(chan: Byte); cdecl; external;
-procedure update_fmpar(chan: Byte);
+procedure update_fmpar(chan: Byte); cdecl; external;
 procedure reset_chan_data(chan: Byte);
 procedure poll_proc; cdecl;
 procedure macro_poll_proc; cdecl;
@@ -321,7 +321,7 @@ procedure start_playing;
 procedure stop_playing;
 procedure update_song_position;
 procedure change_frequency(chan: Byte; freq: Word); cdecl; external;
-procedure set_global_volume;
+procedure set_global_volume; cdecl; external;
 procedure set_ins_data(ins,chan: Byte); cdecl; external;
 procedure init_timer_proc; cdecl; external;
 procedure done_timer_proc; cdecl; external;
@@ -344,7 +344,7 @@ function  calc_order_jump: Integer;
 function  calc_following_order(order: Byte): Integer; cdecl;
 function  is_4op_chan(chan: Byte): Boolean; cdecl; external;
 
-procedure count_order(var entries: Byte);
+procedure count_order(var entries: Byte); cdecl; external;
 procedure count_patterns(var patterns: Byte);
 procedure count_instruments(var instruments: Byte);
 procedure init_old_songdata;
@@ -352,7 +352,7 @@ procedure init_songdata;
 procedure update_instr_data(ins: Byte);
 procedure load_instrument(var data; chan: Byte);
 procedure output_note(note,ins,chan: Byte;
-                      restart_macro,restart_adsr: Boolean);
+                      restart_macro,restart_adsr: Boolean); cdecl; external;
 
 function  min(value: Longint; minimum: Longint): Longint; cdecl; external;
 function  max(value: Longint; maximum: Longint): Longint; cdecl; external;
@@ -470,29 +470,7 @@ procedure reset_ins_volume(chan: Byte); cdecl; external;
 //set_ins_data
 //update_modulator_adsrw
 //update_carrier_adsrw
-
-procedure update_fmpar(chan: Byte);
-begin
-  opl3out(_instr[00]+_chan_m[chan],fmpar_table[chan].multipM+
-                                   fmpar_table[chan].ksrM  SHL 4+
-                                   fmpar_table[chan].sustM SHL 5+
-                                   fmpar_table[chan].vibrM SHL 6+
-                                   fmpar_table[chan].tremM SHL 7);
-  opl3out(_instr[01]+_chan_c[chan],fmpar_table[chan].multipC+
-                                   fmpar_table[chan].ksrC  SHL 4+
-                                   fmpar_table[chan].sustC SHL 5+
-                                   fmpar_table[chan].vibrC SHL 6+
-                                   fmpar_table[chan].tremC SHL 7);
-
-  opl3out(_instr[10]+_chan_n[chan],(fmpar_table[chan].connect+
-                                    fmpar_table[chan].feedb SHL 1) OR
-                                   _panning[panning_table[chan]]);
-
-  vscale_table[chan] := concw(fmpar_table[chan].kslM SHL 6,
-                              fmpar_table[chan].kslC SHL 6);
-  set_ins_volume(LO(volume_table[chan]),
-                 HI(volume_table[chan]),chan);
-end;
+//update_fmpar
 
 procedure reset_chan_data(chan: Byte);
 begin
@@ -521,199 +499,9 @@ begin
     else init_macro_table(chan,0,voice_table[chan],freq_table[chan]);
 end;
 
-procedure init_macro_table(chan,note,ins: Byte; freq: Word); cdecl;
-public name PUBLIC_PREFIX + 'init_macro_table';
-begin
-  macro_table[chan].fmreg_count := 1;
-  macro_table[chan].fmreg_pos := 0;
-  macro_table[chan].fmreg_duration := 0;
-  macro_table[chan].fmreg_table := ins;
-  macro_table[chan].arpg_count := 1;
-  macro_table[chan].arpg_pos := 0;
-  macro_table[chan].arpg_table := songdata.instr_macros[ins].arpeggio_table;
-  macro_table[chan].arpg_note := note;
-  macro_table[chan].vib_count := 1;
-  macro_table[chan].vib_paused := FALSE;
-  macro_table[chan].vib_pos := 0;
-  macro_table[chan].vib_table := songdata.instr_macros[ins].vibrato_table;
-  macro_table[chan].vib_freq := freq;
-  macro_table[chan].vib_delay := songdata.macro_table[macro_table[chan].vib_table].vibrato.delay;
-  zero_fq_table[chan] := 0;
-end;
-
-procedure output_note(note,ins,chan: Byte;
-                      restart_macro,restart_adsr: Boolean);
-var
-  freq: Word;
-
-begin
-  If (note = 0) and (ftune_table[chan] = 0) then
-    EXIT; //output_note
-  If NOT (note in [1..12*8+1]) then freq := freq_table[chan]
-  else begin
-         freq := nFreq(note-1)+SHORTINT(ins_parameter(ins,12));
-         If restart_adsr then key_on(chan);
-
-         freq_table[chan] := concw(LO(freq_table[chan]),
-                                   HI(freq_table[chan]) OR $20);
-
-         If channel_flag[chan] then
-           If is_4op_chan(chan) then
-             begin
-               If NOT (percussion_mode and (chan in [17..20])) then
-                 If (ins_parameter(voice_table[chan],10) AND 1 = 1) then
-                   If (volum_bar[chan].lvl < (carrier_vol[chan]+modulator_vol[chan]) DIV 2) then
-                     volum_bar[chan].dir := 1
-                   else
-                 else If (volum_bar[chan].lvl < carrier_vol[chan]) then
-                        volum_bar[chan].dir := 1
-                      else
-               else If (volum_bar[chan].lvl < modulator_vol[chan]) then
-                      volum_bar[chan].dir := 1;
-
-               If NOT (percussion_mode and (PRED(chan) in [17..20])) then
-                 If (ins_parameter(voice_table[PRED(chan)],10) AND 1 = 1) then
-                   If (volum_bar[PRED(chan)].lvl < (carrier_vol[PRED(chan)]+modulator_vol[PRED(chan)]) DIV 2) then
-                     volum_bar[PRED(chan)].dir := 1
-                   else
-                 else If (volum_bar[PRED(chan)].lvl < carrier_vol[PRED(chan)]) then
-                        volum_bar[PRED(chan)].dir := 1
-                      else
-               else If (volum_bar[PRED(chan)].lvl < modulator_vol[PRED(chan)]) then
-                      volum_bar[PRED(chan)].dir := 1;
-
-               If (decay_bar[chan].lvl1 < carrier_vol[chan]) then
-                 decay_bar[chan].dir1 := 1;
-
-               If (decay_bar[chan].lvl2 < modulator_vol[chan]) then
-                 decay_bar[chan].dir2 := 1;
-
-               If (decay_bar[PRED(chan)].lvl1 < carrier_vol[PRED(chan)]) then
-                 decay_bar[PRED(chan)].dir1 := 1;
-
-               If (decay_bar[PRED(chan)].lvl2 < modulator_vol[PRED(chan)]) then
-                 decay_bar[PRED(chan)].dir2 := 1;
-
-               If (play_status <> isPlaying) then
-                 begin
-                   volum_bar[chan].dir := -1;
-                   decay_bar[chan].dir1 := -1;
-                   decay_bar[chan].dir2 := -1;
-                   decay_bar[PRED(chan)].dir1 := -1;
-                   decay_bar[PRED(chan)].dir2 := -1;
-                 end;
-             end
-           else begin
-                  If NOT (percussion_mode and (chan in [17..20])) then
-                    If (ins_parameter(voice_table[chan],10) AND 1 = 1) then
-                      If (volum_bar[chan].lvl < (carrier_vol[chan]+modulator_vol[chan]) DIV 2) then
-                        volum_bar[chan].dir := 1
-                      else
-                    else If (volum_bar[chan].lvl < carrier_vol[chan]) then
-                           volum_bar[chan].dir := 1
-                         else
-                  else If (volum_bar[chan].lvl < modulator_vol[chan]) then
-                         volum_bar[chan].dir := 1;
-
-                  If (decay_bar[chan].lvl1 < carrier_vol[chan]) then
-                    decay_bar[chan].dir1 := 1;
-
-                  If (decay_bar[chan].lvl2 < modulator_vol[chan]) then
-                    decay_bar[chan].dir2 := 1;
-
-                  If (play_status <> isPlaying) then
-                    begin
-                      volum_bar[chan].dir := -1;
-                      decay_bar[chan].dir1 := -1;
-                      decay_bar[chan].dir2 := -1;
-                    end;
-                end;
-       end;
-
-  If (ftune_table[chan] = -127) then ftune_table[chan] := 0;
-  freq := freq+ftune_table[chan];
-  change_frequency(chan,freq);
-
-  If (note <> 0) then
-    begin
-      event_table[chan].note := note;
-      If is_4op_chan(chan) then
-        event_table[PRED(chan)].note := note;
-      If restart_macro then
-        With event_table[chan] do
-           If NOT (((effect_def = ef_Extended) and
-                   (effect DIV 16 = ef_ex_ExtendedCmd2) and
-                   (effect MOD 16 = ef_ex_cmd2_NoRestart)) or
-                  ((effect_def2 = ef_Extended) and
-                   (effect2 DIV 16 = ef_ex_ExtendedCmd2) and
-                   (effect2 MOD 16 = ef_ex_cmd2_NoRestart))) then
-             init_macro_table(chan,note,ins,freq)
-           else macro_table[chan].arpg_note := note;
-    end;
-
-  //EXIT //output_note
-end;
-
-procedure generate_custom_vibrato(value: Byte);
-
-const
-  vibtab_size: array[0..15] of Byte = (
-    16,16,16,16,32,32,32,32,64,64,64,64,128,128,128,128);
-
-var
-  mul_r: Real;
-  mul_b: Byte;
-  idx,idx2: Byte;
-
-function min0(value: Longint): Longint;
-begin
-  If (value >= 0) then min0 := value
-  else min0 := 0;
-end;
-
-begin
-  Case value of
-    // set default speed table
-    0: begin
-         vibtrem_table_size := def_vibtrem_table_size;
-         Move(def_vibtrem_table,vibtrem_table,SizeOf(vibtrem_table));
-       end;
-
-    // set custom speed table (fixed size = 32)
-    1..239:
-       begin
-         vibtrem_table_size := def_vibtrem_table_size;
-         mul_r := value/16;
-         For idx2 := 0 to 7 do
-          begin
-            vibtrem_table[idx2*32] := 0;
-            For idx := 1 to 16 do
-              vibtrem_table[idx2*32+idx] := ROUND(idx*mul_r);
-            For idx := 17 to 31 do
-              vibtrem_table[idx2*32+idx] := ROUND((32-idx)*mul_r);
-          end;
-       end;
-
-    // set custom speed table (speed factor = 1-4)
-    240..255:
-       begin
-         vibtrem_speed_factor := SUCC((value-240) MOD 4);
-         vibtrem_table_size := 2*vibtab_size[value-240];
-         mul_b := 256 DIV (vibtab_size[value-240]);
-         For idx2 := 0 to PRED(128 DIV vibtab_size[value-240]) do
-           begin
-             vibtrem_table[2*vibtab_size[value-240]*idx2] := 0;
-             For idx := 1 to vibtab_size[value-240] do
-               vibtrem_table[2*vibtab_size[value-240]*idx2+idx] :=
-                 min0(idx*mul_b-1);
-             For idx := vibtab_size[value-240]+1 to
-                        2*vibtab_size[value-240]-1 do
-               vibtrem_table[2*vibtab_size[value-240]*idx2+idx] :=
-                 min0((2*vibtab_size[value-240]-idx)*mul_b-1);
-           end;
-       end;
-  end;
-end;
+//init_macro_table
+//output_note
+procedure generate_custom_vibrato(value: Byte); cdecl; external;
 
 procedure update_fine_effects(chan: Byte); forward;
 procedure play_line;
@@ -3727,21 +3515,7 @@ begin
   _dbg_leave; //EXIT //macro_poll_proc
 end;
 
-procedure set_global_volume;
-
-var
-  chan: Byte;
-
-begin
-  For chan := 1 to songdata.nm_tracks do
-    If _4op_vol_valid_chan(chan) then
-      set_ins_volume_4op(BYTE_NULL,chan)
-    else If NOT ((carrier_vol[chan] = 0) and
-                 (modulator_vol[chan] = 0)) then
-           If (ins_parameter(voice_table[chan],10) AND 1 = 0) then
-             set_ins_volume(BYTE_NULL,HI(volume_table[chan]),chan)
-           else set_ins_volume(LO(volume_table[chan]),HI(volume_table[chan]),chan);
-end;
+//set_global_volume
 
 {$IFDEF GO32V2}
 
@@ -4640,37 +4414,7 @@ begin
   count_pos := result;
 end;
 
-procedure count_order(var entries: Byte);
-
-var
-  index,
-  index2: Byte;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'count_order');
-
-  index := 0;
-  index2 := 0;
-
-  Repeat
-    If (songdata.pattern_order[index] <> $80) then
-      begin
-        If (songdata.pattern_order[index] > $80) then
-          If (songdata.pattern_order[index]-$80 <> index2) then
-            begin
-              index := songdata.pattern_order[index]-$80;
-              index2 := index;
-            end
-          else BREAK;
-      end
-    else BREAK;
-    If (index < $80) then Inc(index);
-  until (index > $7f);
-
-  entries := index;
-
-  _dbg_leave; //EXIT //count_order
-end;
+//count_order
 
 procedure count_patterns(var patterns: Byte);
 

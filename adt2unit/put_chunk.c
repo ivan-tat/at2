@@ -9,9 +9,11 @@
 // channel: 1..20
 void put_chunk (uint8_t pattern, uint8_t line, uint8_t channel, const tCHUNK *chunk)
 {
+  channel--;
+
   if (pattern < max_patterns)
   {
-    (*pattdata)[pattern / 8][pattern % 8][channel - 1][line] = *chunk;
+    (*pattdata)[pattern / 8][pattern % 8][channel][line] = *chunk;
 #if !ADT2PLAY
     module_archived = false;
 #endif // !ADT2PLAY
