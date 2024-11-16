@@ -261,18 +261,18 @@ void TimerSetup (uint32_t Hz); // forward
 #include "adt2unit/generate_custom_vibrato.c" // HINT: static
 //procedure update_fine_effects(chan: Byte); forward;
 //procedure play_line;
-//procedure portamento_up(chan: Byte; slide: Word; limit: Word);
-//procedure portamento_down(chan: Byte; slide: Word; limit: Word);
-//procedure macro_vibrato__porta_up(chan: Byte; depth: Byte);
-//procedure macro_vibrato__porta_down(chan: Byte; depth: Byte);
-//procedure tone_portamento(chan: Byte);
-//procedure tone_portamento2(chan: Byte);
-//procedure slide_carrier_volume_up(chan: Byte; slide,limit: Byte);
-//procedure slide_modulator_volume_up(chan: Byte; slide,limit: Byte);
-//procedure slide_volume_up(chan,slide: Byte);
-//procedure slide_carrier_volume_down(chan: Byte; slide: Byte);
-//procedure slide_modulator_volume_down(chan: Byte; slide: Byte);
-//procedure slide_volume_down(chan,slide: Byte);
+#include "adt2unit/portamento_up.c" // HINT: static
+#include "adt2unit/portamento_down.c" // HINT: static
+#include "adt2unit/macro_vibrato__porta_up.c" // HINT: static
+#include "adt2unit/macro_vibrato__porta_down.c" // HINT: static
+#include "adt2unit/tone_portamento.c" // HINT: static
+#include "adt2unit/tone_portamento2.c" // HINT: static
+#include "adt2unit/slide_carrier_volume_up.c" // static
+#include "adt2unit/slide_modulator_volume_up.c" // static
+#include "adt2unit/slide_volume_up.c" // HINT: static
+#include "adt2unit/slide_carrier_volume_down.c" // static
+#include "adt2unit/slide_modulator_volume_down.c" // static
+#include "adt2unit/slide_volume_down.c" // HINT: static
 //procedure volume_slide(chan,up_speed,down_speed: Byte);
 //procedure global_volume_slide(up_speed,down_speed: Byte);
 //procedure arpeggio(chan: Byte);
