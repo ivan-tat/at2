@@ -93,11 +93,11 @@ const
 var
   decay_bar: array[1..DECAY_BARS] of tDECAY_BAR; cvar; external;
 
-procedure start_playing;
+procedure start_playing; cdecl; external;
 procedure set_overall_volume(level: Byte); cdecl; external;
-procedure stop_playing;
+procedure stop_playing; cdecl; external;
 procedure init_old_songdata;
-procedure init_songdata;
+procedure init_songdata; cdecl; external;
 procedure init_timer_proc;
 procedure done_timer_proc;
 procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
@@ -2798,29 +2798,7 @@ begin
   _dbg_leave; //EXIT //calc_following_order
 end;
 
-function calc_order_jump: Integer;
-
-var
-  temp: Byte;
-  result: Integer;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'calc_order_jump');
-
-  result := 0;
-  temp := 0;
-
-  Repeat
-    If (songdata.pattern_order[current_order] > $7f) then
-      current_order := songdata.pattern_order[current_order]-$80;
-    Inc(temp);
-  until (temp > $7f) or (songdata.pattern_order[current_order] < $80);
-
-  If (temp > $7f) then begin stop_playing; result := -1; end;
-  calc_order_jump := result;
-
-  _dbg_leave; //EXIT //calc_order_jump
-end;
+function calc_order_jump: Integer; cdecl; external;
 
 procedure update_song_position;
 
@@ -3323,176 +3301,10 @@ procedure TimerDone; cdecl; external;
 {$I adt2unit/pas/done_timer_proc.pas}
 {$I adt2unit/pas/calc_pattern_pos.pas}
 
-procedure init_buffers;
+procedure init_buffers; cdecl; external;
+procedure init_player; cdecl; external;
 
-var
-  temp: Byte;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'init_buffers');
-
-  FillChar(fmpar_table,SizeOf(fmpar_table),0);
-  FillChar(pan_lock,SizeOf(pan_lock),BYTE(panlock));
-  FillChar(volume_table,SizeOf(volume_table),0);
-  FillChar(vscale_table,SizeOf(vscale_table),0);
-  FillChar(modulator_vol,SizeOf(modulator_vol),0);
-  FillChar(carrier_vol,SizeOf(carrier_vol),0);
-  FillChar(event_table,SizeOf(event_table),0);
-  FillChar(freq_table,SizeOf(freq_table),0);
-  FillChar(zero_fq_table,SizeOf(zero_fq_table),0);
-  FillChar(effect_table,SizeOf(effect_table),0);
-  FillChar(effect_table2,SizeOf(effect_table2),0);
-  FillChar(fslide_table,SizeOf(fslide_table),0);
-  FillChar(fslide_table2,SizeOf(fslide_table2),0);
-  FillChar(glfsld_table,SizeOf(glfsld_table),0);
-  FillChar(glfsld_table2,SizeOf(glfsld_table2),0);
-  FillChar(porta_table,SizeOf(porta_table),0);
-  FillChar(porta_table2,SizeOf(porta_table2),0);
-  FillChar(portaFK_table,SizeOf(portaFK_table),BYTE(FALSE));
-  FillChar(arpgg_table,SizeOf(arpgg_table),0);
-  FillChar(arpgg_table2,SizeOf(arpgg_table2),0);
-  FillChar(vibr_table,SizeOf(vibr_table),0);
-  FillChar(vibr_table2,SizeOf(vibr_table2),0);
-  FillChar(trem_table,SizeOf(trem_table),0);
-  FillChar(trem_table2,SizeOf(trem_table2),0);
-  FillChar(retrig_table,SizeOf(retrig_table),0);
-  FillChar(retrig_table2,SizeOf(retrig_table2),0);
-  FillChar(tremor_table,SizeOf(tremor_table),0);
-  FillChar(tremor_table2,SizeOf(tremor_table2),0);
-  FillChar(last_effect,SizeOf(last_effect),0);
-  FillChar(last_effect2,SizeOf(last_effect2),0);
-  FillChar(voice_table,SizeOf(voice_table),0);
-  FillChar(event_new,SizeOf(event_new),0);
-  FillChar(notedel_table,SizeOf(notedel_table),BYTE_NULL);
-  FillChar(notecut_table,SizeOf(notecut_table),BYTE_NULL);
-  FillChar(ftune_table,SizeOf(ftune_table),0);
-  FillChar(loopbck_table,SizeOf(loopbck_table),BYTE_NULL);
-  FillChar(loop_table,SizeOf(loop_table),BYTE_NULL);
-  FillChar(reset_chan,SizeOf(reset_chan),BYTE(FALSE));
-  FillChar(keyoff_loop,SizeOf(keyoff_loop),BYTE(FALSE));
-  FillChar(macro_table,SizeOf(macro_table),0);
-
-  If NOT lockvol then FillChar(volume_lock,SizeOf(volume_lock),0)
-  else For temp := 1 to 20 do volume_lock[temp] := BOOLEAN(songdata.lock_flags[temp] SHR 4 AND 1);
-
-  If NOT panlock then FillChar(panning_table,SizeOf(panning_table),0)
-  else For temp := 1 to 20 do panning_table[temp] := songdata.lock_flags[temp] AND 3;
-
-  If NOT lockVP then FillChar(peak_lock,SizeOf(peak_lock),0)
-  else For temp := 1 to 20 do peak_lock[temp] := BOOLEAN(songdata.lock_flags[temp] SHR 5 AND 1);
-
-  FillChar(vol4op_lock,SizeOf(vol4op_lock),BYTE(FALSE));
-  For temp := 1 to 6 do
-    begin
-      vol4op_lock[_4op_main_chan[temp]] :=
-        (songdata.lock_flags[_4op_main_chan[temp]] OR $40 = songdata.lock_flags[_4op_main_chan[temp]]);
-      vol4op_lock[PRED(_4op_main_chan[temp])] :=
-        (songdata.lock_flags[PRED(_4op_main_chan[temp])] OR $40 = songdata.lock_flags[PRED(_4op_main_chan[temp])]);
-    end;
-
-  For temp := 1 to 20 do
-    volslide_type[temp] := songdata.lock_flags[temp] SHR 2 AND 3;
-
-  _dbg_leave; //EXIT //init_buffers
-end;
-
-procedure init_player;
-
-var
-  temp: Byte;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'init_player');
-
-  opl2out($01,0);
-
-  For temp := 1 to 18 do opl2out($0b0+_chan_n[temp],0);
-  For temp := $080 to $08d do opl2out(temp,BYTE_NULL);
-  For temp := $090 to $095 do opl2out(temp,BYTE_NULL);
-
-  speed_update    := BOOLEAN(songdata.common_flag AND 1);
-  lockvol         := BOOLEAN(songdata.common_flag SHR 1 AND 1);
-  lockVP          := BOOLEAN(songdata.common_flag SHR 2 AND 1);
-  tremolo_depth   :=         songdata.common_flag SHR 3 AND 1;
-  vibrato_depth   :=         songdata.common_flag SHR 4 AND 1;
-  panlock         := BOOLEAN(songdata.common_flag SHR 5 AND 1);
-  percussion_mode := BOOLEAN(songdata.common_flag SHR 6 AND 1);
-  volume_scaling  := BOOLEAN(songdata.common_flag SHR 7 AND 1);
-
-  current_tremolo_depth := tremolo_depth;
-  current_vibrato_depth := vibrato_depth;
-  init_buffers;
-
-  If NOT percussion_mode then
-    begin
-      _chan_n := _chmm_n;
-      _chan_m := _chmm_m;
-      _chan_c := _chmm_c;
-    end
-  else
-    begin
-      _chan_n := _chpm_n;
-      _chan_m := _chpm_m;
-      _chan_c := _chpm_c;
-    end;
-
-  misc_register := tremolo_depth SHL 7+
-                   vibrato_depth SHL 6+
-                   BYTE(percussion_mode) SHL 5;
-
-  opl2out($01,$20);
-  opl2out($08,$40);
-  opl3exp($0105);
-  opl3exp($04+songdata.flag_4op SHL 8);
-
-  key_off(17);
-  key_off(18);
-  opl2out(_instr[11],misc_register);
-
-  global_volume := 63;
-  vibtrem_speed_factor := def_vibtrem_speed_factor;
-  vibtrem_table_size := def_vibtrem_table_size;
-  Move(def_vibtrem_table,vibtrem_table,SizeOf(vibtrem_table));
-
-  For temp := 1 to 20 do
-    begin
-      arpgg_table[temp].state := 1;
-      voice_table[temp] := temp;
-    end;
-
-  _dbg_leave; //EXIT //init_player
-end;
-
-procedure stop_playing;
-
-var
-  temp: Byte;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'stop_playing');
-
-  play_status := isStopped;
-  replay_forbidden := TRUE;
-  global_volume := 63;
-  current_tremolo_depth := tremolo_depth;
-  current_vibrato_depth := vibrato_depth;
-  pattern_break := FALSE;
-  current_order := 0;
-  current_pattern := 0;
-  current_line := 0;
-  song_timer := 0;
-  timer_temp := 0;
-  song_timer_tenths := 0;
-  playback_speed_shift := 0;
-
-  For temp := 1 to 20 do release_sustaining_sound(temp);
-  opl2out(_instr[11],0);
-  opl3exp($0004);
-  opl3exp($0005);
-  init_buffers;
-
-  _dbg_leave; //EXIT //stop_playing
-end;
+//stop_playing
 
 procedure init_old_songdata;
 begin
@@ -3505,93 +3317,8 @@ begin
   _dbg_leave; //EXIT //init_old_songdata
 end;
 
-procedure init_songdata;
-begin
-  _dbg_enter ({$I %FILE%}, 'init_songdata');
-
-  If (play_status <> isStopped) then stop_playing
-  else init_buffers;
-
-  FillChar(songdata,SizeOf(songdata),0);
-  FillChar(songdata.pattern_order,SizeOf(songdata.pattern_order),$080);
-  FillChar(pattdata^,PATTERN_SIZE*max_patterns,0);
-
-  songdata.patt_len := 64;
-  songdata.nm_tracks := 9;
-  songdata.tempo := tempo;
-  songdata.speed := speed;
-  songdata.macro_speedup := 1;
-  songdata.bpm_data.tempo_finetune := IRQ_freq_shift;
-  speed_update := FALSE;
-  lockvol := FALSE;
-  panlock := FALSE;
-  lockVP  := FALSE;
-  tremolo_depth := 0;
-  vibrato_depth := 0;
-  volume_scaling := FALSE;
-
-  If (songdata.nm_tracks <= 18) then
-    begin
-      percussion_mode := FALSE;
-      _chan_n := _chmm_n;
-      _chan_m := _chmm_m;
-      _chan_c := _chmm_c;
-    end
-  else
-    begin
-      percussion_mode := TRUE;
-      _chan_n := _chpm_n;
-      _chan_m := _chpm_m;
-      _chan_c := _chpm_c;
-    end;
-
-  _dbg_leave; //EXIT //init_songdata
-end;
-
-procedure start_playing;
-begin
-  _dbg_enter ({$I %FILE%}, 'start_playing');
-
-  stop_playing;
-  If (error_code <> 0) then
-    begin
-      _dbg_leave; EXIT; //start_playing
-    end
-  else init_player;
-
-  current_order := 0;
-  If (songdata.pattern_order[current_order] > $7f) then
-    If (calc_order_jump = -1) then
-      begin
-        _dbg_leave; EXIT; //start_playing
-      end;
-
-  current_pattern := songdata.pattern_order[current_order];
-  current_line := 0;
-  pattern_break := FALSE;
-  pattern_delay := FALSE;
-  tickXF := 0;
-  ticks := 0;
-  tick0 := 0;
-  next_line := 0;
-  song_timer := 0;
-  timer_temp := 0;
-  song_timer_tenths := 0;
-  replay_forbidden := FALSE;
-  play_status := isPlaying;
-  time_playing := 0;
-  ticklooper := 0;
-  macro_ticklooper := 0;
-  speed := songdata.speed;
-  IRQ_freq_shift := songdata.bpm_data.tempo_finetune;
-  macro_speedup := songdata.macro_speedup;
-  playback_speed_shift := 0;
-
-  update_timer(songdata.tempo);
-
-  _dbg_leave; //EXIT //start_playing
-end;
-
+//init_songdata
+//start_playing
 //get_chunk
 //put_chunk
 //count_order

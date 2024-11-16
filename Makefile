@@ -55,6 +55,7 @@ FPCFLAGS_DIRS+=-Fi$(srcdir) -Fi. -Fuunits
 
 SRCS=\
  adt2data.c\
+ adt2ext2.c\
  adt2sys.c\
  adt2keyb.c\
  adt2opl3.c\
@@ -367,7 +368,8 @@ adt2ext2_ppu_deps=\
  $(srcdir)/ipattern.inc\
  $(srcdir)/ipattord.inc\
  units/debug.ppu\
- units/platform.ppu
+ units/platform.ppu\
+ adt2ext2.o
 
 adt2ext3_ppu_deps=\
  $(srcdir)/adt2ext3.pas\

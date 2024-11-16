@@ -16,17 +16,19 @@
 unit AdT2ext2;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$MODESWITCH CVAR}
+{$L adt2ext2.o}
 interface
 
-const
-  quick_mark_type: Byte = 0;
-  discard_block: Boolean = FALSE;
-  old_chan_pos: Byte = 1;
-  old_hpos: Byte = 1;
-  old_page: Byte = 0;
-  old_block_chan_pos: Byte = 1;
-  old_block_patt_hpos: Byte = 1;
-  old_block_patt_page: Byte = 0;
+var
+  quick_mark_type: Byte; cvar; external;
+  discard_block: Boolean; cvar; external;
+  old_chan_pos: Byte; cvar; external;
+  old_hpos: Byte; cvar; external;
+  old_page: Byte; cvar; external;
+  old_block_chan_pos: Byte; cvar; external;
+  old_block_patt_hpos: Byte; cvar; external;
+  old_block_patt_page: Byte; cvar; external;
 
 procedure process_global_keys; cdecl;
 

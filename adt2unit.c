@@ -8,6 +8,10 @@
 #include "platform.h"
 #include "debug.h"
 #include <math.h>
+#if !ADT2PLAY
+#include <stdio.h>
+#endif // !ADT2PLAY
+#include <string.h>
 #include <time.h>
 #if GO32
 #include <stdlib.h>
@@ -23,6 +27,10 @@
 #include "adt2keyb.h"
 #include "adt2opl3.h"
 #include "adt2sys.h"
+#if !ADT2PLAY
+#include "adt2ext2.h"
+#include "parserio.h"
+#endif // !ADT2PLAY
 #include "adt2unit.h"
 
 // HINT: (FPC) S-: Stack checking (off)
@@ -321,7 +329,7 @@ struct status_backup_t status_backup;
 #include "adt2unit/update_modulator_adsrw.c"
 #include "adt2unit/update_carrier_adsrw.c"
 #include "adt2unit/update_fmpar.c"
-//procedure reset_chan_data(chan: Byte);
+#include "adt2unit/reset_chan_data.c"
 #include "adt2unit/init_macro_table.c"
 #include "adt2unit/output_note.c"
 #include "adt2unit/generate_custom_vibrato.c" // HINT: static
@@ -351,7 +359,7 @@ struct status_backup_t status_backup;
 //procedure update_fine_effects(chan: Byte);
 //procedure update_extra_fine_effects;
 //function calc_following_order(order: Byte): Integer;
-//function calc_order_jump: Integer;
+#include "adt2unit/calc_order_jump.c"
 //procedure update_song_position;
 //procedure poll_proc;
 //procedure macro_poll_proc;
@@ -391,11 +399,11 @@ __PAREA_END (CODE)
 
 #include "adt2unit/calc_pattern_pos.c"
 //procedure calibrate_player(order,line: Byte; status_filter: Boolean; line_dependent: Boolean);
-//procedure init_buffers;
-//procedure init_player;
+#include "adt2unit/init_buffers.c"
+#include "adt2unit/init_player.c"
 //procedure reset_player;
-//procedure start_playing;
-//procedure stop_playing;
+#include "adt2unit/start_playing.c"
+#include "adt2unit/stop_playing.c"
 #include "adt2unit/get_chunk.c"
 #include "adt2unit/put_chunk.c"
 //function get_chanpos(var data; channels,scancode: Byte): Byte;
@@ -409,7 +417,7 @@ __PAREA_END (CODE)
 //function calc_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
 //function calc_realtime_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
 //procedure init_old_songdata;
-//procedure init_songdata;
+#include "adt2unit/init_songdata.c"
 //procedure update_instr_data(ins: Byte);
 //procedure load_instrument(var data; chan: Byte);
 #include "adt2unit/is_4op_chan.c"

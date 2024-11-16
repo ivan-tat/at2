@@ -285,7 +285,7 @@ void TimerSetup (uint32_t Hz); // forward
 //procedure update_fine_effects(chan: Byte);
 //procedure update_extra_fine_effects;
 //function calc_following_order(order: Byte): Integer;
-//function calc_order_jump: Integer;
+#include "adt2unit/calc_order_jump.c"
 //procedure update_song_position;
 //procedure poll_proc;
 //procedure macro_poll_proc;
@@ -305,12 +305,12 @@ __PAREA_END (CODE)
 //#include "adt2unit/init_timer_proc.c"
 //#include "adt2unit/done_timer_proc.c"
 //#include "adt2unit/calc_pattern_pos.c"
-//procedure init_buffers;
-//procedure init_player;
-//procedure stop_playing;
+#include "adt2unit/init_buffers.c"
+#include "adt2unit/init_player.c"
+#include "adt2unit/stop_playing.c"
 //procedure init_old_songdata;
-//procedure init_songdata;
-//procedure start_playing;
+#include "adt2unit/init_songdata.c"
+#include "adt2unit/start_playing.c"
 #include "adt2unit/get_chunk.c"
 #include "adt2unit/put_chunk.c"
 #include "adt2unit/count_order.c"

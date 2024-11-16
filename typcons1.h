@@ -459,7 +459,7 @@ extern const tTRACK_ADDR _chpm_c; // HINT: (FPC) start index 1
 extern const uint8_t _4op_tracks_hi[256/8]; // HINT: (FPC) set of byte, chan: 1..20
 extern const uint8_t _4op_tracks_lo[256/8]; // HINT: (FPC) set of byte, chan: 1..20
 
-extern const uint8_t _4op_main_chan[6]; // HINT: (FPC) start index 1
+extern const uint8_t _4op_main_chan[6]; // chan: 1..20, HINT: (FPC) start index 1
 #if !ADT2PLAY
 extern const uint8_t _perc_sim_chan[2]; // HINT: (FPC) start index 19
 #endif // !ADT2PLAY

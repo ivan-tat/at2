@@ -290,14 +290,14 @@ void set_ins_volume (uint8_t modulator, uint8_t carrier, uint8_t chan);
 void update_modulator_adsrw (uint8_t chan);
 void update_carrier_adsrw (uint8_t chan);
 void update_fmpar (uint8_t chan);
-//procedure reset_chan_data(chan: Byte);
+void reset_chan_data (uint8_t chan);
 void poll_proc (void);
 void macro_poll_proc (void);
-//procedure init_buffers;
-//procedure init_player;
+void init_buffers (void);
+void init_player (void);
 //procedure reset_player;
-//procedure start_playing;
-//procedure stop_playing;
+void start_playing (void);
+void stop_playing (void);
 //procedure update_song_position;
 void change_frequency (uint8_t chan, uint16_t freq);
 void set_global_volume (void);
@@ -319,7 +319,7 @@ void put_chunk (uint8_t pattern, uint8_t line, uint8_t channel, const tCHUNK *ch
 //function  calc_max_speedup(tempo: Byte): Word;
 //function  calc_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
 //function  calc_realtime_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
-//function  calc_order_jump: Integer;
+int16_t calc_order_jump (void);
 int16_t calc_following_order (uint8_t order);
 bool    is_4op_chan (uint8_t chan);
 
@@ -329,7 +329,7 @@ void count_order (uint8_t *entries);
 //procedure count_patterns(var patterns: Byte);
 //procedure count_instruments(var instruments: Byte);
 //procedure init_old_songdata;
-//procedure init_songdata;
+void init_songdata (void);
 //procedure update_instr_data(ins: Byte);
 //procedure load_instrument(var data; chan: Byte);
 void output_note (uint8_t note, uint8_t ins, uint8_t chan,
@@ -348,7 +348,7 @@ extern uint8_t block_x1;
 extern uint8_t block_y1;
 
 //function  is_in_block(x0,y0,x1,y1: Byte): Boolean;
-//procedure fade_out_playback(fade_screen: Boolean);
+void fade_out_playback (bool fade_screen);
 
 extern int32_t ticklooper;
 extern int32_t macro_ticklooper;

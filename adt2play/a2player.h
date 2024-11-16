@@ -80,11 +80,11 @@ extern bool     force_macro_keyon;
 
 extern tDECAY_BAR decay_bar[DECAY_BARS]; // HINT: (FPC) start index 1
 
-//void     start_playing (void);
+void     start_playing (void);
 void     set_overall_volume (uint8_t level);
-//void     stop_playing (void);
+void     stop_playing (void);
 //void     init_old_songdata (void);
-//void     init_songdata (void);
+void     init_songdata (void);
 //void     init_timer_proc (void);
 //void     done_timer_proc (void);
 void     get_chunk (uint8_t pattern, uint8_t line, uint8_t chan, tCHUNK *chunk);

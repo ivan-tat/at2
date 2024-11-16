@@ -305,7 +305,7 @@ const uint8_t _4op_tracks_lo[256/8] = { // HINT: (FPC) set of byte, chan: 1..20
   0,
 };
 
-const uint8_t _4op_main_chan[6] = { // HINT: (FPC) start index 1
+const uint8_t _4op_main_chan[6] = { // chan: 1..20, HINT: (FPC) start index 1
   2, 4, 6, 11, 13, 15
 };
 
