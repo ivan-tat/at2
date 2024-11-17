@@ -4,10 +4,12 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-void done_timer_proc (void) {
+void done_timer_proc (void)
+{
   DBG_ENTER ("done_timer_proc");
 
-  if (timer_initialized) {
+  if (timer_initialized)
+  {
     timer_initialized = false;
     TimerDone ();
 #if !ADT2PLAY
@@ -15,5 +17,5 @@ void done_timer_proc (void) {
 #endif // !ADT2PLAY
   }
 
-  DBG_LEAVE (); //done_timer_proc
+  DBG_LEAVE (); //EXIT //done_timer_proc
 }

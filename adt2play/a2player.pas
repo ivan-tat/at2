@@ -96,15 +96,15 @@ var
 procedure start_playing; cdecl; external;
 procedure set_overall_volume(level: Byte); cdecl; external;
 procedure stop_playing; cdecl; external;
-procedure init_old_songdata;
+procedure init_old_songdata; cdecl; external;
 procedure init_songdata; cdecl; external;
-procedure init_timer_proc;
-procedure done_timer_proc;
+procedure init_timer_proc; cdecl; external;
+procedure done_timer_proc; cdecl; external;
 procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
 procedure put_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
 procedure count_order(var entries: Byte); cdecl; external;
 procedure timer_poll_proc; cdecl;
-function  calc_following_order(order: Byte): Integer;
+function  calc_following_order(order: Byte): Integer; cdecl; external;
 function  is_4op_chan(chan: Byte): Boolean; cdecl; external;
 function  min(value: Longint; minimum: Longint): Longint; cdecl; external;
 function  max(value: Longint; maximum: Longint): Longint; cdecl; external;
@@ -1843,118 +1843,14 @@ procedure slide_volume_up(chan,slide: Byte); cdecl; external;
 //slide_carrier_volume_down
 //slide_modulator_volume_down
 procedure slide_volume_down(chan,slide: Byte); cdecl; external;
-
-procedure volume_slide(chan,up_speed,down_speed: Byte);
-begin
-  If (up_speed <> 0) then slide_volume_up(chan,up_speed)
-  else If (down_speed <> 0) then slide_volume_down(chan,down_speed);
-end;
-
-procedure global_volume_slide(up_speed,down_speed: Byte);
-begin
-  If (up_speed <> BYTE_NULL) then
-    global_volume := max(global_volume+up_speed,63);
-  If (down_speed <> BYTE_NULL) then
-    If (global_volume >= down_speed) then Dec(global_volume,down_speed)
-    else global_volume := 0;
-  set_global_volume;
-end;
-
-procedure arpeggio(chan: Byte);
-
-const
-  arpgg_state: array[0..2] of Byte = (1,2,0);
-
-var
-  freq: Word;
-
-begin
-  Case arpgg_table[chan].state of
-    0: freq := nFreq(arpgg_table[chan].note-1);
-    1: freq := nFreq(arpgg_table[chan].note-1 +arpgg_table[chan].add1);
-    2: freq := nFreq(arpgg_table[chan].note-1 +arpgg_table[chan].add2);
-  end;
-
-  arpgg_table[chan].state := arpgg_state[arpgg_table[chan].state];
-  change_frequency(chan,freq+
-    SHORTINT(ins_parameter(event_table[chan].instr_def,12)));
-end;
-
-procedure arpeggio2(chan: Byte);
-
-const
-  arpgg_state: array[0..2] of Byte = (1,2,0);
-
-var
-  freq: Word;
-
-begin
-  Case arpgg_table2[chan].state of
-    0: freq := nFreq(arpgg_table2[chan].note-1);
-    1: freq := nFreq(arpgg_table2[chan].note-1 +arpgg_table2[chan].add1);
-    2: freq := nFreq(arpgg_table2[chan].note-1 +arpgg_table2[chan].add2);
-  end;
-
-  arpgg_table2[chan].state := arpgg_state[arpgg_table2[chan].state];
-  change_frequency(chan,freq+
-    SHORTINT(ins_parameter(event_table[chan].instr_def,12)));
-end;
-
-procedure vibrato(chan: Byte);
-
-var
-  freq,old_freq: Word;
-
-begin
-  Inc(vibr_table[chan].pos,vibr_table[chan].speed*vibtrem_speed_factor);
-  freq := calc_vibtrem_shift(chan,vibr_table);
-  old_freq := freq_table[chan];
-  If (vibr_table[chan].dir = 0) then portamento_down(chan,freq,nFreq(0))
-  else portamento_up(chan,freq,nFreq(12*8+1));
-  freq_table[chan] := old_freq;
-end;
-
-procedure vibrato2(chan: Byte);
-
-var
-  freq,old_freq: Word;
-
-begin
-  Inc(vibr_table2[chan].pos,vibr_table2[chan].speed*vibtrem_speed_factor);
-  freq := calc_vibtrem_shift(chan,vibr_table2);
-  old_freq := freq_table[chan];
-  If (vibr_table2[chan].dir = 0) then portamento_down(chan,freq,nFreq(0))
-  else portamento_up(chan,freq,nFreq(12*8+1));
-  freq_table[chan] := old_freq;
-end;
-
-procedure tremolo(chan: Byte);
-
-var
-  vol,old_vol: Word;
-
-begin
-  Inc(trem_table[chan].pos,trem_table[chan].speed*vibtrem_speed_factor);
-  vol := calc_vibtrem_shift(chan,trem_table);
-  old_vol := volume_table[chan];
-  If (trem_table[chan].dir = 0) then slide_volume_down(chan,vol)
-  else slide_volume_up(chan,vol);
-  volume_table[chan] := old_vol;
-end;
-
-procedure tremolo2(chan: Byte);
-
-var
-  vol,old_vol: Word;
-
-begin
-  Inc(trem_table2[chan].pos,trem_table2[chan].speed*vibtrem_speed_factor);
-  vol := calc_vibtrem_shift(chan,trem_table2);
-  old_vol := volume_table[chan];
-  If (trem_table2[chan].pos = 0) then slide_volume_down(chan,vol)
-  else slide_volume_up(chan,vol);
-  volume_table[chan] := old_vol;
-end;
+procedure volume_slide(chan,up_speed,down_speed: Byte); cdecl; external;
+procedure global_volume_slide(up_speed,down_speed: Byte); cdecl; external;
+procedure arpeggio(chan: Byte); cdecl; external;
+procedure arpeggio2(chan: Byte); cdecl; external;
+procedure vibrato(chan: Byte); cdecl; external;
+procedure vibrato2(chan: Byte); cdecl; external;
+procedure tremolo(chan: Byte); cdecl; external;
+procedure tremolo2(chan: Byte); cdecl; external;
 
 procedure update_effects;
 
@@ -2529,33 +2425,7 @@ begin
     end;
 end;
 
-function calc_following_order(order: Byte): Integer;
-
-var
-  result: Integer;
-  index,jump_count: Byte;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'calc_following_order');
-
-  result := -1;
-  index := order;
-  jump_count := 0;
-
-  Repeat
-    If (songdata.pattern_order[index] < $80) then result := index
-    else begin
-           index := songdata.pattern_order[index]-$80;
-           Inc(jump_count);
-         end;
-  until (jump_count > $7f) or
-        (result <> -1);
-
-  calc_following_order := result;
-
-  _dbg_leave; //EXIT //calc_following_order
-end;
-
+//calc_following_order
 function calc_order_jump: Integer; cdecl; external;
 
 procedure update_song_position;
@@ -3054,33 +2924,19 @@ procedure ___IRQ_CODE_END___; begin end;
 
 procedure TimerSetup(Hz: Longint); cdecl; external;
 procedure TimerDone; cdecl; external;
-
-{$I adt2unit/pas/init_timer_proc.pas}
-{$I adt2unit/pas/done_timer_proc.pas}
-{$I adt2unit/pas/calc_pattern_pos.pas}
+//init_timer_proc
+//done_timer_proc
+function calc_pattern_pos(pattern: Byte): Byte; cdecl; external;
 
 procedure init_buffers; cdecl; external;
 procedure init_player; cdecl; external;
-
 //stop_playing
-
-procedure init_old_songdata;
-begin
-  _dbg_enter ({$I %FILE%}, 'init_old_songdata');
-
-  FillChar(old_songdata,SizeOf(old_songdata),0);
-  FillChar(old_songdata.pattern_order,SizeOf(old_songdata.pattern_order),$080);
-  FillChar(old_songdata.instr_data,SizeOf(old_songdata.instr_data),0);
-
-  _dbg_leave; //EXIT //init_old_songdata
-end;
-
+//init_old_songdata
 //init_songdata
 //start_playing
 //get_chunk
 //put_chunk
 //count_order
-
 procedure init_a2player; cdecl; external;
 
 var

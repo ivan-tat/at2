@@ -328,7 +328,7 @@ bool    is_4op_chan (uint8_t chan);
 void count_order (uint8_t *entries);
 //procedure count_patterns(var patterns: Byte);
 //procedure count_instruments(var instruments: Byte);
-//procedure init_old_songdata;
+void init_old_songdata (void);
 void init_songdata (void);
 //procedure update_instr_data(ins: Byte);
 //procedure load_instrument(var data; chan: Byte);

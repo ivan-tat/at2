@@ -267,24 +267,24 @@ void TimerSetup (uint32_t Hz); // forward
 #include "adt2unit/macro_vibrato__porta_down.c" // HINT: static
 #include "adt2unit/tone_portamento.c" // HINT: static
 #include "adt2unit/tone_portamento2.c" // HINT: static
-#include "adt2unit/slide_carrier_volume_up.c" // static
-#include "adt2unit/slide_modulator_volume_up.c" // static
+#include "adt2unit/slide_carrier_volume_up.c" // static, used in `slide_volume_up'
+#include "adt2unit/slide_modulator_volume_up.c" // static, used in `slide_volume_up'
 #include "adt2unit/slide_volume_up.c" // HINT: static
-#include "adt2unit/slide_carrier_volume_down.c" // static
-#include "adt2unit/slide_modulator_volume_down.c" // static
+#include "adt2unit/slide_carrier_volume_down.c" // static, used in `slide_volume_down'
+#include "adt2unit/slide_modulator_volume_down.c" // static, used in `slide_volume_down'
 #include "adt2unit/slide_volume_down.c" // HINT: static
-//procedure volume_slide(chan,up_speed,down_speed: Byte);
-//procedure global_volume_slide(up_speed,down_speed: Byte);
-//procedure arpeggio(chan: Byte);
-//procedure arpeggio2(chan: Byte);
-//procedure vibrato(chan: Byte);
-//procedure vibrato2(chan: Byte);
-//procedure tremolo(chan: Byte);
-//procedure tremolo2(chan: Byte);
+#include "adt2unit/volume_slide.c" // HINT: static
+#include "adt2unit/global_volume_slide.c" // HINT: static
+#include "adt2unit/arpeggio.c" // HINT: static, defines `arpgg_state[]'
+#include "adt2unit/arpeggio2.c" // HINT: static, uses `arpgg_state[]'
+#include "adt2unit/vibrato.c" // HINT: static
+#include "adt2unit/vibrato2.c" // HINT: static
+#include "adt2unit/tremolo.c" // HINT: static
+#include "adt2unit/tremolo2.c" // HINT: static
 //procedure update_effects;
 //procedure update_fine_effects(chan: Byte);
 //procedure update_extra_fine_effects;
-//function calc_following_order(order: Byte): Integer;
+#include "adt2unit/calc_following_order.c"
 #include "adt2unit/calc_order_jump.c"
 //procedure update_song_position;
 //procedure poll_proc;
@@ -302,13 +302,13 @@ __PAREA_END (CODE)
 #include "adt2unit/go32/TimerSetup.c"
 #include "adt2unit/go32/TimerDone.c" // HINT: static
 #endif // GO32
-//#include "adt2unit/init_timer_proc.c"
-//#include "adt2unit/done_timer_proc.c"
-//#include "adt2unit/calc_pattern_pos.c"
+#include "adt2unit/init_timer_proc.c"
+#include "adt2unit/done_timer_proc.c"
+#include "adt2unit/calc_pattern_pos.c"
 #include "adt2unit/init_buffers.c"
 #include "adt2unit/init_player.c"
 #include "adt2unit/stop_playing.c"
-//procedure init_old_songdata;
+#include "adt2unit/init_old_songdata.c"
 #include "adt2unit/init_songdata.c"
 #include "adt2unit/start_playing.c"
 #include "adt2unit/get_chunk.c"
