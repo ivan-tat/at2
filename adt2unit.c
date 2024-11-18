@@ -333,7 +333,7 @@ struct status_backup_t status_backup;
 #include "adt2unit/init_macro_table.c"
 #include "adt2unit/output_note.c"
 #include "adt2unit/generate_custom_vibrato.c" // HINT: static
-//procedure update_fine_effects(chan: Byte); forward;
+/*static*/ void update_fine_effects (uint8_t chan); // forward
 //procedure play_line;
 #include "adt2unit/portamento_up.c" // HINT: static
 #include "adt2unit/portamento_down.c" // HINT: static
@@ -355,9 +355,9 @@ struct status_backup_t status_backup;
 #include "adt2unit/vibrato2.c" // HINT: static
 #include "adt2unit/tremolo.c" // HINT: static
 #include "adt2unit/tremolo2.c" // HINT: static
-//procedure update_effects;
-//procedure update_fine_effects(chan: Byte);
-//procedure update_extra_fine_effects;
+#include "adt2unit/update_effects.c" // HINT: static
+#include "adt2unit/update_fine_effects.c" // HINT: static
+#include "adt2unit/update_extra_fine_effects.c" // HINT: static
 #include "adt2unit/calc_following_order.c"
 #include "adt2unit/calc_order_jump.c"
 //procedure update_song_position;
