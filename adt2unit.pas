@@ -319,7 +319,7 @@ procedure init_player; cdecl; external;
 procedure reset_player;
 procedure start_playing; cdecl; external;
 procedure stop_playing; cdecl; external;
-procedure update_song_position;
+procedure update_song_position; cdecl; external;
 procedure change_frequency(chan: Byte; freq: Word); cdecl; external;
 procedure set_global_volume; cdecl; external;
 procedure set_ins_data(ins,chan: Byte); cdecl; external;
@@ -2063,92 +2063,7 @@ procedure update_effects; cdecl; external;
 procedure update_extra_fine_effects; cdecl; external;
 //calc_following_order
 //calc_order_jump
-
-procedure update_song_position;
-
-var
-  temp: Byte;
-
-begin
-  For temp := 9 downto 2 do
-    play_pos_buf[temp] := play_pos_buf[temp-1];
-  play_pos_buf[1] := (current_pattern SHL 8)+current_line;
-
-  If NOT _rewind then
-    begin
-      If (current_line < PRED(songdata.patt_len)) and NOT pattern_break then Inc(current_line)
-      else begin
-             If NOT (pattern_break and (next_line AND $0f0 = pattern_loop_flag)) and
-                repeat_pattern then
-               begin
-                 FillChar(loopbck_table,SizeOf(loopbck_table),BYTE_NULL);
-                 FillChar(loop_table,SizeOf(loop_table),BYTE_NULL);
-                 current_line := 0;
-                 pattern_break := FALSE;
-               end
-             else begin
-                    If NOT (pattern_break and (next_line AND $0f0 = pattern_loop_flag)) and
-                           (current_order < $7f) then
-                      begin
-                        FillChar(loopbck_table,SizeOf(loopbck_table),BYTE_NULL);
-                        FillChar(loop_table,SizeOf(loop_table),BYTE_NULL);
-                        Inc(current_order);
-                      end;
-
-                    If pattern_break and (next_line AND $0f0 = pattern_loop_flag) then
-                      begin
-                        temp := next_line-pattern_loop_flag;
-                        next_line := loopbck_table[temp];
-                        If (loop_table[temp][current_line] <> 0) then
-                          Dec(loop_table[temp][current_line]);
-                      end
-                    else If pattern_break and (next_line AND $0f0 = pattern_break_flag) then
-                           begin
-                             If (event_table[next_line-pattern_break_flag].effect_def2 = ef_PositionJump) then
-                               current_order := event_table[next_line-pattern_break_flag].effect2
-                             else current_order := event_table[next_line-pattern_break_flag].effect;
-                             pattern_break := FALSE;
-                           end
-                         else If (current_order > $7f) then
-                                current_order := 0;
-
-                    If NOT play_single_patt then
-                      If (songdata.pattern_order[current_order] > $7f) then
-                        If (calc_order_jump = -1) then
-                          EXIT; //update_song_position
-
-                    If NOT play_single_patt then
-                      current_pattern := songdata.pattern_order[current_order];
-
-                    If NOT pattern_break then current_line := 0
-                    else begin
-                           pattern_break := FALSE;
-                           current_line := next_line;
-                         end;
-                  end;
-           end;
-    end
-  else
-    If (current_line > 0) then Dec(current_line);
-
-  For temp := 1 to songdata.nm_tracks do
-    begin
-      ignore_note_once[temp] := FALSE;
-      glfsld_table[temp] := 0;
-      glfsld_table2[temp] := 0;
-    end;
-
-  If NOT play_single_patt then
-    If (current_line = 0) and
-       (current_order = calc_following_order(0)) and speed_update then
-      begin
-        tempo := songdata.tempo;
-        speed := songdata.speed;
-        update_timer(tempo);
-      end;
-
-  //EXIT //update_song_position
-end;
+//update_song_position
 
 procedure poll_proc; cdecl;
 public name PUBLIC_PREFIX + 'poll_proc';

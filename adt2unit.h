@@ -298,7 +298,7 @@ void init_player (void);
 //procedure reset_player;
 void start_playing (void);
 void stop_playing (void);
-//procedure update_song_position;
+void update_song_position (void);
 void change_frequency (uint8_t chan, uint16_t freq);
 void set_global_volume (void);
 void set_ins_data (uint8_t ins, uint8_t chan);

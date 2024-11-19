@@ -286,7 +286,7 @@ void TimerSetup (uint32_t Hz); // forward
 #include "adt2unit/update_extra_fine_effects.c" // HINT: static
 #include "adt2unit/calc_following_order.c"
 #include "adt2unit/calc_order_jump.c"
-//procedure update_song_position;
+#include "adt2unit/update_song_position.c"
 //procedure poll_proc;
 //procedure macro_poll_proc;
 //procedure timer_poll_proc;
