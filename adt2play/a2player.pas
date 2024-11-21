@@ -289,7 +289,8 @@ procedure output_note(note,ins,chan: Byte;
 procedure generate_custom_vibrato(value: Byte); cdecl; external;
 procedure update_fine_effects(chan: Byte); cdecl; external;
 
-procedure play_line;
+procedure play_line; cdecl;
+public name PUBLIC_PREFIX + 'play_line';
 
 var
   chan,idx: Byte;
@@ -1856,77 +1857,7 @@ procedure update_extra_fine_effects; cdecl; external;
 //calc_following_order
 function calc_order_jump: Integer; cdecl; external;
 procedure update_song_position; cdecl; external;
-
-procedure poll_proc;
-
-var
-  temp: Byte;
-
-begin
-  _dbg_enter ({$I %FILE%}, '_poll_proc');
-
-  If (NOT pattern_delay and (ticks-tick0+1 >= speed)) or
-     fast_forward then
-    begin
-      If (songdata.pattern_order[current_order] > $7f) then
-        If (calc_order_jump = -1) then
-          begin
-            _dbg_leave; EXIT; //_poll_proc
-          end;
-
-      current_pattern := songdata.pattern_order[current_order];
-      play_line;
-      If NOT fast_forward then update_effects
-      else For temp := 1 to speed do
-             begin
-               update_effects;
-               If (temp MOD 4 = temp) then
-                 update_extra_fine_effects;
-               Inc(ticks);
-             end;
-
-      pattern_break_docmd := pattern_break;
-      pattern_break_oldord := current_order;
-      If fast_forward or NOT pattern_delay then
-        update_song_position;
-
-      If (pattern_break_docmd = TRUE) then
-        pattern_break_loop := current_order = pattern_break_oldord;
-
-      tick0 := ticks;
-      If fast_forward then
-        If NOT pattern_delay then synchronize_song_timer;
-
-      If fast_forward and pattern_delay then
-        begin
-          tickD := 0;
-          pattern_delay := FALSE;
-        end;
-    end
-  else
-    begin
-      update_effects;
-      Inc(ticks);
-      If pattern_delay and (tickD > 1) then Dec(tickD)
-      else begin
-             If pattern_delay then
-               begin
-                 tick0 := ticks;
-                 update_song_position;
-               end;
-             pattern_delay := FALSE;
-           end;
-    end;
-
-  Inc(tickXF);
-  If (tickXF MOD 4 = 0) then
-    begin
-      update_extra_fine_effects;
-      Dec(tickXF,4);
-    end;
-
-  _dbg_leave; //EXIT //_poll_proc
-end;
+procedure poll_proc; cdecl; external;
 
 procedure macro_poll_proc;
 

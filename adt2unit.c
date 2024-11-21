@@ -334,7 +334,7 @@ struct status_backup_t status_backup;
 #include "adt2unit/output_note.c"
 #include "adt2unit/generate_custom_vibrato.c" // HINT: static
 /*static*/ void update_fine_effects (uint8_t chan); // forward
-//procedure play_line;
+void play_line (void);
 #include "adt2unit/portamento_up.c" // HINT: static
 #include "adt2unit/portamento_down.c" // HINT: static
 #include "adt2unit/macro_vibrato__porta_up.c" // HINT: static
@@ -361,7 +361,7 @@ struct status_backup_t status_backup;
 #include "adt2unit/calc_following_order.c"
 #include "adt2unit/calc_order_jump.c"
 #include "adt2unit/update_song_position.c"
-//procedure poll_proc;
+#include "adt2unit/poll_proc.c"
 //procedure macro_poll_proc;
 #include "adt2unit/set_global_volume.c"
 #if GO32

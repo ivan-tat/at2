@@ -42,6 +42,10 @@ procedure Pascal_FillWord (var x; count: SizeInt; value: Word); cdecl;
 
 procedure Pascal_Move (const src; var dest; n: SizeInt); cdecl;
 
+// FPC_ABS_REAL
+function Pascal_Abs_Single (x: Single): Single; cdecl;
+function Pascal_Abs_Double (x: Double): Double; cdecl;
+
 // FPC_TRUNC_REAL
 function Pascal_Trunc_Single (x: Single): Single; cdecl;
 function Pascal_Trunc_Double (x: Double): Double; cdecl;
@@ -163,6 +167,18 @@ procedure Pascal_Move (const src; var dest; n: SizeInt); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_Move';
 begin
   system.Move (src, dest, n);
+end;
+
+function Pascal_Abs_Single (x: Single): Single; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Abs_Single';
+begin
+  Pascal_Abs_Single := system.Abs (x);
+end;
+
+function Pascal_Abs_Double (x: Double): Double; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Abs_Double';
+begin
+  Pascal_Abs_Double := system.Abs (x);
 end;
 
 function Pascal_Trunc_Single (x: Single): Single; cdecl;

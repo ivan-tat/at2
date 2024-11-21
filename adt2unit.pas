@@ -312,7 +312,7 @@ procedure update_modulator_adsrw(chan: Byte); cdecl; external;
 procedure update_carrier_adsrw(chan: Byte); cdecl; external;
 procedure update_fmpar(chan: Byte); cdecl; external;
 procedure reset_chan_data(chan: Byte); cdecl; external;
-procedure poll_proc; cdecl;
+procedure poll_proc; cdecl; external;
 procedure macro_poll_proc; cdecl;
 procedure init_buffers; cdecl; external;
 procedure init_player; cdecl; external;
@@ -476,7 +476,8 @@ procedure reset_ins_volume(chan: Byte); cdecl; external;
 //output_note
 procedure generate_custom_vibrato(value: Byte); cdecl; external;
 procedure update_fine_effects(chan: Byte); cdecl; external;
-procedure play_line;
+procedure play_line; cdecl;
+public name PUBLIC_PREFIX + 'play_line';
 
 var
   chan,idx: Byte;
@@ -2064,104 +2065,7 @@ procedure update_extra_fine_effects; cdecl; external;
 //calc_following_order
 //calc_order_jump
 //update_song_position
-
-procedure poll_proc; cdecl;
-public name PUBLIC_PREFIX + 'poll_proc';
-
-var
-  temp: Byte;
-  factor: Real;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'poll_proc');
-
-  If (NOT pattern_delay and (ticks-tick0+1 >= speed)) or
-     fast_forward or _rewind or single_play then
-    begin
-      If debugging and
-         NOT single_play and NOT pattern_break and
-         (NOT space_pressed or no_step_debugging) then
-        begin
-          _dbg_leave; EXIT; //poll_proc
-        end;
-
-      If NOT single_play and
-         NOT play_single_patt then
-        begin
-          If (songdata.pattern_order[current_order] > $7f) then
-            If (calc_order_jump = -1) then
-              begin
-                _dbg_leave; EXIT; //poll_proc
-              end;
-          current_pattern := songdata.pattern_order[current_order];
-        end;
-
-      play_line;
-      If NOT single_play and NOT (fast_forward or _rewind) then update_effects
-      else For temp := 1 to speed do
-             begin
-               update_effects;
-               If (temp MOD 4 = temp) then
-                 update_extra_fine_effects;
-               Inc(ticks);
-             end;
-
-      tick0 := ticks;
-      If NOT single_play and (fast_forward or _rewind or
-                              NOT pattern_delay) then
-        update_song_position;
-
-      If fast_forward or _rewind then
-        If NOT pattern_delay then synchronize_song_timer;
-
-      If (fast_forward or _rewind) and pattern_delay then
-        begin
-          tickD := 0;
-          pattern_delay := FALSE;
-        end;
-
-      If fast_forward or _rewind then
-        begin
-{$IFDEF GO32V2}
-          keyboard_reset_buffer;
-{$ENDIF}
-          If fast_forward then factor := 1/(5-fforward_factor+1)
-          else factor := 1/(5-rewind_factor+1);
-          If (Abs(time_playing-time_playing0) > factor*(1+(1/255*tempo))/speed) then
-            begin
-              fast_forward := FALSE;
-              _rewind := FALSE;
-              time_playing0 := time_playing;
-              synchronize_song_timer;
-            end;
-        end;
-    end
-  else
-    begin
-      update_effects;
-      Inc(ticks);
-
-      If NOT (debugging and NOT single_play and (NOT space_pressed or no_step_debugging)) then
-        If pattern_delay and (tickD > 1) then Dec(tickD)
-        else begin
-               If pattern_delay and NOT single_play then
-                 begin
-                   tick0 := ticks;
-                   update_song_position;
-                 end;
-               pattern_delay := FALSE;
-             end;
-    end;
-
-  Inc(tickXF);
-  If (tickXF MOD 4 = 0) then
-    begin
-      update_extra_fine_effects;
-      Dec(tickXF,4);
-    end;
-
-  _dbg_leave; //EXIT //poll_proc
-end;
+//poll_proc
 
 procedure macro_poll_proc; cdecl;
 public name PUBLIC_PREFIX + 'macro_poll_proc';

@@ -11,6 +11,8 @@
 
 #include "pascal.h"
 
+#define fabsf(x) Pascal_Abs_Single (x)
+#define fabs(x) Pascal_Abs_Double (x)
 #define truncf(x) Pascal_Trunc_Single (x)
 #define trunc(x) Pascal_Trunc_Double (x)
 

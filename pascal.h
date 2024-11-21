@@ -83,6 +83,9 @@ extern void Pascal_FillWord (void *x, ssize_t count, uint16_t value);
 
 extern void Pascal_Move (const void *src, void *dest, ssize_t n);
 
+extern float Pascal_Abs_Single (float x);
+extern double Pascal_Abs_Double (double x);
+
 extern float Pascal_Trunc_Single (float x);
 extern double Pascal_Trunc_Double (double x);
 

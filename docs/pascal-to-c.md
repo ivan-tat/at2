@@ -34,6 +34,8 @@
 | `D := Frac(D);` | `D = D-trunc(D);` | `"pascal/math.h"` | `<math.h>` |
 | `q := Round(F);` | `q = (int64_t)F;` | `"pascal/math.h"` | `<math.h>` |
 | `q := Round(D);` | `q = (int64_t)D;` | `"pascal/math.h"` | `<math.h>` |
+| `F := Abs(F);` | `F = fabsf(F);` | `"pascal/math.h"` | `<math.h>` |
+| `D := Abs(D);` | `D = fabs(D);` | `"pascal/math.h"` | `<math.h>` |
 
 ## Interrupts
 
