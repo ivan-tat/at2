@@ -288,8 +288,8 @@ void play_line (void);
 #include "adt2unit/calc_order_jump.c"
 #include "adt2unit/update_song_position.c"
 #include "adt2unit/poll_proc.c"
-//procedure macro_poll_proc;
-//procedure timer_poll_proc;
+void macro_poll_proc (void);
+#include "adt2unit/timer_poll_proc.c" // static
 
 #if GO32
 __PAREA_END (CONST)

@@ -103,7 +103,6 @@ procedure done_timer_proc; cdecl; external;
 procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
 procedure put_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
 procedure count_order(var entries: Byte); cdecl; external;
-procedure timer_poll_proc; cdecl;
 function  calc_following_order(order: Byte): Integer; cdecl; external;
 function  is_4op_chan(chan: Byte): Boolean; cdecl; external;
 function  min(value: Longint; minimum: Longint): Longint; cdecl; external;
@@ -1859,7 +1858,8 @@ function calc_order_jump: Integer; cdecl; external;
 procedure update_song_position; cdecl; external;
 procedure poll_proc; cdecl; external;
 
-procedure macro_poll_proc;
+procedure macro_poll_proc; cdecl;
+public name PUBLIC_PREFIX + 'macro_poll_proc';
 
 const
   IDLE = $0fff;
@@ -2139,77 +2139,7 @@ begin
   _dbg_leave; //EXIT //macro_poll_proc
 end;
 
-procedure timer_poll_proc; cdecl;
-public name PUBLIC_PREFIX + 'timer_poll_proc';
-begin
-  _dbg_enter ({$I %FILE%}, 'timer_poll_proc');
-
-  If (timer_200hz_counter < (IRQ_freq+IRQ_freq_shift+playback_speed_shift) DIV 200) then
-    Inc(timer_200hz_counter)
-  else begin
-         timer_200hz_counter := 0;
-         timer_200hz_flag := TRUE;
-       end;
-
-  If (timer_50hz_counter < (IRQ_freq+IRQ_freq_shift+playback_speed_shift) DIV 50) then
-    Inc(timer_50hz_counter)
-  else begin
-         timer_50hz_counter := 0;
-         timer_50hz_flag := TRUE;
-       end;
-
-  If (timer_20hz_counter < (IRQ_freq+IRQ_freq_shift+playback_speed_shift) DIV 20) then
-    Inc(timer_20hz_counter)
-  else begin
-         timer_20hz_counter := 0;
-         timer_20hz_flag := TRUE;
-       end;
-
-  If NOT replay_forbidden then
-    begin
-      If (current_order = 0) and (current_line = 0) and
-         (tick0 = ticks) then
-        begin
-          song_timer := 0;
-          timer_temp := 0;
-          song_timer_tenths := 0;
-        end;
-
-      If (play_status = isPlaying) then
-        begin
-          song_timer_tenths := TRUNC(100/(IRQ_freq+IRQ_freq_shift+playback_speed_shift)*timer_temp);
-          If (song_timer_tenths >= 100) then song_timer_tenths := 0;
-          If (timer_temp < IRQ_freq+IRQ_freq_shift+playback_speed_shift) then Inc(timer_temp)
-          else begin
-                 Inc(song_timer);
-                 timer_temp := 1;
-               end;
-        end;
-
-      If (song_timer > 3600-1) then
-        begin
-          song_timer := 0;
-          timer_temp := 0;
-          song_timer_tenths := 0;
-        end;
-
-      If (ticklooper = 0) or fast_forward then
-        poll_proc;
-
-      If (macro_ticklooper = 0) then
-        macro_poll_proc;
-
-      Inc(ticklooper);
-      If (ticklooper >= IRQ_freq DIV tempo) then
-        ticklooper := 0;
-
-      Inc(macro_ticklooper);
-      If (macro_ticklooper >= IRQ_freq DIV (tempo*_macro_speedup)) then
-        macro_ticklooper := 0;
-    end;
-
-  _dbg_leave; //EXIT //timer_poll_proc
-end;
+//timer_poll_proc
 
 const
   ___IRQ_DATA_END___: Dword = 0;

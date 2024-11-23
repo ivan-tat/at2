@@ -90,7 +90,6 @@ void     done_timer_proc (void);
 void     get_chunk (uint8_t pattern, uint8_t line, uint8_t chan, tCHUNK *chunk);
 void     put_chunk (uint8_t pattern, uint8_t line, uint8_t chan, const tCHUNK *chunk);
 void     count_order (uint8_t *entries);
-void     timer_poll_proc (void);
 int16_t  calc_following_order (uint8_t order);
 bool     is_4op_chan (uint8_t chan);
 int32_t  min (int32_t value, int32_t minimum);

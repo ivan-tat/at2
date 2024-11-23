@@ -30,6 +30,7 @@
 #if !ADT2PLAY
 #include "adt2ext2.h"
 #include "parserio.h"
+#include "txtscrio.h"
 #endif // !ADT2PLAY
 #include "adt2unit.h"
 
@@ -362,17 +363,16 @@ void play_line (void);
 #include "adt2unit/calc_order_jump.c"
 #include "adt2unit/update_song_position.c"
 #include "adt2unit/poll_proc.c"
-//procedure macro_poll_proc;
+void macro_poll_proc (void);
 #include "adt2unit/set_global_volume.c"
 #if GO32
-//procedure update_mouse_position;
+void update_mouse_position (void);
 #endif // GO32
 //procedure synchronize_screen;
 #include "adt2unit/_macro_speedup.c"
+#include "adt2unit/timer_poll_proc.c" // static
 
 #if GO32
-
-/*static*/ extern void timer_poll_proc (void); // TODO: port to C
 
 __PAREA_END (CODE)
 
@@ -382,8 +382,6 @@ __PAREA_END (CODE)
 #include "adt2unit/go32/TimerRemoveHandler.c" // HINT: static
 
 #else // !GO32
-
-/*static*/ extern void timer_poll_proc (void); // TODO: port to C
 
 #include "adt2unit/sdl/TimerSetup.c"
 #include "adt2unit/sdl/TimerDone.c" // HINT: static
