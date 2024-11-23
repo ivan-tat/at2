@@ -194,7 +194,7 @@ typedef struct {
 /*st*/ uint8_t  notecut_table [20]; // HINT: (FPC) start index 1
 /*st*/ int8_t   ftune_table   [20]; // HINT: (FPC) start index 1
 /*st*/ bool     keyoff_loop   [20]; // HINT: (FPC) start index 1
-/*st*/ struct {
+/*st*/ struct macro_table_t {
   uint16_t fmreg_pos, arpg_pos, vib_pos;
   uint8_t  fmreg_count, fmreg_duration, arpg_count,
            vib_count, vib_delay;
@@ -288,7 +288,7 @@ void play_line (void);
 #include "adt2unit/calc_order_jump.c"
 #include "adt2unit/update_song_position.c"
 #include "adt2unit/poll_proc.c"
-void macro_poll_proc (void);
+#include "adt2unit/macro_poll_proc.c"
 #include "adt2unit/timer_poll_proc.c" // static
 
 #if GO32

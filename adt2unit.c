@@ -363,7 +363,7 @@ void play_line (void);
 #include "adt2unit/calc_order_jump.c"
 #include "adt2unit/update_song_position.c"
 #include "adt2unit/poll_proc.c"
-void macro_poll_proc (void);
+#include "adt2unit/macro_poll_proc.c"
 #include "adt2unit/set_global_volume.c"
 #if GO32
 void update_mouse_position (void);
