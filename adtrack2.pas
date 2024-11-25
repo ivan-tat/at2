@@ -232,6 +232,11 @@ begin { MAIN }
   If _debug_ then WriteLn('--- allocating frame buffer for patterns');
 
   GetMem(pattdata,PATTERN_SIZE*max_patterns);
+  If (pattdata = NIL) then
+    begin
+      WriteLn('ERROR(1) - Insufficient memory!');
+      halt_startup(1);
+    end;
   If NOT iVGA then
     begin
       WriteLn('ERROR(2) - Insufficient video equipment!');
@@ -274,6 +279,7 @@ begin { MAIN }
   If _debug_ then WriteLn('--- allocating frame buffer for patterns');
   max_patterns := 128;
   GetMem(pattdata,PATTERN_SIZE*max_patterns);
+  // TODO: check `pattdata' !
 
 {$ENDIF}
 

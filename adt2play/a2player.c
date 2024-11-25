@@ -71,7 +71,7 @@ int32_t  tickXF;
 bool     limit_exceeded;
 
 double time_playing;
-tPATTERN_DATA *pattdata;
+tPATTERN_DATA *pattdata = NULL;
 tFIXED_SONGDATA songdata;
 tOLD_FIXED_SONGDATA old_songdata;
 tOLD_VARIABLE_DATA1 old_hash_buffer;
@@ -232,7 +232,7 @@ typedef struct {
 #include "adt2unit/is_data_empty.c" // HINT: static
 #include "adt2unit/min.c"
 #include "adt2unit/max.c"
-//#include "adt2unit/concw.c"
+#include "adt2unit/concw.c"
 #include "adt2unit/synchronize_song_timer.c" // HINT: static
 #include "adt2unit/change_frequency.c"
 #include "adt2unit/_macro_speedup.c"
