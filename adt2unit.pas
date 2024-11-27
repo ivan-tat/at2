@@ -316,7 +316,7 @@ procedure poll_proc; cdecl; external;
 procedure macro_poll_proc; cdecl; external;
 procedure init_buffers; cdecl; external;
 procedure init_player; cdecl; external;
-procedure reset_player;
+procedure reset_player; cdecl; external;
 procedure start_playing; cdecl; external;
 procedure stop_playing; cdecl; external;
 procedure update_song_position; cdecl; external;
@@ -504,77 +504,10 @@ procedure update_extra_fine_effects; cdecl; external;
 //poll_proc
 //macro_poll_proc
 //set_global_volume
-
 {$IFDEF GO32V2}
-
-var
-  regs: tRealRegs;
-
-procedure update_mouse_position; cdecl;
-public name PUBLIC_PREFIX + 'update_mouse_position';
-begin
-  If mouse_active then
-    begin
-      FillChar(regs,SizeOf(regs),0);
-      regs.ax := $04;
-      regs.cx := scr_scroll_x;
-      regs.dx := scr_scroll_y;
-      RealIntr($33,regs);
-    end;
-end;
-
+//update_mouse_position
 {$ENDIF}
-
-procedure synchronize_screen;
-begin
-  _dbg_enter ({$I %FILE%}, 'synchronize_screen');
-
-{$IFDEF GO32V2}
-  If mouse_active then
-    begin
-      FillChar(regs,SizeOf(regs),0);
-      regs.ax := $03;
-      RealIntr($33,regs);
-      scr_scroll_x := regs.cx;
-      scr_scroll_y := regs.dx;
-    end;
-
-  If (scr_scroll_x <> old_scr_scroll_x) or
-     (scr_scroll_y <> old_scr_scroll_y) then
-    begin
-      old_scr_scroll_x := scr_scroll_x;
-      old_scr_scroll_y := scr_scroll_y;
-
-      If (scr_scroll_x > scr_font_width*MaxCol-scr_font_width*hard_maxcol) then
-        begin
-          scr_scroll_x := scr_font_width*MaxCol-scr_font_width*hard_maxcol;
-          update_mouse_position;
-        end;
-
-      If (scr_scroll_y > scr_font_height*MaxLn-scr_font_height*hard_maxln) then
-        begin
-          scr_scroll_y := scr_font_height*MaxLn-scr_font_height*hard_maxln;
-          update_mouse_position;
-        end;
-
-      WaitRetrace;
-      If NOT is_VESA_emulated_mode then
-        SetTextDisp(scr_scroll_x,scr_scroll_y)
-      else virtual_screen__first_row := scr_scroll_y*800;
-    end;
-{$ELSE}
-  If NOT is_default_screen_mode then
-    begin
-      _dbg_leave; EXIT; //synchronize_screen
-    end;
-  If (screen_scroll_offset > 16*MaxLn-16*hard_maxln) then
-    screen_scroll_offset := 16*MaxLn-16*hard_maxln;
-  virtual_screen__first_row := screen_scroll_offset*SCREEN_RES_X;
-{$ENDIF}
-
-  _dbg_leave; //EXIT //synchronize_screen
-end;
-
+procedure synchronize_screen; cdecl; external;
 //_macro_speedup
 //timer_poll_proc
 
@@ -817,38 +750,7 @@ end;
 
 //init_buffers
 //init_player
-
-procedure reset_player;
-
-var
-  temp: Byte;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'reset_player');
-
-  opl2out($01,0);
-
-  For temp := 1 to 18 do opl2out($0b0+_chan_n[temp],0);
-  For temp := $080 to $08d do opl2out(temp,BYTE_NULL);
-  For temp := $090 to $095 do opl2out(temp,BYTE_NULL);
-
-  misc_register := tremolo_depth SHL 7+
-                   vibrato_depth SHL 6+
-                   BYTE(percussion_mode) SHL 5;
-
-  opl2out($01,$20);
-  opl2out($08,$40);
-  opl3exp($0105);
-  opl3exp($04+songdata.flag_4op SHL 8);
-
-  key_off(17);
-  key_off(18);
-  opl2out(_instr[11],misc_register);
-  For temp := 1 to 20 do reset_chan_data(temp);
-
-  _dbg_leave; //EXIT //reset_player
-end;
-
+//reset_player
 //start_playing
 //stop_playing
 //get_chunk

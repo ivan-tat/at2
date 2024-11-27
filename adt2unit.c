@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include "go32/adt2dpmi.h"
 #include "go32/iss_tim.h"
+#include "go32/mouse.h"
 #else // !GO32
 #include <SDL/SDL_timer.h>
 #if USE_FPC
@@ -366,9 +367,9 @@ void play_line (void);
 #include "adt2unit/macro_poll_proc.c"
 #include "adt2unit/set_global_volume.c"
 #if GO32
-void update_mouse_position (void);
+#include "adt2unit/go32/update_mouse_position.c" // static
 #endif // GO32
-//procedure synchronize_screen;
+#include "adt2unit/synchronize_screen.c" // HINT: static
 #include "adt2unit/_macro_speedup.c"
 #include "adt2unit/timer_poll_proc.c" // static
 
@@ -399,7 +400,7 @@ __PAREA_END (CODE)
 //procedure calibrate_player(order,line: Byte; status_filter: Boolean; line_dependent: Boolean);
 #include "adt2unit/init_buffers.c"
 #include "adt2unit/init_player.c"
-//procedure reset_player;
+#include "adt2unit/reset_player.c"
 #include "adt2unit/start_playing.c"
 #include "adt2unit/stop_playing.c"
 #include "adt2unit/get_chunk.c"

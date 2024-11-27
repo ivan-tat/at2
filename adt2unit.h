@@ -295,7 +295,7 @@ void poll_proc (void);
 void macro_poll_proc (void);
 void init_buffers (void);
 void init_player (void);
-//procedure reset_player;
+void reset_player (void);
 void start_playing (void);
 void stop_playing (void);
 void update_song_position (void);
