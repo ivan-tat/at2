@@ -349,8 +349,8 @@ procedure count_patterns(var patterns: Byte);
 procedure count_instruments(var instruments: Byte);
 procedure init_old_songdata; cdecl; external;
 procedure init_songdata; cdecl; external;
-procedure update_instr_data(ins: Byte);
-procedure load_instrument(var data; chan: Byte);
+procedure update_instr_data(ins: Byte); cdecl; external;
+procedure load_instrument(var data; chan: Byte); cdecl; external;
 procedure output_note(note,ins,chan: Byte;
                       restart_macro,restart_adsr: Boolean); cdecl; external;
 
@@ -394,8 +394,8 @@ var
                                           bank_position: Longint;
                                         end; cvar; external;
 
-function  get_bank_position(bank_name: String; bank_size: Longint): Longint;
-procedure add_bank_position(bank_name: String; bank_size: Longint; bank_position: Longint);
+function  get_bank_position(bank_name: String; bank_size: Longint): Longint; cdecl; external;
+procedure add_bank_position(bank_name: String; bank_size: Longint; bank_position: Longint); cdecl; external;
 
 {$IFDEF GO32V2}
 const
@@ -941,59 +941,8 @@ end;
 
 //init_old_songdata
 //init_songdata
-
-procedure update_instr_data(ins: Byte);
-
-var
-  temp: Byte;
-
-begin
-  For temp := 1 to 20 do
-    If (voice_table[temp] = ins) then
-      begin
-        reset_chan[temp] := TRUE;
-        set_ins_data(ins,temp);
-        change_frequency(temp,nFreq(PRED(event_table[temp].note AND $7f))+
-                              SHORTINT(ins_parameter(ins,12)));
-      end;
-end;
-
-procedure load_instrument(var data; chan: Byte);
-begin
-  fmpar_table[chan].connect := pBYTE(@data)[10] AND 1;
-  fmpar_table[chan].feedb   := pBYTE(@data)[10] SHR 1 AND 7;
-  fmpar_table[chan].multipM := pBYTE(@data)[0]  AND $0f;
-  fmpar_table[chan].kslM    := pBYTE(@data)[2]  SHR 6;
-  fmpar_table[chan].tremM   := pBYTE(@data)[0]  SHR 7;
-  fmpar_table[chan].vibrM   := pBYTE(@data)[0]  SHR 6 AND 1;
-  fmpar_table[chan].ksrM    := pBYTE(@data)[0]  SHR 4 AND 1;
-  fmpar_table[chan].sustM   := pBYTE(@data)[0]  SHR 5 AND 1;
-  fmpar_table[chan].multipC := pBYTE(@data)[1]  AND $0f;
-  fmpar_table[chan].kslC    := pBYTE(@data)[3]  SHR 6;
-  fmpar_table[chan].tremC   := pBYTE(@data)[1]  SHR 7;
-  fmpar_table[chan].vibrC   := pBYTE(@data)[1]  SHR 6 AND 1;
-  fmpar_table[chan].ksrC    := pBYTE(@data)[1]  SHR 4 AND 1;
-  fmpar_table[chan].sustC   := pBYTE(@data)[1]  SHR 5 AND 1;
-
-  fmpar_table[chan].adsrw_car.attck := pBYTE(@data)[5] SHR 4;
-  fmpar_table[chan].adsrw_mod.attck := pBYTE(@data)[4] SHR 4;
-  fmpar_table[chan].adsrw_car.dec   := pBYTE(@data)[5] AND $0f;
-  fmpar_table[chan].adsrw_mod.dec   := pBYTE(@data)[4] AND $0f;
-  fmpar_table[chan].adsrw_car.sustn := pBYTE(@data)[7] SHR 4;
-  fmpar_table[chan].adsrw_mod.sustn := pBYTE(@data)[6] SHR 4;
-  fmpar_table[chan].adsrw_car.rel   := pBYTE(@data)[7] AND $0f;
-  fmpar_table[chan].adsrw_mod.rel   := pBYTE(@data)[6] AND $0f;
-  fmpar_table[chan].adsrw_car.wform := pBYTE(@data)[9] AND $07;
-  fmpar_table[chan].adsrw_mod.wform := pBYTE(@data)[8] AND $07;
-
-  panning_table[chan] := pBYTE(@data)[11] AND 3;
-  volume_table[chan] := concw(pBYTE(@data)[2] AND $3f,
-                              pBYTE(@data)[3] AND $3f);
-
-  update_modulator_adsrw(chan);
-  update_carrier_adsrw(chan);
-  update_fmpar(chan);
-end;
+//update_instr_data
+//load_instrument
 
 function is_in_block(x0,y0,x1,y1: Byte): Boolean;
 begin
@@ -1200,72 +1149,8 @@ begin
   //EXIT //realtime_gfx_poll_proc
 end;
 
-function get_bank_position(bank_name: String; bank_size: Longint): Longint;
-
-var
-  idx: Longint;
-  result: Longint;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'get_bank_position');
-
-  result := 0;
-  bank_name := CutStr(Upper_filename(bank_name));
-  For idx := 1 to bank_position_list_size do
-    If (bank_position_list[idx].bank_name = bank_name) and
-       ((bank_position_list[idx].bank_size = bank_size) or
-        (bank_size = -1)) then
-      begin
-        result := bank_position_list[idx].bank_position;
-        BREAK;
-      end;
-  get_bank_position := result;
-
-  _dbg_leave; //EXIT //get_bank_position
-end;
-
-procedure add_bank_position(bank_name: String; bank_size: Longint; bank_position: Longint);
-
-var
-  idx,idx2: Longint;
-  found_flag: Boolean;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'add_bank_position');
-
-  found_flag := FALSE;
-  bank_name := CutStr(Upper_filename(bank_name));
-  For idx := 1 to bank_position_list_size do
-    If (bank_position_list[idx].bank_name = bank_name) and
-       ((bank_position_list[idx].bank_size = bank_size) or
-        (bank_size = -1)) then
-      begin
-        found_flag := TRUE;
-        idx2 := idx;
-        BREAK;
-      end;
-
-  If found_flag then
-    begin
-      bank_position_list[idx2].bank_position := bank_position;
-      _dbg_leave; EXIT; //add_bank_position
-    end;
-
-  If (bank_position_list_size < MAX_NUM_BANK_POSITIONS) then
-    Inc(bank_position_list_size)
-  else
-    begin
-      bank_position_list_size := MAX_NUM_BANK_POSITIONS;
-      For idx := 1 to PRED(bank_position_list_size) do
-        bank_position_list[idx] := bank_position_list[idx+1];
-    end;
-
-  bank_position_list[bank_position_list_size].bank_name := bank_name;
-  bank_position_list[bank_position_list_size].bank_size := bank_size;
-  bank_position_list[bank_position_list_size].bank_position := bank_position;
-
-  _dbg_leave; //EXIT //add_bank_position
-end;
+//get_bank_position
+//add_bank_position
 
 {$IFDEF GO32V2}
 

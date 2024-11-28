@@ -330,8 +330,8 @@ void count_order (uint8_t *entries);
 //procedure count_instruments(var instruments: Byte);
 void init_old_songdata (void);
 void init_songdata (void);
-//procedure update_instr_data(ins: Byte);
-//procedure load_instrument(var data; chan: Byte);
+void update_instr_data (uint8_t ins);
+void load_instrument (void *data, uint8_t chan);
 void output_note (uint8_t note, uint8_t ins, uint8_t chan,
                   bool restart_macro, bool restart_adsr);
 
@@ -354,25 +354,27 @@ extern int32_t ticklooper;
 extern int32_t macro_ticklooper;
 
 #if GO32
+// Length of `bank_position_list.bank_name' string (introduced while porting to C)
+#define BANK_NAME_LEN 50
+
 #define MAX_NUM_BANK_POSITIONS 1000
 #else // !GO32
+// Length of `bank_position_list.bank_name' string (introduced while porting to C)
+#define BANK_NAME_LEN 255 // HINT: (FPC) length not set (default)
+
 #define MAX_NUM_BANK_POSITIONS 500
 #endif // !GO32
 
 extern int32_t bank_position_list_size;
 
 extern struct bank_position_list_t {
-#if GO32
-  String bank_name[50+1];
-#else // !GO32
-  String bank_name[255+1]; // HINT: (FPC) length not set (default)
-#endif // !GO32
+  String bank_name[BANK_NAME_LEN+1];
   int32_t bank_size;
   int32_t bank_position;
 } bank_position_list[MAX_NUM_BANK_POSITIONS]; // HINT: (FPC) start index 1
 
-//function  get_bank_position(bank_name: String; bank_size: Longint): Longint;
-//procedure add_bank_position(bank_name: String; bank_size: Longint; bank_position: Longint);
+int32_t get_bank_position (String *bank_name, int32_t bank_size);
+void add_bank_position (String *bank_name, int32_t bank_size, int32_t bank_position);
 
 void realtime_gfx_poll_proc (void);
 

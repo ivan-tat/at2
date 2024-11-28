@@ -75,4 +75,7 @@ void InsertChr (char c, String *s, ssize_t n, ssize_t index);
 ssize_t Pos (const String *substr, const String *s);
 ssize_t PosChr (char c, const String *s);
 
+// FPC_SHORTSTR_COMPARE
+int CompareStrings (const String *s1, const String *s2);
+
 #endif // !defined(PASCAL_STRING_H)

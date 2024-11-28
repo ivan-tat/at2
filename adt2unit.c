@@ -417,8 +417,8 @@ __PAREA_END (CODE)
 //function calc_realtime_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
 #include "adt2unit/init_old_songdata.c"
 #include "adt2unit/init_songdata.c"
-//procedure update_instr_data(ins: Byte);
-//procedure load_instrument(var data; chan: Byte);
+#include "adt2unit/update_instr_data.c"
+#include "adt2unit/load_instrument.c"
 #include "adt2unit/is_4op_chan.c"
 
 uint8_t block_xstart = 1;
@@ -438,10 +438,10 @@ int32_t macro_ticklooper = 0;
 //procedure realtime_gfx_poll_proc;
 
 int32_t bank_position_list_size = 0;
-struct bank_position_list_t bank_position_list[MAX_NUM_BANK_POSITIONS];
+struct bank_position_list_t bank_position_list[MAX_NUM_BANK_POSITIONS]; // HINT: (FPC) start index 1
 
-//function get_bank_position(bank_name: String; bank_size: Longint): Longint;
-//procedure add_bank_position(bank_name: String; bank_size: Longint; bank_position: Longint);
+#include "adt2unit/get_bank_position.c"
+#include "adt2unit/add_bank_position.c"
 
 #if GO32
 __PAREA_END (CONST)

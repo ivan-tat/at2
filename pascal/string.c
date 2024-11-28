@@ -258,3 +258,23 @@ ssize_t PosChr (char c, const String *s) {
 
   return 0;
 }
+
+int CompareStrings (const String *s1, const String *s2) {
+  size_t l1 = Length (s1);
+  size_t l2 = Length (s2);
+  size_t len = (l1 < l2) ? l1 : l2;
+
+  for (size_t i = 1; i <= len; i++) {
+    if (s1[i] > s2[i])
+      return 1;
+    else if (s1[i] < s2[i])
+      return -1;
+  }
+
+  if (l1 > l2)
+    return 1;
+  else if (l1 < l2)
+    return -1;
+  else
+    return 0;
+}
