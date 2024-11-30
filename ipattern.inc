@@ -86,7 +86,8 @@ begin
     end;
 end;
 
-procedure STATUS_LINE_refresh;
+procedure STATUS_LINE_refresh; cdecl;
+public name PUBLIC_PREFIX + 'STATUS_LINE_refresh';
 
 var
   tracking_indicator_attr: array[Boolean] of Byte;

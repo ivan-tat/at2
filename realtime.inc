@@ -719,7 +719,8 @@ begin
   _dbg_leave; //EXIT //status_refresh
 end;
 
-procedure trace_update_proc;
+procedure trace_update_proc; cdecl;
+public name PUBLIC_PREFIX + 'trace_update_proc';
 begin
   _dbg_enter ({$I %FILE%}, 'trace_update_proc');
 

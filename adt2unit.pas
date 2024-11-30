@@ -325,28 +325,28 @@ procedure set_global_volume; cdecl; external;
 procedure set_ins_data(ins,chan: Byte); cdecl; external;
 procedure init_timer_proc; cdecl; external;
 procedure done_timer_proc; cdecl; external;
-procedure realtime_gfx_poll_proc; cdecl;
+procedure realtime_gfx_poll_proc; cdecl; external;
 procedure decay_bars_refresh; cdecl;
 procedure status_refresh; cdecl;
-procedure trace_update_proc;
+procedure trace_update_proc; cdecl;
 
 procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
 procedure put_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
 
-function  get_chanpos(var data; channels,scancode: Byte): Byte;
-function  get_chanpos2(var data; channels,scancode: Byte): Byte;
-function  count_channel(hpos: Byte): Byte;
-function  count_pos(hpos: Byte): Byte;
-function  calc_max_speedup(tempo: Byte): Word;
-function  calc_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
-function  calc_realtime_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
+function  get_chanpos(var data; channels,scancode: Byte): Byte; cdecl; external;
+function  get_chanpos2(var data; channels,scancode: Byte): Byte; cdecl; external;
+function  count_channel(hpos: Byte): Byte; cdecl; external;
+function  count_pos(hpos: Byte): Byte; cdecl; external;
+function  calc_max_speedup(tempo: Byte): Word; cdecl; external;
+function  calc_bpm_speed(tempo,speed,rows_per_beat: Byte): Double; cdecl; external;
+function  calc_realtime_bpm_speed(tempo,speed,rows_per_beat: Byte): Double; cdecl; external;
 function  calc_order_jump: Integer; cdecl; external;
 function  calc_following_order(order: Byte): Integer; cdecl; external;
 function  is_4op_chan(chan: Byte): Boolean; cdecl; external;
 
 procedure count_order(var entries: Byte); cdecl; external;
-procedure count_patterns(var patterns: Byte);
-procedure count_instruments(var instruments: Byte);
+procedure count_patterns(var patterns: Byte); cdecl; external;
+procedure count_instruments(var instruments: Byte); cdecl; external;
 procedure init_old_songdata; cdecl; external;
 procedure init_songdata; cdecl; external;
 procedure update_instr_data(ins: Byte); cdecl; external;
@@ -367,8 +367,8 @@ var
   block_x1: Byte; cvar; external;
   block_y1: Byte; cvar; external;
 
-function  is_in_block(x0,y0,x1,y1: Byte): Boolean;
-procedure fade_out_playback(fade_screen: Boolean); cdecl;
+function  is_in_block(x0,y0,x1,y1: Byte): Boolean; cdecl; external;
+procedure fade_out_playback(fade_screen: Boolean); cdecl; external;
 
 var
   ticklooper: Longint; cvar; external;
@@ -755,400 +755,23 @@ end;
 //stop_playing
 //get_chunk
 //put_chunk
-
-function get_chanpos(var data; channels,scancode: Byte): Byte;
-
-var
-  result: Byte;
-
-begin
-  asm
-        xor     ebx,ebx
-@@1:    mov     edi,[data]
-        add     edi,ebx
-        xor     ecx,ecx
-        mov     cl,channels
-        mov     al,scancode
-        sub     ecx,ebx
-        repnz   scasb
-        jnz     @@2
-        xor     eax,eax
-        mov     al,channels
-        sub     eax,ecx
-        jmp     @@3
-@@2:    xor     eax,eax
-        jmp     @@5
-@@3:    pusha
-        push    eax
-        call    is_4op_chan
-        or      al,al
-        jz      @@4
-        popa
-        inc     ebx
-        jmp     @@1
-@@4:    popa
-@@5:    mov     result,al
-  end;
-  get_chanpos := result;
-end;
-
-function get_chanpos2(var data; channels,scancode: Byte): Byte;
-
-var
-  result: Byte;
-
-begin
-  asm
-        mov     edi,[data]
-        xor     ecx,ecx
-        mov     cl,channels
-        mov     al,scancode
-        repnz   scasb
-        jnz     @@1
-        xor     eax,eax
-        mov     al,channels
-        sub     eax,ecx
-        jmp     @@2
-@@1:    xor     eax,eax
-@@2:    mov     result,al
-  end;
-  get_chanpos2 := result;
-end;
-
-function count_channel(hpos: Byte): Byte;
-
-var
-  result: Byte;
-
-begin
-  asm
-        mov     al,_pattedit_lastpos
-        xor     ah,ah
-        mov     bl,MAX_TRACKS
-        div     bl
-        mov     bl,al
-        mov     al,hpos
-        xor     ah,ah
-        div     bl
-        or      ah,ah
-        jz      @@1
-        add     al,chan_pos
-        jmp     @@2
-@@1:    add     al,chan_pos
-        dec     al
-@@2:    mov     result,al
-  end;
-  count_channel := result;
-end;
-
-function count_pos(hpos: Byte): Byte;
-
-var
-  result: Byte;
-
-begin
-  asm
-        mov     al,_pattedit_lastpos
-        xor     ah,ah
-        mov     bl,MAX_TRACKS
-        div     bl
-        mov     bl,al
-        mov     al,hpos
-        xor     ah,ah
-        div     bl
-        mov     al,ah
-        dec     al
-        or      ah,ah
-        jnz     @@1
-        dec     bl
-        mov     al,bl
-@@1:    mov     result,al
-  end;
-  count_pos := result;
-end;
-
+//get_chanpos
+//get_chanpos2
+//count_channel
+//count_pos
 //count_order
-
-procedure count_patterns(var patterns: Byte);
-
-var
-  temp1: Byte;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'count_patterns');
-
-  patterns := 0;
-  For temp1 := 0 to PRED(max_patterns) do
-    begin
-      realtime_gfx_poll_proc;
-      If NOT is_data_empty(pattdata^[temp1 DIV 8][temp1 MOD 8],PATTERN_SIZE) then
-        patterns := temp1+1;
-    end;
-
-  _dbg_leave; //EXIT //count_patterns
-end;
-
-procedure count_instruments(var instruments: Byte);
-begin
-  _dbg_enter ({$I %FILE%}, 'count_instruments');
-
-  instruments := 255;
-  While (instruments > 0) and
-        Empty(songdata.instr_data[instruments],INSTRUMENT_SIZE) do
-    Dec(instruments);
-
-  _dbg_leave; //EXIT //count_instruments
-end;
-
-function calc_max_speedup(tempo: Byte): Word;
-
-var
-  temp: Longint;
-  result: Word;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'calc_max_speedup');
-
-  result := MAX_IRQ_FREQ DIV tempo;
-  Repeat
-    If (tempo = 18) and timer_fix then temp := TRUNC((tempo+0.2)*20)
-    else temp := 250;
-    While (temp MOD (tempo*result) <> 0) do Inc(temp);
-    If (temp <= MAX_IRQ_FREQ) then Inc(result);
-  until NOT (temp <= MAX_IRQ_FREQ);
-  calc_max_speedup := PRED(result);
-
-  _dbg_leave; //EXIT //calc_max_speedup
-end;
-
-function calc_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
-begin
-{$IFDEF GO32V2}
-  calc_bpm_speed := tempo*60/speed/rows_per_beat*(1+(IRQ_freq_shift/IRQ_freq)-0.02);
-{$ELSE}
-  calc_bpm_speed := tempo*60/speed/rows_per_beat*(1+(IRQ_freq_shift/IRQ_freq)-sdl_timer_slowdown/100);
-{$ENDIF}
-end;
-
-function calc_realtime_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
-begin
-{$IFDEF GO32V2}
-  calc_realtime_bpm_speed := tempo*60/speed/rows_per_beat*(1+((IRQ_freq_shift+playback_speed_shift)/IRQ_freq)-0.02);
-{$ELSE}
-  calc_realtime_bpm_speed := tempo*60/speed/rows_per_beat*(1+((IRQ_freq_shift+playback_speed_shift)/IRQ_freq)-sdl_timer_slowdown/100);
-{$ENDIF}
-end;
-
+//count_patterns
+//count_instruments
+//calc_max_speedup
+//calc_bpm_speed
+//calc_realtime_bpm_speed
 //init_old_songdata
 //init_songdata
 //update_instr_data
 //load_instrument
-
-function is_in_block(x0,y0,x1,y1: Byte): Boolean;
-begin
-  block_x1 := x1;
-  block_x0 := block_xstart;
-  If (block_x0 > block_x1) then
-    begin
-      block_x1 := block_x0;
-      block_x0 := x1;
-    end;
-
-  block_y1 := y1;
-  block_y0 := block_ystart;
-  If (block_y0 > block_y1) then
-    begin
-      block_y1 := block_y0;
-      block_y0 := y1;
-    end;
-
-  is_in_block := (x0 >= block_x0) and (x0 <= block_x1) and
-                 (y0 >= block_y0) and (y0 <= block_y1);
-end;
-
-procedure fade_out_playback(fade_screen: Boolean); cdecl;
-public name PUBLIC_PREFIX + 'fade_out_playback';
-
-var
-{$IFDEF GO32V2}
-  idx,idx2: Byte;
-  fade_buf: tFADE_BUF;
-{$ELSE}
-  temp: Byte;
-  temp2,temp3: Byte;
-  factor: Byte;
-{$ENDIF}
-
-begin
-  _dbg_enter ({$I %FILE%}, 'fade_out_playback');
-
-{$IFDEF GO32V2}
-
-  If fade_screen then
-    begin
-      draw_screen;
-      fade_buf.action := first;
-      fade_speed := 32;
-      GetPalette(fade_buf.pal0,0,255);
-
-      For idx := fade_speed downto 0 do
-        begin
-          For idx2 := 0 to 255 do
-            begin
-              fade_buf.pal1[idx2].r := fade_buf.pal0[idx2].r * idx DIV fade_speed;
-              fade_buf.pal1[idx2].g := fade_buf.pal0[idx2].g * idx DIV fade_speed;
-              fade_buf.pal1[idx2].b := fade_buf.pal0[idx2].b * idx DIV fade_speed;
-            end;
-
-          SetPalette(fade_buf.pal1,0,255);
-          If (play_status <> isStopped) then
-            begin
-              fade_out_volume := idx*2;
-              set_global_volume;
-              CRT.Delay(fade_out_volume DIV 32);
-            end
-          else CRT.Delay(1);
-
-          realtime_gfx_poll_proc;
-          draw_screen;
-          keyboard_reset_buffer;
-        end;
-      fade_buf.action := fadeIn;
-    end
-  else If (play_status <> isStopped) then
-         For idx := 63 downto 0 do
-           begin
-             fade_out_volume := idx;
-             set_global_volume;
-             CRT.Delay(fade_out_volume DIV 32);
-             realtime_gfx_poll_proc;
-             keyboard_reset_buffer;
-           end;
-{$ELSE}
-
-  If fade_screen then factor := 255
-  else factor := 63;
-
-  If (global_volume > 0) then temp2 := factor DIV global_volume
-  else temp2 := 0;
-  temp3 := 0;
-  fade_out_volume := 63;
-
-  If (play_status <> isStopped) then
-    For temp := 1 to factor do
-      begin
-        Inc(temp3);
-        If (temp3 > temp2) then
-          begin
-            temp3 := 0;
-            Dec(fade_out_volume);
-            set_global_volume;
-            If fade_screen or (temp MOD 5 = 0) then
-              begin
-                _draw_screen_without_delay := TRUE;
-                draw_screen;
-                keyboard_reset_buffer;
-              end;
-          end;
-        If fade_screen then
-          begin
-            vid_FadeOut;
-            SDL_Delay(1);
-          end;
-      end
-  else
-    For fade_out_volume := 1 to 255 do
-      If fade_screen then
-        begin
-          vid_FadeOut;
-          SDL_Delay(1);
-        end;
-
-{$ENDIF}
-
-  _dbg_leave; //EXIT //fade_out_playback
-end;
-
-procedure realtime_gfx_poll_proc; cdecl;
-public name PUBLIC_PREFIX + 'realtime_gfx_poll_proc';
-begin
-  If _realtime_gfx_no_update then
-    EXIT; //realtime_gfx_poll_proc
-
-{$IFDEF GO32V2}
-
-  If NOT reset_gfx_ticks and
-     (gfx_ticks > ((IRQ_freq+IRQ_freq_shift+playback_speed_shift) DIV 100)*SUCC(fps_down_factor)) then
-    begin
-      Inc(blink_ticks);
-      If (blink_ticks = 40) then
-        begin
-          blink_flag := NOT blink_flag;
-          blink_ticks := 0;
-        end;
-
-      Inc(_NRECM_blink_ticks);
-      If (_NRECM_blink_ticks = 40) then
-        begin
-          _NRECM_blink_flag := NOT _NRECM_blink_flag;
-          _NRECM_blink_ticks := 0;
-        end;
-
-      Inc(_IRQFREQ_blink_ticks);
-      If (_IRQFREQ_blink_ticks = 20) then
-        begin
-          _IRQFREQ_blink_flag := NOT _IRQFREQ_blink_flag;
-          _IRQFREQ_blink_ticks := 0;
-        end;
-
-{$ENDIF}
-
-      If blink_flag then
-        begin
-          If debugging and (play_status = isStopped) then status_layout[isStopped][9] := #9
-          else status_layout[isStopped][9] := ' ';
-          If NOT debugging then status_layout[isPlaying][9] := #16
-          else status_layout[isPlaying][9] := #9;
-          status_layout[isPaused][8] := #8;
-          If (@macro_preview_indic_proc <> NIL) then
-            macro_preview_indic_proc(1);
-        end
-      else
-        begin
-          status_layout[isPlaying][9] := ' ';
-          status_layout[isPaused] [8] := ' ';
-          status_layout[isStopped][9] := ' ';
-          If (@macro_preview_indic_proc <> NIL) then
-            macro_preview_indic_proc(2);
-        end;
-
-      If (Addr(_show_bpm_realtime_proc) <> NIL) then
-        _show_bpm_realtime_proc;
-
-      decay_bars_refresh;
-{$IFNDEF GO32V2}
-      If opl3_channel_recording_mode then update_recorded_channels;
-{$ENDIF}
-      If do_synchronize then synchronize_screen;
-{$IFNDEF GO32V2}
-      If (_name_scrl_pending_frames > 0) then Dec(_name_scrl_pending_frames);
-      Inc(_cursor_blink_pending_frames);
-{$ENDIF}
-      status_refresh;
-      STATUS_LINE_refresh;
-{$IFDEF GO32V2}
-      reset_gfx_ticks := TRUE;
-{$ENDIF}
-      trace_update_proc;
-      If (@mn_environment.ext_proc_rt <> NIL) then
-        mn_environment.ext_proc_rt;
-{$IFDEF GO32V2}
-    end;
-{$ENDIF}
-
-  //EXIT //realtime_gfx_poll_proc
-end;
-
+//is_in_block
+//fade_out_playback
+//realtime_gfx_poll_proc
 //get_bank_position
 //add_bank_position
 

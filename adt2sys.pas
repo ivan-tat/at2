@@ -87,7 +87,7 @@ procedure vid_Init;
 procedure vid_Deinit;
 procedure vid_SetVideoMode(do_delay: Boolean);
 procedure vid_SetRGBPalette(var palette);
-procedure vid_FadeOut;
+procedure vid_FadeOut; cdecl;
 
 {$ELSE}
 
@@ -995,7 +995,8 @@ begin
   SDL_WM_SetCaption(Addr(win_title[1]),NIL);
 end;
 
-procedure vid_FadeOut;
+procedure vid_FadeOut; cdecl;
+public name PUBLIC_PREFIX + 'vid_FadeOut';
 
 var
   idx: Byte;

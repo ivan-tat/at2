@@ -11,6 +11,7 @@
 
 SDL_FIX_BEGIN
 SDL_FIX_NAME(SDL_AddTimer)
+SDL_FIX_NAME(SDL_Delay)
 SDL_FIX_END
 
 #endif // !defined(SDL_TIMER_FIX_H)

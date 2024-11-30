@@ -41,7 +41,7 @@ extern int32_t  _IRQFREQ_blink_ticks;
 extern bool     blink_flag;
 extern int32_t  blink_ticks;
 extern bool     cursor_sync;
-extern void    *_show_bpm_realtime_proc;
+extern void   (*_show_bpm_realtime_proc) (void);
 #if GO32
 extern bool     _draw_screen_without_vsync;
 extern bool     _draw_screen_without_delay;
@@ -74,9 +74,15 @@ extern uint8_t _pattedit_lastpos;
 extern void draw_screen (void);
 
 #if !GO32
+
 extern void   *_FrameBuffer;
+
+void vid_FadeOut (void);
+
 #else // GO32
+
 extern uint8_t _FrameBuffer_mirror[1024*768]; // HINT: (FPC) start index 0
+
 #endif // GO32
 
 #endif // !defined(ADT2SYS_H)

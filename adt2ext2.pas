@@ -46,7 +46,7 @@ procedure PATTERN_ORDER_edit(var page,hpos,vpos: Byte);
 
 procedure PATTERN_tabs_refresh;
 procedure PATTERN_page_refresh(page: Byte); cdecl;
-procedure STATUS_LINE_refresh;
+procedure STATUS_LINE_refresh; cdecl;
 
 procedure PATTERN_position_preview(pattern,line,channel,mode: Byte);
 function  PATTERN_trace: Word;

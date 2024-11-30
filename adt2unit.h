@@ -304,21 +304,21 @@ void set_global_volume (void);
 void set_ins_data (uint8_t ins, uint8_t chan);
 void init_timer_proc (void);
 void done_timer_proc (void);
-//procedure realtime_gfx_poll_proc; cdecl;
+void realtime_gfx_poll_proc (void);
 //procedure decay_bars_refresh; cdecl;
 //procedure status_refresh; cdecl;
-//procedure trace_update_proc;
-//
+void trace_update_proc (void);
+
 void get_chunk (uint8_t pattern, uint8_t line, uint8_t channel, tCHUNK *chunk);
 void put_chunk (uint8_t pattern, uint8_t line, uint8_t channel, const tCHUNK *chunk);
-//
-//function  get_chanpos(var data; channels,scancode: Byte): Byte;
-//function  get_chanpos2(var data; channels,scancode: Byte): Byte;
-//function  count_channel(hpos: Byte): Byte;
-//function  count_pos(hpos: Byte): Byte;
-//function  calc_max_speedup(tempo: Byte): Word;
-//function  calc_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
-//function  calc_realtime_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
+
+uint8_t get_chanpos (const void *data, uint8_t channels, uint8_t scancode);
+uint8_t get_chanpos2 (const void *data, uint8_t channels, uint8_t scancode);
+uint8_t count_channel (uint8_t hpos);
+uint8_t count_pos (uint8_t hpos);
+uint16_t calc_max_speedup (uint8_t tempo);
+double  calc_bpm_speed (uint8_t tempo, uint8_t speed, uint8_t rows_per_beat);
+double  calc_realtime_bpm_speed (uint8_t tempo, uint8_t speed, uint8_t rows_per_beat);
 int16_t calc_order_jump (void);
 int16_t calc_following_order (uint8_t order);
 bool    is_4op_chan (uint8_t chan);
@@ -326,8 +326,8 @@ bool    is_4op_chan (uint8_t chan);
 #include "realtime.h"
 
 void count_order (uint8_t *entries);
-//procedure count_patterns(var patterns: Byte);
-//procedure count_instruments(var instruments: Byte);
+void count_patterns (uint8_t *patterns);
+void count_instruments (uint8_t *instruments);
 void init_old_songdata (void);
 void init_songdata (void);
 void update_instr_data (uint8_t ins);
@@ -347,7 +347,7 @@ extern uint8_t block_y0;
 extern uint8_t block_x1;
 extern uint8_t block_y1;
 
-//function  is_in_block(x0,y0,x1,y1: Byte): Boolean;
+bool is_in_block (uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
 void fade_out_playback (bool fade_screen);
 
 extern int32_t ticklooper;

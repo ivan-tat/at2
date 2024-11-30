@@ -4,5 +4,9 @@
 // SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-void STATUS_LINE_refresh (void);
-void PATTERN_page_refresh (uint8_t page);
+uint8_t count_channel (uint8_t hpos)
+{
+  uint8_t a = _pattedit_lastpos / MAX_TRACKS;
+
+  return chan_pos + hpos / a - (!(hpos % a)) ? 1 : 0;
+}

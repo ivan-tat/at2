@@ -49,7 +49,7 @@ int32_t  _IRQFREQ_blink_ticks = 0;
 bool     blink_flag = false;
 int32_t  blink_ticks = 0;
 bool     cursor_sync = false;
-void    *_show_bpm_realtime_proc = NULL;
+void   (*_show_bpm_realtime_proc) (void) = NULL;
 #if GO32
 bool     _draw_screen_without_vsync = false;
 bool     _draw_screen_without_delay = false;

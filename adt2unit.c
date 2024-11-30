@@ -15,6 +15,7 @@
 #include <time.h>
 #if GO32
 #include <stdlib.h>
+#include <dos.h>
 #include "go32/adt2dpmi.h"
 #include "go32/iss_tim.h"
 #include "go32/mouse.h"
@@ -32,6 +33,7 @@
 #include "adt2ext2.h"
 #include "parserio.h"
 #include "txtscrio.h"
+#include "dialogio.h"
 #endif // !ADT2PLAY
 #include "adt2unit.h"
 
@@ -405,16 +407,16 @@ __PAREA_END (CODE)
 #include "adt2unit/stop_playing.c"
 #include "adt2unit/get_chunk.c"
 #include "adt2unit/put_chunk.c"
-//function get_chanpos(var data; channels,scancode: Byte): Byte;
-//function get_chanpos2(var data; channels,scancode: Byte): Byte;
-//function count_channel(hpos: Byte): Byte;
-//function count_pos(hpos: Byte): Byte;
+#include "adt2unit/get_chanpos.c"
+#include "adt2unit/get_chanpos2.c"
+#include "adt2unit/count_channel.c"
+#include "adt2unit/count_pos.c"
 #include "adt2unit/count_order.c"
-//procedure count_patterns(var patterns: Byte);
-//procedure count_instruments(var instruments: Byte);
-//function calc_max_speedup(tempo: Byte): Word;
-//function calc_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
-//function calc_realtime_bpm_speed(tempo,speed,rows_per_beat: Byte): Real;
+#include "adt2unit/count_patterns.c"
+#include "adt2unit/count_instruments.c"
+#include "adt2unit/calc_max_speedup.c"
+#include "adt2unit/calc_bpm_speed.c"
+#include "adt2unit/calc_realtime_bpm_speed.c"
 #include "adt2unit/init_old_songdata.c"
 #include "adt2unit/init_songdata.c"
 #include "adt2unit/update_instr_data.c"
@@ -429,13 +431,13 @@ uint8_t block_y0 = 1;
 uint8_t block_x1 = 0;
 uint8_t block_y1 = 1;
 
-//function is_in_block(x0,y0,x1,y1: Byte): Boolean;
-//procedure fade_out_playback(fade_screen: Boolean);
+#include "adt2unit/is_in_block.c"
+#include "adt2unit/fade_out_playback.c"
 
 int32_t ticklooper = 0;
 int32_t macro_ticklooper = 0;
 
-//procedure realtime_gfx_poll_proc;
+#include "adt2unit/realtime_gfx_poll_proc.c"
 
 int32_t bank_position_list_size = 0;
 struct bank_position_list_t bank_position_list[MAX_NUM_BANK_POSITIONS]; // HINT: (FPC) start index 1
