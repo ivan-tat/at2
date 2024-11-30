@@ -31,6 +31,7 @@
 #include "adt2sys.h"
 #if !ADT2PLAY
 #include "adt2ext2.h"
+#include "adt2extn.h"
 #include "parserio.h"
 #include "txtscrio.h"
 #include "dialogio.h"
@@ -399,7 +400,8 @@ __PAREA_END (CODE)
 #include "realtime.c"
 
 #include "adt2unit/calc_pattern_pos.c"
-//procedure calibrate_player(order,line: Byte; status_filter: Boolean; line_dependent: Boolean);
+#include "adt2unit/update_status.c" // static, used in `calibrate_player'
+#include "adt2unit/calibrate_player.c"
 #include "adt2unit/init_buffers.c"
 #include "adt2unit/init_player.c"
 #include "adt2unit/reset_player.c"

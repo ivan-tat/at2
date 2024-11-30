@@ -280,7 +280,8 @@ bool     is_chan_adsr_data_empty (uint8_t chan);
 bool     is_ins_adsr_data_empty (uint8_t ins);
 uint8_t  scale_volume (uint8_t volume, uint8_t scale_factor);
 uint16_t _macro_speedup (void);
-//procedure calibrate_player(order,line: Byte; status_filter: Boolean; line_dependent: Boolean);
+void calibrate_player (uint8_t order, uint8_t line,
+                       bool status_filter, bool line_dependent);
 void update_timer (uint16_t Hz);
 void key_on (uint8_t chan);
 void key_off (uint8_t chan);

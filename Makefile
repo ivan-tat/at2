@@ -388,7 +388,8 @@ adt2ext5_ppu_deps=\
 
 adt2extn_ppu_deps=\
  $(srcdir)/adt2extn.pas\
- units/debug.ppu
+ units/debug.ppu\
+ units/pascal.ppu
 
 adt2opl3_ppu_deps=\
  $(srcdir)/adt2opl3.pas\

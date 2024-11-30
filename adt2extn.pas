@@ -75,7 +75,7 @@ type
 
 function _patts_marked: Byte;
 
-procedure nul_volume_bars;
+procedure nul_volume_bars; cdecl;
 procedure transpose_custom_area(type1,type2: tTRANSPOSE_TYPE;
                                 patt0,patt1,track0,track1,line0,line1: Byte;
                                 factor: Byte);
@@ -100,6 +100,7 @@ implementation
 
 uses
   debug,
+  pascal,
 {$IFNDEF UNIX}
   CRT,
 {$ENDIF}
@@ -138,7 +139,8 @@ begin
   _patts_marked := result;
 end;
 
-procedure nul_volume_bars;
+procedure nul_volume_bars; cdecl;
+public name PUBLIC_PREFIX + 'nul_volume_bars';
 
 var
   chan: Byte;
