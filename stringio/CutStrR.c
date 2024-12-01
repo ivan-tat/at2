@@ -7,7 +7,7 @@
 String_t CutStrR (const String *str, uint8_t margin) {
   String_t r;
   size_t len = Length (str);
-  size_t count = 1 + (margin < len) ? len - margin : 0;
+  size_t count = 1 + ((margin < len) ? len - margin : 0);
   const unsigned char *s = GetStr (str);
 
   len--;

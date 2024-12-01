@@ -8,5 +8,5 @@ uint8_t count_channel (uint8_t hpos)
 {
   uint8_t a = _pattedit_lastpos / MAX_TRACKS;
 
-  return chan_pos + hpos / a - (!(hpos % a)) ? 1 : 0;
+  return chan_pos + hpos / a - ((!(hpos % a)) ? 1 : 0);
 }
