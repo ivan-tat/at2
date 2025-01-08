@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
@@ -76,6 +76,7 @@ AT2_char_t AT2_lower_case_ct[AT2_CP_SIZE];
 #include "stringio/ExpStrL.c"
 #include "stringio/ExpStrR.c"
 #if !ADT2PLAY
+#include "stringio/ExpCStrR.c"
 #include "stringio/ExpC2StrL.c"
 #include "stringio/ExpC2StrR.c"
 #include "stringio/ExpC3StrL.c"

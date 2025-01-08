@@ -71,7 +71,7 @@ function FilterStr2(str: String; var chr0: tCHARSET; chr1: Char): String; cdecl;
 function Num2str(num: Longint; base: Byte): String; cdecl; external;
 function Str2num(str: String; base: Byte): Longint; cdecl; external;
 {$IFNDEF ADT2PLAY}
-function Bpm2str(bpm: Single): String; cdecl; external;
+function Bpm2str(bpm: Double): String; cdecl; external;
 {$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 {$IFNDEF ADT2PLAY}

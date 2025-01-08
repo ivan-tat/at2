@@ -150,6 +150,7 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 ### Documentation
 
 * [TECH Help!](http://www.techhelpmanual.com/) - The Electronic Technical Reference Manual
+* [Ralf Brown's Interrupt List (RBIL)](https://www.cs.cmu.edu/~ralf/files.html) (The x86 Interrupt List)
 * [BIOS Data Area (BDA)](https://stanislavs.org/helppc/bios_data_area.html) - x86 PC memory map
 * [DOS Protected Mode Interface](https://en.wikipedia.org/wiki/DOS_Protected_Mode_Interface)
 * [DPMI version 0.9 specification (text format)](https://web.archive.org/web/20120425162013/http://homer.rice.edu/~sandmann/cwsdpmi/dpmispec.txt)

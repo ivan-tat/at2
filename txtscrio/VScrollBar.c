@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 uint16_t VScrollBar (tSCREEN_MEM *dest, uint8_t x, uint8_t y, uint8_t size,
@@ -30,51 +30,48 @@ uint16_t VScrollBar (tSCREEN_MEM *dest, uint8_t x, uint8_t y, uint8_t size,
 
   if (size < len1)
   {
-    String_t s, t;
+    String_t s;
+    String t[1+1];
 
     pos = temp;
 
-    s.len = 0;
-    t = ExpStrL ((String *)&s, size - 2, '\xB0');
-    s.len = 1;
-    s.str[0] = '\x1E';
-    AppendString ((String *)&s, (String *)&t, 255);
-    t.len = 1;
-    t.str[0] = '\x1F';
-    AppendString ((String *)&s, (String *)&t, 255);
+    SetLength (t, 1);
+    GetStr (t)[0] = charmap.black_up_triangle; // '▲'
+    s = ExpStrR (t, size - 2 + 1, charmap.light_shade); // '░'
+    //SetLength (t, 1);
+    GetStr (t)[0] = charmap.black_down_triangle; // '▼'
+    AppendString ((String *)&s, t, size);
     ShowVStr (dest, x, y, (String *)&s, attr1);
 
     if (size - 2 - 1 < 10)
     {
       s.len = 1;
-      s.str[0] = '\xB2';
+      s.str[0] = charmap.dark_shade; // '▓'
+      ShowStr (dest, x, y + 1 + temp, (String *)&s, attr2);
     }
     else
     {
       s.len = 3;
-      s.str[0] = '\xB2';
-      s.str[1] = '\xB2';
-      s.str[2] = '\xB2';
+      s.str[0] = charmap.dark_shade; // '▓'
+      s.str[1] = charmap.dark_shade; // '▓'
+      s.str[2] = charmap.dark_shade; // '▓'
+      ShowVStr (dest, x, y + 1 + temp, (String *)&s, attr2);
     }
-    show_str (x, y + 1 + temp, (String *)&s, attr2);
   }
   else
   {
-    String_t s, t;
+    String_t s;
+    String t[2+1];
 
-    s.len = 0;
-    t = ExpStrL ((String *)&s, size - 2, '\xB1');
-    s.len = 3;
-    s.str[0] = '~';
-    s.str[1] = '\x1E';
-    s.str[2] = '~';
-    AppendString ((String *)&s, (String *)&t, 255);
-    t.len = 3;
-    s.str[0] = '~';
-    s.str[1] = '\x1F';
-    s.str[2] = '~';
-    AppendString ((String *)&s, (String *)&t, 255);
-    ShowVStr (dest, x, y, (String *)&s, attr1);
+    SetLength (t, 2);
+    GetStr (t)[0] = charmap.black_up_triangle; // '▲'
+    GetStr (t)[1] = '~'; // switch color
+    s = ExpStrR (t, size - 2 + 2, charmap.medium_shade); // '▒'
+    //SetLength (t, 2);
+    GetStr (t)[0] = '~'; // switch color
+    GetStr (t)[1] = charmap.black_down_triangle; // '▼'
+    AppendString ((String *)&s, t, 255);
+    ShowVCStr (dest, x, y, (String *)&s, attr1, attr2);
   }
 
   DBG_LEAVE (); //EXIT //VScrollBar

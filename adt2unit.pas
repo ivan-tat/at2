@@ -326,9 +326,9 @@ procedure set_ins_data(ins,chan: Byte); cdecl; external;
 procedure init_timer_proc; cdecl; external;
 procedure done_timer_proc; cdecl; external;
 procedure realtime_gfx_poll_proc; cdecl; external;
-procedure decay_bars_refresh; cdecl;
-procedure status_refresh; cdecl;
-procedure trace_update_proc; cdecl;
+procedure decay_bars_refresh; cdecl; external;
+procedure status_refresh; cdecl; external;
+procedure trace_update_proc; cdecl; external;
 
 procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
 procedure put_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
@@ -425,6 +425,7 @@ uses
   AdT2extn,
   AdT2ext2,
   AdT2keyb,
+  font,
   TxtScrIO,
   StringIO,
   DialogIO,

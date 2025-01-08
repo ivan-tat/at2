@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -112,6 +112,7 @@ String_t RotStrR (const String *str1, const String *str2, uint8_t shift);
 String_t ExpStrL (const String *str, uint8_t size, char chr);
 String_t ExpStrR (const String *str, uint8_t size, char chr);
 #if !ADT2PLAY
+String_t ExpCStrR (const String *str, uint8_t size, char chr);
 String_t ExpC2StrL (const String *str, uint8_t size, char chr);
 String_t ExpC2StrR (const String *str, uint8_t size, char chr);
 String_t ExpC3StrL (const String *str, uint8_t size, char chr);
@@ -133,7 +134,7 @@ String_t FilterStr2 (const String *str, const uint8_t *charset, char chr);
 String_t Num2str (uint32_t num, uint8_t base);
 int32_t Str2num (const String *str, uint8_t base);
 #if !ADT2PLAY
-String_t Bpm2str (float bpm);
+String_t Bpm2str (double bpm);
 
 String_t Upper_filename (const String *str);
 #endif // !ADT2PLAY

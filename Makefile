@@ -1,6 +1,6 @@
 #!/bin/make -f
 # SPDX-FileType: SOURCE
-# SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+# SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 makefile:=$(realpath $(lastword $(MAKEFILE_LIST)))
@@ -63,6 +63,7 @@ SRCS=\
  common.c\
  debug.c\
  dialogio.c\
+ font.c\
  go32/adt2vesa.c\
  go32/dpmi.c\
  go32/iss_tim.c\
@@ -269,6 +270,11 @@ units/dpmi.ppu: $(dpmi_ppu_deps) $(makefile) | units
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
+units/font.ppu: $(srcdir)/font.pas font.o $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
 iss_tim_ppu_deps=\
  $(srcdir)/go32/iss_tim.pas\
  go32/iss_tim.o\
@@ -421,6 +427,7 @@ adt2unit_ppu_deps=\
  $(srcdir)/typcons1.inc\
  $(srcdir)/typcons2.inc\
  units/debug.ppu\
+ units/font.ppu\
  units/platform.ppu\
  adt2unit.o
 

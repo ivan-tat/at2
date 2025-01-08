@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -16,6 +16,7 @@
 #include "pascal.h"
 #endif // USE_FPC
 #include "common.h"
+#include "font.h"
 
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 #pragma pack(push, 1)
@@ -306,8 +307,8 @@ void set_ins_data (uint8_t ins, uint8_t chan);
 void init_timer_proc (void);
 void done_timer_proc (void);
 void realtime_gfx_poll_proc (void);
-//procedure decay_bars_refresh; cdecl;
-//procedure status_refresh; cdecl;
+void decay_bars_refresh (void);
+void status_refresh (void);
 void trace_update_proc (void);
 
 void get_chunk (uint8_t pattern, uint8_t line, uint8_t channel, tCHUNK *chunk);
