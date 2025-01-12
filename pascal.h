@@ -1,5 +1,5 @@
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2024 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2024-2025 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -71,10 +71,21 @@ extern bool Pascal_LFNSupport;
 #endif // USE_FPC
 #endif // GO32
 
+// `FileMode' determines how untyped files are opened for reading with `Reset'
+#define Pascal_FileMode_ReadOnly  0 // open file read only
+#define Pascal_FileMode_WriteOnly 1 // open file write only
+#define Pascal_FileMode_ReadWrite 2 // open file read and write
+
+extern uint8_t *Pascal_FileMode_ptr;
+#define Pascal_FileMode (*Pascal_FileMode_ptr)
+
 extern void *Pascal_Output;
 
 extern uint16_t *Pascal_InOutRes_ptr;
 #define Pascal_InOutRes (*Pascal_InOutRes_ptr)
+
+extern ssize_t Pascal_FileRec_size;
+extern ssize_t Pascal_TextRec_size;
 
 extern void Pascal_Halt (int32_t errnum) __NORETURN;
 
@@ -93,9 +104,24 @@ extern void *Pascal_AllocMem (size_t size);
 extern size_t Pascal_FreeMem (void *p);
 extern void *Pascal_ReAllocMem (void **p, size_t size);
 
+extern uint16_t Pascal_IOResult (void);
+
+extern void Pascal_AssignFile (void *file, const String *name);
+extern void Pascal_AssignText (void *text, const String *name);
+extern void Pascal_ResetFile (void *file, int32_t l);
+extern void Pascal_ResetText (void *text);
+extern void Pascal_RewriteFile (void *file, int32_t l);
+extern void Pascal_RewriteText (void *text);
+extern void Pascal_Seek (void *file, int64_t pos);
+extern void Pascal_BlockRead (void *file, void *buf, int32_t count, int32_t *result);
+extern void Pascal_BlockWrite (void *file, void *buf, int32_t count, int32_t *result);
 extern void Pascal_Write_PChar (void *text, const char *str);
 extern void Pascal_Write_String (void *text, const String *str);
 extern void Pascal_Flush (void *text);
+extern void Pascal_EraseFile (void *file);
+extern void Pascal_EraseText (void *text);
+extern void Pascal_CloseFile (void *file);
+extern void Pascal_CloseText (void *text);
 
 extern int Pascal_Random (int l);
 
@@ -120,6 +146,42 @@ extern char *Pascal_stripos (const char *haystack, const char *needle);
 extern void Pascal_Delay (uint16_t ms);
 extern bool Pascal_KeyPressed (void);
 extern char Pascal_ReadKey (void);
+
+// `dos' unit
+
+#define DOSERR_FILE_NOT_FOUND      2
+#define DOSERR_PATH_NOT_FOUND      3
+#define DOSERR_ACCESS_DENIED       5
+#define DOSERR_INVALID_HANDLE      6
+#define DOSERR_NOT_ENOUGH_MEMORY   8
+#define DOSERR_INVALID_ENVIRONMENT 10
+#define DOSERR_INVALID_FORMAT      11
+#define DOSERR_NO_MORE_FILES       18
+
+extern int16_t *Pascal_DosError_ptr;
+#define Pascal_DosError (*Pascal_DosError_ptr)
+
+// Bit masks for file attribute
+#define Pascal_ReadOnly  0x01 // Read-Only file attribute
+#define Pascal_Hidden    0x02 // Hidden file attribute
+#define Pascal_SysFile   0x04 // System file attribute
+#define Pascal_VolumeId  0x08 // Volume ID file attribute
+#define Pascal_Directory 0x10 // Directory file attribute
+#define Pascal_Archive   0x20 // Archive file attribute
+#define Pascal_AnyFile   0x3F // Match any file attribute
+
+// Under Linux, supported attributes are:
+//   * Pascal_Directory
+//   * Pascal_ReadOnly: if the current process doesn't have access to the file
+//   * Pascal_Hidden: for files whose name starts with a dot ('.')
+
+// `file' (`text') must have been assigned, but not opened.
+extern void Pascal_GetFAttrFile (void *file, uint16_t *attr);
+extern void Pascal_GetFAttrText (void *text, uint16_t *attr);
+// Under Unix like systems (such as Linux and BeOS) the call `SetFAttr'
+// exists, but is not implemented, i.e. it does nothing.
+extern void Pascal_SetFAttrFile (void *file, uint16_t attr);
+extern void Pascal_SetFAttrText (void *text, uint16_t attr);
 
 // `sysutils' unit
 

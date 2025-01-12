@@ -1,5 +1,5 @@
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2024 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2024-2025 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 unit Pascal;
@@ -28,10 +28,16 @@ const
 
 { `system' unit }
 
+const
+  Pascal_RandSeedPtr: Pointer = @system.RandSeed; cvar;
+
 var
+  Pascal_FileRec_size: SizeInt; cvar;
+  Pascal_TextRec_size: SizeInt; cvar;
 {$IFDEF GO32V2}
   Pascal_LFNSupport: Boolean; cvar;
 {$ENDIF} {DEFINED(GO32V2)}
+  Pascal_FileMode_ptr: ^Byte; cvar;
   Pascal_Output: Pointer; cvar;
   Pascal_InOutRes_ptr: ^Word; cvar;
 
@@ -54,12 +60,23 @@ function Pascal_AllocMem (size: PtrUInt): Pointer; cdecl;
 function Pascal_FreeMem (p: Pointer): PtrUInt; cdecl;
 function Pascal_ReAllocMem (var p: pointer; size: PtrUInt): Pointer; cdecl;
 
+function  Pascal_IOResult: Word; cdecl;
+procedure Pascal_AssignFile (var f: File; name: String); cdecl;
+procedure Pascal_AssignText (var t: Text; name: String); cdecl;
+procedure Pascal_ResetFile (var f: File; l: Longint); cdecl;
+procedure Pascal_ResetText (var t: Text); cdecl;
+procedure Pascal_RewriteFile (var f: File; l: Longint); cdecl;
+procedure Pascal_RewriteText (var t: Text); cdecl;
+procedure Pascal_Seek (var f: File; pos: Int64); cdecl;
+procedure Pascal_BlockRead (var f: File; var buf; count: Longint; var result: Longint); cdecl;
+procedure Pascal_BlockWrite (var f: File; var buf; count: Longint; var result: Longint); cdecl;
 procedure Pascal_Write_PChar (var t: Text; str: PChar); cdecl;
 procedure Pascal_Write_String (var t: Text; str: String); cdecl;
 procedure Pascal_Flush (var t: Text); cdecl;
-
-const
-  Pascal_RandSeedPtr: Pointer = @system.RandSeed; cvar;
+procedure Pascal_EraseFile (var f: File); cdecl;
+procedure Pascal_EraseText (var t: Text); cdecl;
+procedure Pascal_CloseFile (var f: File); cdecl;
+procedure Pascal_CloseText (var t: Text); cdecl;
 
 {$IFDEF CPU64}
 function Pascal_Random (l: Int64): Int64; cdecl;
@@ -96,6 +113,18 @@ function Pascal_DateTimeToUnix (const AValue: TDateTime): Int64; cdecl;
 procedure Pascal_Delay (ms: Word); cdecl;
 function Pascal_KeyPressed: Boolean; cdecl;
 function Pascal_ReadKey: Char; cdecl;
+
+{ `dos' unit }
+
+var
+  Pascal_DosError_ptr: ^Integer; cvar;
+
+// `f' (`t') must have been assigned, but not opened.
+procedure Pascal_GetFAttrFile (var f: File; var attr: Word); cdecl;
+procedure Pascal_GetFAttrText (var t: Text; var attr: Word); cdecl;
+// Under Unix like systems (such as Linux and BeOS) the call `SetFAttr' exists, but is not implemented, i.e. it does nothing.
+procedure Pascal_SetFAttrFile (var f: File; attr: Word); cdecl;
+procedure Pascal_SetFAttrText (var t: Text; attr: Word); cdecl;
 
 {$IFDEF GO32V2}
 
@@ -141,6 +170,7 @@ implementation
 uses
   crt,
   dateutils,
+  dos,
   strings;
 
 { `System' unit }
@@ -211,6 +241,84 @@ begin
   Pascal_ReAllocMem := system.ReAllocMem (p, size);
 end;
 
+function Pascal_IOResult: Word; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_IOResult';
+begin
+  Pascal_IOResult := system.IOResult;
+end;
+
+procedure Pascal_AssignFile (var f: File; name: String); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_AssignFile';
+begin
+  {$PUSH} {$I-}
+  system.Assign (f, name);
+  {$POP}
+end;
+
+procedure Pascal_AssignText (var t: Text; name: String); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_AssignText';
+begin
+  {$PUSH} {$I-}
+  system.Assign (t, name);
+  {$POP}
+end;
+
+procedure Pascal_ResetFile (var f: File; l: Longint); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_ResetFile';
+begin
+  {$PUSH} {$I-}
+  system.Reset (f, l);
+  {$POP}
+end;
+
+procedure Pascal_ResetText (var t: Text); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_ResetText';
+begin
+  {$PUSH} {$I-}
+  system.Reset (t);
+  {$POP}
+end;
+
+procedure Pascal_RewriteFile (var f: File; l: Longint); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_RewriteFile';
+begin
+  {$PUSH} {$I-}
+  system.Rewrite (f, l);
+  {$POP}
+end;
+
+procedure Pascal_RewriteText (var t: Text); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_RewriteText';
+begin
+  {$PUSH} {$I-}
+  system.Rewrite (t);
+  {$POP}
+end;
+
+procedure Pascal_Seek (var f: File; pos: Int64); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_Seek';
+begin
+  {$PUSH} {$I-}
+  system.Seek (f, pos);
+  {$POP}
+end;
+
+procedure Pascal_BlockRead (var f: File; var buf; count: Longint; var result: Longint); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_BlockRead';
+begin
+  {$PUSH} {$I-}
+  system.BlockRead (f, buf, count, result);
+  {$POP}
+end;
+
+procedure Pascal_BlockWrite (var f: File; var buf; count: Longint; var result: Longint); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_BlockWrite';
+begin
+  {$PUSH} {$I-}
+  system.BlockWrite (f, buf, count, result);
+  {$POP}
+end;
+
 procedure Pascal_Write_PChar (var t: Text; str: PChar); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_Write_PChar';
 begin
@@ -232,6 +340,38 @@ public name PUBLIC_PREFIX + 'Pascal_Flush';
 begin
   {$PUSH} {$I-}
   system.Flush (t);
+  {$POP}
+end;
+
+procedure Pascal_EraseFile (var f: File); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_EraseFile';
+begin
+  {$PUSH} {$I-}
+  system.Erase (f);
+  {$POP}
+end;
+
+procedure Pascal_EraseText (var t: Text); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_EraseText';
+begin
+  {$PUSH} {$I-}
+  system.Erase (t);
+  {$POP}
+end;
+
+procedure Pascal_CloseFile (var f: File); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_CloseFile';
+begin
+  {$PUSH} {$I-}
+  system.Close (f);
+  {$POP}
+end;
+
+procedure Pascal_CloseText (var t: Text); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_CloseText';
+begin
+  {$PUSH} {$I-}
+  system.Close (t);
   {$POP}
 end;
 
@@ -361,6 +501,32 @@ begin
   Pascal_ReadKey := crt.ReadKey;
 end;
 
+{ `dos' unit }
+
+procedure Pascal_GetFAttrFile (var f: File; var attr: Word); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_GetFAttrFile';
+begin
+  dos.GetFAttr (f, attr);
+end;
+
+procedure Pascal_GetFAttrText (var t: Text; var attr: Word); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_GetFAttrText';
+begin
+  dos.GetFAttr (t, attr);
+end;
+
+procedure Pascal_SetFAttrFile (var f: File; attr: Word); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_SetFAttrFile';
+begin
+  dos.SetFAttr (f, attr);
+end;
+
+procedure Pascal_SetFAttrText (var t: Text; attr: Word); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_SetFAttrText';
+begin
+  dos.SetFAttr (t, attr);
+end;
+
 {$IFDEF GO32V2}
 
 { `go32' unit }
@@ -368,7 +534,7 @@ end;
 function Pascal_allocate_ldt_descriptors (count: Word): Word; cdecl;
 public name PUBLIC_PREFIX + 'Pascal_allocate_ldt_descriptors';
 begin
-  Pascal_allocate_ldt_descriptors := go32.allocate_ldt_descriptors(count);
+  Pascal_allocate_ldt_descriptors := go32.allocate_ldt_descriptors (count);
 end;
 
 function Pascal_free_ldt_descriptor (selector: Word): Boolean; cdecl;
@@ -481,13 +647,17 @@ begin
 end;
 
 begin
+  Pascal_FileRec_size := SizeOf (FileRec);
+  Pascal_TextRec_size := SizeOf (TextRec);
 {$IFDEF GO32V2}
   __dpmi_error_ptr := @go32.int31error;
   Pascal_dosmemselector := go32.dosmemselector;
   Pascal_LFNSupport := system.LFNSupport;
 {$ENDIF} {DEFINED(GO32V2)}
+  Pascal_FileMode_ptr := @system.FileMode;
   Pascal_Output := @system.Output;
   Pascal_InOutRes_ptr := @system.InOutRes;
+  Pascal_DosError_ptr := @dos.DosError;
   OldExitProc := system.ExitProc;
   system.ExitProc := @OnExit;
   // `stdlib' must be first (controls proper exit in C via `atexit' routine)

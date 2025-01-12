@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -10,7 +10,6 @@
 #define ADT2SYS_H
 
 #include "defines.h"
-
 #include <stdbool.h>
 #include <stdint.h>
 #include "pascal.h"
@@ -84,5 +83,14 @@ void vid_FadeOut (void);
 extern uint8_t _FrameBuffer_mirror[1024*768]; // HINT: (FPC) start index 0
 
 #endif // GO32
+
+void ResetF_RW (void *file);
+void ResetF (void *file);
+void RewriteF (void *file);
+void BlockReadF (void *file, void *data, int32_t size, int32_t *bytes_read);
+void BlockWriteF (void *file, void *data, int32_t size, int32_t *bytes_written);
+void SeekF (void *file, int32_t fpos);
+void EraseF (void *file);
+void CloseF (void *file);
 
 #endif // !defined(ADT2SYS_H)

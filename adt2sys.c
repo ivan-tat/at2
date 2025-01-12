@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
@@ -100,3 +100,12 @@ uint8_t _FrameBuffer_mirror[1024*768];
 #if GO32
 #include "adt2sys/go32/dump_VESA_buffer.c"
 #endif // !GO32
+
+#include "adt2sys/ResetF_RW.c"
+#include "adt2sys/ResetF.c"
+#include "adt2sys/RewriteF.c"
+#include "adt2sys/BlockReadF.c"
+#include "adt2sys/BlockWriteF.c"
+#include "adt2sys/SeekF.c"
+#include "adt2sys/EraseF.c"
+#include "adt2sys/CloseF.c"

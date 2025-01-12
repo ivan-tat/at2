@@ -96,14 +96,14 @@ var
 
 {$ENDIF}
 
-procedure ResetF_RW(var f: File);
-procedure ResetF(var f: File);
-procedure RewriteF(var f: File);
-procedure BlockReadF(var f: File; var data; size: Longint; var bytes_read: Longint);
-procedure BlockWriteF(var f: File; var data; size: Longint; var bytes_written: Longint);
-procedure SeekF(var f: File; fpos: Longint);
-procedure EraseF(var f: File);
-procedure CloseF(var f: File);
+procedure ResetF_RW(var f: File); cdecl; external;
+procedure ResetF(var f: File); cdecl; external;
+procedure RewriteF(var f: File); cdecl; external;
+procedure BlockReadF(var f: File; var data; size: Longint; var bytes_read: Longint); cdecl; external;
+procedure BlockWriteF(var f: File; var data; size: Longint; var bytes_written: Longint); cdecl; external;
+procedure SeekF(var f: File; fpos: Longint); cdecl; external;
+procedure EraseF(var f: File); cdecl; external;
+procedure CloseF(var f: File); cdecl; external;
 
 implementation
 
@@ -1019,121 +1019,13 @@ end;
 
 {$ENDIF}
 
-procedure ResetF_RW(var f: File);
-
-var
-  fattr: Word;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'ResetF_RW');
-
-  GetFAttr(f,fattr);
-  If (fattr AND ReadOnly = ReadOnly) then
-    SetFAttr(f,fattr AND NOT ReadOnly);
-  If (DosError <> 0) then ;
-  FileMode := 2;
-  {$i-}
-  Reset(f,1);
-  {$i+}
-
-  _dbg_leave; //EXIT //ResetF_RW
-end;
-
-procedure ResetF(var f: File);
-
-var
-  fattr: Word;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'ResetF');
-
-  GetFAttr(f,fattr);
-  If (fattr AND ReadOnly = ReadOnly) then
-    FileMode := 0;
-  {$i-}
-  Reset(f,1);
-  {$i+}
-
-  _dbg_leave; //EXIT //ResetF
-end;
-
-procedure RewriteF(var f: File);
-
-var
-  fattr: Word;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'RewriteF');
-
-  GetFAttr(f,fattr);
-  If (fattr AND ReadOnly = ReadOnly) then
-    SetFAttr(f,fattr AND NOT ReadOnly);
-  {$i-}
-  Rewrite(f,1);
-  {$i+}
-
-  _dbg_leave; //EXIT //RewriteF
-end;
-
-procedure BlockReadF(var f: File; var data; size: Longint; var bytes_read: Longint);
-begin
-  _dbg_enter ({$I %FILE%}, 'BlockReadF');
-
-  {$i-}
-  BlockRead(f,data,size,bytes_read);
-  {$i+}
-  If (IOresult <> 0) then
-    bytes_read := 0;
-
-  _dbg_leave; //EXIT //BlockReadF
-end;
-
-procedure BlockWriteF(var f: File; var data; size: Longint; var bytes_written: Longint);
-begin
-  _dbg_enter ({$I %FILE%}, 'BlockWriteF');
-
-  {$i-}
-  BlockWrite(f,data,size,bytes_written);
-  {$i+}
-  If (IOresult <> 0) then
-    bytes_written := 0;
-
-  _dbg_leave; //EXIT //BlockWriteF
-end;
-
-procedure SeekF(var f: File; fpos: Longint);
-begin
-  _dbg_enter ({$I %FILE%}, 'SeekF');
-
-  {$i-}
-  Seek(f,fpos);
-  {$i+}
-
-  _dbg_leave; //EXIT //SeekF
-end;
-
-procedure EraseF(var f: File);
-begin
-  _dbg_enter ({$I %FILE%}, 'EraseF');
-
-  {$i-}
-  Erase(f);
-  {$i+}
-  If (IOresult <> 0) then ;
-
-  _dbg_leave; //EXIT //EraseF
-end;
-
-procedure CloseF(var f: File);
-begin
-  _dbg_enter ({$I %FILE%}, 'CloseF');
-
-  {$i-}
-  Close(f);
-  {$i+}
-  If (IOresult <> 0) then ;
-
-  _dbg_leave; //EXIT //CloseF
-end;
+//ResetF_RW
+//ResetF
+//RewriteF
+//BlockReadF
+//BlockWriteF
+//SeekF
+//EraseF
+//CloseF
 
 end.
