@@ -1,72 +1,91 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-void VESA_Init (void) {
+#define FARPTR_TO_LINEAR(x) (((x >> 12) & 0xFFFF0) + (x & 0xFFFF))
+
+// s = pointer to string in DOS memory (seg:ofs)
+static size_t dos_strnlen (uint32_t s, size_t n)
+{
+  uint32_t p = FARPTR_TO_LINEAR (s);
+  size_t count = n;
+  uint16_t orig_fs = _fargetsel ();
+
+  _farsetsel (_dos_ds);
+  while (_farnspeekb (p) && count)
+  {
+    p++; // be careful: no 1MB limit
+    count--;
+  }
+  _farsetsel (orig_fs);
+
+  return n - count;
+}
+
+// src = pointer to string in DOS memory (seg:ofs)
+static void get_dos_str (char *dst, uint32_t src, size_t n)
+{
+  dosmemget (FARPTR_TO_LINEAR (src), dos_strnlen (src, n), dst);
+}
+
+// Returns 0 on success, error code otherwise.
+int VESA_Init (void)
+{
+  int status = 0;
   uint8_t i, j;
-  __dpmi_regs regs;
-  int32_t dos_sel, dos_seg;
+  int32_t dos_sel, dos_seg = -1;
+  char t[255+1];
+
+  DBG_ENTER ("VESA_Init");
 
   if (VESA_GraphicsSysInited)
-    return;
+    goto _exit;
 
   VESA_ModeList[0].ModeNumber = 0x13;
   VESA_ModeList[0].XResolution = 320;
   VESA_ModeList[0].YResolution = 200;
   VESA_ModeList[0].BufferAddress = (void *) 0xA0000;
 
-  dos_seg = __dpmi_allocate_dos_memory ((sizeof (tVESA_Info) + 15) / 16,
-                                        &dos_sel);
-  if (dos_seg < 0) {
-    // FIXME: no check for error in original code
-  }
-
-  VESA_Info.Signature = MK_UINT32 ('V', 'B', 'E', '2');
-  memset ((uint8_t *) &VESA_Info + 4, 0, sizeof (tVESA_Info) - 4);
-  // Indicate VBE 2.0 information is desired and the information
-  // block is 512 bytes in size
-  dosmemput (&VESA_Info, 4, dos_seg * 16);
-
-  regs.d.eax = 0x4F00; // Return VBE Controller Information
-  regs.x.ds = dos_seg;
-  regs.x.es = dos_seg; // ES:DI = Pointer to buffer in which to place
-  regs.d.edi = 0;      // VbeInfoBlock structure
-  if (__dpmi_simulate_real_mode_interrupt (0x10, &regs)) {
-    // FIXME: no check for error in original code
-  }
-
-  dosmemget (dos_seg * 16, sizeof (tVESA_Info), &VESA_Info);
-  __dpmi_free_dos_memory (dos_sel);
+  status = VESA_GetInfo (&VESA_Info);
+  if (status != 0)
+    goto _error;
 
   if (VESA_Info.Signature != MK_UINT32 ('V', 'E', 'S', 'A'))
-    return; // ERROR: VESA BIOS extensions not found!
+  {
+    status = 3; // ERROR: VESA BIOS extensions not found
+    goto _error;
+  }
 
   VESA_Version = VESA_Info.Version;
 
   if ((VESA_Version >> 8) < 2)
-    return; // ERROR: VESA 2.0 required!
+  {
+    status = 4; // ERROR: VESA 2.0 required
+    goto _error;
+  }
 
-  StrToString (VESA_OEM_String,
-               (char *) &VESA_Info + VESA_Info.OEM_StringPtr, 255);
+  get_dos_str (t, VESA_Info.OEM_StringPtr, 255);
+  StrToString (VESA_OEM_String, t, 255);
   VESA_Capabilities = VESA_Info.Capabilities;
   VESA_VideoMemory = VESA_Info.VideoMemory << 6;
   VESA_OEM_SoftwareRevision = VESA_Info.OEM_SoftwareRevision;
-  StrToString (VESA_OEM_VendorName,
-               (char *) &VESA_Info + VESA_Info.OEM_VendorNamePtr, 255);
-  StrToString (VESA_OEM_ProductName,
-               (char *) &VESA_Info + VESA_Info.OEM_ProductNamePtr, 255);
-  StrToString (VESA_OEM_ProductRevision,
-               (char *) &VESA_Info + VESA_Info.OEM_ProductRevisionPtr, 255);
-  dosmemget (((VESA_Info.ModeListPtr >> 12) & 0xFFFF0)
-             + (VESA_Info.ModeListPtr & 0xFFFF),
-             sizeof (tModeList), ModeList);
+  get_dos_str (t, VESA_Info.OEM_VendorNamePtr, 255);
+  StrToString (VESA_OEM_VendorName, t, 255);
+  get_dos_str (t, VESA_Info.OEM_ProductNamePtr, 255);
+  StrToString (VESA_OEM_ProductName, t, 255);
+  get_dos_str (t, VESA_Info.OEM_ProductRevisionPtr, 255);
+  StrToString (VESA_OEM_ProductRevision, t, 255);
+  dosmemget (FARPTR_TO_LINEAR (VESA_Info.ModeListPtr),
+             sizeof (tModeList), &ModeList);
 
   dos_seg = __dpmi_allocate_dos_memory ((sizeof (tModeInfoBlock) + 15) / 16,
                                         &dos_sel);
-  if (dos_seg < 0) {
-    // FIXME: no check for error in original code
+  if (dos_seg < 0)
+  {
+    status = 5; // ERROR: failed to allocate `tModeInfoBlock' structure
+    goto _error;
   }
 
   i = 0;
@@ -116,6 +135,7 @@ void VESA_Init (void) {
   }
 
   __dpmi_free_dos_memory (dos_sel);
+  dos_seg = -1;
   VESA_NumberOfModes = j - 1;
 
   if (VESA_NumberOfModes >= 1) {
@@ -126,7 +146,10 @@ void VESA_Init (void) {
 
     if (__dpmi_physical_address_mapping (&info)
     ||  (!info.address))
-      return; // ERROR: Cannot remap LFB to linear address space!
+    {
+      status = 7; // ERROR: cannot remap LFB to linear address space
+      goto _error;
+    }
 
     VESA_ModeList[1].BufferAddress = (void *) info.address;
 
@@ -136,4 +159,14 @@ void VESA_Init (void) {
 
   VESA_Mode = 0;
   VESA_GraphicsSysInited = true;
+
+_exit:
+  DBG_LEAVE (); //EXIT //VESA_Init
+  return status;
+
+_error:
+  if (dos_seg >= 0)
+    __dpmi_free_dos_memory (dos_sel);
+
+  goto _exit;
 }

@@ -70,12 +70,18 @@ extern uint8_t _traceprc_last_pattern;
 extern uint8_t _traceprc_last_line;
 extern uint8_t _pattedit_lastpos;
 
-extern void draw_screen (void);
+void sys_init (void);
+void sys_done (void);
+void draw_screen (void);
 
 #if !GO32
 
 extern void   *_FrameBuffer;
 
+void vid_Init (void);
+void vid_Deinit (void);
+void vid_SetVideoMode (bool do_delay);
+void vid_SetRGBPalette (void *palette);
 void vid_FadeOut (void);
 
 #else // GO32

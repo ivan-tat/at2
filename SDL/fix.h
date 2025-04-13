@@ -1,13 +1,13 @@
 // Fix C symbol names for Free Pascal compiler on Windows platform.
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2024 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2024-2025 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
 
-#ifndef SDL_FIX_H
-#define SDL_FIX_H
+#ifndef SDL__FIX_H
+#define SDL__FIX_H
 
 #if WINNT
 #define SDL_FIX_BEGIN __asm__ (
@@ -19,4 +19,4 @@
 #define SDL_FIX_END
 #endif // !WINNT
 
-#endif // !define(SDL_FIX_H)
+#endif // !define(SDL__FIX_H)

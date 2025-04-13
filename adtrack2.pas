@@ -414,7 +414,7 @@ begin { MAIN }
          end;
 
       4: set_svga_txtmode_100x38;      // 100x38
-      5: set_svga_txtmode_128x48;      // 100x48
+      5: set_svga_txtmode_128x48;      // 128x48
     end
   else
     Case get_VESA_emulated_mode_idx of

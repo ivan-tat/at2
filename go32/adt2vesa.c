@@ -1,17 +1,20 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
 #include <dpmi.h>
 #include <go32.h>
+#include <sys/farptr.h>
 #include <math.h>
 #include <pc.h>
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
+#include "debug.h"
+#include "platform.h"
 #include "go32/VGA.h"
 #include "go32/adt2vesa.h"
 
@@ -115,6 +118,7 @@ static tModeInfoBlock ModeInfoBlock;
 
 #include "go32/adt2vesa/_VESA_CheckStatus.c"
 
+#include "go32/adt2vesa/VESA_GetInfo.c" // static
 #include "go32/adt2vesa/VESA_Init.c"
 #include "go32/adt2vesa/VESA_GetModeInfo.c"
 #include "go32/adt2vesa/VESA_SetMode.c"

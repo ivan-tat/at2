@@ -64,7 +64,7 @@ var
   StepDelta: array[0..767] of Single; cvar; external;
   FadeSteps: Word; cvar; external;
 
-procedure VESA_Init; cdecl; external;
+function  VESA_Init: Longint; cdecl; external;
 function  VESA_GetModeInfo(Mode: Word; DOSAddr: Longword): Longint; cdecl; external;
 function  VESA_SetMode(Mode: Word): Longint; cdecl; external;
 procedure VESA_GetPalette(var Palette); cdecl; external;
