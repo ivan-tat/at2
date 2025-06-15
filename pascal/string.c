@@ -1,5 +1,5 @@
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2024 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2024-2025 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "pascal/string.h"
@@ -158,7 +158,7 @@ String_t Copy (const String *s, ssize_t index, ssize_t count) {
 void Delete (String *s, ssize_t index, ssize_t count) {
   index--;
   if ((index >= 0) && (index < Length (s)) && (count > 0)) {
-    if (count > Length (s) - index)
+    if (count >= Length (s) - index)
       count = Length (s) - index;
 
     SetLength (s, Length (s) - count);

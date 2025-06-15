@@ -4,12 +4,10 @@
 // SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+static int32_t frame_start = 0;
+
 void draw_screen (void)
 {
-  int32_t frame_start = 0;
-  int32_t frame_end = 0;
-  int32_t actual_frame_end = 0;
-
   realtime_gfx_poll_proc ();
   draw_screen_proc ();
   if (_update_sdl_screen)
@@ -19,6 +17,9 @@ void draw_screen (void)
     _draw_screen_without_delay = false;
   else
   {
+    int32_t actual_frame_end;
+    int32_t frame_end;
+
     // keep framerate
     actual_frame_end = SDL_GetTicks ();
     frame_end = frame_start + (1000 / sdl_frame_rate);

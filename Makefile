@@ -56,6 +56,7 @@ FPCFLAGS_DIRS+=-Fi$(srcdir) -Fi. -Fuunits
 SRCS=\
  adt2data.c\
  adt2ext2.c\
+ adt2extn.c\
  adt2sys.c\
  adt2keyb.c\
  adt2opl3.c\
@@ -70,6 +71,7 @@ SRCS=\
  go32/VGA.c\
  opl3emu.c\
  parserio.c\
+ pascal.c\
  pascal/dos.c\
  pascal/dpmi.c\
  pascal/go32.c\
@@ -312,6 +314,7 @@ pascal_ppu_deps=\
  $(srcdir)/pascal/stdlib.pas\
  $(srcdir)/pascal/string.pas\
  $(srcdir)/pascal/time.pas\
+ pascal.o\
  pascal/stdio.o\
  pascal/stdlib.o\
  pascal/string.o\
@@ -395,7 +398,8 @@ adt2ext5_ppu_deps=\
 adt2extn_ppu_deps=\
  $(srcdir)/adt2extn.pas\
  units/debug.ppu\
- units/pascal.ppu
+ units/pascal.ppu\
+ adt2extn.o
 
 adt2opl3_ppu_deps=\
  $(srcdir)/adt2opl3.pas\

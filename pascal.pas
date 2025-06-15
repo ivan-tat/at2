@@ -4,6 +4,7 @@
 
 unit Pascal;
 
+{$L pascal.o}
 {$IFDEF GO32V2}
 {$L pascal/dos.o}
 {$L pascal/dpmi.o}
@@ -21,6 +22,7 @@ uses
 {$IFDEF GO32V2}
   go32,
 {$ENDIF} {NOT DEFINED(GO32V2)}
+  dos,
   sysutils;
 
 const
@@ -41,12 +43,16 @@ var
   Pascal_Output: Pointer; cvar;
   Pascal_InOutRes_ptr: ^Word; cvar;
 
+procedure Pascal_SetLength (var s: String; count: SizeInt); cdecl;
+
 procedure Pascal_Halt (errnum: Longint); cdecl;
 
 procedure Pascal_FillChar (var x; count: SizeInt; value: Byte); cdecl;
 procedure Pascal_FillWord (var x; count: SizeInt; value: Word); cdecl;
 
 procedure Pascal_Move (const src; var dest; n: SizeInt); cdecl;
+
+function Pascal_ParamStr (l: Longint): String; cdecl;
 
 // FPC_ABS_REAL
 function Pascal_Abs_Single (x: Single): Single; cdecl;
@@ -77,6 +83,8 @@ procedure Pascal_EraseFile (var f: File); cdecl;
 procedure Pascal_EraseText (var t: Text); cdecl;
 procedure Pascal_CloseFile (var f: File); cdecl;
 procedure Pascal_CloseText (var t: Text); cdecl;
+procedure Pascal_GetDir (drivenr: Byte; var dir: String); cdecl;
+procedure Pascal_ChDir (s: String); cdecl;
 
 {$IFDEF CPU64}
 function Pascal_Random (l: Int64): Int64; cdecl;
@@ -126,6 +134,11 @@ procedure Pascal_GetFAttrText (var t: Text; var attr: Word); cdecl;
 procedure Pascal_SetFAttrFile (var f: File; attr: Word); cdecl;
 procedure Pascal_SetFAttrText (var t: Text; attr: Word); cdecl;
 
+function Pascal_DiskSize (drive: Byte): Int64; cdecl;
+
+procedure Pascal_FindFirst (path: String; attr: Word; var f: SearchRec); cdecl;
+procedure Pascal_FindNext (var f: SearchRec); cdecl;
+
 {$IFDEF GO32V2}
 
 { `go32' unit }
@@ -154,6 +167,15 @@ function Pascal_unlock_code (functionaddr: Pointer; size: Longint): Boolean; cde
 
 {$ENDIF} {DEFINED(GO32V2)}
 
+{$IFDEF WINDOWS}
+
+{ `windows' unit }
+
+function Pascal_GetLogicalDriveStrings (nBufferLength: LongWord; lpBuffer: PChar): LongWord; cdecl;
+
+{$ENDIF} {DEFINED(WINDOWS)}
+
+
 {$IFDEF GO32V2}
 {$I pascal/dos.pas}
 {$I pascal/dpmi.pas}
@@ -170,10 +192,40 @@ implementation
 uses
   crt,
   dateutils,
-  dos,
+{$IFNDEF GO32V2}
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF} {NOT DEFINED(UNIX)}
+{$ENDIF} {NOT DEFINED(GO32V2)}
   strings;
 
+// Check structures shared between C and Pascal
+
+procedure _check_struct_memb (const name, member: PChar; off_C, off: SizeUInt);
+begin
+  if (off_C <> off) then
+  begin
+    WriteLn (stderr, 'Error: There is difference (', off - off_C, ') in the offset of member "', name, '.', member, '" in C (', off_c, ') and Pascal (', off, ')');
+    Halt (1);
+  end;
+end;
+
+procedure _check_struct_size (const name: PChar; size_C, size: SizeUInt);
+begin
+  if (size_C <> size) then
+  begin
+    WriteLn (stderr, 'Error: There is difference (', size - size_C, ') in the size of structure "', name, '" in C (', size_C, ') and Pascal (', size, ')');
+    Halt (1);
+  end;
+end;
+
 { `System' unit }
+
+procedure Pascal_SetLength (var s: String; count: SizeInt); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_SetLength';
+begin
+  system.SetLength (s, count);
+end;
 
 procedure Pascal_Halt (errnum: Longint); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_Halt';
@@ -197,6 +249,12 @@ procedure Pascal_Move (const src; var dest; n: SizeInt); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_Move';
 begin
   system.Move (src, dest, n);
+end;
+
+function Pascal_ParamStr (l: Longint): String; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_ParamStr';
+begin
+  Pascal_ParamStr := system.ParamStr (l);
 end;
 
 function Pascal_Abs_Single (x: Single): Single; cdecl;
@@ -375,6 +433,22 @@ begin
   {$POP}
 end;
 
+procedure Pascal_GetDir (drivenr: Byte; var dir: String); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_GetDir';
+begin
+  {$PUSH} {$I-}
+  system.GetDir (drivenr, dir);
+  {$POP}
+end;
+
+procedure Pascal_ChDir (s: String); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_ChDir';
+begin
+  {$PUSH} {$I-}
+  system.ChDir (s);
+  {$POP}
+end;
+
 {$IFDEF CPU64}
 function Pascal_Random (l: Int64): Int64; cdecl;
 {$ELSE} {NOT DEFINED(CPU64)}
@@ -503,6 +577,167 @@ end;
 
 { `dos' unit }
 
+{$IFDEF GO32V2}
+
+// dos.SearchRec
+
+var
+  struct_SearchRec: packed record
+    Fill,
+    Attr,
+    Time,
+    //Rreserved, not in DJGPP V2
+    Size,
+    Name: LongWord;
+  end; cvar; external;
+var
+  struct_SearchRec_size: LongWord; cvar; external;
+
+procedure _check_struct_SearchRec;
+const s: PChar = 'SearchRec';
+begin
+  _check_struct_memb (s, 'Fill', struct_SearchRec.Fill, SizeUInt (@(SearchRec (NIL^).Fill[1])));
+  _check_struct_memb (s, 'Attr', struct_SearchRec.Attr, SizeUInt (@(SearchRec (NIL^).Attr)));
+  _check_struct_memb (s, 'Time', struct_SearchRec.Time, SizeUInt (@(SearchRec (NIL^).Time)));
+  //_check_struct_memb (s, 'Reserved', struct_SearchRec.Reserved, SizeUInt (@(SearchRec (NIL^).Reserved)));
+  _check_struct_memb (s, 'Size', struct_SearchRec.Size, SizeUInt (@(SearchRec (NIL^).Size)));
+  _check_struct_memb (s, 'Name', struct_SearchRec.Name, SizeUInt (@(SearchRec (NIL^).Name)));
+  _check_struct_size (s, struct_SearchRec_size, SizeOf (SearchRec));
+end;
+
+{$ENDIF} {DEFINED(GO32V2)}
+
+{$IFDEF UNIX}
+
+// dos.SearchRec
+
+var
+  struct_SearchRec: packed record
+    SearchPos,
+    SearchNum,
+    DirPtr,
+    SearchType,
+    SearchAttr,
+    Mode,
+    Fill,
+    Attr,
+    Time,
+    Size,
+    Reserved,
+    Name,
+    SearchSpec,
+    NamePos: LongWord;
+  end; cvar; external;
+var
+  struct_SearchRec_size: LongWord; cvar; external;
+
+procedure _check_struct_SearchRec;
+const s: PChar = 'SearchRec';
+begin
+  _check_struct_memb (s, 'SearchPos', struct_SearchRec.SearchPos, SizeUInt (@(SearchRec (NIL^).SearchPos)));
+  _check_struct_memb (s, 'SearchNum', struct_SearchRec.SearchNum, SizeUInt (@(SearchRec (NIL^).SearchNum)));
+  _check_struct_memb (s, 'DirPtr', struct_SearchRec.DirPtr, SizeUInt (@(SearchRec (NIL^).DirPtr)));
+  _check_struct_memb (s, 'SearchType', struct_SearchRec.SearchType, SizeUInt (@(SearchRec (NIL^).SearchType)));
+  _check_struct_memb (s, 'SearchAttr', struct_SearchRec.SearchAttr, SizeUInt (@(SearchRec (NIL^).SearchAttr)));
+  _check_struct_memb (s, 'Fill', struct_SearchRec.Fill, SizeUInt (@(SearchRec (NIL^).Fill[1])));
+  _check_struct_memb (s, 'Attr', struct_SearchRec.Attr, SizeUInt (@(SearchRec (NIL^).Attr)));
+  _check_struct_memb (s, 'Time', struct_SearchRec.Time, SizeUInt (@(SearchRec (NIL^).Time)));
+  _check_struct_memb (s, 'Size', struct_SearchRec.Size, SizeUInt (@(SearchRec (NIL^).Size)));
+  _check_struct_memb (s, 'Reserved', struct_SearchRec.Reserved, SizeUInt (@(SearchRec (NIL^).Reserved)));
+  _check_struct_memb (s, 'Name', struct_SearchRec.Name, SizeUInt (@(SearchRec (NIL^).Name)));
+  _check_struct_memb (s, 'SearchSpec', struct_SearchRec.SearchSpec, SizeUInt (@(SearchRec (NIL^).SearchSpec)));
+  _check_struct_memb (s, 'NamePos', struct_SearchRec.NamePos, SizeUInt (@(SearchRec (NIL^).NamePos)));
+  _check_struct_size (s, struct_SearchRec_size, SizeOf (SearchRec));
+end;
+
+{$ENDIF} {DEFINED(UNIX)}
+
+{$IFDEF WINDOWS}
+
+// dos.TWinFileTime
+
+var
+  struct_TWinFileTime: packed record
+    dwLowDateTime,
+    dwHighDateTime: LongWord;
+  end; cvar; external;
+var
+  struct_TWinFileTime_size: LongWord; cvar; external;
+
+procedure _check_struct_TWinFileTime;
+const s: PChar = 'TWinFileTime';
+begin
+  _check_struct_memb (s, 'dwLowDateTime', struct_TWinFileTime.dwLowDateTime, SizeUInt (@(TWinFileTime (NIL^).dwLowDateTime)));
+  _check_struct_memb (s, 'dwHighDateTime', struct_TWinFileTime.dwHighDateTime, SizeUInt (@(TWinFileTime (NIL^).dwHighDateTime)));
+  _check_struct_size (s, struct_TWinFileTime_size, SizeOf (TWinFileTime));
+end;
+
+// dos.TWinFindData
+
+var
+  struct_TWinFindData: packed record
+    dwFileAttributes,
+    ftCreationTime,
+    ftLastAccessTime,
+    ftLastWriteTime,
+    nFileSizeHigh,
+    nFileSizeLow,
+    dwReserved0,
+    dwReserved1,
+    cFileName,
+    cAlternateFileName,
+    pad: LongWord;
+  end; cvar; external;
+var
+  struct_TWinFindData_size: LongWord; cvar; external;
+
+procedure _check_struct_TWinFindData;
+const s: PChar = 'TWinFindData';
+begin
+  _check_struct_memb (s, 'dwFileAttributes', struct_TWinFindData.dwFileAttributes, SizeUInt (@(TWinFindData (NIL^).dwFileAttributes)));
+  _check_struct_memb (s, 'ftCreationTime', struct_TWinFindData.ftCreationTime, SizeUInt (@(TWinFindData (NIL^).ftCreationTime)));
+  _check_struct_memb (s, 'ftLastAccessTime', struct_TWinFindData.ftLastAccessTime, SizeUInt (@(TWinFindData (NIL^).ftLastAccessTime)));
+  _check_struct_memb (s, 'ftLastWriteTime', struct_TWinFindData.ftLastWriteTime, SizeUInt (@(TWinFindData (NIL^).ftLastWriteTime)));
+  _check_struct_memb (s, 'nFileSizeHigh', struct_TWinFindData.nFileSizeHigh, SizeUInt (@(TWinFindData (NIL^).nFileSizeHigh)));
+  _check_struct_memb (s, 'nFileSizeLow', struct_TWinFindData.nFileSizeLow, SizeUInt (@(TWinFindData (NIL^).nFileSizeLow)));
+  _check_struct_memb (s, 'dwReserved0', struct_TWinFindData.dwReserved0, SizeUInt (@(TWinFindData (NIL^).dwReserved0)));
+  _check_struct_memb (s, 'dwReserved1', struct_TWinFindData.dwReserved1, SizeUInt (@(TWinFindData (NIL^).dwReserved1)));
+  _check_struct_memb (s, 'cFileName', struct_TWinFindData.cFileName, SizeUInt (@(TWinFindData (NIL^).cFileName)));
+  _check_struct_memb (s, 'cAlternateFileName', struct_TWinFindData.cAlternateFileName, SizeUInt (@(TWinFindData (NIL^).cAlternateFileName)));
+  _check_struct_memb (s, 'pad', struct_TWinFindData.pad, SizeUInt (@(TWinFindData (NIL^).pad)));
+  _check_struct_size (s, struct_TWinFindData_size, SizeOf (TWinFindData));
+end;
+
+// dos.SearchRec
+
+var
+  struct_SearchRec: packed record
+    FindHandle,
+    WinFindData,
+    ExcludeAttr,
+    Time,
+    Size,
+    Attr,
+    Name: LongWord;
+  end; cvar; external;
+var
+  struct_SearchRec_size: LongWord; cvar; external;
+
+procedure _check_struct_SearchRec;
+const s: PChar = 'SearchRec';
+begin
+  _check_struct_memb (s, 'FindHandle', struct_SearchRec.FindHandle, SizeUInt (@(SearchRec (NIL^).FindHandle)));
+  _check_struct_memb (s, 'WinFindData', struct_SearchRec.WinFindData, SizeUInt (@(SearchRec (NIL^).WinFindData)));
+  _check_struct_memb (s, 'ExcludeAttr', struct_SearchRec.ExcludeAttr, SizeUInt (@(SearchRec (NIL^).ExcludeAttr)));
+  _check_struct_memb (s, 'Time', struct_SearchRec.Time, SizeUInt (@(SearchRec (NIL^).Time)));
+  _check_struct_memb (s, 'Size', struct_SearchRec.Size, SizeUInt (@(SearchRec (NIL^).Size)));
+  _check_struct_memb (s, 'Attr', struct_SearchRec.Attr, SizeUInt (@(SearchRec (NIL^).Attr)));
+  _check_struct_memb (s, 'Name', struct_SearchRec.Name, SizeUInt (@(SearchRec (NIL^).Name)));
+  _check_struct_size (s, struct_SearchRec_size, SizeOf (SearchRec));
+end;
+
+{$ENDIF} {DEFINED(WINDOWS)}
+
 procedure Pascal_GetFAttrFile (var f: File; var attr: Word); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_GetFAttrFile';
 begin
@@ -525,6 +760,24 @@ procedure Pascal_SetFAttrText (var t: Text; attr: Word); cdecl;
 public name PUBLIC_PREFIX + 'Pascal_SetFAttrText';
 begin
   dos.SetFAttr (t, attr);
+end;
+
+function Pascal_DiskSize (drive: Byte): Int64; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_DiskSize';
+begin
+  Pascal_DiskSize := dos.DiskSize (drive);
+end;
+
+procedure Pascal_FindFirst (path: String; attr: Word; var f: SearchRec); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_FindFirst';
+begin
+  dos.FindFirst (path, attr, f);
+end;
+
+procedure Pascal_FindNext (var f: SearchRec); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_FindNext';
+begin
+  dos.FindNext (f);
 end;
 
 {$IFDEF GO32V2}
@@ -635,6 +888,18 @@ end;
 
 {$ENDIF} {DEFINED(GO32V2)}
 
+{$IFDEF WINDOWS}
+
+{ `windows' unit }
+
+function Pascal_GetLogicalDriveStrings (nBufferLength: LongWord; lpBuffer: PChar): LongWord; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_GetLogicalDriveStrings';
+begin
+  Pascal_GetLogicalDriveStrings := windows.GetLogicalDriveStrings (nBufferLength, lpBuffer);
+end;
+
+{$ENDIF} {DEFINED(WINDOWS)}
+
 { Initialization and finalization }
 
 var
@@ -647,6 +912,11 @@ begin
 end;
 
 begin
+{$IFDEF WINDOWS}
+  _check_struct_TWinFileTime;
+  _check_struct_TWinFindData;
+{$ENDIF} {DEFINED(WINDOWS)}
+  _check_struct_SearchRec;
   Pascal_FileRec_size := SizeOf (FileRec);
   Pascal_TextRec_size := SizeOf (TextRec);
 {$IFDEF GO32V2}

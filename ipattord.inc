@@ -24,7 +24,7 @@
 var
   _nm_patterns: Byte;
 
-procedure pattern_list__proc;
+procedure pattern_list__proc; cdecl;
 
 var
   chunk: tCHUNK;

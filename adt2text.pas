@@ -1301,12 +1301,13 @@ const
     'Hubert Lamontagne (Madbrain), Jason Karl Warren (Televicious), kvee,',
     'Vojta Nedved (nula), and all members of AT2 user group on Facebook');
 
-procedure HELP(topic: String);
+procedure HELP(topic: String); cdecl;
 procedure ShowStartMessage;
 
 implementation
 
 uses
+  pascal,
   debug,
   StrUtils,
   AdT2unit,
@@ -1336,7 +1337,8 @@ const
   shift_f9_2 = '~[Shift] F9~               @F9 with no Trace';
   alt_f8_2   = '~[Alt] F8~                 @F8 Ã with synchronization';
 
-procedure HELP(topic: String);
+procedure HELP(topic: String); cdecl;
+public name PUBLIC_PREFIX + 'HELP';
 
 var
   spec_attr_table: array[1..255] of Byte;

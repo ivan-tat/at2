@@ -1,8 +1,15 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
+
+String frame_solid_type1[8+1];
+String frame_solid_type2[8+1];
+String frame_single[8+1];
+String frame_double[8+1];
+String frame_double_side[8+1];
+String frame_double_top[8+1];
 
 const char *patt_win_tracks[3][5] = {
   {

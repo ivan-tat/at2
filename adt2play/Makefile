@@ -1,6 +1,6 @@
 #!/bin/make -f
 # SPDX-FileType: SOURCE
-# SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+# SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # $(srcdir) is root directory, $(srcdir1) is current directory
@@ -47,6 +47,7 @@ SRCS=\
  go32/dpmi.c\
  go32/iss_tim.c\
  go32/VGA.c\
+ pascal.c\
  pascal/dos.c\
  pascal/dpmi.c\
  pascal/go32.c\
@@ -223,6 +224,7 @@ pascal_ppu_deps=\
  $(srcdir)/pascal/stdio.pas\
  $(srcdir)/pascal/stdlib.pas\
  $(srcdir)/pascal/string.pas\
+ pascal.o\
  pascal/stdio.o\
  pascal/stdlib.o\
  pascal/string.o\

@@ -1595,7 +1595,7 @@ begin { test_instrument_alt2 }
   _dbg_leave; //EXIT //test_instrument_alt2
 end;
 
-procedure fselect_external_proc;
+procedure fselect_external_proc; cdecl;
 
 var
   test_ins1: Byte;

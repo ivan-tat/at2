@@ -12,6 +12,11 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <sys/types.h>
+#if WIN32 || WIN64 || WINNT
+#include <windows.h>
+#endif // WIN32 || WIN64 || WINNT
+
+#pragma pack(push, 1)
 
 typedef unsigned char Shortstring;
 
@@ -25,12 +30,12 @@ typedef Shortstring String;
 typedef Shortstring_t String_t;
 
 #define Length(s) ((s)[0])
-#define SetLength(s, l) (s)[0] = (l)
+#define SetLength(s, l) Pascal_SetLength (s, l)
 #define GetStr(s) (&(s)[1])
 
-// `go32' unit
-
 #if GO32
+
+// `go32' unit
 
 extern uint16_t __v2prt0_ds_alias;
 extern uint16_t Pascal_dosmemselector;
@@ -87,12 +92,16 @@ extern uint16_t *Pascal_InOutRes_ptr;
 extern ssize_t Pascal_FileRec_size;
 extern ssize_t Pascal_TextRec_size;
 
+extern void Pascal_SetLength (String *s, size_t count);
+
 extern void Pascal_Halt (int32_t errnum) __NORETURN;
 
 extern void Pascal_FillChar (void *x, ssize_t count, uint8_t value);
 extern void Pascal_FillWord (void *x, ssize_t count, uint16_t value);
 
 extern void Pascal_Move (const void *src, void *dest, ssize_t n);
+
+extern String_t Pascal_ParamStr (int32_t l);
 
 extern float Pascal_Abs_Single (float x);
 extern double Pascal_Abs_Double (double x);
@@ -122,6 +131,9 @@ extern void Pascal_EraseFile (void *file);
 extern void Pascal_EraseText (void *text);
 extern void Pascal_CloseFile (void *file);
 extern void Pascal_CloseText (void *text);
+
+extern void Pascal_GetDir (uint8_t drivenr, String *dir);
+extern void Pascal_ChDir (const String *s);
 
 extern int Pascal_Random (int l);
 
@@ -161,6 +173,8 @@ extern char Pascal_ReadKey (void);
 extern int16_t *Pascal_DosError_ptr;
 #define Pascal_DosError (*Pascal_DosError_ptr)
 
+#define Pascal_FileNameLen 255
+
 // Bit masks for file attribute
 #define Pascal_ReadOnly  0x01 // Read-Only file attribute
 #define Pascal_Hidden    0x02 // Hidden file attribute
@@ -175,6 +189,82 @@ extern int16_t *Pascal_DosError_ptr;
 //   * Pascal_ReadOnly: if the current process doesn't have access to the file
 //   * Pascal_Hidden: for files whose name starts with a dot ('.')
 
+typedef String ComStr_t[Pascal_FileNameLen+1];
+typedef String PathStr_t[Pascal_FileNameLen+1];
+typedef String DirStr_t[Pascal_FileNameLen+1];
+typedef String NameStr_t[Pascal_FileNameLen+1];
+typedef String ExtStr_t[Pascal_FileNameLen+1];
+
+#if GO32
+
+typedef struct {
+  uint8_t Fill[21]; // HINT: (FPC) start index 1
+  uint8_t Attr;
+  int32_t Time;
+  //uint16_t reserved; not in DJGPP V2
+  int32_t Size;
+  String Name[255+1]; // LFN Name, DJGPP uses only [12] but more can't hurt (PFV)
+} SearchRec_t;
+
+#elif linux || unix
+
+typedef struct {
+  int64_t  SearchPos;  // directory position
+  int32_t  SearchNum;  // to track which search this is
+  void    *DirPtr;     // directory pointer for reading directory
+  uint8_t  SearchType; // 0=normal, 1=open will close, 2=only 1 file
+  uint8_t  SearchAttr; // attribute we are searching for
+  uint16_t Mode;
+  uint8_t  Fill;       // future use
+  uint8_t  Attr;       // attribute of found file
+  int32_t  Time;       // last modify date of found file
+  int32_t  Size;       // file size of found file
+  uint16_t Reserved;   // future use
+  String   Name[Pascal_FileNameLen+1];       // name of found file
+  String   SearchSpec[Pascal_FileNameLen+1]; // search pattern
+  uint16_t NamePos;    // end of path, start of name position
+} SearchRec_t;
+
+#elif WIN32 || WIN64 || WINNT
+
+#define PASCAL_MAX_PATH 260 // including terminating zero
+
+typedef struct {
+  uint32_t dwLowDateTime;
+  uint32_t dwHighDateTime;
+} TWinFileTime;
+
+typedef struct {
+  uint32_t dwFileAttributes;
+  TWinFileTime ftCreationTime;
+  TWinFileTime ftLastAccessTime;
+  TWinFileTime ftLastWriteTime;
+  uint32_t nFileSizeHigh;
+  uint32_t nFileSizeLow;
+  uint32_t dwReserved0;
+  uint32_t dwReserved1;
+  char cFileName[PASCAL_MAX_PATH]; // HINT: (FPC) start index 0
+  char cAlternateFileName[16]; // HINT: (FPC) start index 0
+  // The structure should be 320 bytes long...
+  int32_t pad;
+} TWinFindData;
+
+typedef struct {
+  uint32_t FindHandle;
+  TWinFindData WinFindData;
+  int32_t ExcludeAttr;
+  int32_t Time;
+  int32_t Size;
+  int32_t Attr;
+  String Name[255+1];
+} SearchRec_t;
+
+#else // !(GO32 || linux || unix || WIN32 || WIN64 || WINNT)
+
+#error Not implemented
+
+#endif // !(GO32 || linux || unix || WIN32 || WIN64 || WINNT)
+
 // `file' (`text') must have been assigned, but not opened.
 extern void Pascal_GetFAttrFile (void *file, uint16_t *attr);
 extern void Pascal_GetFAttrText (void *text, uint16_t *attr);
@@ -183,6 +273,11 @@ extern void Pascal_GetFAttrText (void *text, uint16_t *attr);
 extern void Pascal_SetFAttrFile (void *file, uint16_t attr);
 extern void Pascal_SetFAttrText (void *text, uint16_t attr);
 
+extern int64_t Pascal_DiskSize (uint8_t drive);
+
+extern void Pascal_FindFirst (const String *path, uint16_t attr, SearchRec_t *f);
+extern void Pascal_FindNext (SearchRec_t *f);
+
 // `sysutils' unit
 
 extern TDateTime Pascal_Now (void);
@@ -190,5 +285,15 @@ extern TDateTime Pascal_Now (void);
 // `dateutils' unit
 
 extern int64_t Pascal_DateTimeToUnix (const TDateTime value);
+
+#if !(GO32 || linux || unix)
+
+// `windows' unit
+
+extern uint32_t Pascal_GetLogicalDriveStrings (uint32_t nBufferLength, char *lpBuffer);
+
+#endif // !(GO32 || linux || unix)
+
+#pragma pack(pop)
 
 #endif // !defined(PASCAL_H)

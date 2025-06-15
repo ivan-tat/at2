@@ -65,12 +65,12 @@ uses
   TxtScrIO,
   DepackIO;
 
-procedure a2b_lister_external_proc; forward;
+procedure a2b_lister_external_proc; cdecl; forward;
 procedure a2w_lister_external_proc_callback; forward;
 procedure a2w_macro_lister_external_proc_callback; forward;
-procedure bnk_lister_external_proc; forward;
-procedure fib_lister_external_proc; forward;
-procedure ibk_lister_external_proc; forward;
+procedure bnk_lister_external_proc; cdecl; forward;
+procedure fib_lister_external_proc; cdecl; forward;
+procedure ibk_lister_external_proc; cdecl; forward;
 
 var
   xstart,ystart: Byte;
@@ -297,7 +297,7 @@ begin
 end;
 
 procedure a2b_lister_external_proc_callback; forward;
-procedure a2b_lister_external_proc;
+procedure a2b_lister_external_proc; cdecl;
 
 var
   temp: Byte;
@@ -340,7 +340,7 @@ var
   header: tOLD_HEADER;
   header2: tHEADER;
   crc,temp: Longint;
-  old_external_proc: procedure;
+  old_external_proc: procedure; cdecl;
   old_topic_len: Byte;
   old_cycle_moves: Boolean;
   idx,index,nm_valid: Byte;
@@ -980,7 +980,7 @@ begin
   _dbg_leave; //EXIT //_macro_preview_refresh
 end;
 
-procedure a2w_macro_lister_external_proc;
+procedure a2w_macro_lister_external_proc; cdecl;
 
 const
   _check_chr: array[BOOLEAN] of Char = (#251,' ');
@@ -1827,7 +1827,7 @@ begin
   _dbg_leave; //EXIT //_fmreg_macro_preview_refresh
 end;
 
-procedure a2w_lister_external_proc;
+procedure a2w_lister_external_proc; cdecl;
 
 var
   idx,temp: Byte;
@@ -2075,7 +2075,7 @@ var
   ysize: Byte;
 
   // backup of Menu settings / variables
-  old_external_proc: procedure;
+  old_external_proc: procedure; cdecl;
   old_topic_len: Byte;
   old_cycle_moves: Boolean;
   old_topic_mask_chr: Set of Char;
@@ -3806,7 +3806,7 @@ var
   header: tBNK_HEADER;
   temp: Longint;
   index: Word;
-  old_external_proc: procedure;
+  old_external_proc: procedure; cdecl;
   old_topic_len: Byte;
   old_cycle_moves: Boolean;
   xstart,ystart: Byte;
@@ -4096,7 +4096,7 @@ var
   header: tFIB_HEADER;
   temp: Longint;
   index: Word;
-  old_external_proc: procedure;
+  old_external_proc: procedure; cdecl;
   old_topic_len: Byte;
   old_cycle_moves: Boolean;
   xstart,ystart: Byte;
@@ -4349,7 +4349,7 @@ var
   header: array[1..4] of Char;
   temp: Longint;
   index: Word;
-  old_external_proc: procedure;
+  old_external_proc: procedure; cdecl;
   old_topic_len: Byte;
   old_cycle_moves: Boolean;
   xstart,ystart: Byte;
@@ -4701,7 +4701,7 @@ begin
   _dbg_leave; //EXIT //a2w_macro_lister_external_proc_callback
 end;
 
-procedure bnk_lister_external_proc;
+procedure bnk_lister_external_proc; cdecl;
 begin
   _dbg_enter ({$I %FILE%}, 'bnk_lister_external_proc');
 
@@ -4714,7 +4714,7 @@ begin
   _dbg_leave; //EXIT //bnk_lister_external_proc
 end;
 
-procedure fib_lister_external_proc;
+procedure fib_lister_external_proc; cdecl;
 begin
   _dbg_enter ({$I %FILE%}, 'fib_lister_external_proc');
 
@@ -4727,7 +4727,7 @@ begin
   _dbg_leave; //EXIT //fib_lister_external_proc
 end;
 
-procedure ibk_lister_external_proc;
+procedure ibk_lister_external_proc; cdecl;
 begin
   _dbg_enter ({$I %FILE%}, 'ibk_lister_external_proc');
 

@@ -38,7 +38,7 @@ procedure fin_file_loader;
 procedure ins_file_loader;
 procedure sbi_file_loader;
 procedure sgi_file_loader;
-procedure fselect_external_proc;
+procedure fselect_external_proc; cdecl;
 procedure import_standard_instrument_alt(var data);
 procedure test_instrument_alt(chan: Byte; fkey: Word; loadMacros: Boolean; bankSelector: Boolean; loadArpVib: Boolean;
                               test_ins1,test_ins2: Byte);

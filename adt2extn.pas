@@ -16,6 +16,8 @@
 unit AdT2extn;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$MODESWITCH CVAR}
+{$L adt2extn.o}
 interface
 
 const
@@ -73,9 +75,9 @@ type
   tTRANSPOSE_TYPE = (ttTransposeUp,ttTransposeDown,
                      ttTransposeCurrentIns,ttTransposeAllIns);
 
-function _patts_marked: Byte;
+function _patts_marked: Byte; cdecl; external;
 
-procedure nul_volume_bars; cdecl;
+procedure nul_volume_bars; cdecl; external;
 procedure transpose_custom_area(type1,type2: tTRANSPOSE_TYPE;
                                 patt0,patt1,track0,track1,line0,line1: Byte;
                                 factor: Byte);
@@ -125,38 +127,14 @@ uses
   MenuLib1,
   MenuLib2;
 
-function _patts_marked: Byte;
+//_patts_marked
+
+//nul_volume_bars
 
 var
-  temp,
-  result: Byte;
-
-begin
-  result := 0;
-  For temp := 0 to $7f do
-    If (songdata.pattern_names[temp][1] = #16) then
-      Inc(result);
-  _patts_marked := result;
-end;
-
-procedure nul_volume_bars; cdecl;
-public name PUBLIC_PREFIX + 'nul_volume_bars';
-
-var
-  chan: Byte;
-
-begin
-  For chan := chan_pos to chan_pos+MAX_TRACKS-1 do
-    If channel_flag[chan] then
-      show_str(08+(chan-PRED(chan_pos)-1)*15,MAX_PATTERN_ROWS+11,
-               ExpStrR('',14,#205),
-               pattern_bckg+pattern_border);
-end;
-
-const
-  transp_menu2: Boolean = FALSE;
-  transp_pos1: Byte = 1;
-  transp_pos2: Byte = 1;
+  transp_menu2: Boolean; cvar; external;
+  transp_pos1: Byte; cvar; external;
+  transp_pos2: Byte; cvar; external;
 
 procedure transpose_custom_area(type1,type2: tTRANSPOSE_TYPE;
                                 patt0,patt1,track0,track1,line0,line1: Byte;
@@ -638,7 +616,7 @@ begin
   _dbg_leave; //EXIT //transpose_custom_area
 end;
 
-procedure transpose__control_proc;
+procedure transpose__control_proc; cdecl;
 begin
   _dbg_enter ({$I %FILE%}, 'transpose__control_proc');
 
@@ -5604,7 +5582,7 @@ function FILE_open(masks: String; loadBankPossible: Boolean): Byte;
 var
   fname,temps: String;
   mpos,index: Byte;
-  old_ext_proc: procedure;
+  old_ext_proc: procedure; cdecl;
   old_songdata_source: String;
   old_play_status: tPLAY_STATUS;
   old_tracing: Boolean;

@@ -3048,7 +3048,7 @@ begin
   _dbg_leave; //EXIT //paste_object
 end;
 
-procedure instr_control_ai;
+procedure instr_control_ai; cdecl;
 
 var
   temp,temp2: Byte;
@@ -3092,7 +3092,7 @@ begin
   _dbg_leave; //EXIT //instr_control_ai
 end;
 
-procedure instr_control_proc;
+procedure instr_control_proc; cdecl;
 
 var
   temp,temp2,ins1,ins2: Byte;
@@ -3665,7 +3665,7 @@ begin
   _dbg_leave; //EXIT //INSTRUMENT_CONTROL
 end;
 
-procedure instr_control_proc_alt;
+procedure instr_control_proc_alt; cdecl;
 begin
   _dbg_enter ({$I %FILE%}, 'instr_control_proc_alt');
 
