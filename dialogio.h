@@ -15,6 +15,8 @@
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 #pragma pack(push, 1)
 
+/*** Dialog ***/
+
 typedef struct
 {
   String     frame_type[255+1];
@@ -38,6 +40,25 @@ typedef struct
   bool       all_enabled;
   ExtKeyCode terminate_keys[50]; // HINT: (FPC) start index 1
 } tDIALOG_SETTING;
+
+typedef struct
+{
+  ExtKeyCode keystroke;
+  String     context[255+1];
+  String     input_str[255+1];
+  uint8_t    xpos, ypos;
+  uint8_t    xsize, ysize;
+  uint8_t    cur_item;
+  void     (*ext_proc) (void);
+} tDIALOG_ENVIRONMENT;
+
+extern tDIALOG_SETTING     dl_setting;
+extern tDIALOG_ENVIRONMENT dl_environment;
+
+uint8_t Dialog (const String *text, const String *keys, const String *title,
+                uint8_t spos);
+
+/*** Menu ***/
 
 typedef struct
 {
@@ -71,17 +92,6 @@ typedef struct
 
 typedef struct
 {
-  ExtKeyCode keystroke;
-  String     context[255+1];
-  String     input_str[255+1];
-  uint8_t    xpos, ypos;
-  uint8_t    xsize, ysize;
-  uint8_t    cur_item;
-  void     (*ext_proc) (void);
-} tDIALOG_ENVIRONMENT;
-
-typedef struct
-{
   tSCREEN_MEM *v_dest;
   ExtKeyCode keystroke;
   String   context[255+1];
@@ -108,6 +118,67 @@ typedef struct
   uint8_t  hlight_chrs;
 } tMENU_ENVIRONMENT;
 
+extern tMENU_SETTING     mn_setting;
+extern tMENU_ENVIRONMENT mn_environment;
+
+uint16_t Menu (void *data, uint8_t x, uint8_t y, uint16_t spos, uint8_t len,
+               uint8_t len2, uint16_t count, const String *title);
+
+/*** Menu 1 ***/
+
+typedef struct
+{
+  String     frame_type[255+1];
+  bool       shadow_enabled;
+  bool       posbar_enabled;
+  uint8_t    title_attr;
+  uint8_t    menu_attr;
+  uint8_t    text_attr;
+  uint8_t    text2_attr;
+  uint8_t    default_attr;
+  uint8_t    short_attr;
+  uint8_t    short2_attr;
+  uint8_t    disbld_attr;
+  uint8_t    contxt_attr;
+  uint8_t    contxt2_attr;
+  bool       center_box;
+  bool       cycle_moves;
+  bool       edit_contents;
+  bool       reverse_use;
+  uint8_t    fixed_len;
+  ExtKeyCode terminate_keys[50]; // HINT: (FPC) start index 1
+} tMENU1_SETTING;
+
+typedef struct
+{
+  tSCREEN_MEM *v_dest;
+  ExtKeyCode   keystroke;
+  String       context[255+1];
+  bool         unpolite;
+  bool         winshade;
+  uint8_t      edit_pos;
+  uint16_t     curr_pos;
+  void       (*ext_proc) ();
+  void       (*refresh) ();
+  bool         do_refresh;
+  bool         preview;
+  uint8_t      descr_len;
+  void        *descr;
+} tMENU1_ENVIRONMENT;
+
+// Aliases
+#define mn1_setting     MenuLib1_mn_setting     // TODO: remove when done
+#define mn1_environment MenuLib1_mn_environment // TODO: remove when done
+#define Menu1           MenuLib1_Menu           // TODO: remove when done
+
+extern tMENU1_SETTING     mn1_setting;
+extern tMENU1_ENVIRONMENT mn1_environment;
+
+uint16_t Menu1 (void *data, uint8_t x, uint8_t y, uint16_t spos, uint8_t len,
+                uint8_t len2, uint16_t count, const String *title);
+
+/*** File Selector ***/
+
 #if GO32
 #define FILENAME_SIZE 12
 #define DIR_SIZE 80
@@ -124,16 +195,7 @@ typedef struct
   String last_dir[DIR_SIZE+1];
 } tFSELECT_ENVIRONMENT;
 
-extern tDIALOG_SETTING      dl_setting;
-extern tMENU_SETTING        mn_setting;
-extern tDIALOG_ENVIRONMENT  dl_environment;
-extern tMENU_ENVIRONMENT    mn_environment;
 extern tFSELECT_ENVIRONMENT fs_environment;
-
-uint8_t Dialog (const String *text, const String *keys, const String *title, uint8_t spos);
-
-uint16_t Menu (void *data, uint8_t x, uint8_t y, uint16_t spos, uint8_t len,
-               uint8_t len2, uint16_t count, const String *title);
 
 String_t Fselect (const String *mask);
 

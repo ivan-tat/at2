@@ -124,7 +124,6 @@ uses
   DialogIO,
   ParserIO,
   TxtScrIO,
-  MenuLib1,
   MenuLib2;
 
 //_patts_marked

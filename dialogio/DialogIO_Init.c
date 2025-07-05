@@ -24,6 +24,8 @@ void DialogIO_Init (void)
   UTF8nstr_to_AT2 (t, 8, FRAME_DOUBLE_TOP);
   StrToString (frame_double_top, (char *)t, 8);
 
+  /*** Dialog ***/
+
   CopyString (dl_setting.frame_type, frame_double, 8);
   //dl_setting.shadow_enabled
   dl_setting.title_attr      = dialog_background + dialog_title;
@@ -44,6 +46,18 @@ void DialogIO_Init (void)
   //dl_setting.cycle_moves
   //dl_setting.all_enabled
   //dl_setting.terminate_keys
+
+  dl_environment.keystroke   = 0; // no key
+  StrToString (dl_environment.context, "", 255);
+  StrToString (dl_environment.input_str, "", 255);
+  dl_environment.xpos        = 0;
+  dl_environment.ypos        = 0;
+  dl_environment.xsize       = 0;
+  dl_environment.ysize       = 0;
+  dl_environment.cur_item    = 1;
+  dl_environment.ext_proc    = NULL;
+
+  /*** Menu ***/
 
   CopyString (mn_setting.frame_type, frame_double, 8);
   //mn_setting.frame_enabled
@@ -72,16 +86,6 @@ void DialogIO_Init (void)
   //mn_setting.homing_pos
   //mn_setting.terminate_keys
 
-  dl_environment.keystroke   = 0; // no key
-  StrToString (dl_environment.context, "", 255);
-  StrToString (dl_environment.input_str, "", 255);
-  dl_environment.xpos        = 0;
-  dl_environment.ypos        = 0;
-  dl_environment.xsize       = 0;
-  dl_environment.ysize       = 0;
-  dl_environment.cur_item    = 1;
-  dl_environment.ext_proc    = NULL;
-
   mn_environment.v_dest      = screen_ptr;
   mn_environment.keystroke   = 0; // no key
   StrToString (mn_environment.context, "", 255);
@@ -108,6 +112,49 @@ void DialogIO_Init (void)
   mn_environment.ysize       = 0;
   mn_environment.desc_pos    = 0;
   mn_environment.hlight_chrs = 0;
+
+  /*** Menu 1 ***/
+
+  CopyString (mn1_setting.frame_type, frame_single, 8);
+  mn1_setting.shadow_enabled = false;
+  //mn1_setting.posbar_enabled
+  mn1_setting.title_attr     = dialog_background + dialog_title;
+  mn1_setting.menu_attr      = dialog_background + dialog_text;
+  mn1_setting.text_attr      = dialog_background + dialog_item;
+  mn1_setting.text2_attr     = dialog_sel_itm_bck + dialog_sel_itm;
+  mn1_setting.default_attr   = dialog_def_bckg + dialog_def;
+  mn1_setting.short_attr     = dialog_background + dialog_short;
+  mn1_setting.short2_attr    = dialog_sel_itm_bck + dialog_sel_short;
+  mn1_setting.disbld_attr    = dialog_background + dialog_item_dis;
+  mn1_setting.contxt_attr    = dialog_background + dialog_context;
+  mn1_setting.contxt2_attr   = dialog_background + dialog_context_dis;
+  mn1_setting.center_box     = false;
+  mn1_setting.cycle_moves    = false;
+  //mn1_setting.edit_contents
+  //mn1_setting.reverse_use
+  //mn1_setting.fixed_len
+  mn1_setting.terminate_keys[2] = kTAB;
+  mn1_setting.terminate_keys[3] = kLEFT;
+  mn1_setting.terminate_keys[4] = kRIGHT;
+  mn1_setting.terminate_keys[5] = kCtrlO;
+  mn1_setting.terminate_keys[6] = kF1;
+  mn1_setting.terminate_keys[7] = kShTAB;
+
+  mn1_environment.v_dest     = screen_ptr;
+  mn1_environment.keystroke  = 0; // no key
+  StrToString (mn1_environment.context, "", 255);
+  mn1_environment.unpolite   = false;
+  mn1_environment.winshade   = true;
+  //mn1_environment.edit_pos
+  //mn1_environment.curr_pos
+  mn1_environment.ext_proc   = NULL;
+  mn1_environment.refresh    = NULL;
+  mn1_environment.do_refresh = false;
+  mn1_environment.preview    = false;
+  mn1_environment.descr_len  = 0;
+  mn1_environment.descr      = NULL;
+
+  /*** File Selector ***/
 
   StrToString (fs_environment.last_file, "FNAME:EXT", FILENAME_SIZE);
   StrToString (fs_environment.last_dir, "", DIR_SIZE);

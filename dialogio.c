@@ -30,6 +30,11 @@
 
 #pragma pack(push, 1)
 
+#include "dialogio/OutKey.c" // static, used in `Dialog' and `Menu'
+#include "dialogio/ReadChunk.c" // static, used in `Dialog' and `Fselect'
+
+/*** Dialog ***/
+
 tDIALOG_SETTING dl_setting =
 {
   .frame_type     = { 0, }, // frame_single
@@ -58,6 +63,37 @@ tDIALOG_SETTING dl_setting =
     0,
   }
 };
+
+tDIALOG_ENVIRONMENT dl_environment;
+
+typedef struct
+{
+  String_t str;
+  uint8_t pos;
+  char key;
+  bool use;
+} tDBUFFR[100];
+
+static struct
+{
+  uint16_t idx2;
+  uint16_t idx3;
+  uint16_t num;
+  uint16_t nm2;
+  uint16_t xstart;
+  uint16_t ystart;
+  String_t str;
+  tDBUFFR  dbuf;
+} _dlg;
+
+#include "dialogio/Dialog_SubPos.c" // static
+#include "dialogio/Dialog_AddPos.c" // static
+#include "dialogio/Dialog_ShowItem.c" // static
+#include "dialogio/Dialog_RetKey.c" // static
+//#include "dialogio/Dialog_CurrentKey.c" // static, not used actually
+#include "dialogio/Dialog.c"
+
+/*** Menu ***/
 
 tMENU_SETTING mn_setting =
 {
@@ -94,43 +130,7 @@ tMENU_SETTING mn_setting =
   }
 };
 
-tDIALOG_ENVIRONMENT  dl_environment;
-tMENU_ENVIRONMENT    mn_environment;
-tFSELECT_ENVIRONMENT fs_environment;
-
-#include "dialogio/OutKey.c" // static, used in `Dialog' and `Menu'
-#include "dialogio/ReadChunk.c" // static, used in `Dialog' and `Fselect'
-
-/*** Dialog ***/
-
-typedef struct
-{
-  String_t str;
-  uint8_t pos;
-  char key;
-  bool use;
-} tDBUFFR[100];
-
-static struct
-{
-  uint16_t idx2;
-  uint16_t idx3;
-  uint16_t num;
-  uint16_t nm2;
-  uint16_t xstart;
-  uint16_t ystart;
-  String_t str;
-  tDBUFFR  dbuf;
-} _dlg;
-
-#include "dialogio/Dialog_SubPos.c" // static
-#include "dialogio/Dialog_AddPos.c" // static
-#include "dialogio/Dialog_ShowItem.c" // static
-#include "dialogio/Dialog_RetKey.c" // static
-//#include "dialogio/Dialog_CurrentKey.c" // static, not used actually
-#include "dialogio/Dialog.c"
-
-/*** Menu ***/
+tMENU_ENVIRONMENT mn_environment;
 
 typedef struct
 {
@@ -172,7 +172,73 @@ static struct
 #include "dialogio/Menu_edit_contents.c" // static
 #include "dialogio/Menu.c"
 
-/*** File selector ***/
+/*** Menu 1 ***/
+
+tMENU1_SETTING mn1_setting =
+{
+  .frame_type     = { 0, }, // frame_single
+  .shadow_enabled = true,
+  .posbar_enabled = true,
+  .title_attr     = 0x0F,
+  .menu_attr      = 0x07,
+  .text_attr      = 0x07,
+  .text2_attr     = 0x70,
+  .default_attr   = 0x0F,
+  .short_attr     = 0x0F,
+  .short2_attr    = 0x70,
+  .disbld_attr    = 0x07,
+  .contxt_attr    = 0x0F,
+  .contxt2_attr   = 0x07,
+  .center_box     = true,
+  .cycle_moves    = true,
+  .edit_contents  = false,
+  .reverse_use    = false,
+  .fixed_len      = 0,
+  .terminate_keys =
+  {
+    kESC,
+    kENTER,
+    0,
+  }
+};
+
+tMENU1_ENVIRONMENT mn1_environment;
+
+static struct
+{
+  uint16_t   idx;
+  uint16_t   idx2;
+  uint16_t   max;
+  uint16_t   page;
+  uint16_t   first;
+  uint16_t   last;
+  uint16_t   opage;
+  uint16_t   opos;
+  bool       solid;
+  uint8_t    x;
+  uint8_t    y;
+  uint8_t    len;
+  uint8_t    len2;
+  void      *data;
+  uint16_t   count;
+  uint16_t   vscrollbar_size;
+  uint16_t   vscrollbar_pos;
+  tMBUFFR    mbuf;
+} _mnu1;
+
+#include "dialogio/Menu1_pstr.c" // static
+#include "dialogio/Menu1_pdes.c" // static
+#include "dialogio/Menu1_ShowCStr.c" // static
+#include "dialogio/Menu1_refresh.c" // static
+#include "dialogio/Menu1_SubPos.c" // static
+#include "dialogio/Menu1_AddPos.c" // static
+#include "dialogio/Menu1_RetKey.c" // static
+#include "dialogio/Menu1_edit_contents.c" // static
+#include "dialogio/Menu1.c"
+
+/*** File Selector ***/
+
+tFSELECT_ENVIRONMENT fs_environment;
 
 #define MAX_FILES 4096
 static const String updir_str[] = "\x06" "\x13" "updir"; // TODO: initialize using `charmap'

@@ -60,6 +60,23 @@ type
                       all_enabled:    Boolean;
                       terminate_keys: array[1..50] of Word;
                     end;
+
+  tDIALOG_ENVIRONMENT = Record
+                          keystroke:   Word;
+                          context:     String;
+                          input_str:   String;
+                          xpos,ypos:   Byte;
+                          xsize,ysize: Byte;
+                          cur_item:    Byte;
+                          ext_proc:    procedure; cdecl;
+                        end;
+
+var
+  dl_setting: tDIALOG_SETTING; cvar; external;
+  dl_environment: tDIALOG_ENVIRONMENT; cvar; external;
+
+function Dialog(text,keys,title: String; spos: Byte): Byte; cdecl; external;
+
 type
   tMENU_SETTING = Record
                     frame_type:     String;
@@ -89,16 +106,7 @@ type
                     homing_pos:     Longint;
                     terminate_keys: array[1..50] of Word;
                   end;
-type
-  tDIALOG_ENVIRONMENT = Record
-                          keystroke:   Word;
-                          context:     String;
-                          input_str:   String;
-                          xpos,ypos:   Byte;
-                          xsize,ysize: Byte;
-                          cur_item:    Byte;
-                          ext_proc:    procedure; cdecl;
-                        end;
+
 type
   tMENU_ENVIRONMENT = Record
                         v_dest:      tSCREEN_MEM_PTR;
@@ -127,6 +135,56 @@ type
                         hlight_chrs: Byte;
                       end;
 
+var
+  mn_setting: tMENU_SETTING; cvar; external;
+  mn_environment: tMENU_ENVIRONMENT; cvar; external;
+
+function Menu(var data; x,y: Byte; spos: Word;
+              len,len2: Byte; count: Word; title: String): Word; cdecl; external;
+
+var
+  MenuLib1_mn_setting: Record
+                         frame_type:     String;
+                         shadow_enabled: Boolean;
+                         posbar_enabled: Boolean;
+                         title_attr,
+                         menu_attr,
+                         text_attr,
+                         text2_attr,
+                         default_attr,
+                         short_attr,
+                         short2_attr,
+                         disbld_attr,
+                         contxt_attr,
+                         contxt2_attr:   Byte;
+                         center_box:     Boolean;
+                         cycle_moves:    Boolean;
+                         edit_contents:  Boolean;
+                         reverse_use:    Boolean;
+                         fixed_len:      Byte;
+                         terminate_keys: array[1..50] of Word;
+                       end; cvar; external;
+
+var
+  MenuLib1_mn_environment: Record
+                             v_dest:     tSCREEN_MEM_PTR;
+                             keystroke:  Word;
+                             context:    String;
+                             unpolite:   Boolean;
+                             winshade:   Boolean;
+                             edit_pos:   Byte;
+                             curr_pos:   Word;
+                             ext_proc:   procedure;
+                             Menu1_refresh:    procedure; cdecl;
+                             do_refresh: Boolean;
+                             preview:    Boolean;
+                             descr_len:  Byte;
+                             descr:      Pointer;
+                           end; cvar; external;
+
+function MenuLib1_Menu(var data; x,y: Byte; spos: Word;
+                       len,len2: Byte; count: Word; title: String): Word; cdecl; external;
+
 const
 {$IFDEF GO32V2}
   FILENAME_SIZE = 12;
@@ -144,15 +202,8 @@ type
                            last_dir:  String[DIR_SIZE];
                          end;
 var
-  dl_setting: tDIALOG_SETTING; cvar; external;
-  mn_setting: tMENU_SETTING; cvar; external;
-  dl_environment: tDIALOG_ENVIRONMENT; cvar; external;
-  mn_environment: tMENU_ENVIRONMENT; cvar; external;
   fs_environment: tFSELECT_ENVIRONMENT; cvar; external;
 
-function Dialog(text,keys,title: String; spos: Byte): Byte; cdecl; external;
-function Menu(var data; x,y: Byte; spos: Word;
-              len,len2: Byte; count: Word; title: String): Word; cdecl; external;
 function Fselect(mask: String): String; cdecl; external;
 
 procedure DialogIO_Init; cdecl; external;

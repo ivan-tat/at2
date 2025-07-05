@@ -17,7 +17,7 @@ static String_t Menu_pstr (uint16_t item)
   else
     t.len = 0;
 
-  t = ExpStrR ((String *)&t, !_mnu.solid ? _mnu.len - 2 : _mnu.len, ' ');
+  t = ExpStrR ((String *)&t, _mnu.len - (_mnu.solid ? 0 : 2), ' ');
 
   DBG_LEAVE (); //EXIT //Menu_pstr
   return t;

@@ -450,10 +450,6 @@ dialogio_ppu_deps=\
  units/platform.ppu\
  dialogio.o
 
-menulib1_ppu_deps=\
- $(srcdir)/menulib1.pas\
- units/debug.ppu
-
 menulib2_ppu_deps=\
  $(srcdir)/menulib2.pas\
  units/debug.ppu
@@ -497,7 +493,6 @@ adtrack2_bin_deps+=\
  $(adt2unit_ppu_deps)\
  $(depackio_ppu_deps)\
  $(dialogio_ppu_deps)\
- $(menulib1_ppu_deps)\
  $(menulib2_ppu_deps)\
  $(txtscrio_ppu_deps)\
  units/adt2data.ppu\

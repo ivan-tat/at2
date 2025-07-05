@@ -43,22 +43,23 @@ static void Menu_edit_contents (uint16_t item, uint8_t x, uint8_t y, uint8_t len
   else
     t = CutStr ((String *)&item_str);
 
+  remove_spaces_right ((String *)&t);
+
   mn_environment.is_editing = true;
-
-  while ((t.len != 0) && (t.str[t.len - 1] == ' '))
-    Delete ((String *)&t, t.len, 1);
-
-  t = InputStr ((String *)&t, x + 1 + mn_environment.edit_pos, y + _mnu.idx2,
+  t = InputStr ((String *)&t,
+                x + 1 + mn_environment.edit_pos,
+                y + _mnu.idx2,
                 _mnu.max - 2 - mn_environment.edit_pos + 1,
                 _mnu.max - 2 - mn_environment.edit_pos + 1,
-                mn_setting.text2_attr, mn_setting.default_attr);
+                mn_setting.text2_attr,
+                mn_setting.default_attr);
   mn_environment.is_editing = false;
 
   HideCursor ();
   if (is_environment.keystroke == kENTER)
   {
     if (   (mn_environment.edit_pos > 0)
-        && (mn_environment.edit_pos < (_mnu.max - 2)))
+        && (mn_environment.edit_pos < _mnu.max - 2))
     {
       String_t s = Copy ((String *)&item_str, 1, mn_environment.edit_pos);
 

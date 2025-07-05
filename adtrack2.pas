@@ -50,7 +50,6 @@ uses
   StringIO,
   DialogIO,
   ParserIO,
-  MenuLib1,
   MenuLib2;
 
 {$IFDEF GO32V2}
@@ -338,7 +337,6 @@ begin { MAIN }
   DialogIO_Init;
   StringIO_Init;
   TxtScrIO_Init;
-  MenuLib1_Init;
   MenuLib2_Init;
 
   If _debug_ then WriteLn('--- initializing songdata');
