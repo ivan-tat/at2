@@ -174,8 +174,8 @@ var
                              winshade:   Boolean;
                              edit_pos:   Byte;
                              curr_pos:   Word;
-                             ext_proc:   procedure;
-                             Menu1_refresh:    procedure; cdecl;
+                             ext_proc:   procedure; cdecl;
+                             refresh:    procedure; cdecl;
                              do_refresh: Boolean;
                              preview:    Boolean;
                              descr_len:  Byte;
@@ -183,6 +183,48 @@ var
                            end; cvar; external;
 
 function MenuLib1_Menu(var data; x,y: Byte; spos: Word;
+                       len,len2: Byte; count: Word; title: String): Word; cdecl; external;
+
+var
+  MenuLib2_mn_setting: Record
+                         frame_type:     String;
+                         shadow_enabled: Boolean;
+                         posbar_enabled: Boolean;
+                         title_attr,
+                         menu_attr,
+                         text_attr,
+                         text2_attr,
+                         default_attr,
+                         short_attr,
+                         short2_attr,
+                         disbld_attr,
+                         contxt_attr,
+                         contxt2_attr:   Byte;
+                         center_box:     Boolean;
+                         cycle_moves:    Boolean;
+                         edit_contents:  Boolean;
+                         reverse_use:    Boolean;
+                         fixed_len:      Byte;
+                         terminate_keys: array[1..50] of Word;
+                       end; cvar; external;
+
+  MenuLib2_mn_environment: Record
+                             v_dest:     tSCREEN_MEM_PTR;
+                             keystroke:  Word;
+                             context:    String;
+                             unpolite:   Boolean;
+                             winshade:   Boolean;
+                             edit_pos:   Byte;
+                             curr_pos:   Word;
+                             ext_proc:   procedure; cdecl;
+                             refresh:    procedure; cdecl;
+                             do_refresh: Boolean;
+                             preview:    Boolean;
+                             descr_len:  Byte;
+                             descr:      Pointer;
+                           end; cvar; external;
+
+function MenuLib2_Menu(var data; x,y: Byte; spos: Word;
                        len,len2: Byte; count: Word; title: String): Word; cdecl; external;
 
 const

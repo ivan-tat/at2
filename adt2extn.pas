@@ -123,8 +123,7 @@ uses
   StringIO,
   DialogIO,
   ParserIO,
-  TxtScrIO,
-  MenuLib2;
+  TxtScrIO;
 
 //_patts_marked
 
@@ -915,7 +914,7 @@ begin
   _dbg_leave; //EXIT //_remap_refresh_proc
 end;
 
-procedure REMAP_instr_control_proc;
+procedure REMAP_instr_control_proc; cdecl;
 begin
   _dbg_enter ({$I %FILE%}, 'REMAP_instr_control_proc');
 

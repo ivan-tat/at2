@@ -236,6 +236,70 @@ static struct
 #include "dialogio/Menu1_edit_contents.c" // static
 #include "dialogio/Menu1.c"
 
+/*** Menu 2 ***/
+
+tMENU2_SETTING mn2_setting =
+{
+  .frame_type     = { 0, }, // frame_single
+  .shadow_enabled = true,
+  .posbar_enabled = true,
+  .title_attr     = 0x0F,
+  .menu_attr      = 0x07,
+  .text_attr      = 0x07,
+  .text2_attr     = 0x70,
+  .default_attr   = 0x0F,
+  .short_attr     = 0x0F,
+  .short2_attr    = 0x70,
+  .disbld_attr    = 0x07,
+  .contxt_attr    = 0x0F,
+  .contxt2_attr   = 0x07,
+  .center_box     = true,
+  .cycle_moves    = true,
+  .edit_contents  = false,
+  .reverse_use    = false,
+  .fixed_len      = 0,
+  .terminate_keys =
+  {
+    kESC,
+    kENTER,
+    0,
+  }
+};
+
+tMENU2_ENVIRONMENT mn2_environment;
+
+static struct
+{
+  uint16_t   idx;
+  uint16_t   idx2;
+  uint16_t   max;
+  uint16_t   page;
+  uint16_t   first;
+  uint16_t   last;
+  uint16_t   opage;
+  uint16_t   opos;
+  bool       solid;
+  uint8_t    x;
+  uint8_t    y;
+  uint8_t    len;
+  uint8_t    len2;
+  void      *data;
+  uint16_t   count;
+  uint16_t   vscrollbar_size;
+  uint16_t   vscrollbar_pos;
+  tMBUFFR    mbuf;
+} _mnu2;
+
+#include "dialogio/Menu2_pstr.c" // static
+#include "dialogio/Menu2_pdes.c" // static
+#include "dialogio/Menu2_ShowCStr.c" // static
+#include "dialogio/Menu2_refresh.c" // static
+#include "dialogio/Menu2_SubPos.c" // static
+#include "dialogio/Menu2_AddPos.c" // static
+#include "dialogio/Menu2_RetKey.c" // static
+#include "dialogio/Menu2_edit_contents.c" // static
+#include "dialogio/Menu2.c"
+
 /*** File Selector ***/
 
 tFSELECT_ENVIRONMENT fs_environment;

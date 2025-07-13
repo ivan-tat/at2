@@ -177,6 +177,59 @@ extern tMENU1_ENVIRONMENT mn1_environment;
 uint16_t Menu1 (void *data, uint8_t x, uint8_t y, uint16_t spos, uint8_t len,
                 uint8_t len2, uint16_t count, const String *title);
 
+/*** Menu 2 ***/
+
+typedef struct
+{
+  String     frame_type[255+1];
+  bool       shadow_enabled;
+  bool       posbar_enabled;
+  uint8_t    title_attr;
+  uint8_t    menu_attr;
+  uint8_t    text_attr;
+  uint8_t    text2_attr;
+  uint8_t    default_attr;
+  uint8_t    short_attr;
+  uint8_t    short2_attr;
+  uint8_t    disbld_attr;
+  uint8_t    contxt_attr;
+  uint8_t    contxt2_attr;
+  bool       center_box;
+  bool       cycle_moves;
+  bool       edit_contents;
+  bool       reverse_use;
+  uint8_t    fixed_len;
+  ExtKeyCode terminate_keys[50]; // HINT: (FPC) start index 1
+} tMENU2_SETTING;
+
+typedef struct
+{
+  tSCREEN_MEM *v_dest;
+  ExtKeyCode   keystroke;
+  String       context[255+1];
+  bool         unpolite;
+  bool         winshade;
+  uint8_t      edit_pos;
+  uint16_t     curr_pos;
+  void       (*ext_proc) ();
+  void       (*refresh) ();
+  bool         do_refresh;
+  bool         preview;
+  uint8_t      descr_len;
+  void        *descr;
+} tMENU2_ENVIRONMENT;
+
+// Aliases
+#define mn2_setting     MenuLib2_mn_setting     // TODO: remove when done
+#define mn2_environment MenuLib2_mn_environment // TODO: remove when done
+#define Menu2           MenuLib2_Menu           // TODO: remove when done
+
+extern tMENU2_SETTING     mn2_setting;
+extern tMENU2_ENVIRONMENT mn2_environment;
+
+uint16_t Menu2 (void *data, uint8_t x, uint8_t y, uint16_t spos, uint8_t len,
+                uint8_t len2, uint16_t count, const String *title);
+
 /*** File Selector ***/
 
 #if GO32

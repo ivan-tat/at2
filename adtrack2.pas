@@ -49,8 +49,7 @@ uses
   TxtScrIO,
   StringIO,
   DialogIO,
-  ParserIO,
-  MenuLib2;
+  ParserIO;
 
 {$IFDEF GO32V2}
 
@@ -337,7 +336,6 @@ begin { MAIN }
   DialogIO_Init;
   StringIO_Init;
   TxtScrIO_Init;
-  MenuLib2_Init;
 
   If _debug_ then WriteLn('--- initializing songdata');
   tempo := init_tempo;
