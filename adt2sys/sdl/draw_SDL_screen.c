@@ -12,7 +12,7 @@ static void draw_SDL_screen (uint8_t columns, uint8_t rows, uint32_t scr_res)
   const uint8_t *font = font8x16;
   const uint8_t *s = screen_ptr;
   uint8_t *p     = _FrameBuffer;
-  uint8_t *p_end = &_FrameBuffer[scr_res];
+  uint8_t *p_end = (uint8_t *) _FrameBuffer + scr_res;
   uint32_t skip = virtual_screen__first_row;
   uint8_t cur_pos_x = virtual_cur_pos & 0xFF;
   uint8_t cur_pos_y = virtual_cur_pos >> 8;

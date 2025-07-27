@@ -47,6 +47,9 @@ Ed Ross
 Philip G. Gage
   Author of "SixPack" compression algorithm.
   See "SIXPACK_decompress" routine.
+  Library:
+  * https://mvnrepository.com/artifact/dev.benedikt.compression/sixpack
+  * https://github.com/benedikt-wueller/sixpack-kotlin
 
 Alexey Khokholov (aka Nuke.YKT)
   https://github.com/nukeykt

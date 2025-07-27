@@ -63,6 +63,7 @@ SRCS=\
  adt2unit.c\
  common.c\
  debug.c\
+ depackio.c\
  dialogio.c\
  font.c\
  go32/adt2vesa.c\
@@ -161,6 +162,9 @@ build-sdl: | $(srcdir)/SDL/Makefile
 	@mkdir -p SDL
 	FPCFLAGS='$(FPCFLAGS_CPU) $(FPCFLAGS) -Ccpascal -Mtp' \
 	$(MAKE) -w -C SDL -f $|
+
+SDL/sdl_events.ppu\
+ SDL/sdl_keyboard.ppu: build-sdl
 
 .PHONY: clean-sdl
 clean-sdl: | $(srcdir)/SDL/Makefile
@@ -442,7 +446,8 @@ ifeq ($(FPC_OS_TARGET),go32v2)
 endif
 
 depackio_ppu_deps=\
- $(srcdir)/depackio.pas
+ $(srcdir)/depackio.pas\
+ depackio.o
 
 dialogio_ppu_deps=\
  $(srcdir)/dialogio.pas\
