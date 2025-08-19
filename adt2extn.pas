@@ -51,11 +51,13 @@ var
   fkey: Word;
 
 var
-  progress_xstart,progress_ystart: Byte;
-  progress_num_steps: Byte;
-  progress_step: Byte;
-  progress_value: Dword;
-  progress_old_value,progress_new_value: Byte;
+  progress_xstart: Byte; cvar; external;
+  progress_ystart: Byte; cvar; external;
+  progress_num_steps: Byte; cvar; external;
+  progress_step: Byte; cvar; external;
+  progress_value: Dword; cvar; external;
+  progress_old_value: Byte; cvar; external;
+  progress_new_value: Byte; cvar; external;
 
 var
   tracing_block_pattern,
@@ -95,8 +97,8 @@ function  FILE_open(masks: String; loadBankPossible: Boolean): Byte;
 procedure NUKE;
 procedure MESSAGE_BOARD;
 procedure QUIT_request;
-procedure show_progress(value: Longint); overload;
-procedure show_progress(value,refresh_dif: Longint); overload;
+procedure show_progress(value: Longint);
+procedure show_progress2(value,refresh_dif: Longint); cdecl;
 
 implementation
 
@@ -5475,12 +5477,12 @@ end;
 
 procedure show_progress(value: Longint);
 begin
-  _dbg_enter ({$I %FILE%}, 'show_progress@1');
+  _dbg_enter ({$I %FILE%}, 'show_progress');
 
   If (progress_num_steps = 0) or
      (progress_value = 0) then
     begin
-      _dbg_leave; EXIT; //show_progress@1
+      _dbg_leave; EXIT; //show_progress
     end;
   If (value <> DWORD_NULL) then
     begin
@@ -5518,17 +5520,17 @@ begin
          draw_screen;
        end;
 
-  _dbg_leave; //EXIT //show_progress@1
+  _dbg_leave; //EXIT //show_progress
 end;
 
-procedure show_progress(value,refresh_dif: Longint);
+procedure show_progress2(value,refresh_dif: Longint); cdecl; public name PUBLIC_PREFIX + 'show_progress2';
 begin
-  _dbg_enter ({$I %FILE%}, 'show_progress@2');
+  _dbg_enter ({$I %FILE%}, 'show_progress2');
 
   If (progress_num_steps = 0) or
      (progress_value = 0) then
     begin
-      _dbg_leave; EXIT; //show_progress@2
+      _dbg_leave; EXIT; //show_progress2
     end;
   If (value <> DWORD_NULL) then
     begin
@@ -5567,7 +5569,7 @@ begin
          draw_screen;
        end;
 
-  _dbg_leave; //EXIT //show_progress@2
+  _dbg_leave; //EXIT //show_progress2
 end;
 
 const

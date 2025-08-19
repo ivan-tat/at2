@@ -19,6 +19,12 @@
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 #pragma pack(push, 1)
 
+uint8_t  progress_xstart, progress_ystart;
+uint8_t  progress_num_steps;
+uint8_t  progress_step;
+uint32_t progress_value;
+uint8_t  progress_old_value, progress_new_value;
+
 #include "adt2extn/_patts_marked.c"
 
 #include "adt2extn/nul_volume_bars.c"

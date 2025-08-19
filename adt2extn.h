@@ -15,6 +15,12 @@
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 #pragma pack(push, 1)
 
+extern uint8_t  progress_xstart, progress_ystart;
+extern uint8_t  progress_num_steps;
+extern uint8_t  progress_step;
+extern uint32_t progress_value;
+extern uint8_t  progress_old_value, progress_new_value;
+
 typedef enum
 {
   ttTransposeUp,
@@ -27,6 +33,8 @@ typedef uint8_t tTRANSPOSE_TYPE; // holds `TRANSPOSE_TYPE_enum'
 uint8_t _patts_marked (void);
 
 void nul_volume_bars (void);
+
+void show_progress2 (int32_t value, int32_t refresh_dif);
 
 #pragma pack(pop)
 

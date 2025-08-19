@@ -3918,7 +3918,7 @@ begin { bnk_file_loader }
           end;
 
       If (ticklooper = 0) then
-        show_progress(index,3);
+        show_progress2(index,3);
 
       SeekF(f,header.name_offset+PRED(index)*SizeOf(name_record));
       If (IOresult <> 0) then
@@ -4191,7 +4191,7 @@ begin { fib_file_loader }
           end;
 
       If (ticklooper = 0) then
-        show_progress(index,3);
+        show_progress2(index,3);
 
       BlockReadF(f,instrument_data,SizeOf(instrument_data),temp);
       If (temp <> SizeOf(instrument_data)) then
@@ -4276,7 +4276,7 @@ begin { fib_file_loader }
     end;
 
   CloseF(f);
-  show_progress(index,3);
+  show_progress2(index,3);
   // delay for awhile to show progress bar
   {$IFDEF GO32V2}
   CRT.Delay(500);
@@ -4448,7 +4448,7 @@ begin { ibk_file_loader }
           end;
 
       If (ticklooper = 0) then
-        show_progress(index,3);
+        show_progress2(index,3);
 
       SeekF(f,$004+PRED(index)*SizeOf(instrument_data));
       If (IOresult <> 0) then
@@ -4541,7 +4541,7 @@ begin { ibk_file_loader }
     end;
 
   CloseF(f);
-  show_progress(index,3);
+  show_progress2(index,3);
   // delay for awhile to show progress bar
   {$IFDEF GO32V2}
   CRT.Delay(500);

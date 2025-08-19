@@ -57,9 +57,10 @@ SRCS=\
  adt2data.c\
  adt2ext2.c\
  adt2extn.c\
- adt2sys.c\
  adt2keyb.c\
  adt2opl3.c\
+ adt2pack.c\
+ adt2sys.c\
  adt2unit.c\
  common.c\
  debug.c\
@@ -412,7 +413,8 @@ adt2opl3_ppu_deps=\
  adt2opl3.o
 
 adt2pack_ppu_deps=\
- $(srcdir)/adt2pack.pas
+ $(srcdir)/adt2pack.pas\
+ adt2pack.o
 
 adt2sys_ppu_deps=\
  $(srcdir)/adt2sys.pas\

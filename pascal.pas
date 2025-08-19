@@ -28,6 +28,11 @@ uses
 const
   PUBLIC_PREFIX = {$IF DEFINED(GO32V2) OR DEFINED(WINDOWS)} '_' {$ELSE} '' {$ENDIF};
 
+// Check structures shared between C and Pascal
+
+procedure _check_struct_memb (const name, member: PChar; off_C, off: SizeUInt);
+procedure _check_struct_size (const name: PChar; size_C, size: SizeUInt);
+
 { `system' unit }
 
 const
@@ -198,8 +203,6 @@ uses
 {$ENDIF} {NOT DEFINED(UNIX)}
 {$ENDIF} {NOT DEFINED(GO32V2)}
   strings;
-
-// Check structures shared between C and Pascal
 
 procedure _check_struct_memb (const name, member: PChar; off_C, off: SizeUInt);
 begin
