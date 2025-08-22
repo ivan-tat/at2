@@ -16,6 +16,9 @@
 program AdLib_Tracker_II;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$IFDEF LINKLIB_GCC}
+{$LINKLIB gcc}
+{$ENDIF} // DEFINED(LINKLIB_GCC)
 {$I adtrack2.inc}
 
 uses

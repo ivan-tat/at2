@@ -375,8 +375,8 @@ extern struct bank_position_list_t {
   int32_t bank_position;
 } bank_position_list[MAX_NUM_BANK_POSITIONS]; // HINT: (FPC) start index 1
 
-int32_t get_bank_position (String *bank_name, int32_t bank_size);
-void add_bank_position (String *bank_name, int32_t bank_size, int32_t bank_position);
+int32_t get_bank_position (const String *bank_name, int32_t bank_size);
+void add_bank_position (const String *bank_name, int32_t bank_size, int32_t bank_position);
 
 void realtime_gfx_poll_proc (void);
 

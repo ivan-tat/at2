@@ -43,21 +43,22 @@ extern CharSet_t HEX_NUM_CHARSET;
 
 #endif // !ADT2PLAY
 
-__inline__ bool IsUpper (uint8_t c) {
-  return (c >= 'A') && (c <= 'Z');
-}
+#if DEBUG
 
-__inline__ bool IsLower (uint8_t c) {
-  return (c >= 'a') && (c <= 'z');
-}
+bool IsUpper (uint8_t c);
+bool IsLower (uint8_t c);
+uint8_t UpCase (uint8_t c);
+uint8_t LoCase (uint8_t c);
 
-__inline__ uint8_t UpCase (uint8_t c) {
-  return IsLower (c) ? c - 'a' + 'A' : c;
-}
+#else // !DEBUG
 
-__inline__ uint8_t LoCase (uint8_t c) {
-  return IsUpper (c) ? c - 'A' + 'a' : c;
-}
+// Inline versions (depends on `DEBUG' macro)
+#include "stringio/IsUpper.c"
+#include "stringio/IsLower.c"
+#include "stringio/UpCase.c"
+#include "stringio/LoCase.c"
+
+#endif // !DEBUG
 
 #if !ADT2PLAY
 

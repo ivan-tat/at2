@@ -19,10 +19,20 @@ typedef uint8_t CharSet_t[32];
 
 #if i386||_X86_||__x86_64
 
+#if DEBUG
+
+void bit_set (uint8_t *s, uint32_t value);
+void bit_clear (uint8_t *s, uint32_t value);
+bool bit_test (const uint8_t *s, uint32_t value);
+
+#else // !DEBUG
+
 // Inline versions
 #include "common/x86/bit_set.h"
 #include "common/x86/bit_clear.h"
 #include "common/x86/bit_test.h"
+
+#endif // !DEBUG
 
 #else // !(i386||_X86_||__x86_64)
 

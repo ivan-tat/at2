@@ -36,6 +36,16 @@ uint16_t UCS2_lower_case_ct[UCS2_CP_SIZE];
 CharSet_t DEC_NUM_CHARSET;
 CharSet_t HEX_NUM_CHARSET;
 
+#if DEBUG
+
+// Normal versions (depends on `DEBUG' macro)
+#include "stringio/IsUpper.c"
+#include "stringio/IsLower.c"
+#include "stringio/UpCase.c"
+#include "stringio/LoCase.c"
+
+#endif // DEBUG
+
 // `AT2' code page
 
 #include "stringio/CP437_it.c"

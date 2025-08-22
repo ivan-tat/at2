@@ -8,7 +8,10 @@
 #error Unsupported "wchar_t" size
 #endif // (__SIZEOF_WCHAR_T__ != 2) && (__SIZEOF_WCHAR_T__ != 4)
 
-__inline__ wchar_t UTF8_to_wchar (const char **pstr) {
+#if !DEBUG
+__inline__
+#endif // !DEBUG
+wchar_t UTF8_to_wchar (const char **pstr) {
   const unsigned char *s = (const unsigned char *) *pstr;
   uint32_t c = *s;
 
