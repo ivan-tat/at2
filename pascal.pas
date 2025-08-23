@@ -26,7 +26,7 @@ uses
   sysutils;
 
 const
-  PUBLIC_PREFIX = {$IF DEFINED(GO32V2) OR DEFINED(WINDOWS)} '_' {$ELSE} '' {$ENDIF};
+  PUBLIC_PREFIX = {$IF DEFINED(GO32V2) OR (DEFINED(WINDOWS) AND NOT DEFINED(CPU64))} '_' {$ELSE} '' {$ENDIF};
 
 // Check structures shared between C and Pascal
 

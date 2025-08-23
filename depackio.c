@@ -7,6 +7,7 @@
 #include "defines.h"
 #include "pascal.h"
 #include <string.h>
+#include <stdlib.h>
 #include "depackio.h"
 
 // HINT: (FPC) S-: Stack checking (off)
@@ -17,10 +18,6 @@
 // HINT: (FPC) X+: Extended syntax (ON)
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 #pragma pack(push, 1)
-
-#define WORKMEM_SIZE (64 * 1024) // 64KiB
-
-uint8_t work_mem[WORKMEM_SIZE];
 
 #include "depackio/RDC_decompress.c"
 #include "depackio/LZSS_decompress.c"

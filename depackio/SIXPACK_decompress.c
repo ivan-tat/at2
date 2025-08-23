@@ -15,28 +15,27 @@
 #define MAXCHAR       (FIRSTCODE + COPYRANGES * CODESPERRANGE - 1)
 #define SUCCMAX       (MAXCHAR + 1)
 #define TWICEMAX      (2 * MAXCHAR + 1)
-#define MAXBUF        (WORKMEM_SIZE - 1) // 64KiB
+#define MAXBUF        (0x10000 - 1) // 64KiB, see `.dict[]'
 #define MAXDISTANCE   21389
 #define MAXSIZE       (MAXDISTANCE + MAXCOPY)
 
-// Decoder state
-struct SixpackDState_t
+typedef struct
 {
   const uint8_t *input_ptr;
   //uint16_t input_size; // unused
   uint8_t *output_ptr;
   uint16_t output_size;
-  uint8_t *dict_ptr;
+  uint16_t ibitCount, ibitBuffer, ibufCount, obufCount;
   uint16_t leftC[MAXCHAR + 1], rghtC[MAXCHAR + 1];
   uint16_t dad[TWICEMAX + 1], frq[TWICEMAX + 1];
-  uint16_t ibitCount, ibitBuffer, ibufCount, obufCount;
-};
+  uint8_t dict[0x10000]; // 64KiB
+} SixpackDecoderState_t;
 
 static const uint16_t BitValue[14] = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192 };
 static const uint16_t CopyBits[COPYRANGES] = { 4, 6, 8, 10, 12, 14 };
 static const uint16_t CopyMin[COPYRANGES] = { 0, 16, 80, 336, 1360, 5456 };
 
-static void Sixpack_InitTree (struct SixpackDState_t *ds)
+static void Sixpack_InitTree (SixpackDecoderState_t *ds)
 {
   for (uint16_t i = 2; i <= TWICEMAX; i++)
   {
@@ -51,7 +50,7 @@ static void Sixpack_InitTree (struct SixpackDState_t *ds)
   }
 }
 
-static void Sixpack_UpdateFreq (struct SixpackDState_t *ds, uint16_t a, uint16_t b)
+static void Sixpack_UpdateFreq (SixpackDecoderState_t *ds, uint16_t a, uint16_t b)
 {
   do
   {
@@ -67,7 +66,7 @@ static void Sixpack_UpdateFreq (struct SixpackDState_t *ds, uint16_t a, uint16_t
     for (uint16_t i = 1; i <= TWICEMAX; i++) ds->frq[i] >>= 1;
 }
 
-static void Sixpack_UpdateModel (struct SixpackDState_t *ds, uint16_t code)
+static void Sixpack_UpdateModel (SixpackDecoderState_t *ds, uint16_t code)
 {
   uint16_t a = code + SUCCMAX;
 
@@ -116,7 +115,7 @@ static void Sixpack_UpdateModel (struct SixpackDState_t *ds, uint16_t code)
   }
 }
 
-static uint16_t Sixpack_InputCode (struct SixpackDState_t *ds, uint16_t bits)
+static uint16_t Sixpack_InputCode (SixpackDecoderState_t *ds, uint16_t bits)
 {
   uint16_t code = 0;
 
@@ -138,7 +137,7 @@ static uint16_t Sixpack_InputCode (struct SixpackDState_t *ds, uint16_t bits)
   return code;
 }
 
-static uint16_t Sixpack_Uncompress (struct SixpackDState_t *ds)
+static uint16_t Sixpack_Uncompress (SixpackDecoderState_t *ds)
 {
   uint16_t a = 1;
 
@@ -162,7 +161,7 @@ static uint16_t Sixpack_Uncompress (struct SixpackDState_t *ds)
   return a;
 }
 
-static void Sixpack_Decode (struct SixpackDState_t *ds)
+static void Sixpack_Decode (SixpackDecoderState_t *ds)
 {
   uint16_t count = 0;
   uint16_t c;
@@ -185,7 +184,7 @@ static void Sixpack_Decode (struct SixpackDState_t *ds)
         ds->obufCount = 0;
       }
 
-      ds->dict_ptr[count++] = c;
+      ds->dict[count++] = c;
       if (count == MAXSIZE) count = 0;
     }
     else
@@ -204,14 +203,14 @@ static void Sixpack_Decode (struct SixpackDState_t *ds)
 
       for (uint16_t i = 0; i < len; i++)
       {
-        ds->output_ptr[ds->obufCount++] = ds->dict_ptr[k];
+        ds->output_ptr[ds->obufCount++] = ds->dict[k];
         if (ds->obufCount == MAXBUF)
         {
           ds->output_size = MAXBUF;
           ds->obufCount = 0;
         }
 
-        ds->dict_ptr[j++] = ds->dict_ptr[k++];
+        ds->dict[j++] = ds->dict[k++];
         if (j == MAXSIZE) j = 0;
         if (k == MAXSIZE) k = 0;
       }
@@ -226,14 +225,30 @@ static void Sixpack_Decode (struct SixpackDState_t *ds)
   ds->output_size = ds->obufCount;
 }
 
-static struct SixpackDState_t sixpack_ds;
-
 uint16_t SIXPACK_decompress (const void *source, void *dest, __UNUSED uint16_t size)
 {
-  sixpack_ds.input_ptr = source;
-  //sixpack_ds.input_size = size;
-  sixpack_ds.output_ptr = dest;
-  sixpack_ds.dict_ptr = work_mem;
-  Sixpack_Decode (&sixpack_ds);
-  return sixpack_ds.output_size;
+  uint_least16_t result = 0;
+  SixpackDecoderState_t *ds = NULL;
+
+  if ((ds = malloc (sizeof (SixpackDecoderState_t))) == NULL) goto _exit;
+
+  ds->input_ptr = source;
+  //ds->input_size = size; // unused
+  ds->output_ptr = dest;
+  //ds->output_size
+  //ds->ibitCount
+  //ds->ibitBuffer
+  //ds->ibufCount
+  //ds->obufCount
+  //ds->leftC
+  //ds->rghtC
+  //ds->dad
+  //ds->frq
+  //ds->dict
+  Sixpack_Decode (ds);
+  result = ds->output_size;
+
+_exit:
+  if (ds != NULL) free (ds);
+  return result;
 }

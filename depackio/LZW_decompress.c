@@ -7,21 +7,20 @@
 #define LZW_MIN_BITS 9
 #define LZW_MAX_BITS 13
 
-// Decoder state
-struct LZWDState_t
+typedef struct
 {
   const uint8_t *input_ptr;
   uint8_t *output_ptr;
   uint16_t output_size;
-  uint8_t *dict_ptr;
   uint8_t  bits;
   uint32_t bit_pos;
   uint16_t stack[0x10000]; // 128KiB, [0] is never used and not even accessed
-};
+  uint8_t  dict[0x10000]; // 64KiB
+} LZWDecoderState_t;
 
 static const uint16_t lzw_masks[5] = { 0x01FF, 0x03FF, 0x07FF, 0x0FFF, 0x1FFF };
 
-static uint16_t LZW_NextCode (struct LZWDState_t *ds)
+static uint16_t LZW_NextCode (LZWDecoderState_t *ds)
 {
   uint8_t bit = ds->bit_pos & 7;
   uint32_t offs = ds->bit_pos >> 3;
@@ -36,7 +35,7 @@ static uint16_t LZW_NextCode (struct LZWDState_t *ds)
   return code & lzw_masks[ds->bits - LZW_MIN_BITS];
 }
 
-static void LZW_decode (struct LZWDState_t *ds)
+static void LZW_decode (LZWDecoderState_t *ds)
 {
   uint16_t sp = 0; // stack pointer, growing up
   uint16_t index = (1 << LZW_MIN_BITS) / 2 + 2;
@@ -82,9 +81,9 @@ static void LZW_decode (struct LZWDState_t *ds)
     while (code1 > 0x00FF)
     {
       uint16_t offs = code1 * 3;
-      code = (code & 0xFF00) + ds->dict_ptr[offs + 2];
+      code = (code & 0xFF00) + ds->dict[offs + 2];
       ds->stack[++sp] = code;
-      code1 = ds->dict_ptr[offs + 0] + (ds->dict_ptr[offs + 1] << 8);
+      code1 = ds->dict[offs + 0] + (ds->dict[offs + 1] << 8);
     }
 
     a = code1;
@@ -94,9 +93,9 @@ static void LZW_decode (struct LZWDState_t *ds)
     for (; sp; sp--)
       ds->output_ptr[ds->output_size++] = ds->stack[sp];
 
-    ds->dict_ptr[index * 3 + 0] = code2;
-    ds->dict_ptr[index * 3 + 1] = code2 >> 8;
-    ds->dict_ptr[index * 3 + 2] = b;
+    ds->dict[index * 3 + 0] = code2;
+    ds->dict[index * 3 + 1] = code2 >> 8;
+    ds->dict[index * 3 + 2] = b;
     index++;
     code2 = saved;
     if ((index >= max) && (ds->bits <= LZW_MAX_BITS))
@@ -107,13 +106,24 @@ static void LZW_decode (struct LZWDState_t *ds)
   }
 }
 
-static struct LZWDState_t lzw_ds;
-
 uint16_t LZW_decompress (const void *source, void *dest)
 {
-  lzw_ds.input_ptr = source;
-  lzw_ds.output_ptr = dest;
-  lzw_ds.dict_ptr = work_mem;
-  LZW_decode (&lzw_ds);
-  return lzw_ds.output_size;
+  uint_least16_t result = 0;
+  LZWDecoderState_t *ds = NULL;
+
+  if ((ds = malloc (sizeof (LZWDecoderState_t))) == NULL) goto _exit;
+
+  ds->input_ptr = source;
+  ds->output_ptr = dest;
+  //ds->output_size
+  //ds->bits
+  //ds->bit_pos
+  //ds->stack
+  //ds->dict
+  LZW_decode (ds);
+  result = ds->output_size;
+
+_exit:
+  if (ds != NULL) free (ds);
+  return result;
 }

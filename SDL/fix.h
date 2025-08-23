@@ -11,7 +11,12 @@
 
 #if WINNT
 #define SDL_FIX_BEGIN __asm__ (
-#define SDL_FIX_NAME(x) ".equ _" #x ", _$dll$sdl$" #x "\n\t"
+#if i386||_X86_
+#define SDL_FIX_NAME(x) ".equ _" #x ", _$dll$sdl$" #x "\n"
+#else // !(i386||_X86_)
+#define SDL_FIX_NAME(x) ".equ " #x ", _$dll$sdl$" #x "\n"
+#endif // !(i386||_X86_)
+
 #define SDL_FIX_END );
 #else // !WINNT
 #define SDL_FIX_BEGIN
