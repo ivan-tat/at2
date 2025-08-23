@@ -61,6 +61,7 @@ SRCS=\
 
 SRCS1=\
  a2data.c\
+ a2depack.c\
  a2player.c
 
 DEPS=$(patsubst %.c,_deps_/%.d,$(SRCS) $(SRCS1))
@@ -293,7 +294,8 @@ units/VGA.ppu: $(VGA_ppu_deps) $(srcdir)/Makefile | units
 # Pascal units with complex dependencies and target executable
 
 a2depack_ppu_deps=\
- $(srcdir1)/a2depack.pas
+ $(srcdir1)/a2depack.pas\
+ a2depack.o
 
 a2fileio_ppu_deps=\
  $(srcdir1)/a2fileio.pas\
