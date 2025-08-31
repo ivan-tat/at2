@@ -16,7 +16,12 @@
 unit AdT2ext3;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$MODESWITCH CVAR}
+{$L adt2ext3.o}
 interface
+
+uses
+  AdT2unit;
 
 procedure a2m_file_loader;
 procedure a2t_file_loader;
@@ -38,11 +43,13 @@ procedure fin_file_loader;
 procedure ins_file_loader;
 procedure sbi_file_loader;
 procedure sgi_file_loader;
-procedure fselect_external_proc; cdecl;
-procedure import_standard_instrument_alt(var data);
+procedure fselect_external_proc; cdecl; external;
+procedure import_standard_instrument_alt (var ins: tADTRACK2_INS; var data); cdecl; external;
+procedure import_sbi_instrument_alt (var ins: tADTRACK2_INS; var data); cdecl; external;
+procedure ibk_file_loader_alt (instr: Word); cdecl; external;
 procedure test_instrument_alt(chan: Byte; fkey: Word; loadMacros: Boolean; bankSelector: Boolean; loadArpVib: Boolean;
-                              test_ins1,test_ins2: Byte);
-procedure test_instrument_alt2(chan: Byte; fkey: Word);
+                              test_ins1, test_ins2: Byte); cdecl; external;
+procedure test_instrument_alt2 (chan: Byte; fkey: Word); cdecl; external;
 
 implementation
 
@@ -52,7 +59,6 @@ uses
   AdT2opl3,
   AdT2sys,
   AdT2keyb,
-  AdT2unit,
   AdT2extn,
   AdT2ext2,
   AdT2ext4,
@@ -827,41 +833,7 @@ begin
   _dbg_leave; //EXIT //sbi_file_loader
 end;
 
-procedure import_sgi_instrument(inst: Byte; var data);
-begin
-  FillChar(songdata.instr_data[inst],
-           SizeOf(songdata.instr_data[inst]),0);
-
-  With songdata.instr_data[inst] do
-    begin
-      fm_data.ATTCK_DEC_modulator := (pBYTE(@data)[1]  AND $0f)+
-                                     (pBYTE(@data)[0]  AND $0f) SHL 4;
-      fm_data.SUSTN_REL_modulator := (pBYTE(@data)[3]  AND $0f)+
-                                     (pBYTE(@data)[2]  AND $0f) SHL 4;
-      fm_data.WAVEFORM_modulator  := (pBYTE(@data)[4]  AND 3);
-      fm_data.KSL_VOLUM_modulator := (pBYTE(@data)[7]  AND $3f)+
-                                     (pBYTE(@data)[6]  AND 3) SHL 6;
-      fm_data.AM_VIB_EG_modulator := (pBYTE(@data)[5]  AND $0f)+
-                                     (pBYTE(@data)[8]  AND 1) SHL 4+
-                                     (pBYTE(@data)[11] AND 1) SHL 5+
-                                     (pBYTE(@data)[10] AND 1) SHL 6+
-                                     (pBYTE(@data)[9]  AND 1) SHL 7;
-      fm_data.ATTCK_DEC_carrier   := (pBYTE(@data)[13] AND $0f)+
-                                     (pBYTE(@data)[12] AND $0f) SHL 4;
-      fm_data.SUSTN_REL_carrier   := (pBYTE(@data)[15] AND $0f)+
-                                     (pBYTE(@data)[14] AND $0f) SHL 4;
-      fm_data.WAVEFORM_carrier    := (pBYTE(@data)[16] AND 3);
-      fm_data.KSL_VOLUM_carrier   := (pBYTE(@data)[19] AND $3f)+
-                                     (pBYTE(@data)[18] AND 3) SHL 6;
-      fm_data.AM_VIB_EG_carrier   := (pBYTE(@data)[17] AND $0f)+
-                                     (pBYTE(@data)[20] AND 1) SHL 4+
-                                     (pBYTE(@data)[23] AND 1) SHL 5+
-                                     (pBYTE(@data)[22] AND 1) SHL 6+
-                                     (pBYTE(@data)[21] AND 1) SHL 7;
-      fm_data.FEEDBACK_FM         := (pBYTE(@data)[25] AND 1)+
-                                     (pBYTE(@data)[24] AND 7) SHL 1;
-    end;
-end;
+procedure import_sgi_instrument (var ins: tADTRACK2_INS; var data); cdecl; external;
 
 procedure sgi_file_loader;
 
@@ -927,7 +899,8 @@ begin
       _dbg_leave; EXIT; //sgi_file_loader
     end;
 
-  import_sgi_instrument(current_inst,buffer);
+  FillChar (songdata.instr_data[current_inst], SizeOf (songdata.instr_data[current_inst]), 0);
+  import_sgi_instrument (songdata.instr_data[current_inst], buffer);
   temp_str := Lower(NameOnly(instdata_source));
   songdata.instr_names[current_inst] :=
     Copy(songdata.instr_names[current_inst],1,9)+Copy(temp_str,1,32);

@@ -56,6 +56,9 @@ FPCFLAGS_DIRS+=-Fi$(srcdir) -Fi. -Fuunits
 SRCS=\
  adt2data.c\
  adt2ext2.c\
+ adt2ext3.c\
+ adt2ext4.c\
+ adt2ext5.c\
  adt2extn.c\
  adt2keyb.c\
  adt2opl3.c\
@@ -390,15 +393,18 @@ adt2ext3_ppu_deps=\
  $(srcdir)/go32/PIT/pas/PIT_consts.inc\
  $(srcdir)/iloaders.inc\
  $(srcdir)/iloadins.inc\
- units/debug.ppu
+ units/debug.ppu\
+ adt2ext3.o
 
 adt2ext4_ppu_deps=\
  $(srcdir)/adt2ext4.pas\
- units/debug.ppu
+ units/debug.ppu\
+ adt2ext4.o
 
 adt2ext5_ppu_deps=\
  $(srcdir)/adt2ext5.pas\
- units/debug.ppu
+ units/debug.ppu\
+ adt2ext5.o
 
 adt2extn_ppu_deps=\
  $(srcdir)/adt2extn.pas\

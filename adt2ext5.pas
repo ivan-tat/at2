@@ -16,22 +16,23 @@
 unit AdT2ext5;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$MODESWITCH CVAR}
+{$L adt2ext5.o}
 interface
 
-const
-  arp_tab_selected: Boolean = FALSE;
-  vib_tab_selected: Boolean = FALSE;
+var
+  arp_tab_selected: Boolean; cvar; external;
+  vib_tab_selected: Boolean; cvar; external;
 
 var
-  ptr_arpeggio_table: Byte;
-  ptr_vibrato_table: Byte;
+  ptr_arpeggio_table: Byte; cvar; external;
+  ptr_vibrato_table: Byte; cvar; external;
 
 procedure bnk_file_loader;
 procedure fib_file_loader;
 procedure ibk_file_loader;
-procedure bnk_file_loader_alt(instr: Word);
-procedure fib_file_loader_alt(instr: Word);
-procedure ibk_file_loader_alt(instr: Word);
+procedure bnk_file_loader_alt (instr: Word); cdecl;
+procedure fib_file_loader_alt (instr: Word); cdecl;
 procedure a2b_file_loader(bankSelector: Boolean; loadBankPossible: Boolean);
 procedure a2w_file_loader(loadFromFile: Boolean; loadMacros: Boolean; bankSelector: Boolean;
                           loadBankPossible: Boolean; updateCurInstr: Boolean);
@@ -39,6 +40,7 @@ procedure a2w_file_loader(loadFromFile: Boolean; loadMacros: Boolean; bankSelect
 implementation
 
 uses
+  pascal,
   debug,
 {$IFNDEF UNIX}
   CRT,
@@ -3552,7 +3554,7 @@ begin
   _dbg_leave; //EXIT //import_instrument_from_data_record
 end;
 
-procedure bnk_file_loader_alt(instr: Word);
+procedure bnk_file_loader_alt(instr: Word); cdecl; public name PUBLIC_PREFIX + 'bnk_file_loader_alt';
 
 var
   f: File;
@@ -3641,7 +3643,7 @@ type
                 idata: tFM_INST_DATA;
               end;
 
-procedure fib_file_loader_alt(instr: Word);
+procedure fib_file_loader_alt(instr: Word); cdecl; public name PUBLIC_PREFIX + 'fib_file_loader_alt';
 
 const
   id = 'FIB'+#244;
@@ -3703,7 +3705,7 @@ begin
       _dbg_leave; EXIT; //fib_file_loader_alt
     end;
 
-  import_standard_instrument_alt(instrument_data.idata);
+  import_standard_instrument_alt (temp_instrument, instrument_data.idata);
   CloseF(f);
   load_flag_alt := 1;
 
@@ -3713,88 +3715,6 @@ end;
 var
   ibk_queue: array[1..128+3] of String[45];
   ibk_skip: Byte;
-
-procedure import_sbi_instrument_alt(var data);
-begin
-  _dbg_enter ({$I %FILE%}, 'import_sbi_instrument_alt');
-
-  FillChar(temp_instrument,SizeOf(temp_instrument),0);
-  With temp_instrument do
-    begin
-      fm_data.AM_VIB_EG_modulator := pBYTE(@data)[0];
-      fm_data.AM_VIB_EG_carrier   := pBYTE(@data)[1];
-      fm_data.KSL_VOLUM_modulator := pBYTE(@data)[2];
-      fm_data.KSL_VOLUM_carrier   := pBYTE(@data)[3];
-      fm_data.ATTCK_DEC_modulator := pBYTE(@data)[4];
-      fm_data.ATTCK_DEC_carrier   := pBYTE(@data)[5];
-      fm_data.SUSTN_REL_modulator := pBYTE(@data)[6];
-      fm_data.SUSTN_REL_carrier   := pBYTE(@data)[7];
-      fm_data.WAVEFORM_modulator  := pBYTE(@data)[8]  AND 3;
-      fm_data.WAVEFORM_carrier    := pBYTE(@data)[9]  AND 3;
-      fm_data.FEEDBACK_FM         := pBYTE(@data)[10] AND $0f;
-    end;
-
-  temp_instrument.panning := 0;
-  temp_instrument.fine_tune := 0;
-
-  _dbg_leave; //EXIT //import_sbi_instrument_alt
-end;
-
-procedure ibk_file_loader_alt(instr: Word);
-
-const
-  id = 'IBK'+#26;
-
-var
-  f: File;
-  header: array[1..4] of Char;
-  temp: Longint;
-  instrument_data: Record
-                     idata: tFM_INST_DATA;
-                     dummy: array[1..5] of Byte;
-                   end;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'ibk_file_loader_alt');
-
-  {$i-}
-  Assign(f,instdata_source);
-  ResetF(f);
-  {$i+}
-  If (IOresult <> 0) then
-    begin
-      CloseF(f);
-      _dbg_leave; EXIT; //ibk_file_loader_alt
-    end;
-
-  BlockReadF(f,header,SizeOf(header),temp);
-  If (temp <> SizeOf(header)) or
-     (header <> id) then
-    begin
-      CloseF(f);
-      _dbg_leave; EXIT; //ibk_file_loader_alt
-    end;
-
-  SeekF(f,$004+PRED(instr)*SizeOf(instrument_data));
-  If (IOresult <> 0) then
-    begin
-      CloseF(f);
-      _dbg_leave; EXIT; //ibk_file_loader_alt
-    end;
-
-  BlockReadF(f,instrument_data,SizeOf(instrument_data),temp);
-  If (temp <> SizeOf(instrument_data)) then
-    begin
-      CloseF(f);
-      _dbg_leave; EXIT; //ibk_file_loader_alt
-    end;
-
-  import_sbi_instrument_alt(instrument_data);
-  CloseF(f);
-  load_flag_alt := 1;
-
-  _dbg_leave; //EXIT //ibk_file_loader_alt
-end;
 
 procedure bnk_file_loader;
 
@@ -4204,7 +4124,7 @@ begin { fib_file_loader }
           _dbg_leave; EXIT; //fib_file_loader
         end;
 
-      import_standard_instrument_alt(instrument_data.idata);
+      import_standard_instrument_alt (temp_instrument, instrument_data.idata);
       If NOT Empty(instrument_data.idata,SizeOf(instrument_data.idata)) then
         begin
           bnk_queue[3+index-bnk_skip] := '~ ~~';
@@ -4494,7 +4414,8 @@ begin { ibk_file_loader }
           _dbg_leave; EXIT; //ibk_file_loader
         end;
 
-      import_sbi_instrument_alt(instrument_data);
+      FillChar (temp_instrument, SizeOf(temp_instrument), 0);
+      import_sbi_instrument_alt (temp_instrument, instrument_data);
       If NOT Empty(instrument_data,SizeOf(instrument_data)) then
         begin
           ibk_queue[3+index-ibk_skip] := '~ ~~';

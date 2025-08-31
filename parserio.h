@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -17,7 +17,7 @@ int32_t Scan (const void *buf, ssize_t skip, ssize_t size, const String *str);
 int32_t SensitiveScan (const void *buf, ssize_t skip, ssize_t size,
                        const String *str);
 bool Compare (const char *buf1, const char *buf2, size_t size);
-bool Empty (const char *buf, size_t size);
+bool Empty (const void *buf, size_t size);
 size_t CountLines (const char *buf, size_t size);
 uint16_t Update16 (const uint8_t *buf, size_t size, uint16_t CRC);
 uint32_t Update32 (const uint8_t *buf, size_t size, uint32_t CRC);

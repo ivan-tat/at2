@@ -78,6 +78,7 @@ procedure Pascal_ResetFile (var f: File; l: Longint); cdecl;
 procedure Pascal_ResetText (var t: Text); cdecl;
 procedure Pascal_RewriteFile (var f: File; l: Longint); cdecl;
 procedure Pascal_RewriteText (var t: Text); cdecl;
+function  Pascal_FileSize (var f: File): Int64; cdecl;
 procedure Pascal_Seek (var f: File; pos: Int64); cdecl;
 procedure Pascal_BlockRead (var f: File; var buf; count: Longint; var result: Longint); cdecl;
 procedure Pascal_BlockWrite (var f: File; var buf; count: Longint; var result: Longint); cdecl;
@@ -353,6 +354,14 @@ public name PUBLIC_PREFIX + 'Pascal_RewriteText';
 begin
   {$PUSH} {$I-}
   system.Rewrite (t);
+  {$POP}
+end;
+
+function Pascal_FileSize (var f: File): Int64; cdecl;
+public name PUBLIC_PREFIX + 'Pascal_FileSize';
+begin
+  {$PUSH} {$I-}
+  Pascal_FileSize := system.FileSize (f);
   {$POP}
 end;
 

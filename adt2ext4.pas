@@ -16,23 +16,25 @@
 unit AdT2ext4;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
+{$MODESWITCH CVAR}
+{$L adt2ext4.o}
 interface
 
-const
-  _arp_vib_loader: Boolean = FALSE;
-  _arp_vib_mode: Boolean = FALSE;
-  _macro_editor__pos: array[Boolean] of Byte = (1,8);
-  _macro_editor__fmreg_hpos: array[Boolean] of Byte = (1,1);
-  _macro_editor__fmreg_page: array[Boolean] of Byte = (1,1);
-  _macro_editor__fmreg_left_margin: array[Boolean] of Byte = (1,1);
-  _macro_editor__fmreg_cursor_pos: array[Boolean] of Byte = (1,1);
-  _macro_editor__arpeggio_page: array[Boolean] of Byte = (1,1);
-  _macro_editor__vibrato_hpos: array[Boolean] of Byte = (1,1);
-  _macro_editor__vibrato_page: array[Boolean] of Byte = (1,1);
+var
+  _arp_vib_loader: Boolean; cvar; external;
+  _arp_vib_mode: Boolean; cvar; external;
+  _macro_editor__pos: array[Boolean] of Byte; cvar; external;
+  _macro_editor__fmreg_hpos: array[Boolean] of Byte; cvar; external;
+  _macro_editor__fmreg_page: array[Boolean] of Byte; cvar; external;
+  _macro_editor__fmreg_left_margin: array[Boolean] of Byte; cvar; external;
+  _macro_editor__fmreg_cursor_pos: array[Boolean] of Byte; cvar; external;
+  _macro_editor__arpeggio_page: array[Boolean] of Byte; cvar; external;
+  _macro_editor__vibrato_hpos: array[Boolean] of Byte; cvar; external;
+  _macro_editor__vibrato_page: array[Boolean] of Byte; cvar; external;
 
-const
-  arpvib_arpeggio_table: Byte = 1;
-  arpvib_vibrato_table:  Byte = 1;
+var
+  arpvib_arpeggio_table: Byte; cvar; external;
+  arpvib_vibrato_table:  Byte; cvar; external;
 
 procedure MACRO_EDITOR(instr: Byte; arp_vib_mode: Boolean);
 procedure MACRO_BROWSER(instrBrowser: Boolean; updateCurInstr: Boolean);

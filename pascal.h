@@ -121,6 +121,7 @@ extern void Pascal_ResetFile (void *file, int32_t l);
 extern void Pascal_ResetText (void *text);
 extern void Pascal_RewriteFile (void *file, int32_t l);
 extern void Pascal_RewriteText (void *text);
+extern int64_t Pascal_FileSize (void *file);
 extern void Pascal_Seek (void *file, int64_t pos);
 extern void Pascal_BlockRead (void *file, void *buf, int32_t count, int32_t *result);
 extern void Pascal_BlockWrite (void *file, void *buf, int32_t count, int32_t *result);
