@@ -40,8 +40,8 @@ static tDIS_FMREG_COL ins__dis_fmreg_col_backup2;
 static tARP_VIB_MACRO_TABLE arp_vib_macro_table_backup;
 static uint8_t chan_handle[20];
 
-#include "iloadins/test_instrument_alt_output_note.c" // static
-#include "iloadins/test_instrument_alt.c"
-#include "iloadins/test_instrument_alt2.c"
+#include "adt2ext3/test_instrument_alt_output_note.c" // static
+#include "adt2ext3/test_instrument_alt.c"
+#include "adt2ext3/test_instrument_alt2.c"
 
 #pragma pack(pop)
