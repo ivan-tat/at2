@@ -152,11 +152,23 @@ type
                           data: array[1..MB_VSIZE] of String[MB_HSIZE];
                         end;
 type
+  tINSTR_NAME = string[42];
+type
+  temp_instrument_t = Record
+    four_op, use_macro: Boolean;
+    ins1, ins2: Record
+      fm: tADTRACK2_INS;
+      macro: tREGISTER_TABLE;
+      dis_fmreg_col: tDIS_FMREG_COL;
+      name: tINSTR_NAME;
+    end;
+  end;
+type
   pFIXED_SONGDATA = ^tFIXED_SONGDATA;
   tFIXED_SONGDATA = Record
                       songname:      String[42];
                       composer:      String[42];
-                      instr_names:   array[1..255] of String[42];
+                      instr_names:   array[1..255] of tINSTR_NAME;
                       instr_data:    array[1..255] of tADTRACK2_INS;
                       instr_macros:  array[1..255] of tREGISTER_TABLE;
                       macro_table:   tARP_VIB_MACRO_TABLE;

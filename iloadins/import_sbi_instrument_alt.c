@@ -4,7 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-void import_sbi_instrument_alt (tADTRACK2_INS *ins, const void *data)
+static void import_sbi_instrument_alt (tADTRACK2_INS *ins, const void *data)
 {
   DBG_ENTER ("import_sbi_instrument_alt");
 

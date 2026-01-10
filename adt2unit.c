@@ -7,6 +7,7 @@
 #include "defines.h"
 #include "platform.h"
 #include "debug.h"
+#include <inttypes.h>
 #include <math.h>
 #if !ADT2PLAY
 #include <stdio.h>
@@ -217,13 +218,7 @@ String instdata_source[255+1];
 String songdata_title [255+1];
 
 int32_t songdata_crc, songdata_crc_ord;
-tADTRACK2_INS temp_instrument;
-tADTRACK2_INS temp_instrument2;
-tREGISTER_TABLE temp_instrument_macro;
-tREGISTER_TABLE temp_instrument_macro2;
-tDIS_FMREG_COL temp_instrument_dis_fmreg_col;
-tDIS_FMREG_COL temp_instrument_dis_fmreg_col2;
-uint8_t temp_ins_type;
+temp_instrument_t temp_instrument;
 uint8_t pattord_page;
 uint8_t pattord_hpos;
 uint8_t pattord_vpos;
@@ -299,6 +294,8 @@ uint8_t  panning_table_backup[20];
 uint8_t  voice_table_backup  [20];
 uint8_t  flag_4op_backup;
 struct status_backup_t status_backup;
+
+#include "adt2unit/board_get_pos.c"
 
 #define FreqStart 0x156
 #define FreqEnd   0x2AE

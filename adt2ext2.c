@@ -1,9 +1,15 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include "debug.h"
+#include "parserio.h"
+#include "adt2opl3.h"
+#include "adt2unit.h"
+#include "adt2sys.h"
+#include "adt2extn.h"
 #include "adt2ext2.h"
 
 // HINT: (FPC) S-: Stack checking (off)
@@ -23,5 +29,7 @@ uint8_t old_page = 0;
 uint8_t old_block_chan_pos = 1;
 uint8_t old_block_patt_hpos = 1;
 uint8_t old_block_patt_page = 0;
+
+#include "instedit.c"
 
 #pragma pack(pop)

@@ -154,4 +154,6 @@
 
 #endif // !defined(__GNUC__)
 
+#define PASCALSTRING GCC_ATTRIBUTE((nonstring))
+
 #endif // !defined(DEFINES_H)

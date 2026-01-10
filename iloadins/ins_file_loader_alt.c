@@ -4,13 +4,16 @@
 // SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-static void ins_file_loader_alt (const String *fname)
+// On success: returns `false'.
+// On error: returns `true' and error description in `error'.
+bool ins_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error)
 {
+  bool result = true; // `false' on success, `true' on error
   void *f = NULL; // FILE
   bool f_opened = false;
-  tINS_DATA buffer;
   int64_t fsize;
   int32_t size;
+  tINS_DATA buffer;
 
   bool correct_ins (const void *data)
   {
@@ -19,13 +22,11 @@ static void ins_file_loader_alt (const String *fname)
     DBG_ENTER ("ins_file_loader_alt.correct_ins");
 
     if (   (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_modulator < 0)
-        || (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_modulator > 3))
-      result = false;
-    else if (   (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_carrier < 0)
-             || (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_carrier > 3))
-      result = false;
-    else if (   (((tADTRACK2_INS *)data)->fm_data.FEEDBACK_FM < 0)
-             || (((tADTRACK2_INS *)data)->fm_data.FEEDBACK_FM > 15))
+        || (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_modulator > 3)
+        || (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_carrier < 0)
+        || (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_carrier > 3)
+        || (((tADTRACK2_INS *)data)->fm_data.FEEDBACK_FM < 0)
+        || (((tADTRACK2_INS *)data)->fm_data.FEEDBACK_FM > 15))
       result = false;
 
     DBG_LEAVE (); //EXIT //ins_file_loader_alt.correct_ins
@@ -34,46 +35,71 @@ static void ins_file_loader_alt (const String *fname)
 
   DBG_ENTER ("ins_file_loader_alt");
 
-  memset (&temp_instrument, 0, sizeof (temp_instrument));
-
   //f = fopen (fname, "rb");
-  if ((f = malloc (Pascal_FileRec_size)) == NULL) goto _exit;
+  if ((f = malloc (Pascal_FileRec_size)) == NULL) goto _err_malloc;
   Pascal_AssignFile (f, fname);
   ResetF (f);
-  if (Pascal_IOResult () != 0) goto _exit;
+  if (Pascal_IOResult () != 0) goto _err_fopen;
   f_opened = true;
 
   fsize = Pascal_FileSize (f);
-  if (fsize > sizeof (buffer)) goto _exit;
+  if (fsize > sizeof (buffer)) goto _err_format;
 
   BlockReadF (f, &buffer, fsize, &size);
-  if (size != fsize) goto _exit;
+  if (size != fsize) goto _err_fread;
 
+  dst->four_op = false;
+  dst->use_macro = false;
+
+  // instrument data
+  memset (&dst->ins1.fm, 0, sizeof (dst->ins1.fm));
   switch (force_ins)
   {
     case 0:
       if (size == 12)
-        import_standard_instrument_alt (&temp_instrument, &buffer.idata);
+        import_standard_instrument_alt (&dst->ins1.fm, &buffer.idata);
       if ((size == 12) && !correct_ins (&buffer.idata))
-        import_hsc_instrument_alt (&temp_instrument, &buffer.idata);
+        import_hsc_instrument_alt (&dst->ins1.fm, &buffer.idata);
       else if (size > 12)
-        import_sat_instrument_alt (&temp_instrument, &buffer.idata);
+        import_sat_instrument_alt (&dst->ins1.fm, &buffer.idata);
       break;
 
-    case 1: import_hsc_instrument_alt (&temp_instrument, &buffer.idata); break;
-    case 2: import_sat_instrument_alt (&temp_instrument, &buffer.idata); break;
-    case 3: import_standard_instrument_alt (&temp_instrument, &buffer.idata); break;
+    case 1: import_hsc_instrument_alt (&dst->ins1.fm, &buffer.idata); break;
+    case 2: import_sat_instrument_alt (&dst->ins1.fm, &buffer.idata); break;
+    case 3: import_standard_instrument_alt (&dst->ins1.fm, &buffer.idata); break;
     default: break;
   }
 
-  load_flag_alt = 1;
+  // instrument name
+  SetLength (dst->ins1.name, 0);
+  set_default_ins_name_if_needed (dst, fname);
+
+  result = false;
 
 _exit:
-  //if (f) fclose (f);
-  if (f)
+  //if (f != NULL) fclose (f);
+  if (f != NULL)
   {
     if (f_opened) CloseF (f);
     free (f);
   }
+
   DBG_LEAVE (); //EXIT //ins_file_loader_alt
-};
+  return result;
+
+_err_malloc:
+  *error = "Memory allocation failed";
+  goto _exit;
+
+_err_fopen:
+  *error = "Failed to open input file";
+  goto _exit;
+
+_err_fread:
+  *error = "Failed to read input file";
+  goto _exit;
+
+_err_format:
+  *error = "Unknown file format";
+  goto _exit;
+}

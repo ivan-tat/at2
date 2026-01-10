@@ -12,6 +12,7 @@
 #include "defines.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include "adt2unit.h"
 
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 #pragma pack(push, 1)
@@ -22,15 +23,28 @@ extern bool vib_tab_selected;
 extern uint8_t ptr_arpeggio_table;
 extern uint8_t ptr_vibrato_table;
 
-//void bnk_file_loader (void);
-//void fib_file_loader (void);
-//void ibk_file_loader (void);
-void bnk_file_loader_alt (uint16_t instr);
-void fib_file_loader_alt (uint16_t instr);
-void ibk_file_loader_alt (uint16_t instr);
-//void a2b_file_loader (bool bankSelector, bool loadBankPossible);
+///--- Instruments banks ---///
+
+// A2B
+
+//void a2b_file_loader (bool bankSelector, bool loadBankPossible, char **error);
+
+// A2W
+
 //void a2w_file_loader (bool loadFromFile, bool loadMacros, bool bankSelector,
-//                      bool loadBankPossible, bool updateCurInstr);
+//                      bool loadBankPossible, bool updateCurInstr, char **error);
+
+// BNK (bank)
+
+bool bnk_file_loader (temp_instrument_t *dst, const String *fname, char **error);
+
+// FIB (FIN Bank)
+
+bool fib_file_loader (temp_instrument_t *dst, const String *fname, char **error);
+
+// IBK (Sound Blaster Instrument Bank)
+
+bool ibk_file_loader (temp_instrument_t *dst, const String *fname, char **error);
 
 #pragma pack(pop)
 

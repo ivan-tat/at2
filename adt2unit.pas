@@ -195,13 +195,7 @@ var
 
   songdata_crc: Longint; cvar; external;
   songdata_crc_ord: Longint; cvar; external;
-  temp_instrument: tADTRACK2_INS; cvar; external;
-  temp_instrument2: tADTRACK2_INS; cvar; external;
-  temp_instrument_macro: tREGISTER_TABLE; cvar; external;
-  temp_instrument_macro2: tREGISTER_TABLE; cvar; external;
-  temp_instrument_dis_fmreg_col: tDIS_FMREG_COL; cvar; external;
-  temp_instrument_dis_fmreg_col2: tDIS_FMREG_COL; cvar; external;
-  temp_ins_type: Byte; cvar; external;
+  temp_instrument: temp_instrument_t; cvar; external;
   pattord_page: Byte; cvar; external;
   pattord_hpos: Byte; cvar; external;
   pattord_vpos: Byte; cvar; external;

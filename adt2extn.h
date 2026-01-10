@@ -11,9 +11,12 @@
 
 #include "defines.h"
 #include <stdint.h>
+#include "adt2keyb.h"
 
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 #pragma pack(push, 1)
+
+extern ExtKeyCode fkey;
 
 extern uint8_t  progress_xstart, progress_ystart;
 extern uint8_t  progress_num_steps;
@@ -34,6 +37,7 @@ uint8_t _patts_marked (void);
 
 void nul_volume_bars (void);
 
+void show_progress (int32_t value);
 void show_progress2 (int32_t value, int32_t refresh_dif);
 
 #pragma pack(pop)

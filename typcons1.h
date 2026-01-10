@@ -44,14 +44,14 @@ typedef struct {
   uint8_t WAVEFORM_modulator;
   uint8_t WAVEFORM_carrier;
   uint8_t FEEDBACK_FM;
-} tFM_INST_DATA;
+} tFM_INST_DATA; // 11 bytes
 
 typedef struct {
   tFM_INST_DATA fm_data;
   uint8_t panning;
   int8_t fine_tune;
-  uint8_t perc_voice;
-} tADTRACK2_INS;
+  uint8_t perc_voice; // 0 = melodic, 1..5 = percussion (1 = BD, 2 = SD, 3 = TT, 4 = TC, 5 = HH)
+} tADTRACK2_INS; // 14 bytes
 
 typedef struct {
   tFM_INST_DATA fm_data;
@@ -66,7 +66,7 @@ typedef struct {
   uint8_t loop_length;
   uint8_t keyoff_pos;
   uint8_t data[255]; // HINT: (FPC) start index 1
-} tARPEGGIO_TABLE;
+} tARPEGGIO_TABLE; // 260 bytes
 
 typedef struct {
    uint8_t length;
@@ -76,14 +76,14 @@ typedef struct {
    uint8_t loop_length;
    uint8_t keyoff_pos;
    int8_t data[255]; // HINT: (FPC) start index 1
-} tVIBRATO_TABLE;
+} tVIBRATO_TABLE; // 261 bytes
 
 typedef struct {
   tFM_INST_DATA fm_data;
   int16_t freq_slide;
   uint8_t panning;
   uint8_t duration;
-} tREGISTER_TABLE_DEF;
+} tREGISTER_TABLE_DEF; // 15 bytes
 
 typedef struct {
   uint8_t length;
@@ -93,14 +93,14 @@ typedef struct {
   uint8_t arpeggio_table;
   uint8_t vibrato_table;
   tREGISTER_TABLE_DEF data[255]; // HINT: (FPC) start index 1
-} tREGISTER_TABLE;
+} tREGISTER_TABLE; // 3831 bytes
 
 typedef struct {
   tARPEGGIO_TABLE arpeggio;
   tVIBRATO_TABLE vibrato;
-} tMACRO_TABLE;
+} tMACRO_TABLE; // 521 bytes
 
-typedef tMACRO_TABLE tARP_VIB_MACRO_TABLE[255]; // HINT: (FPC) start index 1
+typedef tMACRO_TABLE tARP_VIB_MACRO_TABLE[255]; // HINT: (FPC) start index 1 // 132855 bytes
 
 typedef struct {
   struct {
@@ -114,7 +114,7 @@ typedef struct {
   uint8_t multipC, kslC, tremC, vibrC, ksrC, sustC;
 } tFM_PARAMETER_TABLE;
 
-typedef bool tDIS_FMREG_COL[28]; // HINT: (FPC) start index 0
+typedef bool tDIS_FMREG_COL[28]; // HINT: (FPC) start index 0 // 28 bytes
 
 typedef struct {
   uint8_t num_4op;
@@ -141,10 +141,23 @@ typedef struct {
   String data[MB_VSIZE][MB_HSIZE+1]; // HINT: (FPC) start index 1
 } tMESSAGE_BOARD_DATA;
 
+typedef String tINSTR_NAME[42+1];
+
+typedef struct {
+  bool four_op;
+  bool use_macro; // and also `.dis_fmreg_col'
+  struct temp_instrument_data {
+    tADTRACK2_INS fm; // 14 bytes
+    tREGISTER_TABLE macro; // 3831 bytes
+    tDIS_FMREG_COL dis_fmreg_col; // 28 bytes
+    tINSTR_NAME name; // 43 bytes
+  } ins1, ins2;
+} temp_instrument_t; // 7834 bytes
+
 typedef struct {
   String songname[42+1];
   String composer[42+1];
-  String instr_names[255][42+1]; // HINT: (FPC) start index 1
+  tINSTR_NAME instr_names[255]; // HINT: (FPC) start index 1
   tADTRACK2_INS instr_data[255]; // HINT: (FPC) start index 1
   tREGISTER_TABLE instr_macros[255]; // HINT: (FPC) start index 1
   tARP_VIB_MACRO_TABLE macro_table;
@@ -547,7 +560,11 @@ extern int32_t  ssaver_time;
 extern bool     timer_fix;
 extern float    decay_bar_rise;
 extern float    decay_bar_fall;
-extern uint8_t  force_ins;
+extern uint8_t  force_ins;  // force type of `.ins' file:
+                            //   0 = autodetect
+                            //   1 = HSC-Tracker/RAD-Tracker
+                            //   2 = SAdT
+                            //   3 = Amusic/AdLib instrument
 extern uint8_t  pattern_layout;
 extern bool     trace_by_default;
 extern bool     nosync_by_default;

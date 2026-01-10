@@ -111,7 +111,11 @@ AT2_char_t AT2_lower_case_ct[AT2_CP_SIZE];
 #include "stringio/Bpm2str.c"
 #include "stringio/number_with_commas.c"
 #include "stringio/remove_spaces_right.c"
+#endif // !ADT2PLAY
 
+#include "stringio/truncate_string.c"
+
+#if !ADT2PLAY
 #include "stringio/Upper_filename.c"
 #endif // !ADT2PLAY
 #include "stringio/Lower_filename.c"

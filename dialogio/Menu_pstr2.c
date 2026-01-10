@@ -5,7 +5,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // item: 1-based
-static String_t Menu_pstr2 (uint8_t item)
+static String_t Menu_pstr2 (uint16_t item)
 {
   String_t t, r;
 

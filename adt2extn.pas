@@ -48,7 +48,7 @@ const
     new_event:     (note: '???'; inst: '??'; fx_1: '???'; fx_2: '???'));
 
 var
-  fkey: Word;
+  fkey: Word; cvar; external;
 
 var
   progress_xstart: Byte; cvar; external;
@@ -97,8 +97,8 @@ function  FILE_open(masks: String; loadBankPossible: Boolean): Byte;
 procedure NUKE;
 procedure MESSAGE_BOARD;
 procedure QUIT_request;
-procedure show_progress(value: Longint);
-procedure show_progress2(value,refresh_dif: Longint); cdecl;
+procedure show_progress(value: Longint); cdecl; external;
+procedure show_progress2(value,refresh_dif: Longint); cdecl; external;
 
 implementation
 
@@ -5475,102 +5475,7 @@ begin
   _dbg_leave; //EXIT //QUIT_request
 end;
 
-procedure show_progress(value: Longint);
-begin
-  _dbg_enter ({$I %FILE%}, 'show_progress');
-
-  If (progress_num_steps = 0) or
-     (progress_value = 0) then
-    begin
-      _dbg_leave; EXIT; //show_progress
-    end;
-  If (value <> DWORD_NULL) then
-    begin
-      If (progress_num_steps = 1) then
-        progress_new_value := Round(40/progress_value*value)
-      else progress_new_value :=
-             Round(40/progress_num_steps*PRED(progress_step)+
-                   40/progress_num_steps/progress_value*value);
-      progress_new_value := max(progress_new_value,40);
-      If (progress_new_value <> progress_old_value) then
-        begin
-          progress_old_value := progress_new_value;
-          ShowStr(screen_ptr,progress_xstart+35,progress_ystart-1,
-                  ExpStrL(Num2Str(Round(100/40*progress_new_value),10)+'%',5,' '),
-                  dialog_background+dialog_hi_text);
-          ShowCStr(screen_ptr,
-                   progress_xstart,progress_ystart,
-                   '~'+ExpStrL('',progress_new_value,#219)+'~'+
-                   ExpStrL('',40-progress_new_value,#219),
-                   dialog_background+dialog_prog_bar1,
-                   dialog_background+dialog_prog_bar2);
-          realtime_gfx_poll_proc;
-          draw_screen;
-        end;
-    end
-  else begin
-         ShowStr(screen_ptr,progress_xstart+35,progress_ystart-1,
-                 ExpStrL('0%',5,' '),
-                 dialog_background+dialog_hi_text);
-         ShowStr(screen_ptr,
-                 progress_xstart,progress_ystart,
-                 ExpStrL('',40,#219),
-                 dialog_background+dialog_prog_bar1);
-         realtime_gfx_poll_proc;
-         draw_screen;
-       end;
-
-  _dbg_leave; //EXIT //show_progress
-end;
-
-procedure show_progress2(value,refresh_dif: Longint); cdecl; public name PUBLIC_PREFIX + 'show_progress2';
-begin
-  _dbg_enter ({$I %FILE%}, 'show_progress2');
-
-  If (progress_num_steps = 0) or
-     (progress_value = 0) then
-    begin
-      _dbg_leave; EXIT; //show_progress2
-    end;
-  If (value <> DWORD_NULL) then
-    begin
-      If (progress_num_steps = 1) then
-        progress_new_value := Round(40/progress_value*value)
-      else progress_new_value :=
-             Round(40/progress_num_steps*PRED(progress_step)+
-                   40/progress_num_steps/progress_value*value);
-      progress_new_value := max(progress_new_value,40);
-      If (Abs(progress_new_value-progress_old_value) >= refresh_dif) or
-         (progress_new_value = 40) then
-        begin
-          progress_old_value := progress_new_value;
-          ShowStr(screen_ptr,progress_xstart+35,progress_ystart-1,
-                  ExpStrL(Num2Str(Round(100/40*progress_new_value),10)+'%',5,' '),
-                  dialog_background+dialog_hi_text);
-          ShowCStr(screen_ptr,
-                   progress_xstart,progress_ystart,
-                   '~'+ExpStrL('',progress_new_value,#219)+'~'+
-                   ExpStrL('',40-progress_new_value,#219),
-                   dialog_background+dialog_prog_bar1,
-                   dialog_background+dialog_prog_bar2);
-          realtime_gfx_poll_proc;
-          draw_screen;
-        end;
-    end
-  else begin
-         ShowStr(screen_ptr,progress_xstart+35,progress_ystart-1,
-                 ExpStrL('0%',5,' '),
-                 dialog_background+dialog_hi_text);
-         ShowStr(screen_ptr,
-                 progress_xstart,progress_ystart,
-                 ExpStrL('',40,#219),
-                 dialog_background+dialog_prog_bar1);
-         realtime_gfx_poll_proc;
-         draw_screen;
-       end;
-
-  _dbg_leave; //EXIT //show_progress2
-end;
+procedure fselect_external_proc; cdecl; external;
 
 const
   last_dir:  array[1..4] of String[DIR_SIZE] = ('','','','');
@@ -5590,6 +5495,7 @@ var
   temp_marks2: array[0..$7f] of Char;
   xstart,ystart: Byte;
   flag: Byte;
+  error: PChar;
 
 procedure _restore;
 begin
@@ -5700,8 +5606,26 @@ _jmp1:
   If (Lower(ExtOnly(fname)) = 'sat') then sat_file_loader;
   If (Lower(ExtOnly(fname)) = 'sa2') then sa2_file_loader;
   If (Lower(ExtOnly(fname)) = 'xms') then amd_file_loader;
-  If (Lower(ExtOnly(fname)) = 'a2i') then a2i_file_loader;
-  If (Lower(ExtOnly(fname)) = 'a2f') then a2f_file_loader;
+  If (Lower(ExtOnly(fname)) = 'a2i') then
+  begin
+    if (a2i_file_loader_alt (temp_instrument, instdata_source, false, error)) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' A2I Loader '), 1)
+    else
+    begin
+      apply_instrument (current_inst - 1, temp_instrument);
+      load_flag := 1;
+    end;
+  end
+  else If (Lower(ExtOnly(fname)) = 'a2f') then
+  begin
+    if (a2f_file_loader_alt (temp_instrument, instdata_source, false, error)) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' A2F Loader '), 1)
+    else
+    begin
+      apply_instrument (current_inst - 1, temp_instrument);
+      load_flag := 1;
+    end;
+  end;
 
   If ((Lower(ExtOnly(fname)) = 'a2m') or (Lower(ExtOnly(fname)) = 'a2t')) and
      (load_flag = 1)  then
@@ -5763,14 +5687,97 @@ _jmp1:
         _arp_vib_loader := FALSE;
       end;
 
-  If (Lower(ExtOnly(fname)) = 'bnk') then bnk_file_loader;
-  If (Lower(ExtOnly(fname)) = 'cif') then cif_file_loader;
-  If (Lower(ExtOnly(fname)) = 'fib') then fib_file_loader;
-  If (Lower(ExtOnly(fname)) = 'fin') then fin_file_loader;
-  If (Lower(ExtOnly(fname)) = 'ibk') then ibk_file_loader;
-  If (Lower(ExtOnly(fname)) = 'ins') then ins_file_loader;
-  If (Lower(ExtOnly(fname)) = 'sbi') then sbi_file_loader;
-  If (Lower(ExtOnly(fname)) = 'sgi') then sgi_file_loader;
+  If (Lower(ExtOnly(fname)) = 'bnk') then
+  begin
+    load_flag_alt := BYTE_NULL;
+    if (bnk_file_loader (temp_instrument, instdata_source, error)) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' BNK Loader '), 1)
+    else
+    begin
+      if (load_flag_alt = 1) then
+      begin
+        apply_instrument (current_inst - 1, temp_instrument);
+        load_flag := 1;
+      end;
+    end;
+  end
+  else If (Lower(ExtOnly(fname)) = 'cif') then
+  begin
+    if (cif_file_loader_alt (temp_instrument, instdata_source, error)) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' CIF Loader '), 1)
+    else
+    begin
+      apply_instrument (current_inst - 1, temp_instrument);
+      load_flag := 1;
+    end;
+  end
+  else If (Lower(ExtOnly(fname)) = 'fib') then
+  begin
+    if (fib_file_loader (temp_instrument, instdata_source, error)) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' FIB Loader '), 1)
+    else
+    begin
+      if (load_flag_alt = 1) then
+      begin
+        apply_instrument (current_inst - 1, temp_instrument);
+        load_flag := 1;
+      end;
+    end;
+  end
+  else If (Lower(ExtOnly(fname)) = 'fin') then
+  begin
+    if (fin_file_loader_alt (temp_instrument, instdata_source, error)) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' FIN Loader '), 1)
+    else
+    begin
+      apply_instrument (current_inst - 1, temp_instrument);
+      load_flag := 1;
+    end;
+  end
+  else If (Lower(ExtOnly(fname)) = 'ibk') then
+  begin
+    load_flag_alt := BYTE_NULL;
+    if (ibk_file_loader (temp_instrument, instdata_source, error)) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' IBK Loader '), 1)
+    else
+    begin
+      if (load_flag_alt = 1) then
+      begin
+        apply_instrument (current_inst - 1, temp_instrument);
+        load_flag := 1;
+      end;
+    end;
+  end
+  else If (Lower(ExtOnly(fname)) = 'ins') then
+  begin
+    if (ins_file_loader_alt (temp_instrument, instdata_source, error)) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' INS Loader '), 1)
+    else
+    begin
+      apply_instrument (current_inst - 1, temp_instrument);
+      load_flag := 1;
+    end;
+  end
+  else If (Lower(ExtOnly(fname)) = 'sbi') then
+  begin
+    if (sbi_file_loader_alt (temp_instrument, instdata_source, error)) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' SBI Loader '), 1)
+    else
+    begin
+      apply_instrument (current_inst - 1, temp_instrument);
+      load_flag := 1;
+    end;
+  end
+  else If (Lower(ExtOnly(fname)) = 'sgi') then
+  begin
+    if (sgi_file_loader_alt (temp_instrument, instdata_source, error)) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' SGI Loader '), 1)
+    else
+    begin
+      apply_instrument (current_inst - 1, temp_instrument);
+      load_flag := 1;
+    end;
+  end;
 
 //  If use_large_cursor then WideCursor
 //  else ThinCursor;

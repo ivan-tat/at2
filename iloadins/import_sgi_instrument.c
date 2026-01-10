@@ -4,7 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-/*static*/ void import_sgi_instrument (tADTRACK2_INS *ins, const void *data)
+static void import_sgi_instrument (tADTRACK2_INS *ins, const void *data)
 {
   DBG_ENTER ("import_sgi_instrument");
 

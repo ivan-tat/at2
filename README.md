@@ -55,7 +55,7 @@ Now:
 * To build `adtrack2` under Windows (works for i386 target for now):
   + Install Cygwin/MSYS2/MinGW, Free Pascal compiler.
   + Run `./Make-Windows-i386.sh` or `./Make-Windows-x86_64.sh`.
-* To build `adtrack2` under GNU/Linux (works for i386 target for now):
+* To build `adtrack2` under GNU/Linux:
   + Install Free Pascal compiler and SDL library.
   + Run `./Make-Linux-i386.sh` or `./Make-Linux-x86_64.sh`.
 * These scripts can also be run in any supported OS for cross-compilation. See [docs/build.md](docs/build.md) for details.
@@ -125,6 +125,7 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 * [far2l](https://github.com/elfmz/far2l) ([package](https://pkgs.org/search/?q=far2l)) - Linux fork of FAR Manager v2
 * [The Doszip Commander](https://sourceforge.net/projects/doszip/) - a LFN-aware TUI file manager (NC clone) with built-in Zip and UnZip for DOS and Windows
 * [UPX](https://upx.github.io/) ([package](https://pkgs.org/search/?q=upx)) - efficient live-compressor for executables
+* [OPL3BankEditor](https://github.com/Wohlstand/OPL3BankEditor) - a small cross-platform editor of the OPL3 FM banks of different formats
 
 ### Fonts
 

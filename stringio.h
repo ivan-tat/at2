@@ -138,7 +138,11 @@ int32_t Str2num (const String *str, uint8_t base);
 String_t Bpm2str (double bpm);
 String *number_with_commas (String *dst, uint32_t num, uint8_t base);
 String *remove_spaces_right (String *s);
+#endif // !ADT2PLAY
 
+String_t truncate_string (const String *s);
+
+#if !ADT2PLAY
 String_t Upper_filename (const String *str);
 #endif // !ADT2PLAY
 String_t Lower_filename (const String *str);

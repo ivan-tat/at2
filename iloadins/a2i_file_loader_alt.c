@@ -4,7 +4,9 @@
 // SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-static void a2i_file_loader_alt (const String *fname)
+// On success: returns `false'.
+// On error: returns `true' and error description in `error'.
+bool a2i_file_loader_alt (temp_instrument_t *dst, const String *fname, bool swap_ins, char **error)
 {
   #pragma pack(push, 1)
   typedef struct
@@ -12,167 +14,175 @@ static void a2i_file_loader_alt (const String *fname)
     char ident[7];
     uint16_t crc16;
     uint8_t ffver;
-    uint8_t b0len;
+    uint8_t b0len; // or LSB of `len'
   } tOLD_HEADER;
-  typedef struct
-  {
-    char ident[7];
-    uint16_t crc16;
-    uint8_t ffver;
-    uint16_t b0len;
-  } tHEADER;
   #pragma pack(pop)
 
   static const char id[7] = { "_A2ins_" };
 
+  bool result = true; // `false' on success, `true' on error
   void *f = NULL; // FILE
   bool f_opened = false;
-  tOLD_HEADER header;
-  tHEADER header2;
   int32_t size;
+  tOLD_HEADER header;
+  uint_least16_t len;
   uint16_t crc;
+  size_t unpacked_size;
+  mem_stream_t stream;
 
   DBG_ENTER ("a2i_file_loader_alt");
 
-  memset (&temp_instrument, 0, sizeof (temp_instrument));
-
   //f = fopen (fname, "rb");
-  if ((f = malloc (Pascal_FileRec_size)) == NULL) goto _exit;
+  if ((f = malloc (Pascal_FileRec_size)) == NULL) goto _err_malloc;
   Pascal_AssignFile (f, fname);
   ResetF (f);
-  if (Pascal_IOResult () != 0) goto _exit;
+  if (Pascal_IOResult () != 0) goto _err_fopen;
   f_opened = true;
 
   BlockReadF (f, &header, sizeof (header), &size);
-  if (   (size != sizeof (header))
-      || (memcmp (header.ident, id, sizeof (header.ident)) != 0)) goto _exit;
+  if (size != sizeof (header)) goto _err_fread;
 
-  if ((header.ffver < 1) && (header.ffver > FFVER_A2I)) goto _exit;
+  if (memcmp (header.ident, id, sizeof (header.ident)) != 0) goto _err_format;
 
-  if ((header.ffver >= 1) && (header.ffver <= 4))
+  if ((header.ffver >= 1) && (header.ffver <= 10))
   {
-    BlockReadF (f, buf2, header.b0len, &size);
-    if (size != header.b0len) goto _exit;
+    if (header.ffver <= 8)
+      len = header.b0len;
+    else
+    {
+      uint8_t b;
+
+      BlockReadF (f, &b, sizeof (b), &size);
+      if (size != sizeof (b)) goto _err_fread;
+      len = header.b0len + (b << 8);
+    }
+
+    BlockReadF (f, buf2, len, &size);
+    if (size != len) goto _err_fread;
 
     crc = UINT16_NULL;
-    crc = Update16 (&header.b0len, 1, crc);
-    crc = Update16 (buf2, header.b0len, crc);
-    if (crc != header.crc16) goto _exit;
+    crc = Update16 (&header.b0len, sizeof (header.b0len), crc); // LSB only
+    crc = Update16 (buf2, len, crc);
+    if (crc != header.crc16) goto _err_crc;
 
     switch (header.ffver)
     {
-      case 4:
-        memmove (buf3, buf2, header.b0len);
-        break;
-      case 3:
-        LZSS_decompress (buf2, buf3, header.b0len);
-        break;
-      case 2:
-        LZW_decompress (buf2, buf3);
-        break;
       case 1:
-        SIXPACK_decompress (buf2, buf3, header.b0len);
-        break;
-      default: // never reached
-        break;
-    }
-
-    memmove (&temp_instrument, buf3, sizeof (temp_instrument));
-    temp_instrument.panning = 0;
-  }
-
-  if ((header.ffver >= 5) && (header.ffver <= 8))
-  {
-    BlockReadF (f, buf2, header.b0len, &size);
-    if (size != header.b0len) goto _exit;
-
-    crc = UINT16_NULL;
-    crc = Update16 (&header.b0len, 1, crc);
-    crc = Update16 (buf2, header.b0len, crc);
-    if (crc != header.crc16) goto _exit;
-
-    switch (header.ffver)
-    {
-      case 8:
-        memmove (buf3, buf2, header.b0len);
-        break;
-      case 7:
-        LZSS_decompress (buf2, buf3, header.b0len);
-        break;
-      case 6:
-        LZW_decompress (buf2, buf3);
-        break;
       case 5:
-        SIXPACK_decompress (buf2, buf3, header.b0len);
+        unpacked_size = SIXPACK_decompress (buf2, buf3, len);
         break;
-      default: // never reached
+
+      case 2:
+      case 6:
+        unpacked_size = LZW_decompress (buf2, buf3);
+        break;
+
+      case 3:
+      case 7:
+        unpacked_size = LZSS_decompress (buf2, buf3, len);
+        break;
+
+      default:
+      case 4:
+      case 8:
+        memcpy (buf3, buf2, len);
+        unpacked_size = len;
+        break;
+
+      case 9:
+        unpacked_size = APACK_decompress (buf2, buf3);
+        break;
+
+      case 10:
+        progress_num_steps = 0;
+        unpacked_size = LZH_decompress (buf2, buf3, len);
         break;
     }
 
-    memmove (&temp_instrument, buf3, sizeof (temp_instrument));
-  }
+    set_mem_stream (&stream, buf3, unpacked_size);
 
-  if (header.ffver == 9)
-  {
-    ResetF (f);
-    BlockReadF (f, &header2, sizeof (header2), &size);
-    if (   (size != sizeof (header2))
-        || (memcmp (header2.ident, id, sizeof (header2.ident)) != 0)) goto _exit;
-
-    BlockReadF (f, buf2, header2.b0len, &size);
-    if (size != header2.b0len) goto _exit;
-
-    crc = UINT16_NULL;
-    crc = Update16 ((uint8_t *)&header2.b0len, 1, crc);
-    crc = Update16 (buf2, header2.b0len, crc);
-    if (crc != header2.crc16) goto _exit;
-
-    APACK_decompress (buf2, buf3);
-
-    memmove (&temp_instrument, buf3, sizeof (temp_instrument));
-  }
-
-  if (header.ffver == FFVER_A2I)
-  {
-    int32_t unpacked_size, pos;
-
-    ResetF (f);
-    BlockReadF (f, &header2, sizeof (header2), &size);
-    if (   (size != sizeof (header2))
-        || (memcmp (header2.ident, id, sizeof (header2.ident)) != 0)) goto _exit;
-
-    BlockReadF (f, buf2, header2.b0len, &size);
-    if (size != header2.b0len) goto _exit;
-
-    crc = UINT16_NULL;
-    crc = Update16 ((uint8_t *)&header2.b0len, 1, crc);
-    crc = Update16 (buf2, header2.b0len, crc);
-
-    if (crc != header2.crc16) goto _exit;
-
-    progress_num_steps = 0;
-    unpacked_size = LZH_decompress (buf2, buf3, header2.b0len);
-
-    pos = 0;
-    memmove (&temp_instrument, &buf3[pos], sizeof (temp_instrument));
-    pos += sizeof (temp_instrument); // instrument data
-    pos += buf3[pos] + 1; // instrument name
-    if (pos < unpacked_size) // more data present => 4op instrument
+    dst->four_op = false;
+    dst->use_macro = false;
+    if (header.ffver <= 8)
     {
-      memmove (&temp_instrument2, &temp_instrument, sizeof (temp_instrument2));
-      memmove (&temp_instrument, &buf3[pos], sizeof (temp_instrument));
-      pos += sizeof (temp_instrument); // instrument data
+      // old instrument data
+      if (read_bytes (&dst->ins1.fm.fm_data, sizeof (dst->ins1.fm.fm_data), &stream)) goto _err_eod;
+      if (read_bytes (&dst->ins1.fm.panning, sizeof (dst->ins1.fm.panning), &stream)) goto _err_eod;
+
+      if (header.ffver <= 4)
+        dst->ins1.fm.panning = 0;
+
+      if (read_bytes (&dst->ins1.fm.fine_tune, sizeof (dst->ins1.fm.fine_tune), &stream)) goto _err_eod;
+      dst->ins1.fm.perc_voice = 0; // N/A
+      if (read_string (dst->ins1.name, sizeof (dst->ins1.name), &stream)) goto _err_eod; // old instrument name
+    }
+    else
+    {
+      if (read_bytes (&dst->ins1.fm, sizeof (dst->ins1.fm), &stream)) goto _err_eod; // instrument data
+      if (read_string (dst->ins1.name, sizeof (dst->ins1.name), &stream)) goto _err_eod; // instrument name
+
+      if (header.ffver == 10)
+        if (stream.curptr < stream.endptr) // more data present => 4op instrument
+        {
+          dst->four_op = true;
+          if (swap_ins)
+          {
+            memcpy (&dst->ins2.fm, &dst->ins1.fm, sizeof (dst->ins2.fm)); // copy to 4OP 2/2
+            memcpy (dst->ins2.name, dst->ins1.name, sizeof (dst->ins2.name)); // copy to 4OP 2/2
+            if (read_bytes (&dst->ins1.fm, sizeof (dst->ins1.fm), &stream)) goto _err_eod; // instrument data (4OP 1/2)
+            if (read_string (dst->ins1.name, sizeof (dst->ins1.name), &stream)) goto _err_eod; // instrument name (4OP 1/2)
+          }
+          else
+          {
+            if (read_bytes (&dst->ins2.fm, sizeof (dst->ins2.fm), &stream)) goto _err_eod; // instrument data (4OP 2/2)
+            if (read_string (dst->ins2.name, sizeof (dst->ins2.name), &stream)) goto _err_eod; // instrument name (4OP 2/2)
+          }
+        }
     }
   }
+  else
+    goto _err_version;
 
-  load_flag_alt = 1;
+  set_default_ins_name_if_needed (dst, fname);
+
+  result = false;
 
 _exit:
-  //if (f) fclose (f);
-  if (f)
+  //if (f != NULL) fclose (f);
+  if (f != NULL)
   {
     if (f_opened) CloseF (f);
     free (f);
   }
+
   DBG_LEAVE (); //EXIT //a2i_file_loader_alt
+  return result;
+
+_err_malloc:
+  *error = "Memory allocation failed";
+  goto _exit;
+
+_err_fopen:
+  *error = "Failed to open input file";
+  goto _exit;
+
+_err_fread:
+  *error = "Failed to read input file";
+  goto _exit;
+
+_err_format:
+  *error = "Unknown file format";
+  goto _exit;
+
+_err_version:
+  *error = "Unknown file format version";
+  goto _exit;
+
+_err_crc:
+  *error = "CRC failed - file corrupted";
+  goto _exit;
+
+_err_eod:
+  *error = "Unexpected end of unpacked data";
+  goto _exit;
 }

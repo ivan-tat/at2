@@ -13,6 +13,8 @@
 //  You should have received a copy of the GNU General Public License
 //  along with AT2.  If not, see <http://www.gnu.org/licenses/>.
 
+// This file is included in "adt2ext3.pas" in implementation section
+
 {
         procedure import_old_a2m_event1(patt,line,chan: Byte; old_chunk: tOLD_CHUNK;
                                         processing_whole_song: Boolean);
@@ -32,16 +34,13 @@
         procedure a2t_file_loader;
         procedure a2p_file_loader;
         function  dec2hex(dec: Byte): Byte;
-        function  truncate_string(str: String): String;
         procedure amd_file_loader;
         procedure import_cff_event(patt,line,chan,byte0,byte1,byte2: Byte);
         procedure import_cff_patterns(var data; patterns: Byte);
         procedure cff_file_loader;
-        procedure import_standard_instrument(inst: Byte; var data);
         procedure dfm_file_loader;
         procedure import_hsc_event(patt,line,chan: Byte; event: Word);
         procedure import_hsc_patterns(var data; patterns: Byte);
-        procedure import_hsc_instrument(inst: Byte; var data);
         procedure hsc_file_loader;
         procedure mtk_file_loader;
         procedure rad_file_loader;
@@ -49,9 +48,7 @@
         procedure fix_single_pattern(patt: Byte);
         procedure s3m_file_loader;
         procedure fix_fmk_commands(patterns: Byte);
-        procedure import_fin_instrument(inst: Byte; var data);
         procedure fmk_file_loader;
-        procedure import_sat_instrument(inst: Byte; var data);
         function  import_sat_instrument_name(var data; inst: Byte): String;
         procedure sat_file_loader;
         function  _sal(op1,op2: Word): Byte;
@@ -3322,13 +3319,6 @@ end;
 function dec2hex(dec: Byte): Byte;
 begin dec2hex := (dec DIV 10)*16 +(dec MOD 10); end;
 
-function truncate_string(str: String): String;
-begin
-  While (Length(str) > 0) and (str[Length(str)] in [#0,#32,#255]) do
-    Delete(str,Length(str),1);
-  truncate_string := str;
-end;
-
 procedure amd_file_loader;
 
 type
@@ -3739,8 +3729,6 @@ begin
 
   _dbg_leave; //EXIT //amd_file_loader
 end;
-
-procedure import_hsc_instrument(inst: Byte; var data); forward;
 
 procedure import_cff_event(patt,line,chan,byte0,byte1,byte2: Byte);
 
@@ -4318,7 +4306,7 @@ begin
 
   For temp2 := 0 to 46 do
     begin
-      import_hsc_instrument(temp2+1,headr2.instr[temp2].iData);
+      import_hsc_instrument_alt (songdata.instr_data[temp2+1], headr2.instr[temp2].iData);
       songdata.instr_data[temp2+1].fine_tune := 0;
       songdata.instr_names[temp2+1] :=
         Copy(songdata.instr_names[temp2+1],1,9)+
@@ -4339,27 +4327,6 @@ begin
 {$ENDIF}
 
   _dbg_leave; //EXIT //cff_file_loader
-end;
-
-procedure import_standard_instrument(inst: Byte; var data);
-begin
-  With songdata.instr_data[inst] do
-    begin
-      fm_data.AM_VIB_EG_modulator := pBYTE(@data)[0];
-      fm_data.AM_VIB_EG_carrier   := pBYTE(@data)[1];
-      fm_data.KSL_VOLUM_modulator := pBYTE(@data)[2];
-      fm_data.KSL_VOLUM_carrier   := pBYTE(@data)[3];
-      fm_data.ATTCK_DEC_modulator := pBYTE(@data)[4];
-      fm_data.ATTCK_DEC_carrier   := pBYTE(@data)[5];
-      fm_data.SUSTN_REL_modulator := pBYTE(@data)[6];
-      fm_data.SUSTN_REL_carrier   := pBYTE(@data)[7];
-      fm_data.WAVEFORM_modulator  := pBYTE(@data)[8]  AND 3;
-      fm_data.WAVEFORM_carrier    := pBYTE(@data)[9]  AND 3;
-      fm_data.FEEDBACK_FM         := pBYTE(@data)[10] AND $0f;
-    end;
-
-  songdata.instr_data[inst].panning := 0;
-  songdata.instr_data[inst].fine_tune := 0;
 end;
 
 procedure dfm_file_loader;
@@ -4564,7 +4531,7 @@ begin
             (Length(songdata.instr_names[temp2]) <> 0) do
         Delete(songdata.instr_names[temp2],
                Length(songdata.instr_names[temp2]),1);
-      import_standard_instrument(temp2,header.instd[temp2]);
+      import_standard_instrument_alt (songdata.instr_data[temp2], header.instd[temp2]);
     end;
 
   temp2 := 0;
@@ -4812,27 +4779,6 @@ begin { import_hsc_patterns }
   until (patt >= patterns) or (order > $7f);
 end;
 
-procedure import_hsc_instrument(inst: Byte; var data);
-begin
-  With songdata.instr_data[inst] do
-    begin
-      fm_data.AM_VIB_EG_carrier   := pBYTE(@data)[0];
-      fm_data.AM_VIB_EG_modulator := pBYTE(@data)[1];
-      fm_data.KSL_VOLUM_carrier   := pBYTE(@data)[2];
-      fm_data.KSL_VOLUM_modulator := pBYTE(@data)[3];
-      fm_data.ATTCK_DEC_carrier   := pBYTE(@data)[4];
-      fm_data.ATTCK_DEC_modulator := pBYTE(@data)[5];
-      fm_data.SUSTN_REL_carrier   := pBYTE(@data)[6];
-      fm_data.SUSTN_REL_modulator := pBYTE(@data)[7];
-      fm_data.FEEDBACK_FM         := pBYTE(@data)[8]  AND $0f;
-      fm_data.WAVEFORM_carrier    := pBYTE(@data)[9]  AND 3;
-      fm_data.WAVEFORM_modulator  := pBYTE(@data)[10] AND 3;
-    end;
-
-  songdata.instr_data[inst].panning := 0;
-  songdata.instr_data[inst].fine_tune := pBYTE(@data)[11] SHR 4;
-end;
-
 var
   hscbuf: tHSC_DATA;
 
@@ -4938,7 +4884,7 @@ begin
 // specific corrections for HSC-Tracker instrument
   For temp2 := 0 to $7f do
     begin
-      import_hsc_instrument(temp2+1,hscbuf.instr[temp2]);
+      import_hsc_instrument_alt (songdata.instr_data[temp2+1], hscbuf.instr[temp2]);
       With songdata.instr_data[temp2+1].fm_data do
         begin
           KSL_VOLUM_modulator := KSL_VOLUM_modulator AND $3f+
@@ -5090,7 +5036,7 @@ begin
 // specific corrections for MPU-401 TRAKKER instrument
   For temp2 := 0 to $7f do
     begin
-      import_hsc_instrument(temp2+1,buffer2.instt[temp2]);
+      import_hsc_instrument_alt (songdata.instr_data[temp2+1], buffer2.instt[temp2]);
       With songdata.instr_data[temp2+1].fm_data do
         begin
           If (KSL_VOLUM_modulator > 128) then
@@ -5473,7 +5419,7 @@ begin
     Inc(temp2);
     If (temp3 <> 0) and (temp2+11 < temp) then
       begin
-        import_hsc_instrument(temp3,buf1[temp2]);
+        import_hsc_instrument_alt (songdata.instr_data[temp3], buf1[temp2]);
         songdata.instr_data[temp3].fine_tune := 0;
         Inc(temp2,11);
       end;
@@ -6486,7 +6432,7 @@ begin
               _dbg_leave; EXIT; //s3m_file_loader
             end;
 
-          import_standard_instrument(temp,insdata.fmdata);
+          import_standard_instrument_alt (songdata.instr_data[temp], insdata.fmdata);
         end;
 
       default_vol[temp] := insdata.vol;
@@ -6890,27 +6836,6 @@ begin { fix_fmk_commands }
   For patt := 0 to PRED(patterns) do
     If NOT (Pos(CHR(patt),patts) <> 0) then
       fix_single_pattern(patt);
-end;
-
-procedure import_fin_instrument(inst: Byte; var data);
-begin
-  With songdata.instr_data[inst] do
-    begin
-      fm_data.AM_VIB_EG_modulator := pBYTE(@data)[0];
-      fm_data.AM_VIB_EG_carrier   := pBYTE(@data)[1];
-      fm_data.KSL_VOLUM_modulator := pBYTE(@data)[2];
-      fm_data.KSL_VOLUM_carrier   := pBYTE(@data)[3];
-      fm_data.ATTCK_DEC_modulator := pBYTE(@data)[4];
-      fm_data.ATTCK_DEC_carrier   := pBYTE(@data)[5];
-      fm_data.SUSTN_REL_modulator := pBYTE(@data)[6];
-      fm_data.SUSTN_REL_carrier   := pBYTE(@data)[7];
-      fm_data.WAVEFORM_modulator  := pBYTE(@data)[8]  AND 7;
-      fm_data.WAVEFORM_carrier    := pBYTE(@data)[9]  AND 7;
-      fm_data.FEEDBACK_FM         := pBYTE(@data)[10] AND $0f;
-    end;
-
-  songdata.instr_data[inst].panning := 0;
-  songdata.instr_data[inst].fine_tune := 0;
 end;
 
 procedure fmk_file_loader;
@@ -7578,7 +7503,7 @@ begin
           Copy(songdata.instr_names[temp],1,9)+
           truncate_string(insdata.dname);
 
-      import_fin_instrument(temp,insdata.idata);
+      import_fin_instrument_alt (songdata.instr_data[temp], insdata.idata);
     end;
 
   For pat := 0 to PRED(header.patnum) do
@@ -7670,27 +7595,6 @@ begin
 {$ENDIF}
 
   _dbg_leave; //EXIT //fmk_file_loader
-end;
-
-procedure import_sat_instrument(inst: Byte; var data);
-begin
-  With songdata.instr_data[inst] do
-    begin
-      fm_data.FEEDBACK_FM         := pBYTE(@data)[0] AND $0f;
-      fm_data.AM_VIB_EG_modulator := pBYTE(@data)[1];
-      fm_data.AM_VIB_EG_carrier   := pBYTE(@data)[2];
-      fm_data.ATTCK_DEC_modulator := pBYTE(@data)[3];
-      fm_data.ATTCK_DEC_carrier   := pBYTE(@data)[4];
-      fm_data.SUSTN_REL_modulator := pBYTE(@data)[5];
-      fm_data.SUSTN_REL_carrier   := pBYTE(@data)[6];
-      fm_data.WAVEFORM_modulator  := pBYTE(@data)[7] AND 3;
-      fm_data.WAVEFORM_carrier    := pBYTE(@data)[8] AND 3;
-      fm_data.KSL_VOLUM_modulator := pBYTE(@data)[9];
-      fm_data.KSL_VOLUM_carrier   := pBYTE(@data)[10];
-    end;
-
-  songdata.instr_data[inst].panning := 0;
-  songdata.instr_data[inst].fine_tune := 0;
 end;
 
 function import_sat_instrument_name(var data; inst: Byte): String;
@@ -7965,7 +7869,7 @@ begin
       temp5 := max(temp5,header.nopat);
       For temp := 0 to $1e do
         begin
-          import_sat_instrument(temp+1,header.instt[temp]);
+          import_sat_instrument_alt (songdata.instr_data[temp+1], header.instt[temp]);
           songdata.instr_names[temp+1] :=
             Copy(songdata.instr_names[temp+1],1,9)+
             truncate_string(import_sat_instrument_name(header.instn,temp));
@@ -7989,7 +7893,7 @@ begin
       temp5 := max(temp5,headr2.nopat);
       For temp := 0 to $1e do
         begin
-          import_sat_instrument(temp+1,headr2.instt[temp]);
+          import_sat_instrument_alt (songdata.instr_data[temp+1], headr2.instt[temp]);
           songdata.instr_names[temp+1] :=
             Copy(songdata.instr_names[temp+1],1,9)+
             truncate_string(import_sat_instrument_name(headr2.instn,temp));
@@ -8356,7 +8260,7 @@ begin { sa2_file_loader }
 
   For temp := 0 to $1e do
     begin
-      import_sat_instrument(temp+1,header.instt[temp]);
+      import_sat_instrument_alt (songdata.instr_data[temp+1], header.instt[temp]);
       songdata.instr_names[temp+1] := Copy(songdata.instr_names[temp+1],1,9)+
         truncate_string(import_sat_instrument_name(header.instn,temp));
     end;

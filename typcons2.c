@@ -34,3 +34,21 @@ const char *patt_win_tracks[3][5] = {
 };
 
 String patt_win[5][176+1] = { 0 };
+
+const char *bnk_header_str[BNK_HEADER_LINES] = {
+  "       Instrument                             Melodic/",
+  "    #  Name      ┌20┐ ┌40┐ ┌60┐ ┌80┐ ┌E0┐ C0  Percussion (Voice)",
+  "═════════════════════════════════════════════════════════════════"
+};
+
+const char *fib_header_str[FIB_HEADER_LINES] = {
+  "       Instrument                                               Mel./",
+  "    #  Name                        ┌20┐ ┌40┐ ┌60┐ ┌80┐ ┌E0┐ C0  Perc.",
+  "══════════════════════════════════════════════════════════════════════"
+};
+
+const char *ibk_header_str[IBK_HEADER_LINES] = {
+  "      Instrument                             Melodic/",
+  "   #  Name      ┌20┐ ┌40┐ ┌60┐ ┌80┐ ┌E0┐ C0  Percussion (Voice)",
+  "════════════════════════════════════════════════════════════════"
+};

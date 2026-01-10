@@ -15,6 +15,7 @@
 #include "parserio.h"
 #include "dialogio.h"
 #include "adt2extn.h"
+#include "adt2ext2.h"
 #include "adt2ext4.h"
 #include "adt2ext5.h"
 #include "adt2ext3.h"
@@ -29,5 +30,18 @@
 #pragma pack(push, 1)
 
 #include "iloadins.c"
+
+// test_instrument_alt, test_instrument_alt2
+
+static tREGISTER_TABLE ins__fmreg_table_backup;
+static tREGISTER_TABLE ins__fmreg_table_backup2;
+static tDIS_FMREG_COL ins__dis_fmreg_col_backup;
+static tDIS_FMREG_COL ins__dis_fmreg_col_backup2;
+static tARP_VIB_MACRO_TABLE arp_vib_macro_table_backup;
+static uint8_t chan_handle[20];
+
+#include "iloadins/test_instrument_alt_output_note.c" // static
+#include "iloadins/test_instrument_alt.c"
+#include "iloadins/test_instrument_alt2.c"
 
 #pragma pack(pop)

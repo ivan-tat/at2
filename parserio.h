@@ -19,8 +19,8 @@ int32_t SensitiveScan (const void *buf, ssize_t skip, ssize_t size,
 bool Compare (const char *buf1, const char *buf2, size_t size);
 bool Empty (const void *buf, size_t size);
 size_t CountLines (const char *buf, size_t size);
-uint16_t Update16 (const uint8_t *buf, size_t size, uint16_t CRC);
-uint32_t Update32 (const uint8_t *buf, size_t size, uint32_t CRC);
+uint16_t Update16 (const void *buf, size_t size, uint16_t CRC);
+uint32_t Update32 (const void *buf, size_t size, uint32_t CRC);
 void make_table_16bit (void);
 void make_table_32bit (void);
 

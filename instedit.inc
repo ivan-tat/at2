@@ -14,19 +14,6 @@
 //  along with AT2.  If not, see <http://www.gnu.org/licenses/>.
 
 {
-    procedure reset_instrument_preview;
-    procedure INSTRUMENT_test(instr,instr2: Byte; chan: Byte; fkey: Word; process_macros: Boolean);
-    function  _1st_marked: Byte;
-    function  _2nd_marked: Byte;
-    function  marked_instruments: Byte;
-    procedure reset_marked_instruments;
-    function  get_4op_to_test: Word;
-    function  check_4op_to_test: Word;
-    function  check_4op_instrument(ins: Byte): Word;
-    function  check_4op_flag(ins: Byte): Boolean;
-    procedure reset_4op_flag(ins: Byte);
-    procedure set_4op_flag(ins: Byte);
-    procedure update_4op_flag_marks;
     procedure INSTRUMENT_CONTROL_page_refresh(page: Byte);
     procedure _show_adsr(var dest; xstart,ystart: Byte;
                          attack,decay,sustain,release,attenuation: Byte;
@@ -55,545 +42,40 @@
     function  INSTRUMENT_CONTROL_alt(instr: Byte; title: String): Byte;
 }
 
-const
-  _ADSR_preview_flag: Boolean = TRUE;
+var
+  _ADSR_preview_flag: Boolean; cvar; external;
+  _instedit_operator_enabled: array[1..4] of Boolean; cvar; external;
 
 const
-  _operator_enabled: array[1..4] of Boolean = (TRUE,TRUE,TRUE,TRUE);
   _carrier_flag: array[BOOLEAN] of Byte = (2,1);
-  _ins_mark_chr = #16;
-  _4op_flag_chr_beg = #172;
-  _4op_flag_chr_end = #173;
+  _ins_mark_chr = #16; // C: _INS_MARK_CHR
+  _4op_flag_chr_beg = #172; // C: charmap.four_op_upper_half
+  _4op_flag_chr_end = #173; // C: charmap.four_op_lower_half
   _4op_flag_chars: Set of Char = [_4op_flag_chr_beg,_4op_flag_chr_end];
-  _4op_connection_str: array[0..3] of String[5] = (
-    'FM/FM','FM/AM','AM/FM','AM/AM');
-
-procedure reset_instrument_preview;
 
 var
-  temp: Word;
+  _4op_connection_str: array[0..3] of String[5]; cvar; external;
 
-begin
-  If (play_status <> isPlaying) then reset_player;
-  temp := check_4op_to_test;
-  If NOT (temp <> 0) then
-    update_instr_data(instrum_page)
-  else begin
-         update_instr_data(LO(temp));
-         update_instr_data(HI(temp));
-       end;
-end;
+procedure reset_instrument_preview; cdecl; external;
 
-procedure INSTRUMENT_test(instr,instr2: Byte; chan: Byte; fkey: Word; process_macros: Boolean);
-
-var
-  temp,temp2,temp3,temp5: Byte;
-  valid_key,temp4: Boolean;
-  chan_handle: array[1..20] of Byte;
-  channels: Byte;
-  _1op_preview,_4op_mode: Boolean;
-
-function _1op_preview_active: Boolean;
-
-var
-  temp,nm_slots: Byte;
-
-begin
-  nm_slots := 0;
-  For temp := 1 to 4 do
-    If _operator_enabled[temp] then
-      Inc(nm_slots);
-  _1op_preview_active := (nm_slots = 1);
-end;
-
-function output_note(chan,board_pos: Byte): Boolean;
-
-var
-  note: Byte;
-  freq: Word;
-  ins: tADTRACK2_INS;
-
-begin
-  _dbg_enter ({$I %FILE%}, 'INSTRUMENT_test.output_note');
-
-  note := board_pos+12*(current_octave-1);
-  If NOT (note in [0..12*8+1]) then
-    begin
-      output_note := FALSE;
-      _dbg_leave; EXIT; //INSTRUMENT_test.output_note
-    end;
-
-  chan_handle[chan] := board_scancodes[board_pos];
-  If _4op_mode then
-    chan := _4op_main_chan[chan];
-
-  If _1op_preview then
-    begin
-      If _operator_enabled[1] or _operator_enabled[2] then
-        ins := songdata.instr_data[instr]
-      else ins := songdata.instr_data[instr2];
-      pBYTE(@ins)[10] := pBYTE(@ins)[10] OR 1;
-      load_instrument(ins,chan);
-      If _operator_enabled[1] or _operator_enabled[2] then
-        set_ins_volume($3f-ORD(_operator_enabled[1])*($3f-LO(volume_table[chan])),
-                       $3f-ORD(_operator_enabled[2])*($3f-HI(volume_table[chan])),
-                       chan)
-      else set_ins_volume($3f-ORD(_operator_enabled[3])*($3f-LO(volume_table[chan])),
-                          $3f-ORD(_operator_enabled[4])*($3f-HI(volume_table[chan])),
-                          chan);
-    end
-  else
-    begin
-      load_instrument(songdata.instr_data[instr],chan);
-      set_ins_volume($3f-ORD(_operator_enabled[1])*($3f-LO(volume_table[chan])),
-                     $3f-ORD(_operator_enabled[2])*($3f-HI(volume_table[chan])),
-                     chan);
-      If percussion_mode and
-         (songdata.instr_data[instr].perc_voice in [4,5]) then
-        load_instrument(songdata.instr_data[instr],_perc_sim_chan[chan]);
-      If _4op_mode then
-        begin
-          load_instrument(songdata.instr_data[instr2],PRED(chan));
-          set_ins_volume($3f-ORD(_operator_enabled[3])*($3f-LO(volume_table[PRED(chan)])),
-                         $3f-ORD(_operator_enabled[4])*($3f-HI(volume_table[PRED(chan)])),
-                         PRED(chan));
-        end;
-    end;
-
-  macro_speedup := songdata.macro_speedup;
-  If (play_status = isStopped) then update_timer(songdata.tempo);
-
-  freq := nFreq(note-1)+$2000+
-          SHORTINT(pBYTE(@Addr(songdata.instr_data[instr])^)[12]);
-  event_table[chan].note := note;
-  freq_table[chan] := freq;
-  freqtable2[chan] := freq;
-  key_on(chan);
-  change_freq(chan,freq);
-
-  If process_macros then
-    If NOT (_1op_preview and (_operator_enabled[3] or _operator_enabled[4])) then
-      init_macro_table(chan,note,instr,freq)
-    else init_macro_table(chan,note,instr2,freq)
-  else begin
-         macro_table[chan].fmreg_table := 0;
-         macro_table[chan].arpg_table := 0;
-         macro_table[chan].vib_table := 0;
-       end;
-
-  If _4op_mode and NOT _1op_preview then
-    begin
-      If process_macros then init_macro_table(PRED(chan),note,instr2,freq)
-      else begin
-             macro_table[PRED(chan)].fmreg_table := 0;
-             macro_table[PRED(chan)].arpg_table := 0;
-             macro_table[PRED(chan)].vib_table := 0;
-           end;
-    end;
-
-  _dbg_leave; //EXIT //INSTRUMENT_test.output_note
-end;
-
-begin { INSTRUMENT_test }
-  _dbg_enter ({$I %FILE%}, 'INSTRUMENT_test');
-
-  If ctrl_pressed or alt_pressed or shift_pressed then
-    begin
-      _dbg_leave; EXIT; //INSTRUMENT_test
-    end;
-
-  _1op_preview := _1op_preview_active;
-  _4op_mode := NOT _1op_preview_active and (songdata.flag_4op <> 0) and (instr2 <> 0);
-
-  valid_key := FALSE;
-  For temp := 1 to 29 do
-    If NOT shift_pressed then
-      If (board_scancodes[temp] = HI(fkey)) then
-        begin valid_key := TRUE; BREAK; end;
-
-  If NOT valid_key or
-     NOT (temp+12*(current_octave-1)-1 in [0..12*8+1]) then
-    begin
-      _dbg_leave; EXIT; //INSTRUMENT_test
-    end;
-
-  If (Empty(songdata.instr_data[instr],SizeOf(songdata.instr_data[instr])) and
-      Empty(songdata.instr_macros[instr],SizeOf(songdata.instr_macros[instr]))) or
-     (_4op_mode and Empty(songdata.instr_data[instr2],SizeOf(songdata.instr_data[instr2])) and
-                    Empty(songdata.instr_macros[instr2],SizeOf(songdata.instr_macros[instr2]))) then
-    begin
-      _dbg_leave; EXIT; //INSTRUMENT_test
-    end;
-
-  temp2 := temp;
-  ins_trailing_flag := TRUE;
-  status_backup.replay_forbidden := replay_forbidden;
-  status_backup.play_status := play_status;
-  replay_forbidden := TRUE;
-  If (play_status <> isStopped) then play_status := isPaused;
-  nul_volume_bars;
-  really_no_status_refresh := TRUE;
-
-  Move(channel_flag,channel_flag_backup,SizeOf(channel_flag_backup));
-  Move(event_table,event_table_backup,SizeOf(event_table_backup));
-  common_flag_backup := songdata.common_flag;
-  volume_scaling_backup := volume_scaling;
-  songdata.common_flag := songdata.common_flag AND NOT $80;
-  volume_scaling := FALSE;
-  FillChar(channel_flag,SizeOf(channel_flag),BYTE(TRUE));
-  Move(pan_lock,pan_lock_backup,SizeOf(pan_lock));
-  Move(volume_lock,volume_lock_backup,SizeOf(volume_lock));
-  Move(peak_lock,peak_lock_backup,SizeOf(volume_lock));
-  Move(panning_table,panning_table_backup,SizeOf(panning_table));
-  FillChar(pan_lock,SizeOf(pan_lock),0);
-  FillChar(volume_lock,SizeOf(volume_lock),0);
-  FillChar(peak_lock,SizeOf(volume_lock),0);
-  flag_4op_backup := songdata.flag_4op;
-  If NOT percussion_mode and
-     NOT (songdata.flag_4op <> 0) then channels := 18
-  else If NOT (songdata.flag_4op <> 0) then channels := 15
-       else begin
-              If _4op_mode then
-                begin
-                  songdata.flag_4op := $3f;
-                  channels := 6;
-                end
-              else begin
-                     songdata.flag_4op := 0;
-                     If NOT percussion_mode then channels := 18
-                     else channels := 15;
-                   end;
-            end;
-
-  reset_player;
-  FillChar(chan_handle,SizeOf(chan_handle),0);
-  Move(fmpar_table,fmpar_table_backup,SizeOf(fmpar_table_backup));
-  Move(volume_table,volume_table_backup,SizeOf(volume_table_backup));
-  Move(freq_table,freq_table_backup,SizeOf(freq_table));
-  Move(freqtable2,freqtable2_backup,SizeOf(freqtable2));
-  Move(keyoff_loop,keyoff_loop_backup,SizeOf(keyoff_loop));
-  FillChar(keyoff_loop,SizeOf(keyoff_loop),FALSE);
-
-  misc_register := current_tremolo_depth SHL 7+
-                   current_vibrato_depth SHL 6+
-                   BYTE(percussion_mode) SHL 5;
-  key_off(17);
-  key_off(18);
-  opl2out(_instr[11],misc_register);
-
-  If percussion_mode and
-     (songdata.instr_data[instr].perc_voice in [1..5]) then
-    begin
-      output_note(songdata.instr_data[instr].perc_voice+15,temp2);
-      While scankey(board_scancodes[temp2]) do
-        begin
-{$IFDEF GO32V2}
-          realtime_gfx_poll_proc;
-{$ELSE}
-          _draw_screen_without_delay := TRUE;
-          keyboard_poll_input;
-{$ENDIF}
-         keyboard_reset_buffer;
-         draw_screen;
-        end;
-    end
-  else Repeat
-{$IFNDEF GO32V2}
-         keyboard_poll_input;
-{$ENDIF}
-         valid_key := FALSE;
-         For temp := 1 to 29 do
-           begin
-             temp2 := board_scancodes[temp];
-             temp4 := scankey(temp2);
-
-             If NOT _4op_mode then
-               begin
-                 temp3 := get_chanpos(chan_handle,channels,temp2);
-                 temp5 := get_chanpos(chan_handle,channels,0);
-               end
-             else begin
-                    temp3 := get_chanpos2(chan_handle,channels,temp2);
-                    temp5 := get_chanpos2(chan_handle,channels,0);
-                  end;
-
-             If temp4 then valid_key := TRUE;
-             If temp4 and (temp3 = 0) and (temp5 <> 0) then
-               output_note(temp5,temp);
-
-             If NOT temp4 and (temp3 <> 0) then
-               begin
-                 chan_handle[temp3] := 0;
-                 key_off(temp3);
-                 If alt_pressed then keyoff_loop[temp3] := TRUE;
-               end;
-           end;
-{$IFDEF GO32V2}
-          realtime_gfx_poll_proc;
-{$ELSE}
-          _draw_screen_without_delay := TRUE;
-          keyboard_poll_input;
-{$ENDIF}
-         keyboard_reset_buffer;
-         draw_screen;
-       until NOT valid_key;
-
-  While ctrl_pressed do
-    begin
-{$IFDEF GO32V2}
-      realtime_gfx_poll_proc;
-{$ELSE}
-      _draw_screen_without_delay := TRUE;
-      keyboard_poll_input;
-{$ENDIF}
-      keyboard_reset_buffer;
-      draw_screen;
-    end;
-
-  For temp := 1 to 20 do key_off(temp);
-  songdata.flag_4op := flag_4op_backup;
-  Move(fmpar_table_backup,fmpar_table,SizeOf(fmpar_table));
-  Move(volume_table_backup,volume_table,SizeOf(volume_table));
-  Move(panning_table_backup,panning_table,SizeOf(panning_table));
-  songdata.common_flag := common_flag_backup;
-  volume_scaling := volume_scaling_backup;
-  If (status_backup.play_status = isPlaying) then reset_player;
-
-  Move(channel_flag_backup,channel_flag,SizeOf(channel_flag));
-  Move(event_table_backup,event_table,SizeOf(event_table));
-  Move(pan_lock_backup,pan_lock,SizeOf(pan_lock));
-  Move(volume_lock_backup,volume_lock,SizeOf(volume_lock));
-  Move(peak_lock_backup,peak_lock,SizeOf(volume_lock));
-
-  really_no_status_refresh := FALSE;
-  Move(freq_table_backup,freq_table,SizeOf(freq_table));
-  Move(freqtable2_backup,freqtable2,SizeOf(freqtable2));
-  Move(keyoff_loop_backup,keyoff_loop,SizeOf(keyoff_loop));
-  FillChar(macro_table,SizeOf(macro_table),0);
-  replay_forbidden := status_backup.replay_forbidden;
-  play_status := status_backup.play_status;
-  ins_trailing_flag := FALSE;
-  keyboard_reset_buffer;
-
-  _dbg_leave; //EXIT //INSTRUMENT_test
-end;
+//_1op_preview_active
+//INSTRUMENT_test_output_note
+//INSTRUMENT_test
 
 var
   color_table: array[1..3] of Byte;
 
-function _1st_marked: Byte;
-
-var
-  temp,result: Byte;
-
-begin
-  result := 0;
-  For temp := 1 to 255 do
-    If (songdata.instr_names[temp][1] = _ins_mark_chr) then
-      begin
-        result := temp;
-        BREAK;
-      end;
-  _1st_marked := result;
-end;
-
-function _2nd_marked: Byte;
-
-var
-  temp,result: Byte;
-
-begin
-  result := 0;
-  If (_1st_marked <> 0) then
-    For temp := SUCC(_1st_marked) to 255 do
-      If (songdata.instr_names[temp][1] = _ins_mark_chr) then
-        begin
-          result := temp;
-          BREAK;
-        end;
-  _2nd_marked := result;
-end;
-
-function marked_instruments: Byte;
-
-var
-  temp,result: Byte;
-
-begin
-  result := 0;
-  For temp := 1 to 255 do
-    If (songdata.instr_names[temp][1] = _ins_mark_chr) then
-      Inc(result);
-  marked_instruments := result;
-end;
-
-procedure reset_marked_instruments;
-begin
-  If (marked_instruments < 2) then
-   If (songdata.instr_names[instrum_page][1] = _ins_mark_chr) then
-     songdata.instr_names[instrum_page][1] := ' '
-   else
-  else begin
-         songdata.instr_names[_2nd_marked][1] := ' ';
-         songdata.instr_names[_1st_marked][1] := ' ';
-       end;
-  update_4op_flag_marks;
-end;
-
-function get_4op_to_test: Word;
-
-var
-  result: Word;
-
-begin
-  result := 0;
-  If (songdata.flag_4op <> 0) then
-    If check_4op_flag(current_inst) then
-      result := SUCC(current_inst)+current_inst SHL 8
-    else If (current_inst > 1) and check_4op_flag(PRED(current_inst)) then
-           result := current_inst+PRED(current_inst) SHL 8;
-  get_4op_to_test := result;
-end;
-
-function check_4op_to_test: Word;
-
-var
-  result: Word;
-
-begin
-  result := 0;
-  If check_4op_flag(current_inst) then
-    result := SUCC(current_inst)+current_inst SHL 8
-  else If (current_inst > 1) and check_4op_flag(PRED(current_inst)) then
-         result := current_inst+PRED(current_inst) SHL 8;
-  check_4op_to_test := result;
-end;
-
-function check_4op_instrument(ins: Byte): Word;
-
-var
-  result: Word;
-
-begin
-  result := 0;
-  If check_4op_flag(ins) then
-    result := SUCC(ins)+ins SHL 8
-  else If (ins > 1) and check_4op_flag(PRED(ins)) then
-         result := ins+PRED(ins) SHL 8;
-  check_4op_instrument := result;
-end;
-
-function check_4op_flag(ins: Byte): Boolean;
-
-var
-  result: Boolean;
-  idx: Byte;
-
-begin
-  result := FALSE;
-  For idx := 1 to songdata.ins_4op_flags.num_4op do
-    If (songdata.ins_4op_flags.idx_4op[idx] = ins) then
-      begin
-        result := TRUE;
-        BREAK;
-      end;
-  check_4op_flag := result;
-end;
-
-procedure reset_4op_flag(ins: Byte);
-
-var
-  temp_ins_4op_flags: tINS_4OP_FLAGS;
-  idx: Byte;
-
-begin
-  If NOT check_4op_flag(ins) then
-    EXIT; //reset_4op_flag
-  temp_ins_4op_flags.num_4op := 0;
-  idx := 1;
-  While (idx <= songdata.ins_4op_flags.num_4op) and
-        (songdata.ins_4op_flags.idx_4op[idx] < ins) do
-    begin
-      Inc(temp_ins_4op_flags.num_4op);
-      temp_ins_4op_flags.idx_4op[temp_ins_4op_flags.num_4op] :=
-        songdata.ins_4op_flags.idx_4op[idx];
-      Inc(idx);
-    end;
-  Inc(idx);
-  While (idx <= songdata.ins_4op_flags.num_4op) do
-    begin
-      Inc(temp_ins_4op_flags.num_4op);
-      temp_ins_4op_flags.idx_4op[temp_ins_4op_flags.num_4op] :=
-        songdata.ins_4op_flags.idx_4op[idx];
-      Inc(idx);
-    end;
-  songdata.ins_4op_flags := temp_ins_4op_flags;
-
-  //EXIT //reset_4op_flag
-end;
-
-procedure set_4op_flag(ins: Byte);
-
-var
-  temp_ins_4op_flags: tINS_4OP_FLAGS;
-  idx: Byte;
-
-begin
-  If (ins = 255) then
-    EXIT; //set_4op_flag
-  If check_4op_flag(ins) then
-    reset_4op_flag(ins);
-  If (ins > 1) and check_4op_flag(PRED(ins)) then
-    reset_4op_flag(PRED(ins));
-  If (ins < 255) and check_4op_flag(SUCC(ins)) then
-    reset_4op_flag(SUCC(ins));
-  temp_ins_4op_flags.num_4op := 0;
-  idx := 1;
-  While (idx <= songdata.ins_4op_flags.num_4op) and
-        (songdata.ins_4op_flags.idx_4op[idx] < ins) do
-    begin
-      Inc(temp_ins_4op_flags.num_4op);
-      temp_ins_4op_flags.idx_4op[temp_ins_4op_flags.num_4op] :=
-        songdata.ins_4op_flags.idx_4op[idx];
-      Inc(idx);
-    end;
-  Inc(temp_ins_4op_flags.num_4op);
-  temp_ins_4op_flags.idx_4op[temp_ins_4op_flags.num_4op] := ins;
-  While (idx <= songdata.ins_4op_flags.num_4op) do
-    begin
-      Inc(temp_ins_4op_flags.num_4op);
-      temp_ins_4op_flags.idx_4op[temp_ins_4op_flags.num_4op] :=
-        songdata.ins_4op_flags.idx_4op[idx];
-      Inc(idx);
-    end;
-  songdata.ins_4op_flags := temp_ins_4op_flags;
-
-  //EXIT //set_4op_flag
-end;
-
-procedure update_4op_flag_marks;
-
-var
-  temp: Byte;
-
-begin
-  For temp := 1 to PRED(255) do
-    If NOT check_4op_flag(temp) then
-      begin
-        If (songdata.instr_names[temp][1] in _4op_flag_chars) then
-          songdata.instr_names[temp][1] := ' ';
-        If (songdata.instr_names[SUCC(temp)][1] in _4op_flag_chars) then
-          songdata.instr_names[SUCC(temp)][1] := ' ';
-      end;
-  For temp := 1 to PRED(255) do
-    If check_4op_flag(temp) then
-      begin
-        If (songdata.instr_names[temp][1] = ' ') then
-          songdata.instr_names[temp][1] := _4op_flag_chr_beg;
-        If (songdata.instr_names[SUCC(temp)][1] = ' ') then
-          songdata.instr_names[SUCC(temp)][1] := _4op_flag_chr_end;
-      end;
-end;
+//_1st_marked
+//_2nd_marked
+//marked_instruments
+//reset_marked_instruments
+//get_4op_to_test
+//check_4op_to_test
+//check_4op_instrument
+//check_4op_flag
+//reset_4op_flag
+//set_4op_flag
+//update_4op_flag_marks
 
 procedure INSTRUMENT_CONTROL_page_refresh(page: Byte);
 
@@ -1338,7 +820,7 @@ begin
 
   If (nm_slots > 1) then
     For temp := 1 to nm_slots do
-      If (NOT _operator_enabled[temp]) then
+      If (NOT _instedit_operator_enabled[temp]) then
         ShowStr(ptr_temp_screen,xstart+72-C3StrLen(temp_str)-1+temp,ystart+24,
                 #250,
                 instrument_bckg+instrument_border);
@@ -1949,18 +1431,18 @@ begin
 
   If NOT toggle then
     begin
-      FillChar(_operator_enabled,SizeOf(_operator_enabled),FALSE);
-      _operator_enabled[operator] := TRUE;
+      FillChar(_instedit_operator_enabled,SizeOf(_instedit_operator_enabled),FALSE);
+      _instedit_operator_enabled[operator] := TRUE;
       EXIT; //_set_operator_flag
     end;
 
-  Move(_operator_enabled,_temp_operator_enabled,SizeOf(_temp_operator_enabled));
+  Move(_instedit_operator_enabled,_temp_operator_enabled,SizeOf(_temp_operator_enabled));
   If NOT (get_4op_to_test <> 0) and (operator in [1,2]) then
     begin
       _temp_operator_enabled[operator] := NOT _temp_operator_enabled[operator];
       If NOT ((_temp_operator_enabled[1] = FALSE) and
               (_temp_operator_enabled[2] = FALSE)) then
-        Move(_temp_operator_enabled,_operator_enabled,SizeOf(_operator_enabled));
+        Move(_temp_operator_enabled,_instedit_operator_enabled,SizeOf(_instedit_operator_enabled));
     end
   else If (get_4op_to_test <> 0) and (operator in [1,2,3,4]) then
          begin
@@ -1969,7 +1451,7 @@ begin
                    (_temp_operator_enabled[2] = FALSE) and
                    (_temp_operator_enabled[3] = FALSE) and
                    (_temp_operator_enabled[4] = FALSE)) then
-           Move(_temp_operator_enabled,_operator_enabled,SizeOf(_operator_enabled));
+           Move(_temp_operator_enabled,_instedit_operator_enabled,SizeOf(_instedit_operator_enabled));
          end;
 
   //EXIT //_set_operator_flag
@@ -1986,7 +1468,7 @@ begin { INSTRUMENT_CONTROL_edit }
   _dbg_enter ({$I %FILE%}, 'INSTRUMENT_CONTROL_edit');
 
   inst := Addr(songdata.instr_data[instrum_page]);
-  FillChar(_operator_enabled,SizeOf(_operator_enabled),TRUE);
+  FillChar(_instedit_operator_enabled,SizeOf(_instedit_operator_enabled),TRUE);
   If NOT (inst^.perc_voice in [2..5]) then
     If remember_ins_pos then
       begin
@@ -2132,7 +1614,7 @@ _jmp1:
         else INSTRUMENT_test(instrum_page,0,count_channel(pattern_hpos),fkey,TRUE);
 
       Case fkey of
-        kAlt0:   FillChar(_operator_enabled,SizeOf(_operator_enabled),TRUE);
+        kAlt0:   FillChar(_instedit_operator_enabled,SizeOf(_instedit_operator_enabled),TRUE);
         kAlt1:   If shift_pressed then
                    _set_operator_flag(1,TRUE)
                  else _set_operator_flag(1,FALSE);
@@ -2683,7 +2165,7 @@ _jmp1:
                         inst := Addr(songdata.instr_data[instrum_page]);
                         If NOT (inst^.perc_voice in [2..5]) then carrier := TRUE
                         else carrier := FALSE;
-                        FillChar(_operator_enabled,SizeOf(_operator_enabled),TRUE);
+                        FillChar(_instedit_operator_enabled,SizeOf(_instedit_operator_enabled),TRUE);
                         _page_build;
                         _page_refresh;
                         _sync_radio_buttons;
@@ -2706,7 +2188,7 @@ _jmp1:
                         inst := Addr(songdata.instr_data[instrum_page]);
                         If NOT (inst^.perc_voice in [2..5]) then carrier := TRUE
                         else carrier := FALSE;
-                        FillChar(_operator_enabled,SizeOf(_operator_enabled),TRUE);
+                        FillChar(_instedit_operator_enabled,SizeOf(_instedit_operator_enabled),TRUE);
                         _page_build;
                         _page_refresh;
                         _sync_radio_buttons;
@@ -2765,7 +2247,7 @@ _jmp1:
                    move_to_screen_area[4] := ystart+24+INSEDIT_yshift+1;
                    move2screen;
 
-                   FillChar(_operator_enabled,SizeOf(_operator_enabled),TRUE);
+                   FillChar(_instedit_operator_enabled,SizeOf(_instedit_operator_enabled),TRUE);
                    quick_cmd := FALSE;
                    FILE_open('*.a2i$*.a2f$*.a2b$*.a2w$'+
                              '*.bnk$*.cif$*.fib$*.fin$*.ibk$*.ins$*.sbi$*.sgi$',FALSE);// load bank is not possible
@@ -2897,7 +2379,7 @@ _end:
 {$ENDIF}
   until (nope and (fkey = kESC)) or _force_program_quit;
 
-  FillChar(_operator_enabled,SizeOf(_operator_enabled),TRUE);
+  FillChar(_instedit_operator_enabled,SizeOf(_instedit_operator_enabled),TRUE);
   If remember_ins_pos then
     begin
       add_bank_position('?instrument_editor?'+byte2hex(instrum_page)+'?carrier',-1,_carrier_flag[carrier]);

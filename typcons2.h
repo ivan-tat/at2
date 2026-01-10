@@ -20,3 +20,18 @@ extern String frame_double_top[8+1];
 
 extern const char *patt_win_tracks[3][5]; // HINT: (FPC) start index 0,1
 extern String patt_win[5][176+1]; // HINT: (FPC) start index 1
+
+#define BNK_HEADER_LINES 3
+#define BNK_HEADER_STR_LEN_MAX 65 // printable characters
+#define BNK_HEADER_STR_MAX (BNK_HEADER_STR_LEN_MAX+2) // all characters (+ at most 2 color switches)
+extern const char *bnk_header_str[BNK_HEADER_LINES];
+
+#define FIB_HEADER_LINES 3
+#define FIB_HEADER_STR_LEN_MAX 70 // printable characters
+#define FIB_HEADER_STR_MAX (FIB_HEADER_STR_LEN_MAX+2) // all characters (+ at most 2 color switches)
+extern const char *fib_header_str[FIB_HEADER_LINES];
+
+#define IBK_HEADER_LINES 3
+#define IBK_HEADER_STR_LEN_MAX 64 // printable characters
+#define IBK_HEADER_STR_MAX (IBK_HEADER_STR_LEN_MAX+2) // all characters (+ at most 2 color switches)
+extern const char *ibk_header_str[IBK_HEADER_LINES];

@@ -66,8 +66,8 @@ extern struct charmap_t
   // xA9      decay bars: horizontal full filled block (4/4) on a background #2
   // xAA
   // xAB
-  // xAC
-  // xAD
+  uint8_t four_op_upper_half;               // 0xAC Upper half is '┌', lower half is '4'
+  uint8_t four_op_lower_half;               // 0xAD Upper half is 'op', lower half is '└'
   uint8_t hertz;                            // 0xAE 'Hz' unit of frequency
   // xAF
   uint8_t light_shade;                      // 0xB0 U+2591 '░' LIGHT SHADE (25%),                               CP437 '\xB0'

@@ -4,40 +4,79 @@
 // SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-static void sbi_file_loader_alt (const String *fname)
+// On success: returns `false'.
+// On error: returns `true' and error description in `error'.
+bool sbi_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error)
 {
+  bool result = true; // `false' on success, `true' on error
   void *f = NULL; // FILE
   bool f_opened = false;
-  tSBI_DATA buffer;
+  int64_t fsize;
   int32_t size;
+  tSBI_DATA buffer;
 
   static const char id[4] = { "SBI\x1A" };
 
   DBG_ENTER ("sbi_file_loader_alt");
 
-  memset (&temp_instrument, 0, sizeof (temp_instrument));
-
   //f = fopen (fname, "rb");
   if ((f = malloc (Pascal_FileRec_size)) == NULL) goto _exit;
   Pascal_AssignFile (f, fname);
   ResetF (f);
-  if (Pascal_IOResult () != 0) goto _exit;
+  if (Pascal_IOResult () != 0) goto _err_fopen;
   f_opened = true;
 
+  fsize = Pascal_FileSize (f);
+  if (fsize < sizeof (buffer)) goto _err_format;
+
   BlockReadF (f, &buffer, sizeof (buffer), &size);
-  if (   (size != sizeof (buffer))
-      || (memcmp (buffer.ident, id, sizeof (buffer.ident)) != 0)) goto _exit;
+  if (size != sizeof (buffer)) goto _err_fread;
 
-  import_standard_instrument_alt (&temp_instrument, &buffer.idata);
+  if (memcmp (buffer.ident, id, sizeof (buffer.ident)) != 0) goto _err_format;
 
-  load_flag_alt = 1;
+  dst->four_op = false;
+  dst->use_macro = false;
+
+  // instrument data
+  memset (&dst->ins1.fm, 0, sizeof (dst->ins1.fm));
+  import_sbi_instrument_alt (&dst->ins1.fm, &buffer.idata);
+
+  // instrument name
+  {
+    String_t s, t;
+
+    StrToString ((String *)&s, buffer.iname, sizeof (buffer.iname)/* - 1*/);
+    t = truncate_string ((String *)&s);
+    CopyString ((String *)&dst->ins1.name, (String *)&t, sizeof (dst->ins1.name) - 1);
+  }
+  set_default_ins_name_if_needed (dst, fname);
+
+  result = false;
 
 _exit:
-  //if (f) fclose (f);
-  if (f)
+  //if (f != NULL) fclose (f);
+  if (f != NULL)
   {
     if (f_opened) CloseF (f);
     free (f);
   }
+
   DBG_LEAVE (); //EXIT //sbi_file_loader_alt
+  return result;
+
+_err_malloc:
+  *error = "Memory allocation failed";
+  goto _exit;
+
+_err_fopen:
+  *error = "Failed to open input file";
+  goto _exit;
+
+_err_fread:
+  *error = "Failed to read input file";
+  goto _exit;
+
+_err_format:
+  *error = "Unknown file format";
+  goto _exit;
 }

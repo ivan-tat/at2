@@ -74,6 +74,8 @@ function Str2num(str: String; base: Byte): Longint; cdecl; external;
 function Bpm2str(bpm: Double): String; cdecl; external;
 {$ENDIF} // NOT DEFINED(ADT2PLAY)
 
+function truncate_string(str: String): String; cdecl; external;
+
 {$IFNDEF ADT2PLAY}
 function Upper_filename(str: String): String; cdecl; external;
 {$ENDIF} // NOT DEFINED(ADT2PLAY)

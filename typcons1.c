@@ -8,7 +8,7 @@
 
 #if !ADT2PLAY
 
-String status_layout[3][10+1] = { // HINT: (FPC) start index 0 (see tPLAY_STATUS)
+PASCALSTRING String status_layout[3][10+1] = { // HINT: (FPC) start index 0 (see tPLAY_STATUS)
   "\x0A" "PLAYiNG   ",
   "\x0A" "PAUSED    ",
   "\x0A" "STOPPED   "
@@ -69,7 +69,7 @@ const uint8_t inst_vpos[inst_vpos_max] = { // HINT: (FPC) start index 1
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 20, 21, 22, 23
 };
 
-String note_layout[12*8+2][3+1] = { // HINT: (FPC) start index 0
+PASCALSTRING String note_layout[12*8+2][3+1] = { // HINT: (FPC) start index 0
   "\x03" "   ",
   "\x03" "C-1", "\x03" "C#1", "\x03" "D-1", "\x03" "D#1", "\x03" "E-1", "\x03" "F-1", "\x03" "F#1", "\x03" "G-1", "\x03" "G#1", "\x03" "A-1", "\x03" "A#1", "\x03" "%-1",
   "\x03" "C-2", "\x03" "C#2", "\x03" "D-2", "\x03" "D#2", "\x03" "E-2", "\x03" "F-2", "\x03" "F#2", "\x03" "G-2", "\x03" "G#2", "\x03" "A-2", "\x03" "A#2", "\x03" "%-2",
@@ -89,7 +89,7 @@ const uint8_t board_scancodes[29] = { // HINT: (FPC) start index 1
   SC_I, SC_9, SC_O, SC_0, SC_P // octave 2
 };
 
-const char fx_digits[48] = { // HINT: (FPC) start index 0
+const GCC_ATTRIBUTE((nonstring)) char fx_digits[48] = { // HINT: (FPC) start index 0
   "0123456789" //0-9
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ" //10-35
   "&" //36
@@ -108,12 +108,12 @@ const char fx_digits[48] = { // HINT: (FPC) start index 0
 
 char b_note = 'b';
 
-const String connection_str[2][2+1] = { // HINT: (FPC) start index 0
+const PASCALSTRING String connection_str[2][2+1] = { // HINT: (FPC) start index 0
   "\x02" "FM",
   "\x02" "AM"
 };
 
-const String macro_retrig_str[8][1+1] = { // HINT: (FPC) start index 0, original string size was 255
+const PASCALSTRING String macro_retrig_str[8][1+1] = { // HINT: (FPC) start index 0, original string size was 255
   "\x01" "\xFA", // HINT: (AT2) custom glyph - center dot
   "\x01" "\x9F", // HINT: (AT2) custom glyph - 'x' (multiply operator)
   "\x01" "\x0B", // HINT: (AT2) custom glyph - medium black circle
@@ -338,14 +338,14 @@ bool marking     = false;
 bool debugging   = false;
 bool quick_cmd   = false;
 
-String   home_dir_path[255+1] = { 0 };
-String   a2b_default_path[255+1] = { 0 };
-String   a2f_default_path[255+1] = { 0 };
-String   a2i_default_path[255+1] = { 0 };
-String   a2m_default_path[255+1] = { 0 };
-String   a2p_default_path[255+1] = { 0 };
-String   a2t_default_path[255+1] = { 0 };
-String   a2w_default_path[255+1] = { 0 };
+PASCALSTRING String home_dir_path[255+1] = { 0 };
+PASCALSTRING String a2b_default_path[255+1] = { 0 };
+PASCALSTRING String a2f_default_path[255+1] = { 0 };
+PASCALSTRING String a2i_default_path[255+1] = { 0 };
+PASCALSTRING String a2m_default_path[255+1] = { 0 };
+PASCALSTRING String a2p_default_path[255+1] = { 0 };
+PASCALSTRING String a2t_default_path[255+1] = { 0 };
+PASCALSTRING String a2w_default_path[255+1] = { 0 };
 
 #if GO32
 
@@ -374,7 +374,7 @@ uint8_t  sdl_opl3_emulator = 0;
 int32_t  sdl_sample_rate = 49716;
 int32_t  sdl_sample_buffer = 2048;
 uint8_t  sdl_timer_slowdown = 2;
-String   sdl_wav_directory[255+1] = "\x0A" "wav_files" DIR_SEP_STR;
+PASCALSTRING String sdl_wav_directory[255+1] = "\x0A" "wav_files" DIR_SEP_STR;
 
 #endif // !GO32
 

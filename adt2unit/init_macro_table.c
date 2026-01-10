@@ -1,14 +1,16 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// chan: 1..20, ins: 1...
+// chan: 1..20
+// note: 1..12*8+1 (0 if none)
+// ins: 1..255
 void init_macro_table (uint8_t chan, uint8_t note, uint8_t ins, uint16_t freq)
 {
-  chan--;
-  ins--;
+  chan--; // 0..19
+  ins--; // 0..254
 
   macro_table[chan].fmreg_count = 1;
   macro_table[chan].fmreg_pos = 0;

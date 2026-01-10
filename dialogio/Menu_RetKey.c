@@ -8,7 +8,7 @@ static uint16_t Menu_RetKey (uint8_t code, uint16_t count)
 {
   uint8_t uc = UpCase (code);
 
-  for (uint8_t i = 0; i < count; i++)
+  for (uint_least16_t i = 0; i < count; i++)
     if (UpCase (_mnu.mbuf[i].key) == uc)
       return i + 1;
 

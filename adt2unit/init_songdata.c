@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void init_songdata (void)
@@ -78,14 +78,14 @@ void init_songdata (void)
 #if !ADT2PLAY
   for (uint8_t i = 0; i < 255; i++)
   {
-    songdata.instr_names[i][0] = 9; // Pascal string length
-    sprintf ((char *)&songdata.instr_names[i][1], " iNS_%02hhX\xF7 ", i + 1);
+    SetLength (songdata.instr_names[i], 9);
+    snprintf (GetStr ((char *)songdata.instr_names[i]), 9+1, " iNS_%02"PRIX8"%c ", i + 1, /*charmap.*/'\xF7');
   }
 
   for (uint8_t i = 0; i < 0x80; i++)
   {
-    songdata.pattern_names[i][0] = 11; // Pascal string length
-    sprintf ((char *)&(songdata.pattern_names[i][1]), " PAT_%02hhX  \xF7 ", i + 1);
+    SetLength (songdata.pattern_names[i], 11);
+    snprintf (GetStr ((char *)songdata.pattern_names[i]), 11+1, " PAT_%02"PRIX8"  %c ", i + 1, /*charmap.*/'\xF7');
   }
 
   songdata_crc_ord = Update32 (songdata.pattern_order,

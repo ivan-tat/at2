@@ -29,6 +29,8 @@ extern uint8_t old_block_patt_page;
 
 void process_global_keys (void);
 
+#include "instedit.h"
+
 #pragma pack(pop)
 
 #endif // !defined(ADT2EXT2_H)

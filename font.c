@@ -66,8 +66,8 @@ struct charmap_t charmap =
   // xA9
   // xAA
   // xAB
-  // xAC
-  // xAD
+  .four_op_upper_half               = '\xAC',
+  .four_op_lower_half               = '\xAD',
   .hertz                            = '\xAE',
   // xAF
   .light_shade                      = '\xB0',

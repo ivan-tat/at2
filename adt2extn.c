@@ -5,7 +5,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
+#include <inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "debug.h"
+#include "adt2sys.h"
 #include "adt2unit.h"
+#include "adt2ext3.h"
+#include "dialogio.h"
 #include "stringio.h"
 #include "txtscrio.h"
 #include "adt2extn.h"
@@ -18,6 +25,8 @@
 // HINT: (FPC) X+: Extended syntax (ON)
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 #pragma pack(push, 1)
+
+ExtKeyCode fkey;
 
 uint8_t  progress_xstart, progress_ystart;
 uint8_t  progress_num_steps;
@@ -32,5 +41,10 @@ uint8_t  progress_old_value, progress_new_value;
 /*static*/ bool    transp_menu2 = false;
 /*static*/ uint8_t transp_pos1 = 1;
 /*static*/ uint8_t transp_pos2 = 1;
+
+#include "adt2extn/show_progress.c"
+#include "adt2extn/show_progress2.c"
+
+#include "adt2extn/fselect_external_proc.c" // HINT: static
 
 #pragma pack(pop)

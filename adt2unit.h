@@ -17,6 +17,7 @@
 #endif // USE_FPC
 #include "common.h"
 #include "font.h"
+#include "adt2keyb.h"
 
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 #pragma pack(push, 1)
@@ -186,13 +187,7 @@ extern String instdata_source[255+1]; // HINT: (FPC) length not set (default)
 extern String songdata_title [255+1]; // HINT: (FPC) length not set (default)
 
 extern int32_t songdata_crc, songdata_crc_ord;
-extern tADTRACK2_INS temp_instrument;
-extern tADTRACK2_INS temp_instrument2;
-extern tREGISTER_TABLE temp_instrument_macro;
-extern tREGISTER_TABLE temp_instrument_macro2;
-extern tDIS_FMREG_COL temp_instrument_dis_fmreg_col;
-extern tDIS_FMREG_COL temp_instrument_dis_fmreg_col2;
-extern uint8_t temp_ins_type;
+extern temp_instrument_t temp_instrument;
 extern uint8_t pattord_page;
 extern uint8_t pattord_hpos;
 extern uint8_t pattord_vpos;
@@ -271,6 +266,8 @@ extern struct status_backup_t {
   bool replay_forbidden;
   tPLAY_STATUS play_status;
 } status_backup;
+
+int8_t board_get_pos (uint8_t octave, ExtKeyCode fkey);
 
 uint16_t nFreq (uint8_t note);
 void     change_freq (uint8_t chan, uint16_t freq);

@@ -36,7 +36,7 @@ procedure PROGRAM_SCREEN_init;
 function  INSTRUMENT_CONTROL_alt(instr: Byte; title: String): Byte;
 
 procedure INSTRUMENT_test(instr,instr2,chan: Byte; fkey: Word;
-                          process_macros: Boolean);
+                          process_macros: Boolean); cdecl; external;
 
 procedure INSTRUMENT_CONTROL_page_refresh(page: Byte);
 procedure INSTRUMENT_CONTROL_edit;
@@ -54,17 +54,17 @@ procedure PATTERN_edit(var pattern,page,hpos: Byte);
 
 procedure process_config_file;
 
-function  _1st_marked: Byte;
-function  _2nd_marked: Byte;
-function  marked_instruments: Byte;
-procedure reset_marked_instruments;
-function  get_4op_to_test: Word;
-function  check_4op_to_test: Word;
-function  check_4op_instrument(ins: Byte): Word;
-function  check_4op_flag(ins: Byte): Boolean;
-procedure reset_4op_flag(ins: Byte);
-procedure set_4op_flag(ins: Byte);
-procedure update_4op_flag_marks;
+function  _1st_marked: Byte; cdecl; external;
+function  _2nd_marked: Byte; cdecl; external;
+function  marked_instruments: Byte; cdecl; external;
+procedure reset_marked_instruments; cdecl; external;
+function  get_4op_to_test: Word; cdecl; external;
+function  check_4op_to_test: Word; cdecl; external;
+function  check_4op_instrument(ins: Byte): Word; cdecl; external;
+function  check_4op_flag(ins: Byte): Boolean; cdecl; external;
+procedure reset_4op_flag(ins: Byte); cdecl; external;
+procedure set_4op_flag(ins: Byte); cdecl; external;
+procedure update_4op_flag_marks; cdecl; external;
 
 implementation
 

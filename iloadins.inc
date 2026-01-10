@@ -13,64 +13,18 @@
 //  You should have received a copy of the GNU General Public License
 //  along with AT2.  If not, see <http://www.gnu.org/licenses/>.
 
-{ This file is included in "adt2ext3.pas" }
+// This file is included in "adt2ext3.pas" in interface section
 
-type
-  tCIF_DATA = Record
-                ident: array[1..20] of Char;
-                idata: tFM_INST_DATA;
-                resrv: Byte;
-                iname: array[1..20] of Char;
-              end;
+procedure import_standard_instrument_alt (var ins: tADTRACK2_INS; var data); cdecl; external;
+procedure import_hsc_instrument_alt (var ins: tADTRACK2_INS; var data); cdecl; external;
+procedure apply_instrument (idx: Byte; var src: temp_instrument_t); cdecl; external;
 
-type
-  tFIN_DATA = Record
-                dname: array[1..12] of Char;
-                iname: array[1..27] of Char;
-                idata: tFM_INST_DATA;
-              end;
-
-type
-  tINS_DATA = Record
-                idata: tFM_INST_DATA;
-                slide: Byte;
-                _SAdT: array[0..18] of Byte;
-              end;
-
-type
-  tSBI_DATA = Record
-                ident: array[1..4]  of Char;
-                iname: array[1..32] of Char;
-                idata: tFM_INST_DATA;
-                dummy: array[1..5]  of Byte;
-              end;
-
-type
-  tSGI_DATA = Record
-           { 0} attack_m,
-           { 1} decay_m,
-           { 2} sustain_m,
-           { 3} release_m,
-           { 4} waveform_m,
-           { 5} mfmult_m,
-           { 6} ksl_m,
-           { 7} volume_m,
-           { 8} ksr_m,
-           { 9} tremolo_m,
-           {10} vibrato_m,
-           {11} eg_type_m,
-           {12} attack_c,
-           {13} decay_c,
-           {14} sustain_c,
-           {15} release_c,
-           {16} waveform_c,
-           {17} mfmult_c,
-           {18} ksl_c,
-           {19} volume_c,
-           {20} ksr_c,
-           {21} tremolo_c,
-           {22} vibrato_c,
-           {23} eg_type_c,
-           {24} feedback,
-           {25} fm:        Byte;
-              end;
+function a2i_file_loader_alt (var dst: temp_instrument_t; fname: String; swap_ins: Boolean; var error: PChar): Boolean; cdecl; external;
+function a2f_file_loader_alt (var dst: temp_instrument_t; fname: String; swap_ins: Boolean; var error: PChar): Boolean; cdecl; external;
+function cif_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Boolean; cdecl; external;
+procedure import_fin_instrument_alt (var ins: tADTRACK2_INS; var data); cdecl; external; // FIN
+function fin_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Boolean; cdecl; external;
+procedure import_sat_instrument_alt (var ins: tADTRACK2_INS; var data); cdecl; external; // INS
+function ins_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Boolean; cdecl; external;
+function sbi_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Boolean; cdecl; external;
+function sgi_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Boolean; cdecl; external;

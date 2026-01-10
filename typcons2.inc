@@ -28,7 +28,7 @@ const
     '฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿'#13#10;
 
 var
-  patt_win_tracks: array[0..2,1..5] of PChar; cvar; external;
+//patt_win_tracks
   patt_win: array[1..5] of String[176]; cvar; external;
 const
   patt_tab_str: array[0..4] of String[18] = (
@@ -99,22 +99,9 @@ const
     ' iNSTRUMENT                                                               PANNiNG            iNSTRUMENT                  ',
     ' NAME    DESCRiPTiON                        ฺ20ฟ ฺ40ฟ ฺ60ฟ ฺ80ฟ ฺE0ฟ C0   ช  c  ซ   F.TUNE   VOiCE     MACROS            ',
     'อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ');
-
-  bnk_header_str: array[1..3] of String[72] = (
-    ' iNSTRUMENT                                  MELODiC/                   ',
-    ' NAME         ฺ20ฟ ฺ40ฟ ฺ60ฟ ฺ80ฟ ฺE0ฟ C0    PERCUSSiON (VOiCE)         ',
-    'ออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ');
-
-  fib_header_str: array[1..3] of String[72] = (
-    ' DOS       iNSTRUMENT                                                   ',
-    ' NAME      NAME                          ฺ20ฟ ฺ40ฟ ฺ60ฟ ฺ80ฟ ฺE0ฟ C0    ',
-    'ออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ');
-
-  ibk_header_str: array[1..3] of String[44] = (
-    ' iNSTRUMENT                                 ',
-    ' NAME         ฺ20ฟ ฺ40ฟ ฺ60ฟ ฺ80ฟ ฺE0ฟ C0   ',
-    'ออออออออออออออออออออออออออออออออออออออออออออ');
-
+//bnk_header_str
+//fib_header_str
+//ibk_header_str
   debug_win_str1: array[1..3] of String[130] = (
     '     TRACK     ~ณ~          iNSTRUMENT          ~ณ~NOTE~ณ ~FX N๙1~ ณ ~FX N๙2~ ณ~FREQ~ณ ~VOL',
     'ฤฤยฤฤยฤฤฤยฤฤยฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤลฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤลฤฤฤฤลฤฤยฤฤ',
