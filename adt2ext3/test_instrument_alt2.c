@@ -1,11 +1,11 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // chan: 1..20
-void test_instrument_alt2 (temp_instrument_t *dst, uint8_t chan, ExtKeyCode fkey)
+void test_instrument_alt2 (temp_instrument_t *dst, __UNUSED uint8_t chan, ExtKeyCode fkey)
 {
   uint8_t octave; // 0..7
   int_least8_t board_pos; // 0..28, < 0 if not found

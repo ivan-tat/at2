@@ -1,5 +1,5 @@
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2024 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2024-2026 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "pascal/stdio.h"
@@ -11,18 +11,25 @@
 #define _SF_S_MASK (1 << 0) // Stream structure allocation
 #define _SF_S_STAT (0 << 0)
 #define _SF_S_HEAP (1 << 0)
-#define _SF_O_MASK (1 << 1) // Output variable allocation (buffered mode)
-#define _SF_O_STAT (0 << 1)
-#define _SF_O_HEAP (1 << 1)
-#define _SF_T_MASK (1 << 2) // Type of Pascal file structure (file mode)
-#define _SF_T_FILE (0 << 2)
-#define _SF_T_TEXT (1 << 2)
-#define _SF_A_MASK (1 << 3) // Access type
-#define _SF_A_RAW  (0 << 3)
-#define _SF_A_BUF  (1 << 3)
-#define _SF_SYNC   (1 << 4) // Flush on each write (buffered mode)
-#define _SF_STOP   (1 << 5) // End of buffer (memory mode)
-#define _SF_ERR    (1 << 6)
+#define _SF_B_MASK (1 << 1) // Buffer allocation (buffered mode)
+#define _SF_B_STAT (0 << 1)
+#define _SF_B_HEAP (1 << 1)
+#define _SF_O_MASK (1 << 2) // Output variable allocation
+#define _SF_O_STAT (0 << 2)
+#define _SF_O_HEAP (1 << 2)
+#define _SF_T_MASK (1 << 3) // Type of Pascal file structure
+#define _SF_T_FILE (0 << 3)
+#define _SF_T_TEXT (1 << 3)
+#define _SF_A_MASK (1 << 4) // I/O access mode
+#define _SF_A_RAW  (0 << 4)
+#define _SF_A_BUF  (1 << 4)
+#define _SF_M_MASK (3 << 5) // File mode bits
+#define _SF_M_R    (1 << 5)
+#define _SF_M_W    (1 << 6)
+#define _SF_OPEN   (1 << 7) // File is opened
+#define _SF_ERR    (1 << 8) // Error occurred
+#define _SF_SYNC   (1 << 9) // Flush on each write (buffered mode)
+#define _SF_STOP   (1 << 10) // End of buffer (memory mode)
 
 #define _STREAM_BUF_SIZE 256
 
@@ -32,6 +39,7 @@ static FILE _stdout_file;
 FILE *custom_stdout = &_stdout_file;
 
 static void _stream_init (FILE *self, unsigned sf);
+static void _stream_free (FILE *self);
 
 static bool _stream_vprintf (FILE *self, const char *format, va_list ap);
 
@@ -49,6 +57,17 @@ static bool _file_stream_flush (FILE *self);
 static void _stream_init (FILE *self, unsigned sf) {
   memset (self, 0, sizeof (FILE));
   self->flags = sf;
+}
+
+static void _stream_free (FILE *self) {
+  if ((self->output != NULL) && ((self->flags & _SF_O_MASK) == _SF_O_HEAP))
+    free (self->output);
+
+  if ((self->buf != NULL) && ((self->flags & _SF_B_MASK) == _SF_B_HEAP))
+    free (self->buf);
+
+  if ((self->flags & _SF_S_MASK) == _SF_S_HEAP)
+    free (self);
 }
 
 // Format flags
@@ -629,6 +648,291 @@ static bool _file_stream_flush (FILE *self) {
 
 //=************************************************************************=//
 
+FILE *custom_fopen (const char *restrict name, const char *restrict mode) {
+  bool status = false; // `false' on error, `true' on success
+  char last = '\0';
+  char m_mode = '\0'; // 'r', 'w', 'a'
+  bool m_plus = false; // '+'
+  bool m_binary = false; // 'b'
+  FILE *f = NULL;
+  uint16_t err;
+  String _name[255+1];
+
+  if ((name == NULL) || (mode == NULL)) goto _err_inval;
+
+  // parse `mode' string
+  for (const char *c = mode; *c != '\0'; c++) {
+    switch (*c) {
+      case 'r':
+      case 'w':
+      case 'a':
+        if (m_mode != '\0') goto _err_inval;
+        m_mode = *c;
+        break;
+
+      case '+':
+        if (((last != 'r') && (last != 'w') && (last != 'a')) || (last == '+') || (last == 'b')) goto _err_inval;
+        m_plus = true;
+        break;
+
+      case 'b':
+        if ((m_mode == '\0') || m_binary) goto _err_inval;
+        m_binary = true;
+        break;
+
+      default: goto _err_inval;
+    }
+    last = *c;
+  }
+
+  if ((f = malloc (sizeof (*f))) == NULL) goto _exit;
+
+  _stream_init (f, _SF_S_HEAP | _SF_O_HEAP); // we'll set other flags later
+
+  if ((f->output = malloc (m_binary ? Pascal_FileRec_size : Pascal_TextRec_size)) == NULL) goto _exit;
+
+  f->flags |= m_binary ? _SF_T_FILE : _SF_T_TEXT;
+
+  StrToString (_name, name, sizeof (_name) - 1);
+
+  if (m_binary) {
+    // binary
+    Pascal_AssignFile (f->output, _name);
+
+    if ((m_mode == 'r') || (m_mode == 'a')) {
+      // "rb", "r+b", "ab", "a+b"
+      if (m_plus) {
+        // "r+b", "a+b"
+        f->flags |= _SF_M_R | _SF_M_W;
+        Pascal_FileMode = Pascal_FileMode_ReadWrite;
+      } else {
+        // "rb", "ab"
+        f->flags |= m_mode == 'r' ? _SF_M_R : _SF_M_W;
+        Pascal_FileMode = m_mode == 'r' ? Pascal_FileMode_ReadOnly : Pascal_FileMode_WriteOnly;
+      }
+      Pascal_ResetFile (f->output, 1); // opens in `Pascal_FileMode' mode
+      if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+
+      f->flags |= _SF_OPEN;
+
+      if (m_mode == 'a') {
+        // "ab", "a+b"
+        // seek to EOF
+        int64_t file_size = Pascal_FileSize (f->output);
+
+        if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+        Pascal_Seek (f->output, file_size);
+        if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+      }
+    } else {
+      // "wb", "w+b"
+      Pascal_RewriteFile (f->output, 1); // creates or truncates existing in W mode only
+      if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+
+      f->flags |= _SF_M_W | _SF_OPEN; // "wb"
+
+      if (m_plus) {
+        // "w+b"
+        f->flags |= _SF_M_R;
+        Pascal_FileMode = Pascal_FileMode_ReadWrite;
+        Pascal_ResetFile (f->output, 1); // reopens in R/W mode
+        if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+      }
+    }
+    status = true; // ok
+  } else {
+    // text
+    Pascal_AssignText (f->output, _name);
+
+    if (m_mode == 'r') {
+      // "r", "r+"
+      if (m_plus) goto _err_na; // "r+"
+      else {
+        // "r"
+        f->flags |= _SF_M_R;
+        Pascal_ResetText (f->output); // opens in R mode only
+        if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+        f->flags |= _SF_OPEN;
+      }
+    } else if (m_mode == 'w') {
+      // "w", "w+"
+      if (m_plus) goto _err_na; // "w+"
+      else {
+        // "w"
+        f->flags |= _SF_M_W;
+        Pascal_RewriteText (f->output); // creates or truncates existing in W mode only
+        if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+        f->flags |= _SF_OPEN;
+      }
+    } else {
+      // "a", "a+"
+      if (m_plus) goto _err_na; // "a+"
+      else {
+        // "a"
+        f->flags |= _SF_M_W;
+
+        Pascal_Append (f->output); // opens existing at EOF in W mode only
+        if ((err = Pascal_IOResult ()) != 0) {
+          // if not exists or wrong permissions: try to create a new file
+          Pascal_RewriteText (f->output); // opens in W mode only
+          if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+        }
+        f->flags |= _SF_OPEN;
+      }
+    }
+    status = true; // ok
+  }
+
+_exit:
+  if (!status) {
+    _stream_free (f);
+    f = NULL;
+  }
+
+  return f;
+
+_err_inval:
+  errno = EINVAL;
+  goto _exit;
+
+_err_io:
+  errno = map_InOutRes_to_errno (err);
+  goto _exit;
+
+_err_na:
+  errno = ENOSYS;
+  goto _exit;
+}
+
+int custom_fseek (FILE *stream, long offset, int whence) {
+  int result = -1;
+  uint16_t err;
+
+  if ((stream->flags & _SF_T_MASK) == _SF_T_FILE) {
+    int64_t file_pos;
+
+    switch (whence) {
+      case SEEK_SET:
+        Pascal_Seek (stream->output, offset);
+        if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+        result = 0;
+        break;
+
+      case SEEK_CUR:
+        file_pos = Pascal_FilePos (stream->output);
+        if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+        Pascal_Seek (stream->output, file_pos + offset);
+        if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+        result = 0;
+        break;
+
+      case SEEK_END:
+        file_pos = Pascal_FileSize (stream->output);
+        if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+        Pascal_Seek (stream->output, file_pos + offset);
+        if ((err = Pascal_IOResult ()) != 0) goto _err_io;
+        result = 0;
+        break;
+
+      default: goto _err_na;
+    }
+  } else goto _err_na;
+
+_exit:
+  return result;
+
+_err_io:
+  errno = map_InOutRes_to_errno (err);
+  goto _exit;
+
+_err_na:
+  errno = ENOSYS;
+  goto _exit;
+}
+
+long custom_ftell (FILE *stream) {
+  int64_t file_pos;
+
+  if ((stream->flags & _SF_T_MASK) == _SF_T_FILE) {
+    uint16_t err;
+
+    file_pos = Pascal_FilePos (stream->output);
+    if ((err = Pascal_IOResult ()) != 0) {
+      file_pos = -1;
+      errno = map_InOutRes_to_errno (err);
+    }
+  } else {
+    file_pos = -1;
+    errno = ENOSYS;
+  }
+
+  return file_pos;
+}
+
+size_t custom_fread (void *ptr, size_t size, size_t n, FILE *restrict stream) {
+  size_t num_read = 0;
+
+  if ((stream->flags & _SF_T_MASK) == _SF_T_FILE) {
+    size_t bytes_to_read = size * n;
+
+    if (bytes_to_read <= 0x7FFFFFFFL) { // __INT32_MAX__
+      int32_t bytes_read = 0;
+      uint16_t err;
+
+      Pascal_BlockRead (stream->output, ptr, bytes_to_read, &bytes_read);
+      if ((err = Pascal_IOResult ()) != 0) errno = map_InOutRes_to_errno (err);
+      num_read = bytes_read / size;
+    } else errno = EINVAL;
+  } else errno = ENOSYS;
+
+  return num_read;
+}
+
+size_t custom_fwrite (void *ptr, size_t size, size_t n, FILE *restrict stream) {
+  size_t num_written = 0;
+
+  if ((stream->flags & _SF_T_MASK) == _SF_T_FILE) {
+    size_t total_bytes = size * n;
+
+    if (total_bytes <= 0x7FFFFFFFL) { // __INT32_MAX__
+      int32_t bytes_written = 0;
+      uint16_t err;
+
+      Pascal_BlockWrite (stream->output, ptr, total_bytes, &bytes_written);
+      if ((err = Pascal_IOResult ()) != 0) errno = map_InOutRes_to_errno (err);
+      num_written = bytes_written / size;
+    } else errno = EINVAL;
+  } else errno = ENOSYS;
+
+  return num_written;
+}
+
+int custom_fflush (FILE *stream) {
+  bool ok;
+
+  if (stream->m_flush)
+    ok = stream->m_flush (stream);
+  else {
+    ok = false; // m_flush is not set
+    stream->flags |= _SF_ERR;
+  }
+
+  return ok ? 0 : -1;
+}
+
+void custom_fclose (FILE *stream) {
+  if ((stream->flags & _SF_OPEN) && (stream->output != NULL)) {
+    if ((stream->flags & _SF_T_MASK) == _SF_T_FILE)
+      Pascal_CloseFile (stream->output);
+    else
+      Pascal_CloseText (stream->output);
+
+    _stream_free (stream);
+  }
+}
+
+//=************************************************************************=//
+
 int custom_printf (const char *format, ...) {
   va_list ap;
 
@@ -732,29 +1036,15 @@ int custom_vsnprintf (char *str, size_t size, const char *format,
 
 //=************************************************************************=//
 
-int custom_fflush (FILE *stream) {
-  bool ok;
-
-  if (stream->m_flush)
-    ok = stream->m_flush (stream);
-  else {
-    ok = false; // m_flush is not set
-    stream->flags |= _SF_ERR;
-  }
-
-  return ok ? 0 : -1;
-}
-
-//=************************************************************************=//
-
 static void done_stdio (void);
 
 void init_stdio (void) {
   _file_stream_init (&_stdout_file,
-                     _SF_S_STAT | _SF_O_STAT | _SF_T_TEXT | _SF_SYNC,
+                     _SF_S_STAT | _SF_B_STAT | _SF_O_STAT | _SF_T_TEXT | _SF_SYNC,
                      _stdout_buf, sizeof (_stdout_buf), Pascal_Output);
   atexit (done_stdio);
 }
 
 static void done_stdio (void) {
+  _stream_free (&_stdout_file);
 }

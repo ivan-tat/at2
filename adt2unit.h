@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -330,7 +330,7 @@ void count_instruments (uint8_t *instruments);
 void init_old_songdata (void);
 void init_songdata (void);
 void update_instr_data (uint8_t ins);
-void load_instrument (void *data, uint8_t chan);
+void load_instrument (const void *data, uint8_t chan);
 void output_note (uint8_t note, uint8_t ins, uint8_t chan,
                   bool restart_macro, bool restart_adsr);
 

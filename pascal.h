@@ -1,5 +1,5 @@
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2024-2025 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2024-2026 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -10,11 +10,12 @@
 #include "defines.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <stddef.h>
+#include <stddef.h> // compiler may include it's own version of `errno.h' here
 #include <sys/types.h>
 #if WIN32 || WIN64 || WINNT
 #include <windows.h>
 #endif // WIN32 || WIN64 || WINNT
+#include "pascal/errno.h" // last to fix macro redefinition
 
 #pragma pack(push, 1)
 
@@ -121,7 +122,9 @@ extern void Pascal_ResetFile (void *file, int32_t l);
 extern void Pascal_ResetText (void *text);
 extern void Pascal_RewriteFile (void *file, int32_t l);
 extern void Pascal_RewriteText (void *text);
+extern void Pascal_Append (void *text);
 extern int64_t Pascal_FileSize (void *file);
+extern int64_t Pascal_FilePos (void *file);
 extern void Pascal_Seek (void *file, int64_t pos);
 extern void Pascal_BlockRead (void *file, void *buf, int32_t count, int32_t *result);
 extern void Pascal_BlockWrite (void *file, void *buf, int32_t count, int32_t *result);
@@ -294,6 +297,8 @@ extern int64_t Pascal_DateTimeToUnix (const TDateTime value);
 extern uint32_t Pascal_GetLogicalDriveStrings (uint32_t nBufferLength, char *lpBuffer);
 
 #endif // !(GO32 || linux || unix)
+
+int map_InOutRes_to_errno (int code);
 
 #pragma pack(pop)
 

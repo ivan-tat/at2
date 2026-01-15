@@ -1,12 +1,12 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // test_ins1: 1..255
 // test_ins2: 1..255 (0 if none)
-void test_instrument_alt (uint8_t chan, ExtKeyCode fkey,
+void test_instrument_alt (__UNUSED uint8_t chan, ExtKeyCode fkey,
                           bool loadMacros,
                           bool bankSelector,
                           bool loadArpVib,
@@ -136,8 +136,8 @@ void test_instrument_alt (uint8_t chan, ExtKeyCode fkey,
               sizeof (songdata.macro_table[0].vibrato)); // HINT: was missing `.vibrato'
   }
 
-  if (   Empty (&temp_ins->ins1.fm, sizeof (temp_ins->ins1.fm))
-      && Empty (&temp_ins->ins1.macro, sizeof (temp_ins->ins1.macro))
+  if ((   Empty (&temp_ins->ins1.fm, sizeof (temp_ins->ins1.fm))
+       && Empty (&temp_ins->ins1.macro, sizeof (temp_ins->ins1.macro)))
       || (   (test_ins2 != 0)
           && Empty (&temp_ins->ins2.fm, sizeof (temp_ins->ins2.fm))
           && Empty (&temp_ins->ins2.macro, sizeof (temp_ins->ins2.macro))))

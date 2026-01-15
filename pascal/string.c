@@ -1,5 +1,5 @@
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2024-2025 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2024-2026 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "pascal/string.h"
@@ -75,7 +75,7 @@ char *custom_stpncpy (char *dest, const char *src, size_t n) {
   return dest + len;
 }
 
-char *StringToStr (char *dest, String *src, uint8_t n) {
+char *StringToStr (char *dest, const String *src, uint8_t n) {
   size_t l = src ? Length (src) : 0;
 
   if (l > n)

@@ -1,19 +1,18 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // On success: returns `false'.
 // On error: returns `true' and error description in `error'.
-bool ins_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error)
+bool ins_file_loader_alt (temp_instrument_t *dst, const String *_fname, char **error)
 {
   bool result = true; // `false' on success, `true' on error
-  void *f = NULL; // FILE
-  bool f_opened = false;
-  int64_t fsize;
-  int32_t size;
+  FILE *f = NULL;
+  long fsize;
   tINS_DATA buffer;
+  char fname[255+1];
 
   bool correct_ins (const void *data)
   {
@@ -21,11 +20,8 @@ bool ins_file_loader_alt (temp_instrument_t *dst, const String *fname, char **er
 
     DBG_ENTER ("ins_file_loader_alt.correct_ins");
 
-    if (   (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_modulator < 0)
-        || (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_modulator > 3)
-        || (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_carrier < 0)
+    if (   (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_modulator > 3)
         || (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_carrier > 3)
-        || (((tADTRACK2_INS *)data)->fm_data.FEEDBACK_FM < 0)
         || (((tADTRACK2_INS *)data)->fm_data.FEEDBACK_FM > 15))
       result = false;
 
@@ -35,18 +31,15 @@ bool ins_file_loader_alt (temp_instrument_t *dst, const String *fname, char **er
 
   DBG_ENTER ("ins_file_loader_alt");
 
-  //f = fopen (fname, "rb");
-  if ((f = malloc (Pascal_FileRec_size)) == NULL) goto _err_malloc;
-  Pascal_AssignFile (f, fname);
-  ResetF (f);
-  if (Pascal_IOResult () != 0) goto _err_fopen;
-  f_opened = true;
+  StringToStr (fname, _fname, sizeof (fname) - 1);
+  if ((f = fopen (fname, "rb")) == NULL) goto _err_fopen;
 
-  fsize = Pascal_FileSize (f);
-  if (fsize > sizeof (buffer)) goto _err_format;
+  if (fseek (f, 0, SEEK_END) != 0) goto _err_fread;
+  if ((fsize = ftell (f)) < 0) goto _err_fread;
+  if (fsize < (long)sizeof (buffer)) goto _err_format;
+  if (fseek (f, 0, SEEK_SET) != 0) goto _err_fread;
 
-  BlockReadF (f, &buffer, fsize, &size);
-  if (size != fsize) goto _err_fread;
+  if (fread (&buffer, fsize, 1, f) == 0) goto _err_fread;
 
   dst->four_op = false;
   dst->use_macro = false;
@@ -56,11 +49,11 @@ bool ins_file_loader_alt (temp_instrument_t *dst, const String *fname, char **er
   switch (force_ins)
   {
     case 0:
-      if (size == 12)
+      if (fsize == 12)
         import_standard_instrument_alt (&dst->ins1.fm, &buffer.idata);
-      if ((size == 12) && !correct_ins (&buffer.idata))
+      if ((fsize == 12) && !correct_ins (&buffer.idata))
         import_hsc_instrument_alt (&dst->ins1.fm, &buffer.idata);
-      else if (size > 12)
+      else if (fsize > 12)
         import_sat_instrument_alt (&dst->ins1.fm, &buffer.idata);
       break;
 
@@ -72,24 +65,15 @@ bool ins_file_loader_alt (temp_instrument_t *dst, const String *fname, char **er
 
   // instrument name
   SetLength (dst->ins1.name, 0);
-  set_default_ins_name_if_needed (dst, fname);
+  set_default_ins_name_if_needed (dst, _fname);
 
   result = false;
 
 _exit:
-  //if (f != NULL) fclose (f);
-  if (f != NULL)
-  {
-    if (f_opened) CloseF (f);
-    free (f);
-  }
+  if (f != NULL) fclose (f);
 
   DBG_LEAVE (); //EXIT //ins_file_loader_alt
   return result;
-
-_err_malloc:
-  *error = "Memory allocation failed";
-  goto _exit;
 
 _err_fopen:
   *error = "Failed to open input file";

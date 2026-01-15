@@ -45,7 +45,7 @@ endif
 # in DJGPP environment
 GCCFLAGS+=-std=gnu99 -Wall -Wextra -pedantic
 
-GCCFLAGS_DIRS+=-isystem $(srcdir)/pascal -I $(srcdir) -I .
+GCCFLAGS_DIRS+=-I $(srcdir)/pascal -I $(srcdir) -I .
 
 # Setup FPC
 
@@ -79,6 +79,7 @@ SRCS=\
  pascal.c\
  pascal/dos.c\
  pascal/dpmi.c\
+ pascal/errno.c\
  pascal/go32.c\
  pascal/pc.c\
  pascal/stdio.c\
@@ -323,6 +324,7 @@ pascal_ppu_deps=\
  $(srcdir)/pascal/string.pas\
  $(srcdir)/pascal/time.pas\
  pascal.o\
+ pascal/errno.o\
  pascal/stdio.o\
  pascal/stdlib.o\
  pascal/string.o\

@@ -1,34 +1,30 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // On success: returns `false'.
 // On error: returns `true' and error description in `error'.
-bool fin_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error)
+bool fin_file_loader_alt (temp_instrument_t *dst, const String *_fname, char **error)
 {
   bool result = true; // `false' on success, `true' on error
-  void *f = NULL; // FILE
-  bool f_opened = false;
-  int64_t fsize;
-  int32_t size;
+  FILE *f = NULL;
+  long fsize;
   tFIN_DATA buffer;
+  char fname[255+1];
 
   DBG_ENTER ("fin_file_loader_alt");
 
-  //f = fopen (fname, "rb");
-  if ((f = malloc (Pascal_FileRec_size)) == NULL) goto _err_malloc;
-  Pascal_AssignFile (f, fname);
-  ResetF (f);
-  if (Pascal_IOResult () != 0) goto _err_fopen;
-  f_opened = true;
+  StringToStr (fname, _fname, sizeof (fname) - 1);
+  if ((f = fopen (fname, "rb")) == NULL) goto _err_fopen;
 
-  fsize = Pascal_FileSize (f);
-  if (fsize < sizeof (buffer)) goto _err_format;
+  if (fseek (f, 0, SEEK_END) != 0) goto _err_fread;
+  if ((fsize = ftell (f)) < 0) goto _err_fread;
+  if (fsize < (long)sizeof (buffer)) goto _err_format;
+  if (fseek (f, 0, SEEK_SET) != 0) goto _err_fread;
 
-  BlockReadF (f, &buffer, sizeof (buffer), &size);
-  if (size != sizeof (buffer)) goto _err_fread;
+  if (fread (&buffer, sizeof (buffer), 1, f) == 0) goto _err_fread;
 
   dst->four_op = false;
   dst->use_macro = false;
@@ -52,24 +48,15 @@ bool fin_file_loader_alt (temp_instrument_t *dst, const String *fname, char **er
     s = Copy ((String *)&t, 1, 32);
     CopyString ((String *)&dst->ins1.name, (String *)&s, sizeof (dst->ins1.name) - 1);
   }
-  set_default_ins_name_if_needed (dst, fname);
+  set_default_ins_name_if_needed (dst, _fname);
 
   result = false;
 
 _exit:
-  //if (f != NULL) fclose (f);
-  if (f != NULL)
-  {
-    if (f_opened) CloseF (f);
-    free (f);
-  }
+  if (f != NULL) fclose (f);
 
   DBG_LEAVE (); //EXIT //fin_file_loader_alt
   return result;
-
-_err_malloc:
-  *error = "Memory allocation failed";
-  goto _exit;
 
 _err_fopen:
   *error = "Failed to open input file";

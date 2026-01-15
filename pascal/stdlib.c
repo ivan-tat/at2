@@ -1,10 +1,9 @@
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2024 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2024-2026 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <stddef.h>
 #include <limits.h>
-#include "stdlib.h"
+#include "pascal/stdlib.h"
 
 static uint8_t _ExitCount = 0;
 static void (*_ExitList[ATEXIT_MAX]) (void);
@@ -23,6 +22,15 @@ int custom_atexit (void (*function) (void)) {
     return -1;
 }
 
+void *custom_malloc (size_t size) {
+  void *p = Pascal_AllocMem (size);
+
+  if (p == NULL)
+    errno = ENOMEM;
+
+  return p;
+}
+
 void custom_free (void *ptr) {
   Pascal_FreeMem (ptr);
 }
@@ -31,6 +39,9 @@ void *custom_realloc (void *ptr, size_t size) {
   void *p = ptr;
 
   Pascal_ReAllocMem (&p, size);
+  if (p == NULL)
+    errno = ENOMEM;
+
   return p;
 }
 

@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <stdlib.h>
@@ -19,6 +19,7 @@
 #include "adt2ext4.h"
 #include "adt2ext5.h"
 #include "adt2ext3.h"
+#include <errno.h> // last to fix macro redefinition
 
 // HINT: (FPC) S-: Stack checking (off)
 // HINT: (FPC) Q-: Overflow checking (off)

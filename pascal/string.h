@@ -1,5 +1,5 @@
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2024 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2024-2026 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -43,7 +43,7 @@ char *custom_stpncpy (char *dest, const char *src, size_t n);
 // Pascal strings support
 
 // n=1..255
-char *StringToStr (char *dest, String *src, uint8_t n);
+char *StringToStr (char *dest, const String *src, uint8_t n);
 
 // FPC_PCHAR_TO_SHORTSTR
 // n=1..255

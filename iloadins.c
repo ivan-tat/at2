@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // This file is included in `adt2ext3.c'
@@ -10,9 +10,9 @@
 
 typedef struct
 {
-  void *buf;
+  const void *buf;
   size_t size;
-  void *curptr, *endptr;
+  const void *curptr, *endptr;
 } mem_stream_t;
 
 #include "iloadins/set_mem_stream.c" // static
@@ -34,7 +34,7 @@ typedef struct
 
 // CIF
 
-#pragma pack(push, 1);
+#pragma pack(push, 1)
 typedef struct
 {
   char ident[20];
@@ -42,13 +42,13 @@ typedef struct
   uint8_t resrv;
   char iname[20];
 } tCIF_DATA;
-#pragma pack(pop);
+#pragma pack(pop)
 
 #include "iloadins/cif_file_loader_alt.c"
 
 // FIN
 
-#pragma pack(push, 1);
+#pragma pack(push, 1)
 typedef struct
 {
   char dname[FIN_DOS_NAME_LEN]; // DOS file name padded with spaces (not terminated by NUL)
@@ -56,28 +56,28 @@ typedef struct
   tFM_INST_DATA idata;
   uint8_t perc_voice;
 } tFIN_DATA;
-#pragma pack(pop);
+#pragma pack(pop)
 
 #include "iloadins/import_fin_instrument_alt.c"
 #include "iloadins/fin_file_loader_alt.c"
 
 // INS
 
-#pragma pack(push, 1);
+#pragma pack(push, 1)
 typedef struct
 {
   tFM_INST_DATA idata;
   uint8_t slide;
   uint8_t _SAdT[19];
 } tINS_DATA;
-#pragma pack(pop);
+#pragma pack(pop)
 
 #include "iloadins/import_sat_instrument_alt.c"
 #include "iloadins/ins_file_loader_alt.c"
 
 // SBI (Sound Blaster Instrument)
 
-#pragma pack(push, 1);
+#pragma pack(push, 1)
 typedef struct
 {
   char ident[4];
@@ -85,14 +85,14 @@ typedef struct
   tFM_INST_DATA idata;
   uint8_t dummy[5];
 } tSBI_DATA;
-#pragma pack(pop);
+#pragma pack(pop)
 
 #include "iloadins/import_sbi_instrument_alt.c" // static
 #include "iloadins/sbi_file_loader_alt.c"
 
 // SGI
 
-#pragma pack(push, 1);
+#pragma pack(push, 1)
 typedef struct
 {
   struct
@@ -102,7 +102,7 @@ typedef struct
   } m, c;
   uint8_t feedback, fm;
 } tSGI_DATA;
-#pragma pack(pop);
+#pragma pack(pop)
 
 #include "iloadins/import_sgi_instrument.c" // static
 #include "iloadins/sgi_file_loader_alt.c"

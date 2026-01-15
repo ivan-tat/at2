@@ -1,5 +1,5 @@
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2025 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2025-2026 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "pascal.h"
@@ -144,5 +144,51 @@ const uint32_t struct_SearchRec_size = sizeof (SearchRec_t);
 #error Not implemented
 
 #endif // !(GO32 || linux || unix || WIN32 || WIN64 || WINNT)
+
+int map_InOutRes_to_errno (int code)
+{
+  int result = -1; // unknown error
+
+  switch (code)
+  {
+    case 0: result = 0; break;
+    // DOS errors
+    case 1: result = ENOMEM; break;       // Out of memory
+    case 2: result = ENOENT; break;       // File not found
+    case 3: result = ENOENT; break;       // Path not found (Invalid file name)
+    case 4: result = EMFILE; break;       // Too many open files
+    case 5: result = EACCES; break;       // Access denied
+    case 6: result = EBADF; break;        // Invalid file handle
+    case 12: result = EBADF; break;       // Invalid file-access mode
+    case 15: result = ENODEV; break;      // Invalid disk number (Invalid drive)
+    case 16: result = ENOTEMPTY; break;   // Cannot remove current directory
+    case 17: result = EXDEV; break;       // Cannot rename across volumes
+    // I/O errors
+    case 100: result = EIO; break;        // Error when reading from disk (End of file)
+    case 101: result = EIO; break;        // Error when writing to disk (Disk full)
+    case 102: result = EBADF; break;      // File not assigned
+    case 103: result = EBADF; break;      // File not opened
+    case 104: result = EPERM; break;      // File not opened for input
+    case 105: result = EPERM; break;      // File not opened for output
+    case 106: result = EDOM; break;       // Invalid input
+    // Fatal errors
+    case 150: result = EPERM; break;      // Disk is write protected
+    case 151: result = ENODEV; break;     // Unknown device
+    case 152: result = EBUSY; break;      // Drive not ready
+    case 153: result = ENOSYS; break;     // Unknown command
+    case 154: result = ERANGE; break;     // CRC check failed
+    case 155: result = EFAULT; break;     // Invalid drive specified
+    case 156: result = EIO; break;        // Seek error on disk
+    case 157: result = ENOTTY; break;     // Invalid media type
+    case 158: result = EIO; break;        // Sector not found
+    case 159: result = ENOSPC; break;     // Printer out of paper
+    case 160: result = EIO; break;        // Error when writing to device
+    case 161: result = EIO; break;        // Error when reading from device
+    case 162: result = EIO; break;        // Hardware failure
+    default: break;
+  }
+
+  return result;
+}
 
 #pragma pack(pop)

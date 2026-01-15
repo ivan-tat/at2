@@ -1,51 +1,44 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // On success: returns `false'.
 // On error: returns `true' and error description in `error'.
-bool a2f_file_loader_alt (temp_instrument_t *dst, const String *fname, bool swap_ins, char **error)
+bool a2f_file_loader_alt (temp_instrument_t *dst, const String *_fname, bool swap_ins, char **error)
 {
   #pragma pack(push, 1)
   typedef struct
   {
     char ident[18];
-    int32_t crc32;
+    uint32_t crc32;
     uint8_t ffver;
     uint16_t len;
   } tHEADER;
   #pragma pack(pop)
 
-  static const char id[18] = { "_a2ins_w/fm-macro_" };
+  static const char GCC_ATTRIBUTE((nonstring)) id[18] = { "_a2ins_w/fm-macro_" };
 
   bool result = true; // `false' on success, `true' on error
-  void *f = NULL; // FILE
-  bool f_opened = false;
-  int32_t size, crc;
+  FILE *f = NULL;
+  uint32_t crc;
   tHEADER header;
   size_t unpacked_size;
   mem_stream_t stream;
+  char fname[255+1];
 
   DBG_ENTER ("a2f_file_loader_alt");
 
-  //f = fopen (fname, "rb");
-  if ((f = malloc (Pascal_FileRec_size)) == NULL) goto _err_malloc;
-  Pascal_AssignFile (f, fname);
-  ResetF (f);
-  if (Pascal_IOResult () != 0) goto _err_fopen;
-  f_opened = true;
+  StringToStr (fname, _fname, sizeof (fname) - 1);
+  if ((f = fopen (fname, "rb")) == NULL) goto _err_fopen;
 
-  BlockReadF (f, &header, sizeof (header), &size);
-  if (size != sizeof (header)) goto _err_fread;
-
+  if (fread (&header, sizeof (header), 1, f) == 0) goto _err_fread;
   if (memcmp (header.ident, id, sizeof (header.ident)) != 0) goto _err_format;
 
   if ((header.ffver == 1) || (header.ffver == 2))
   {
-    BlockReadF (f, buf2, header.len, &size);
-    if (size != header.len) goto _err_fread;
+    if (fread (buf2, header.len, 1, f) == 0) goto _err_fread;
 
     crc = UINT32_NULL;
     crc = Update32 (&header.len, 1, crc); // LSB only
@@ -93,24 +86,15 @@ bool a2f_file_loader_alt (temp_instrument_t *dst, const String *fname, bool swap
   else
     goto _err_version;
 
-  set_default_ins_name_if_needed (dst, fname);
+  set_default_ins_name_if_needed (dst, _fname);
 
   result = false;
 
 _exit:
-  //if (f != NULL) fclose (f);
-  if (f != NULL)
-  {
-    if (f_opened) CloseF (f);
-    free (f);
-  }
+  if (f != NULL) fclose (f);
 
   DBG_LEAVE (); //EXIT //a2f_file_loader_alt
   return result;
-
-_err_malloc:
-  *error = "Memory allocation failed";
-  goto _exit;
 
 _err_fopen:
   *error = "Failed to open input file";
