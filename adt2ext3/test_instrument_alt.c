@@ -43,8 +43,6 @@ void test_instrument_alt (__UNUSED uint8_t chan, ExtKeyCode fkey,
     StringToStr (ext, (String *)&t, sizeof (ext) - 1);
   }
 
-  load_flag_alt = UINT8_NULL;
-
   if (bankSelector || loadArpVib)
   {
     tFIXED_SONGDATA *p;
@@ -70,22 +68,26 @@ void test_instrument_alt (__UNUSED uint8_t chan, ExtKeyCode fkey,
   }
   else
   {
-#if GO32
-    keyboard_toggle_sleep ();
-#endif // GO32
-
-    if      (strcmp (ext, "a2i") == 0) { if (!a2i_file_loader_alt (temp_ins, (String *)&fname, true, &error)) load_flag_alt = 1; }
-    else if (strcmp (ext, "a2f") == 0) { if (!a2f_file_loader_alt (temp_ins, (String *)&fname, true, &error)) load_flag_alt = 1; }
-    else if (strcmp (ext, "cif") == 0) { if (!cif_file_loader_alt (temp_ins, (String *)&fname, &error)) load_flag_alt = 1; }
-    else if (strcmp (ext, "fin") == 0) { if (!fin_file_loader_alt (temp_ins, (String *)&fname, &error)) load_flag_alt = 1; }
-    else if (strcmp (ext, "ins") == 0) { if (!ins_file_loader_alt (temp_ins, (String *)&fname, &error)) load_flag_alt = 1; }
-    else if (strcmp (ext, "sbi") == 0) { if (!sbi_file_loader_alt (temp_ins, (String *)&fname, &error)) load_flag_alt = 1; }
-    else if (strcmp (ext, "sgi") == 0) { if (!sgi_file_loader_alt (temp_ins, (String *)&fname, &error)) load_flag_alt = 1; }
+    int8_t loader_status;
 
 #if GO32
     keyboard_toggle_sleep ();
 #endif // GO32
-    if (load_flag_alt == UINT8_NULL) goto _exit;
+
+    if      (strcmp (ext, "a2i") == 0) loader_status = a2i_file_loader_alt (temp_ins, (String *)&fname, true, &error);
+    else if (strcmp (ext, "a2f") == 0) loader_status = a2f_file_loader_alt (temp_ins, (String *)&fname, true, &error);
+    else if (strcmp (ext, "cif") == 0) loader_status = cif_file_loader_alt (temp_ins, (String *)&fname, &error);
+    else if (strcmp (ext, "fin") == 0) loader_status = fin_file_loader_alt (temp_ins, (String *)&fname, &error);
+    else if (strcmp (ext, "ins") == 0) loader_status = ins_file_loader_alt (temp_ins, (String *)&fname, &error);
+    else if (strcmp (ext, "sbi") == 0) loader_status = sbi_file_loader_alt (temp_ins, (String *)&fname, &error);
+    else if (strcmp (ext, "sgi") == 0) loader_status = sgi_file_loader_alt (temp_ins, (String *)&fname, &error);
+    else
+      loader_status = 1;
+
+#if GO32
+    keyboard_toggle_sleep ();
+#endif // GO32
+    if (loader_status != 0) goto _exit;
   }
 
   if (   (test_ins2 != 0)

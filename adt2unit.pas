@@ -205,7 +205,6 @@ var
   pattern_hpos: Byte; cvar; external;
   limit_exceeded: Boolean; cvar; external;
   load_flag: Byte; cvar; external;
-  load_flag_alt: Byte; cvar; external;
   reset_chan: array[1..20] of Boolean; cvar; external;
   reset_adsrw: array[1..20] of Boolean; cvar; external;
   ignore_note_once: array[1..20] of Boolean; cvar; external;

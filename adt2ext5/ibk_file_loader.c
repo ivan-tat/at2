@@ -1,13 +1,16 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// Returns `false' on success, `true' on error and error description in `error'.
-bool ibk_file_loader (temp_instrument_t *dst, const String *fname, char **error)
+// Returns:
+//   * 0: success.
+//   * -1: error occurred, error description in `error'.
+//   * 1: canceled by user.
+int8_t ibk_file_loader (temp_instrument_t *dst, const String *fname, char **error)
 {
-  bool status = true;
+  int8_t result = -1; // return value
   bool w_opened = false;
   sbi_bank_t *sbi_bank = NULL;
   String (*queue)[][IBK_HEADER_STR_MAX+1] = NULL; // TODO: use structure and pass it to `Menu()'
@@ -155,7 +158,6 @@ bool ibk_file_loader (temp_instrument_t *dst, const String *fname, char **error)
   mn_setting.topic_len = old_topic_len;
   mn_setting.cycle_moves = old_cycle_moves;
 
-  load_flag_alt = UINT8_NULL; // this flag may be changed by `ibk_lister_external_proc()'
   if (mn_environment.keystroke == kENTER)
   {
     const struct sbi_bank_item_t *item = &sbi_bank->items[index];
@@ -170,17 +172,17 @@ bool ibk_file_loader (temp_instrument_t *dst, const String *fname, char **error)
     StrToString (dst->ins1.name, item->name, sizeof (dst->ins1.name) - 1);
     set_default_ins_name_if_needed (dst, fname);
 
-    load_flag_alt = 1;
-  }
-
-  status = false;
+    result = 0;
+  } else
+    result = 1;
 
 _exit:
   if (w_opened) ibk_file_loader_restore (xstart, ystart);
   if (sbi_bank != NULL) sbi_bank_free (sbi_bank);
   if (queue != NULL) free (queue);
+
   DBG_LEAVE (); //EXIT //ibk_file_loader
-  return status;
+  return result;
 
 _err_malloc:
   *error = "Memory allocation failed";

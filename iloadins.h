@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // This file is included in `adt2ext3.h'
@@ -20,34 +20,34 @@ void apply_instrument (uint8_t idx, temp_instrument_t *src);
 
 // A2I
 
-bool a2i_file_loader_alt (temp_instrument_t *dst, const String *fname, bool swap_ins, char **error);
+int8_t a2i_file_loader_alt (temp_instrument_t *dst, const String *fname, bool swap_ins, char **error);
 
 // A2F
 
-bool a2f_file_loader_alt (temp_instrument_t *dst, const String *fname, bool swap_ins, char **error);
+int8_t a2f_file_loader_alt (temp_instrument_t *dst, const String *fname, bool swap_ins, char **error);
 
 // CIF
 
-bool cif_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
+int8_t cif_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
 
 // FIN
 
 void import_fin_instrument_alt (tADTRACK2_INS *ins, const void *data);
-bool fin_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
+int8_t fin_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
 
 // INS
 
 void import_sat_instrument_alt (tADTRACK2_INS *ins, const void *data);
-bool ins_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
+int8_t ins_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
 
 // SBI (Sound Blaster Instrument)
 
 //void import_sbi_instrument_alt (tADTRACK2_INS *ins, const void *data);
-bool sbi_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
+int8_t sbi_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
 
 // SGI
 
-bool sgi_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
+int8_t sgi_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
 
 ///--- Instrument banks ---///
 
@@ -69,7 +69,7 @@ bnk_bank_t *bnk_bank_new (uint16_t capacity, char **error);
 void bnk_bank_free (bnk_bank_t *bnk_bank);
 bnk_bank_t *load_bnk_bank (const String *fname, char **error);
 
-bool bnk_file_loader_alt (temp_instrument_t *dst, const String *fname, uint16_t idx, char **error);
+int8_t bnk_file_loader_alt (temp_instrument_t *dst, const String *fname, uint16_t idx, char **error);
 
 // FIB (FIN Bank)
 
@@ -93,7 +93,7 @@ fin_bank_t *fin_bank_new (uint16_t capacity, char **error);
 void fin_bank_free (fin_bank_t *fin_bank);
 fin_bank_t *load_fin_bank (const String *fname, char **error);
 
-bool fib_file_loader_alt (temp_instrument_t *dst, const String *fname, uint16_t idx, char **error);
+int8_t fib_file_loader_alt (temp_instrument_t *dst, const String *fname, uint16_t idx, char **error);
 
 // IBK (Sound Blaster Instrument Bank)
 
@@ -114,6 +114,6 @@ sbi_bank_t *sbi_bank_new (char **error);
 void sbi_bank_free (sbi_bank_t *sbi_bank);
 sbi_bank_t *load_sbi_bank (const String *fname, char **error);
 
-bool ibk_file_loader_alt (temp_instrument_t *dst, const String *fname, uint16_t idx, char **error);
+int8_t ibk_file_loader_alt (temp_instrument_t *dst, const String *fname, uint16_t idx, char **error);
 
 #endif // !DEFINED(ILOADINS_H)

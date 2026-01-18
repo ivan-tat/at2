@@ -5496,6 +5496,7 @@ var
   xstart,ystart: Byte;
   flag: Byte;
   error: PChar;
+  loader_status: Shortint; // 0: success, < 0: error, > 0: canceled
 
 procedure _restore;
 begin
@@ -5608,7 +5609,7 @@ _jmp1:
   If (Lower(ExtOnly(fname)) = 'xms') then amd_file_loader;
   If (Lower(ExtOnly(fname)) = 'a2i') then
   begin
-    if (a2i_file_loader_alt (temp_instrument, instdata_source, false, error)) then
+    if (a2i_file_loader_alt (temp_instrument, instdata_source, false, error) <> 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' A2I Loader '), 1)
     else
     begin
@@ -5618,7 +5619,7 @@ _jmp1:
   end
   else If (Lower(ExtOnly(fname)) = 'a2f') then
   begin
-    if (a2f_file_loader_alt (temp_instrument, instdata_source, false, error)) then
+    if (a2f_file_loader_alt (temp_instrument, instdata_source, false, error) <> 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' A2F Loader '), 1)
     else
     begin
@@ -5689,12 +5690,12 @@ _jmp1:
 
   If (Lower(ExtOnly(fname)) = 'bnk') then
   begin
-    load_flag_alt := BYTE_NULL;
-    if (bnk_file_loader (temp_instrument, instdata_source, error)) then
+    loader_status := bnk_file_loader (temp_instrument, instdata_source, error);
+    if (loader_status < 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' BNK Loader '), 1)
     else
     begin
-      if (load_flag_alt = 1) then
+      if (loader_status = 0) then
       begin
         apply_instrument (current_inst - 1, temp_instrument);
         load_flag := 1;
@@ -5703,7 +5704,7 @@ _jmp1:
   end
   else If (Lower(ExtOnly(fname)) = 'cif') then
   begin
-    if (cif_file_loader_alt (temp_instrument, instdata_source, error)) then
+    if (cif_file_loader_alt (temp_instrument, instdata_source, error) <> 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' CIF Loader '), 1)
     else
     begin
@@ -5713,11 +5714,12 @@ _jmp1:
   end
   else If (Lower(ExtOnly(fname)) = 'fib') then
   begin
-    if (fib_file_loader (temp_instrument, instdata_source, error)) then
+    loader_status := fib_file_loader (temp_instrument, instdata_source, error);
+    if (loader_status < 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' FIB Loader '), 1)
     else
     begin
-      if (load_flag_alt = 1) then
+      if (loader_status = 0) then
       begin
         apply_instrument (current_inst - 1, temp_instrument);
         load_flag := 1;
@@ -5726,7 +5728,7 @@ _jmp1:
   end
   else If (Lower(ExtOnly(fname)) = 'fin') then
   begin
-    if (fin_file_loader_alt (temp_instrument, instdata_source, error)) then
+    if (fin_file_loader_alt (temp_instrument, instdata_source, error) <> 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' FIN Loader '), 1)
     else
     begin
@@ -5736,12 +5738,12 @@ _jmp1:
   end
   else If (Lower(ExtOnly(fname)) = 'ibk') then
   begin
-    load_flag_alt := BYTE_NULL;
-    if (ibk_file_loader (temp_instrument, instdata_source, error)) then
+    loader_status := ibk_file_loader (temp_instrument, instdata_source, error);
+    if (loader_status < 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' IBK Loader '), 1)
     else
     begin
-      if (load_flag_alt = 1) then
+      if (loader_status = 0) then
       begin
         apply_instrument (current_inst - 1, temp_instrument);
         load_flag := 1;
@@ -5750,7 +5752,7 @@ _jmp1:
   end
   else If (Lower(ExtOnly(fname)) = 'ins') then
   begin
-    if (ins_file_loader_alt (temp_instrument, instdata_source, error)) then
+    if (ins_file_loader_alt (temp_instrument, instdata_source, error) <> 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' INS Loader '), 1)
     else
     begin
@@ -5760,7 +5762,7 @@ _jmp1:
   end
   else If (Lower(ExtOnly(fname)) = 'sbi') then
   begin
-    if (sbi_file_loader_alt (temp_instrument, instdata_source, error)) then
+    if (sbi_file_loader_alt (temp_instrument, instdata_source, error) <> 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' SBI Loader '), 1)
     else
     begin
@@ -5770,7 +5772,7 @@ _jmp1:
   end
   else If (Lower(ExtOnly(fname)) = 'sgi') then
   begin
-    if (sgi_file_loader_alt (temp_instrument, instdata_source, error)) then
+    if (sgi_file_loader_alt (temp_instrument, instdata_source, error) <> 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' SGI Loader '), 1)
     else
     begin

@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -36,15 +36,15 @@ extern uint8_t ptr_vibrato_table;
 
 // BNK (bank)
 
-bool bnk_file_loader (temp_instrument_t *dst, const String *fname, char **error);
+int8_t bnk_file_loader (temp_instrument_t *dst, const String *fname, char **error);
 
 // FIB (FIN Bank)
 
-bool fib_file_loader (temp_instrument_t *dst, const String *fname, char **error);
+int8_t fib_file_loader (temp_instrument_t *dst, const String *fname, char **error);
 
 // IBK (Sound Blaster Instrument Bank)
 
-bool ibk_file_loader (temp_instrument_t *dst, const String *fname, char **error);
+int8_t ibk_file_loader (temp_instrument_t *dst, const String *fname, char **error);
 
 #pragma pack(pop)
 

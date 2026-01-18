@@ -5,11 +5,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // idx: 1..SBI_BANK_CAPACITY
-// On success: returns `false'.
-// On error: returns `true' and error description in `error'.
-bool ibk_file_loader_alt (temp_instrument_t *dst, const String *_fname, uint16_t idx, char **error)
+// On success: returns 0.
+// On error: returns -1 and error description in `error'.
+int8_t ibk_file_loader_alt (temp_instrument_t *dst, const String *_fname, uint16_t idx, char **error)
 {
-  bool result = true; // `false' on success, `true' on error
+  int8_t result = -1; // return value
   FILE *f = NULL;
   long fsize;
   char header[4];
@@ -61,7 +61,7 @@ bool ibk_file_loader_alt (temp_instrument_t *dst, const String *_fname, uint16_t
   }
   set_default_ins_name_if_needed (dst, _fname);
 
-  result = false;
+  result = 0;
 
 _exit:
   if (f != NULL) fclose (f);

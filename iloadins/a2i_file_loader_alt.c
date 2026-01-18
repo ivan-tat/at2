@@ -4,9 +4,9 @@
 // SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// On success: returns `false'.
-// On error: returns `true' and error description in `error'.
-bool a2i_file_loader_alt (temp_instrument_t *dst, const String *_fname, bool swap_ins, char **error)
+// On success: returns 0.
+// On error: returns -1 and error description in `error'.
+int8_t a2i_file_loader_alt (temp_instrument_t *dst, const String *_fname, bool swap_ins, char **error)
 {
   #pragma pack(push, 1)
   typedef struct
@@ -20,7 +20,7 @@ bool a2i_file_loader_alt (temp_instrument_t *dst, const String *_fname, bool swa
 
   static const char GCC_ATTRIBUTE((nonstring)) id[7] = { "_A2ins_" };
 
-  bool result = true; // `false' on success, `true' on error
+  int8_t result = -1; // return value
   FILE *f = NULL;
   tOLD_HEADER header;
   uint_least16_t len;
@@ -136,7 +136,7 @@ bool a2i_file_loader_alt (temp_instrument_t *dst, const String *_fname, bool swa
 
   set_default_ins_name_if_needed (dst, _fname);
 
-  result = false;
+  result = 0;
 
 _exit:
   if (f != NULL) fclose (f);

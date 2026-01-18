@@ -1,13 +1,16 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// Returns `true' on error and error description in `error'.
-bool bnk_file_loader (temp_instrument_t *dst, const String *fname, char **error)
+// Returns:
+//   * 0: success.
+//   * -1: error occurred, error description in `error'.
+//   * 1: canceled by user.
+int8_t bnk_file_loader (temp_instrument_t *dst, const String *fname, char **error)
 {
-  bool result = true; // `false' on success, `true' on error
+  int8_t result = -1; // return value
   bool w_opened = false;
   bnk_bank_t *bnk_bank = NULL;
   String (*queue)[][BNK_HEADER_STR_MAX+1] = NULL; // TODO: use structure and pass it to `Menu()'
@@ -162,7 +165,6 @@ bool bnk_file_loader (temp_instrument_t *dst, const String *fname, char **error)
   mn_setting.topic_len = old_topic_len;
   mn_setting.cycle_moves = old_cycle_moves;
 
-  load_flag_alt = UINT8_NULL; // this flag may be changed by `bnk_lister_external_proc()'
   if (mn_environment.keystroke == kENTER)
   {
     const struct bnk_bank_item_t *item = &bnk_bank->items[index];
@@ -180,10 +182,9 @@ bool bnk_file_loader (temp_instrument_t *dst, const String *fname, char **error)
       SetLength (dst->ins1.name, 0);
     set_default_ins_name_if_needed (dst, fname);
 
-    load_flag_alt = 1;
-  }
-
-  result = false;
+    result = 0;
+  } else
+    result = 1;
 
 _exit:
   if (w_opened) bnk_file_loader_restore (xstart, ystart);

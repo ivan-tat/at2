@@ -4,30 +4,15 @@
 // SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// On success: returns `false'.
-// On error: returns `true' and error description in `error'.
-bool ins_file_loader_alt (temp_instrument_t *dst, const String *_fname, char **error)
+// On success: returns 0.
+// On error: returns -1 and error description in `error'.
+int8_t ins_file_loader_alt (temp_instrument_t *dst, const String *_fname, char **error)
 {
-  bool result = true; // `false' on success, `true' on error
+  int8_t result = -1; // return value
   FILE *f = NULL;
   long fsize;
   tINS_DATA buffer;
   char fname[255+1];
-
-  bool correct_ins (const void *data)
-  {
-    bool result = true;
-
-    DBG_ENTER ("ins_file_loader_alt.correct_ins");
-
-    if (   (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_modulator > 3)
-        || (((tADTRACK2_INS *)data)->fm_data.WAVEFORM_carrier > 3)
-        || (((tADTRACK2_INS *)data)->fm_data.FEEDBACK_FM > 15))
-      result = false;
-
-    DBG_LEAVE (); //EXIT //ins_file_loader_alt.correct_ins
-    return result;
-  }
 
   DBG_ENTER ("ins_file_loader_alt");
 
@@ -51,7 +36,10 @@ bool ins_file_loader_alt (temp_instrument_t *dst, const String *_fname, char **e
     case 0:
       if (fsize == 12)
         import_standard_instrument_alt (&dst->ins1.fm, &buffer.idata);
-      if ((fsize == 12) && !correct_ins (&buffer.idata))
+      if (   (fsize == 12)
+          && (   (buffer.idata.WAVEFORM_modulator > 3)
+              || (buffer.idata.WAVEFORM_carrier > 3)
+              || (buffer.idata.FEEDBACK_FM > 15)))
         import_hsc_instrument_alt (&dst->ins1.fm, &buffer.idata);
       else if (fsize > 12)
         import_sat_instrument_alt (&dst->ins1.fm, &buffer.idata);
@@ -67,7 +55,7 @@ bool ins_file_loader_alt (temp_instrument_t *dst, const String *_fname, char **e
   SetLength (dst->ins1.name, 0);
   set_default_ins_name_if_needed (dst, _fname);
 
-  result = false;
+  result = 0;
 
 _exit:
   if (f != NULL) fclose (f);

@@ -19,12 +19,12 @@ procedure import_standard_instrument_alt (var ins: tADTRACK2_INS; var data); cde
 procedure import_hsc_instrument_alt (var ins: tADTRACK2_INS; var data); cdecl; external;
 procedure apply_instrument (idx: Byte; var src: temp_instrument_t); cdecl; external;
 
-function a2i_file_loader_alt (var dst: temp_instrument_t; fname: String; swap_ins: Boolean; var error: PChar): Boolean; cdecl; external;
-function a2f_file_loader_alt (var dst: temp_instrument_t; fname: String; swap_ins: Boolean; var error: PChar): Boolean; cdecl; external;
-function cif_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Boolean; cdecl; external;
+function a2i_file_loader_alt (var dst: temp_instrument_t; fname: String; swap_ins: Boolean; var error: PChar): Shortint; cdecl; external;
+function a2f_file_loader_alt (var dst: temp_instrument_t; fname: String; swap_ins: Boolean; var error: PChar): Shortint; cdecl; external;
+function cif_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Shortint; cdecl; external;
 procedure import_fin_instrument_alt (var ins: tADTRACK2_INS; var data); cdecl; external; // FIN
-function fin_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Boolean; cdecl; external;
+function fin_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Shortint; cdecl; external;
 procedure import_sat_instrument_alt (var ins: tADTRACK2_INS; var data); cdecl; external; // INS
-function ins_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Boolean; cdecl; external;
-function sbi_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Boolean; cdecl; external;
-function sgi_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Boolean; cdecl; external;
+function ins_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Shortint; cdecl; external;
+function sbi_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Shortint; cdecl; external;
+function sgi_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Shortint; cdecl; external;

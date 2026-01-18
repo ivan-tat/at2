@@ -4,11 +4,11 @@
 // SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// On success: returns `false'.
-// On error: returns `true' and error description in `error'.
-bool fin_file_loader_alt (temp_instrument_t *dst, const String *_fname, char **error)
+// On success: returns 0.
+// On error: returns -1 and error description in `error'.
+int8_t fin_file_loader_alt (temp_instrument_t *dst, const String *_fname, char **error)
 {
-  bool result = true; // `false' on success, `true' on error
+  int8_t result = -1; // return value
   FILE *f = NULL;
   long fsize;
   tFIN_DATA buffer;
@@ -50,7 +50,7 @@ bool fin_file_loader_alt (temp_instrument_t *dst, const String *_fname, char **e
   }
   set_default_ins_name_if_needed (dst, _fname);
 
-  result = false;
+  result = 0;
 
 _exit:
   if (f != NULL) fclose (f);

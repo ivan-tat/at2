@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
@@ -227,7 +227,7 @@ uint8_t pattern_patt;
 uint8_t pattern_page;
 uint8_t pattern_hpos;
 bool    limit_exceeded;
-uint8_t load_flag, load_flag_alt;
+uint8_t load_flag;
 bool    reset_chan      [20];
 bool    reset_adsrw     [20];
 bool    ignore_note_once[20];

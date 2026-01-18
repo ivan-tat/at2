@@ -13,6 +13,7 @@ void test_instrument_alt2 (temp_instrument_t *dst, __UNUSED uint8_t chan, ExtKey
   char ext[255+1];
   uint8_t channels;
   char *error;
+  int8_t loader_status;
 
   DBG_ENTER ("test_instrument_alt2");
 
@@ -24,8 +25,6 @@ void test_instrument_alt2 (temp_instrument_t *dst, __UNUSED uint8_t chan, ExtKey
   octave = current_octave - 1;
   board_pos = board_get_pos (octave, fkey);
   if (board_pos < 0) goto _exit;
-
-  load_flag_alt = UINT8_NULL;
 
   {
     String_t s, t;
@@ -41,26 +40,16 @@ void test_instrument_alt2 (temp_instrument_t *dst, __UNUSED uint8_t chan, ExtKey
   keyboard_toggle_sleep ();
 #endif // GO32
 
-  if      (strcmp (ext, "bnk") == 0)
-  {
-    if (!bnk_file_loader_alt (dst, instdata_source, Str2num ((String *)&basename, 10), &error))
-      load_flag_alt = 1;
-  }
-  else if (strcmp (ext, "fib") == 0)
-  {
-    if (!fib_file_loader_alt (dst, instdata_source, Str2num ((String *)&basename, 10), &error))
-      load_flag_alt = 1;
-  }
-  else if (strcmp (ext, "ibk") == 0)
-  {
-    if (!ibk_file_loader_alt (dst, instdata_source, Str2num ((String *)&basename, 10), &error))
-      load_flag_alt = 1;
-  }
+  if      (strcmp (ext, "bnk") == 0) loader_status = bnk_file_loader_alt (dst, instdata_source, Str2num ((String *)&basename, 10), &error);
+  else if (strcmp (ext, "fib") == 0) loader_status = fib_file_loader_alt (dst, instdata_source, Str2num ((String *)&basename, 10), &error);
+  else if (strcmp (ext, "ibk") == 0) loader_status = ibk_file_loader_alt (dst, instdata_source, Str2num ((String *)&basename, 10), &error);
+  else
+    loader_status = 1;
 
 #if GO32
   keyboard_toggle_sleep ();
 #endif // GO32
-  if (load_flag_alt == UINT8_NULL) goto _exit;
+  if (loader_status != 0) goto _exit;
 
   if (Empty (&dst->ins1.fm, sizeof (dst->ins1.fm))) goto _exit;
 

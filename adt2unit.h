@@ -196,7 +196,7 @@ extern uint8_t pattern_patt;
 extern uint8_t pattern_page;
 extern uint8_t pattern_hpos;
 extern bool    limit_exceeded;
-extern uint8_t load_flag, load_flag_alt;
+extern uint8_t load_flag;
 extern bool    reset_chan      [20]; // HINT: (FPC) start index 1
 extern bool    reset_adsrw     [20]; // HINT: (FPC) start index 1
 extern bool    ignore_note_once[20]; // HINT: (FPC) start index 1
