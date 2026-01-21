@@ -1,5 +1,5 @@
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2024-2025 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2024-2026 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 unit Pascal;
@@ -94,6 +94,7 @@ procedure Pascal_CloseFile (var f: File); cdecl;
 procedure Pascal_CloseText (var t: Text); cdecl;
 procedure Pascal_GetDir (drivenr: Byte; var dir: String); cdecl;
 procedure Pascal_ChDir (s: String); cdecl;
+procedure Pascal_RmDir (s: String); cdecl;
 
 {$IFDEF CPU64}
 function Pascal_Random (l: Int64): Int64; cdecl;
@@ -477,6 +478,14 @@ public name PUBLIC_PREFIX + 'Pascal_ChDir';
 begin
   {$PUSH} {$I-}
   system.ChDir (s);
+  {$POP}
+end;
+
+procedure Pascal_RmDir (s: String); cdecl;
+public name PUBLIC_PREFIX + 'Pascal_RmDir';
+begin
+  {$PUSH} {$I-}
+  system.RmDir (s);
   {$POP}
 end;
 

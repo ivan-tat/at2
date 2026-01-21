@@ -931,6 +931,33 @@ void custom_fclose (FILE *stream) {
   }
 }
 
+int custom_remove (const char *path) {
+  void *f;
+  String _path[255+1];
+  uint16_t err;
+
+  if ((f = malloc (Pascal_FileRec_size)) == NULL) return -1;
+
+  StrToString (_path, path, sizeof (_path) - 1);
+  Pascal_AssignFile (f, _path);
+  Pascal_EraseFile (f);
+  err = Pascal_IOResult ();
+  free (f);
+
+  if (err != 0)
+    if (err == 2) { // File not found
+      Pascal_RmDir (_path); // May also return 2 for directory
+      err = Pascal_IOResult ();
+    }
+
+  if (err == 0)
+    return 0;
+  else {
+    errno = map_InOutRes_to_errno (err);
+    return -1;
+  }
+}
+
 //=************************************************************************=//
 
 int custom_printf (const char *format, ...) {

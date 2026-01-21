@@ -45,4 +45,6 @@ static uint8_t chan_handle[20];
 #include "adt2ext3/test_instrument_alt.c"
 #include "adt2ext3/test_instrument_alt2.c"
 
+#include "iloaders.c"
+
 #pragma pack(pop)

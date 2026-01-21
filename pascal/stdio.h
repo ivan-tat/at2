@@ -39,6 +39,7 @@ size_t custom_fread (void *ptr, size_t size, size_t n, FILE *restrict stream);
 size_t custom_fwrite (void *ptr, size_t size, size_t n, FILE *restrict stream);
 int custom_fflush (FILE *stream);
 void custom_fclose (FILE *stream);
+int custom_remove (const char *path);
 
 int custom_printf (const char *format, ...);
 int custom_vprintf (const char *format, va_list ap);
@@ -60,6 +61,7 @@ int custom_vsnprintf (char *str, size_t size, const char *format, va_list ap);
 #define fwrite custom_fwrite
 #define fflush custom_fflush
 #define fclose custom_fclose
+#define remove custom_remove
 
 #define printf custom_printf
 #define vprintf custom_vprintf

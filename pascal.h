@@ -138,6 +138,7 @@ extern void Pascal_CloseText (void *text);
 
 extern void Pascal_GetDir (uint8_t drivenr, String *dir);
 extern void Pascal_ChDir (const String *s);
+extern void Pascal_RmDir (const String *s);
 
 extern int Pascal_Random (int l);
 
