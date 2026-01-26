@@ -37,7 +37,7 @@ var
   arpvib_vibrato_table:  Byte; cvar; external;
 
 procedure MACRO_EDITOR(instr: Byte; arp_vib_mode: Boolean);
-procedure MACRO_BROWSER(instrBrowser: Boolean; updateCurInstr: Boolean);
+procedure MACRO_BROWSER (instrBrowser, updateCurInstr: Boolean); cdecl; external;
 
 implementation
 
@@ -5594,18 +5594,6 @@ _end2:
   _pip_loop := FALSE;
 
   _dbg_leave; //EXIT //MACRO_EDITOR
-end;
-
-procedure MACRO_BROWSER(instrBrowser: Boolean; updateCurInstr: Boolean);
-begin
-  _dbg_enter ({$I %FILE%}, 'MACRO_BROWSER');
-
-  songdata_crc := Update32(songdata,SizeOf(songdata),0);
-  a2w_file_loader(FALSE,NOT instrBrowser,TRUE,FALSE,updateCurInstr); // browse internal A2W data
-  If (Update32(songdata,SizeOf(songdata),0) <> songdata_crc) then
-    module_archived := FALSE;
-
-  _dbg_leave; //EXIT //MACRO_BROWSER
 end;
 
 end.

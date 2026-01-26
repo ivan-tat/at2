@@ -31,12 +31,16 @@ var
   ptr_arpeggio_table: Byte; cvar; external;
   ptr_vibrato_table: Byte; cvar; external;
 
-procedure a2b_file_loader(bankSelector: Boolean; loadBankPossible: Boolean);
-procedure a2w_file_loader(loadFromFile: Boolean; loadMacros: Boolean; bankSelector: Boolean;
-                          loadBankPossible: Boolean; updateCurInstr: Boolean);
-function bnk_file_loader (var dst: temp_instrument_t; fname: String; var error: PChar): Shortint; cdecl; external;
-function fib_file_loader (var dst: temp_instrument_t; fname: String; var error: PChar): Shortint; cdecl; external;
-function ibk_file_loader (var dst: temp_instrument_t; fname: String; var error: PChar): Shortint; cdecl; external;
+procedure a2b_file_loader (bankSelector, loadBankPossible: Boolean;
+                           progress: progress_callback_p);
+procedure a2w_file_loader (loadFromFile, loadMacros, bankSelector, loadBankPossible, updateCurInstr: Boolean;
+                           progress: progress_callback_p); cdecl;
+function bnk_file_loader (var dst: temp_instrument_t; fname: String;
+                          progress: progress_callback_p; var error: PChar): Shortint; cdecl; external;
+function fib_file_loader (var dst: temp_instrument_t; fname: String;
+                          progress: progress_callback_p; var error: PChar): Shortint; cdecl; external;
+function ibk_file_loader (var dst: temp_instrument_t; fname: String;
+                          progress: progress_callback_p; var error: PChar): Shortint; cdecl; external;
 
 implementation
 
@@ -285,7 +289,7 @@ begin
   a2b_lister_external_proc_callback;
 end;
 
-procedure a2b_file_loader(bankSelector: Boolean; loadBankPossible: Boolean);
+procedure a2b_file_loader (bankSelector, loadBankPossible: Boolean; progress: progress_callback_p);
 
 type
   tOLD_HEADER = Record
@@ -325,8 +329,11 @@ var
 begin
   _dbg_enter ({$I %FILE%}, 'a2b_file_loader');
 
-  progress_num_steps := 0;
-  progress_step := 0;
+  if (progress <> NIL) then
+  begin
+    progress^.num_steps := 0;
+    progress^.step := 0;
+  end;
  {$i-}
   Assign(f,instdata_source);
   ResetF(f);
@@ -521,8 +528,8 @@ begin
       For temp := 1 to 255 do
         temp_marks[temp] := temp_songdata.instr_names[temp][1];
 
-      progress_num_steps := 0;
-      LZH_decompress(buf1,buf2,header2.b0len);
+      if (progress <> NIL) then progress^.num_steps := 0;
+      LZH_decompress (buf1, buf2, header2.b0len, progress);
       Move(buf2,temp_songdata.instr_names,SizeOf(songdata.instr_names)+
                                           SizeOf(songdata.instr_data));
       Move(buf2[SizeOf(songdata.instr_names)+
@@ -2006,8 +2013,9 @@ begin
   _dbg_leave; //EXIT //a2w_lister_external_proc
 end;
 
-procedure a2w_file_loader(loadFromFile: Boolean; loadMacros: Boolean; bankSelector: Boolean;
-                          loadBankPossible: Boolean; updateCurInstr: Boolean);
+procedure a2w_file_loader (loadFromFile, loadMacros, bankSelector, loadBankPossible, updateCurInstr: Boolean;
+                           progress: progress_callback_p); cdecl;
+public name PUBLIC_PREFIX + 'a2w_file_loader';
 type
   tOLD_HEADER = Record
                   ident: array[1..20] of Char;
@@ -2082,8 +2090,11 @@ begin
   temp_songdata := songdata_bak;
   update_current_inst := updateCurInstr;
   browser_flag := FALSE;
-  progress_num_steps := 0;
-  progress_step := 0;
+  if (progress <> NIL) then
+  begin
+    progress^.num_steps := 0;
+    progress^.step := 0;
+  end;
 
   If NOT loadFromFile and bankSelector and
      NOT loadBankPossible then
@@ -2416,8 +2427,8 @@ begin
       For temp := 1 to 255 do
         temp_marks[temp] := temp_songdata.instr_names[temp][1];
 
-      progress_num_steps := 0;
-      LZH_decompress(buf1,buf2,header.b0len);
+      if (progress <> NIL) then progress^.num_steps := 0;
+      LZH_decompress (buf1, buf2, header.b0len, progress);
       Move(buf2,temp_songdata.instr_names,SizeOf(songdata.instr_names)+
                                           SizeOf(songdata.instr_data)+
                                           SizeOf(songdata.instr_macros));
@@ -2440,7 +2451,7 @@ begin
           _dbg_leave; EXIT; //a2w_file_loader
         end;
 
-      LZH_decompress(buf1,temp_songdata.macro_table,header.b1len);
+      LZH_decompress (buf1, temp_songdata.macro_table, header.b1len, progress);
       BlockReadF(f,buf1,header.b2len,temp);
       If NOT (temp = header.b2len) then
         begin
@@ -2451,7 +2462,7 @@ begin
           _dbg_leave; EXIT; //a2w_file_loader
         end;
 
-      LZH_decompress(buf1,temp_songdata.dis_fmreg_col,header.b2len);
+      LZH_decompress (buf1, temp_songdata.dis_fmreg_col, header.b2len, progress);
     end;
 
   CloseF(f);

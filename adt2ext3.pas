@@ -25,9 +25,9 @@ uses
 
 {$i iloadins.inc}
 
-procedure a2m_file_loader;
-procedure a2t_file_loader;
-procedure a2p_file_loader;
+function a2m_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
+procedure a2t_file_loader (progress: progress_callback_p);
+procedure a2p_file_loader (progress: progress_callback_p);
 procedure amd_file_loader;
 procedure cff_file_loader;
 procedure dfm_file_loader;

@@ -4,9 +4,11 @@
 // SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+// In: `progress' and `error' may be NULL.
 // On success: returns 0.
-// On error: returns -1 and error description in `error'.
-int8_t a2f_file_loader_alt (temp_instrument_t *dst, const String *_fname, bool swap_ins, char **error)
+// On error: returns -1 and error description in `error' (if set).
+int8_t a2f_file_loader_alt (temp_instrument_t *dst, const String *_fname, bool swap_ins,
+                            progress_callback_t *progress, char **error)
 {
   #pragma pack(push, 1)
   typedef struct
@@ -21,6 +23,7 @@ int8_t a2f_file_loader_alt (temp_instrument_t *dst, const String *_fname, bool s
   static const char GCC_ATTRIBUTE((nonstring)) id[18] = { "_a2ins_w/fm-macro_" };
 
   int8_t result = -1; // return value
+  char *result_error = NULL;
   FILE *f = NULL;
   uint32_t crc;
   tHEADER header;
@@ -40,17 +43,16 @@ int8_t a2f_file_loader_alt (temp_instrument_t *dst, const String *_fname, bool s
   {
     if (fread (buf2, header.len, 1, f) == 0) goto _err_fread;
 
-    crc = UINT32_NULL;
-    crc = Update32 (&header.len, 1, crc); // LSB only
+    crc = Update32 (&header.len, 1, CRC32_INITVAL); // LSB only
     crc = Update32 (buf2, header.len, crc);
-    if (crc != header.crc32) goto _err_crc;
+    if (crc != header.crc32) goto _err_checksum;
 
     if (header.ffver == 1)
       unpacked_size = APACK_decompress (buf2, buf3);
     else
     {
-      progress_num_steps = 0;
-      unpacked_size = LZH_decompress (buf2, buf3, header.len);
+      if (progress != NULL) progress->num_steps = 0;
+      unpacked_size = LZH_decompress (buf2, buf3, header.len, progress);
     }
 
     set_mem_stream (&stream, buf3, unpacked_size);
@@ -92,31 +94,32 @@ int8_t a2f_file_loader_alt (temp_instrument_t *dst, const String *_fname, bool s
 
 _exit:
   if (f != NULL) fclose (f);
+  if ((result < 0) && (error != NULL)) *error = result_error;
 
   DBG_LEAVE (); //EXIT //a2f_file_loader_alt
   return result;
 
 _err_fopen:
-  *error = "Failed to open input file";
+  result_error = "Failed to open input file";
   goto _exit;
 
 _err_fread:
-  *error = "Failed to read input file";
+  result_error = "Failed to read input file";
   goto _exit;
 
 _err_format:
-  *error = "Unknown file format";
+  result_error = "Unknown file format";
   goto _exit;
 
 _err_version:
-  *error = "Unknown file format version";
+  result_error = "Unknown file format version";
   goto _exit;
 
-_err_crc:
-  *error = "CRC failed - file corrupted";
+_err_checksum:
+  result_error = "Checksum mismatch - file corrupted";
   goto _exit;
 
 _err_eod:
-  *error = "Unexpected end of unpacked data";
+  result_error = "Unexpected end of unpacked data";
   goto _exit;
 }

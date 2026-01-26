@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -31,7 +31,7 @@ extern uint8_t arpvib_arpeggio_table;
 extern uint8_t arpvib_vibrato_table;
 
 //void MACRO_EDITOR (uint8_t instr, bool arp_vib_mode);
-//void MACRO_BROWSER (bool instrBrowser, bool updateCurInstr);
+void MACRO_BROWSER (bool instrBrowser, bool updateCurInstr);
 
 #pragma pack(pop)
 

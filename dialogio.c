@@ -1,10 +1,11 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
+#include <inttypes.h>
 #include "platform.h"
 #include "pascal.h"
 #if GO32
@@ -14,6 +15,7 @@
 #include <windows.h>
 #endif // !(WIN32 || WIN64 || WINNT)
 #include <stdio.h>
+#include <stdlib.h>
 #include "debug.h"
 #include "adt2sys.h"
 #include "adt2text.h"
@@ -29,6 +31,21 @@
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 
 #pragma pack(push, 1)
+
+/*** Progress ***/
+
+uint8_t  progress_xstart, progress_ystart;
+uint8_t  progress_num_steps;
+uint8_t  progress_step;
+uint32_t progress_value;
+uint8_t  progress_old_value, progress_new_value;
+
+#include "dialogio/show_progress.c"
+#include "dialogio/show_progress2.c"
+
+#include "dialogio/progress_window_update.c" // static, used in `progress_window_init'
+#include "dialogio/progress_window_init.c"
+#include "dialogio/progress_window_close.c"
 
 #include "dialogio/OutKey.c" // static, used in `Dialog' and `Menu'
 #include "dialogio/ReadChunk.c" // static, used in `Dialog' and `Fselect'

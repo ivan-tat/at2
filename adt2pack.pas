@@ -20,17 +20,19 @@ unit AdT2pack;
 {$L adt2pack.o}
 interface
 
+uses
+  adt2unit;
+
 function LZH_compress(var source,dest; size: Dword): Dword; cdecl;
 function LZH_compress_ultra(var source,dest; size: Dword): Dword; cdecl;
-function LZH_decompress(var source,dest; size: Dword): Dword; cdecl; external;
+function LZH_decompress (var source, dest; size: Dword; progress: progress_callback_p): Dword; cdecl; external;
 
 implementation
 
 uses
   pascal,
   AdT2sys,
-  AdT2extn,
-  AdT2unit;
+  AdT2extn;
 
 {$I adt2pack/pas/LZH_defs.new.inc}
 {$I adt2pack/pas/LZH_compress.new.pas}

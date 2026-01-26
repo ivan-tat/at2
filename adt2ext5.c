@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
@@ -60,21 +60,18 @@ uint8_t ptr_vibrato_table;
 
 #include "adt2ext5/bnk_lister_external_proc.c" // static
 #include "adt2ext5/bnk_file_loader_get_item_str.c" // static
-#include "adt2ext5/bnk_file_loader_restore.c" // static
 #include "adt2ext5/bnk_file_loader.c"
 
 // FIB (FIN Bank)
 
 #include "adt2ext5/fib_lister_external_proc.c" // static
 #include "adt2ext5/fib_file_loader_get_item_str.c" // static
-#include "adt2ext5/fib_file_loader_restore.c" // static
 #include "adt2ext5/fib_file_loader.c"
 
 // IBK (Sound Blaster Instrument Bank)
 
 #include "adt2ext5/ibk_lister_external_proc.c" // static
 #include "adt2ext5/ibk_file_loader_get_item_str.c" // static
-#include "adt2ext5/ibk_file_loader_restore.c" // static
 #include "adt2ext5/ibk_file_loader.c"
 
 #pragma pack(pop)

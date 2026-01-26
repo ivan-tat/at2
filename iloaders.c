@@ -15,3 +15,4 @@
 #include "iloaders/import_old_a2m_patterns2.c" // HINT: static
 #include "iloaders/import_old_flags.c" // HINT: static
 #include "iloaders/import_old_songdata.c" // HINT: static
+#include "iloaders/a2m_file_loader.c"

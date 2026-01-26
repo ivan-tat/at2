@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // Decoder state
@@ -20,16 +20,18 @@ struct LZHDecoderState_t
   uint8_t *output_buffer;
   uint32_t input_buffer_idx, output_buffer_idx;
   uint32_t size_unpacked, input_buffer_size;
+  progress_callback_t *progress;
 };
 
 static void WriteDataBlock (struct LZHDecoderState_t *ds, const void *ptr, uint16_t size)
 {
   memmove (&ds->output_buffer[ds->output_buffer_idx], ptr, size);
   ds->output_buffer_idx += size;
+  if (ds->progress != NULL)
 #if !ADT2PLAY
-  if (!really_no_status_refresh)
-    show_progress2 (ds->output_buffer_idx, 3);
+    if (!really_no_status_refresh)
 #endif // !ADT2PLAY
+      ds->progress->update (ds->progress, ds->output_buffer_idx, 3);
 }
 
 static void FillBitBuffer (struct LZHDecoderState_t *ds, int16_t bits)
@@ -263,7 +265,7 @@ static void DecodeBuffer (struct LZHDecoderState_t *ds, uint16_t count, uint8_t 
   }
 }
 
-uint32_t LZH_decompress (const void *source, void *dest, uint32_t size)
+uint32_t LZH_decompress (const void *source, void *dest, uint32_t size, progress_callback_t *progress)
 {
   uint32_t result = 0;
   struct LZHDecoderState_t *ds;
@@ -282,10 +284,6 @@ uint32_t LZH_decompress (const void *source, void *dest, uint32_t size)
   memmove (&ds->size_unpacked, &ds->input_buffer[ds->input_buffer_idx], sizeof (ds->size_unpacked));
   ds->input_buffer_idx += sizeof (ds->size_unpacked);
   size = ds->size_unpacked;
-#if !ADT2PLAY
-  progress_old_value = UINT8_NULL;
-  progress_value = size;
-#endif // !ADT2PLAY
   if ((ptr = malloc (ds->DIC_SIZE)) == NULL) goto _exit;
   ds->bit_buf = 0;
   ds->sbit_buf = 0;
@@ -293,6 +291,9 @@ uint32_t LZH_decompress (const void *source, void *dest, uint32_t size)
   FillBitBuffer (ds, 16);
   ds->block_size = 0;
   ds->dec_counter = 0;
+  ds->progress = progress;
+
+  if (progress != NULL) progress->value = size;
 
   while (size > 0)
   {

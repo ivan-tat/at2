@@ -1,11 +1,10 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
-#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "debug.h"
@@ -28,12 +27,6 @@
 
 ExtKeyCode fkey;
 
-uint8_t  progress_xstart, progress_ystart;
-uint8_t  progress_num_steps;
-uint8_t  progress_step;
-uint32_t progress_value;
-uint8_t  progress_old_value, progress_new_value;
-
 #include "adt2extn/_patts_marked.c"
 
 #include "adt2extn/nul_volume_bars.c"
@@ -41,9 +34,6 @@ uint8_t  progress_old_value, progress_new_value;
 /*static*/ bool    transp_menu2 = false;
 /*static*/ uint8_t transp_pos1 = 1;
 /*static*/ uint8_t transp_pos2 = 1;
-
-#include "adt2extn/show_progress.c"
-#include "adt2extn/show_progress2.c"
 
 #include "adt2extn/fselect_external_proc.c" // HINT: static
 

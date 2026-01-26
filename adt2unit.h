@@ -28,6 +28,15 @@
 #include "typcons1.h"
 #include "typcons2.h"
 
+typedef struct progress_callback_s {
+  char msg[63+1];
+  uint8_t num_steps;
+  uint8_t step;
+  uint32_t value;
+  uint8_t old_value;
+  void (*update) (struct progress_callback_s *self, int32_t value, int32_t refresh_diff);
+} progress_callback_t;
+
 extern uint16_t IRQ_freq;
 extern int16_t  IRQ_freq_shift;
 extern uint8_t  tempo;
@@ -186,7 +195,7 @@ extern String songdata_source[255+1]; // HINT: (FPC) length not set (default)
 extern String instdata_source[255+1]; // HINT: (FPC) length not set (default)
 extern String songdata_title [255+1]; // HINT: (FPC) length not set (default)
 
-extern int32_t songdata_crc, songdata_crc_ord;
+extern uint32_t songdata_crc, songdata_crc_ord;
 extern temp_instrument_t temp_instrument;
 extern uint8_t pattord_page;
 extern uint8_t pattord_hpos;

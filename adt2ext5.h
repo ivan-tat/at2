@@ -27,12 +27,14 @@ extern uint8_t ptr_vibrato_table;
 
 // A2B
 
-//void a2b_file_loader (bool bankSelector, bool loadBankPossible, char **error);
+//void a2b_file_loader (bool bankSelector, bool loadBankPossible,
+//                      progress_callback_t *progress);
 
 // A2W
 
-//void a2w_file_loader (bool loadFromFile, bool loadMacros, bool bankSelector,
-//                      bool loadBankPossible, bool updateCurInstr, char **error);
+void a2w_file_loader (bool loadFromFile, bool loadMacros, bool bankSelector,
+                      bool loadBankPossible, bool updateCurInstr,
+                      progress_callback_t *progress);
 
 // BNK (bank)
 

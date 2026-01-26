@@ -217,7 +217,7 @@ String songdata_source[255+1];
 String instdata_source[255+1];
 String songdata_title [255+1];
 
-int32_t songdata_crc, songdata_crc_ord;
+uint32_t songdata_crc, songdata_crc_ord;
 temp_instrument_t temp_instrument;
 uint8_t pattord_page;
 uint8_t pattord_hpos;

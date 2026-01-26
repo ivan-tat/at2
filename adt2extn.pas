@@ -51,15 +51,6 @@ var
   fkey: Word; cvar; external;
 
 var
-  progress_xstart: Byte; cvar; external;
-  progress_ystart: Byte; cvar; external;
-  progress_num_steps: Byte; cvar; external;
-  progress_step: Byte; cvar; external;
-  progress_value: Dword; cvar; external;
-  progress_old_value: Byte; cvar; external;
-  progress_new_value: Byte; cvar; external;
-
-var
   tracing_block_pattern,
   tracing_block_xend,
   tracing_block_yend: Byte;
@@ -97,8 +88,6 @@ function  FILE_open(masks: String; loadBankPossible: Boolean): Byte;
 procedure NUKE;
 procedure MESSAGE_BOARD;
 procedure QUIT_request;
-procedure show_progress(value: Longint); cdecl; external;
-procedure show_progress2(value,refresh_dif: Longint); cdecl; external;
 
 implementation
 
@@ -5493,24 +5482,13 @@ var
   old_tracing: Boolean;
   temp_marks: array[1..255] of Char;
   temp_marks2: array[0..$7f] of Char;
-  xstart,ystart: Byte;
   flag: Byte;
+  state: Byte;
   error: PChar;
   loader_status: Shortint; // 0: success, < 0: error, > 0: canceled
-
-procedure _restore;
-begin
-  _dbg_enter ({$I %FILE%}, 'FILE_open._restore');
-
-  move_to_screen_data := ptr_screen_backup;
-  move_to_screen_area[1] := xstart;
-  move_to_screen_area[2] := ystart;
-  move_to_screen_area[3] := xstart+43+2+1;
-  move_to_screen_area[4] := ystart+3+1;
-  move2screen;
-
-  _dbg_leave; //EXIT //FILE_open._restore
-end;
+  new_macro_speedup: Word;
+  progress_win: progress_window_t;
+  progress: progress_callback_p;
 
 label _jmp1;
 
@@ -5566,36 +5544,38 @@ _jmp1:
   nul_volume_bars;
   no_status_refresh := TRUE;
 
-  If (Lower(ExtOnly(fname)) = 'a2m') or (Lower(ExtOnly(fname)) = 'a2t') then
+  progress_window_init (@progress_win, 44, 4, ' ' + Upper (ExtOnly (fname)) + iCASE (' file '), '');
+  progress := @progress_win.callback;
+
+  If (Lower(ExtOnly(fname)) = 'a2m') then
+  begin
+    If (play_status <> isStopped) then
     begin
-      ScreenMemCopy(screen_ptr,ptr_screen_backup);
-      centered_frame_vdest := screen_ptr;
-
-      temps := Upper(ExtOnly(fname))+' FiLE';
-      centered_frame(xstart,ystart,43,3,' '+temps+' ',
-                     dialog_background+dialog_border,
-                     dialog_background+dialog_title,
-                     frame_double);
-
-      progress_xstart := xstart+2;
-      progress_ystart := ystart+2;
-      progress_num_steps := 1;
-      progress_step := 1;
-
-      If (Lower(ExtOnly(fname)) = 'a2m') then
-        temps := 'MODULE'
-      else temps := 'TiNY MODULE';
-
-      ShowCStr(screen_ptr,xstart+2,ystart+1,
-               'DECOMPRESSiNG '+temps+' DATA...',
-               dialog_background+dialog_text,
-               dialog_background+dialog_hi_text);
-      show_progress(DWORD_NULL);
+      fade_out_playback (false);
+      stop_playing;
     end;
-
-  If (Lower(ExtOnly(fname)) = 'a2m') then a2m_file_loader;
-  If (Lower(ExtOnly(fname)) = 'a2t') then a2t_file_loader;
-  If (Lower(ExtOnly(fname)) = 'a2p') then a2p_file_loader;
+    loader_status := a2m_file_loader (songdata_source, progress, state, error);
+    if (loader_status < 0) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' A2M Loader '), 1)
+    else
+    begin
+      new_macro_speedup := calc_max_speedup (songdata.tempo);
+      if (songdata.macro_speedup > new_macro_speedup) then
+      begin
+        Dialog (iCASE ('Due to system limitations, ~macro speedup~ value is ~changed~$' +
+                'Slowdown: ~x' + Num2str (songdata.macro_speedup, 10) + ' -> x' + Num2str (new_macro_speedup, 10) + '~$'),
+                iCASE ('~O~Kay$'), iCASE (' A2M Loader '), 1);
+        songdata.macro_speedup := new_macro_speedup;
+      end;
+      load_flag := 1;
+    end;
+  end else If (Lower(ExtOnly(fname)) = 'a2t') then
+  begin
+    progress^.msg := 'Decompressing tiny module data...';
+    progress^.update (progress, -1, -1);
+    a2t_file_loader (progress);
+  end;
+  If (Lower(ExtOnly(fname)) = 'a2p') then a2p_file_loader (progress);
   If (Lower(ExtOnly(fname)) = 'amd') then amd_file_loader;
   If (Lower(ExtOnly(fname)) = 'cff') then cff_file_loader;
   If (Lower(ExtOnly(fname)) = 'dfm') then dfm_file_loader;
@@ -5609,7 +5589,7 @@ _jmp1:
   If (Lower(ExtOnly(fname)) = 'xms') then amd_file_loader;
   If (Lower(ExtOnly(fname)) = 'a2i') then
   begin
-    if (a2i_file_loader_alt (temp_instrument, instdata_source, false, error) <> 0) then
+    if (a2i_file_loader_alt (temp_instrument, instdata_source, false, progress, error) <> 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' A2I Loader '), 1)
     else
     begin
@@ -5619,7 +5599,7 @@ _jmp1:
   end
   else If (Lower(ExtOnly(fname)) = 'a2f') then
   begin
-    if (a2f_file_loader_alt (temp_instrument, instdata_source, false, error) <> 0) then
+    if (a2f_file_loader_alt (temp_instrument, instdata_source, false, progress, error) <> 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' A2F Loader '), 1)
     else
     begin
@@ -5627,24 +5607,6 @@ _jmp1:
       load_flag := 1;
     end;
   end;
-
-  If ((Lower(ExtOnly(fname)) = 'a2m') or (Lower(ExtOnly(fname)) = 'a2t')) and
-     (load_flag = 1)  then
-    begin
-      progress_num_steps := 1;
-      progress_step := 1;
-      progress_value := 1;
-      progress_old_value := BYTE_NULL;
-      _draw_screen_without_delay := TRUE;
-      show_progress(1);
-      // delay for awhile to show progress bar at 100%
-{$IFDEF GO32V2}
-      CRT.Delay(500);
-{$ELSE}
-      SDL_Delay(200);
-{$ENDIF}
-      _restore;
-    end;
 
   If (Lower(ExtOnly(fname)) = 'a2b') then
     If shift_pressed and NOT ctrl_pressed and
@@ -5656,11 +5618,11 @@ _jmp1:
                             'DO YOU WiSH TO CONTiNUE?$',
                             '~Y~UP$~N~OPE$',' A2B LOADER ',1);
             If (dl_environment.keystroke <> kESC) and (index = 1) then
-              a2b_file_loader(FALSE,loadBankPossible); // w/o bank selector
+              a2b_file_loader (false, loadBankPossible, progress); // w/o bank selector
           end
-        else a2b_file_loader(TRUE,loadBankPossible); // w/ bank selector
+        else a2b_file_loader (true, loadBankPossible, progress); // w/ bank selector
       end
-    else a2b_file_loader(TRUE,loadBankPossible); // w/ bank selector
+    else a2b_file_loader (true, loadBankPossible, progress); // w/ bank selector
 
   If (Lower(ExtOnly(fname)) = 'a2w') then
     If shift_pressed and NOT ctrl_pressed and
@@ -5677,20 +5639,20 @@ _jmp1:
                               'DO YOU WiSH TO CONTiNUE?$',
                               '~Y~UP$~N~OPE$',' A2W LOADER ',1);
             If (dl_environment.keystroke <> kESC) and (index = 1) then
-              a2w_file_loader(TRUE,_arp_vib_loader,FALSE,loadBankPossible,FALSE); // w/o bank selector
+              a2w_file_loader (true, _arp_vib_loader, false, loadBankPossible,false, progress); // w/o bank selector
           end
-        else a2w_file_loader(TRUE,_arp_vib_loader,TRUE,loadBankPossible,FALSE); // w/ bank selector
+        else a2w_file_loader (true, _arp_vib_loader, true, loadBankPossible, false, progress); // w/ bank selector
         _arp_vib_loader := FALSE;
       end
     else
       begin
-        a2w_file_loader(TRUE,_arp_vib_loader,TRUE,loadBankPossible,FALSE); // w/ bank selector
+        a2w_file_loader (true, _arp_vib_loader, true, loadBankPossible, false, progress); // w/ bank selector
         _arp_vib_loader := FALSE;
       end;
 
   If (Lower(ExtOnly(fname)) = 'bnk') then
   begin
-    loader_status := bnk_file_loader (temp_instrument, instdata_source, error);
+    loader_status := bnk_file_loader (temp_instrument, instdata_source, progress, error);
     if (loader_status < 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' BNK Loader '), 1)
     else
@@ -5714,7 +5676,7 @@ _jmp1:
   end
   else If (Lower(ExtOnly(fname)) = 'fib') then
   begin
-    loader_status := fib_file_loader (temp_instrument, instdata_source, error);
+    loader_status := fib_file_loader (temp_instrument, instdata_source, progress, error);
     if (loader_status < 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' FIB Loader '), 1)
     else
@@ -5738,7 +5700,7 @@ _jmp1:
   end
   else If (Lower(ExtOnly(fname)) = 'ibk') then
   begin
-    loader_status := ibk_file_loader (temp_instrument, instdata_source, error);
+    loader_status := ibk_file_loader (temp_instrument, instdata_source, progress, error);
     if (loader_status < 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' IBK Loader '), 1)
     else
@@ -5780,6 +5742,26 @@ _jmp1:
       load_flag := 1;
     end;
   end;
+
+  if (load_flag = 1) then
+  begin
+    _draw_screen_without_delay := true;
+    progress^.msg := 'File successfully loaded';
+    progress^.num_steps := 1;
+    progress^.step := 1;
+    progress^.value := 1;
+    progress^.old_value := BYTE_NULL;
+    progress^.update (progress, 1, -1);
+    // delay for a while to show progress bar at 100%
+{$IFDEF GO32V2}
+    crt.Delay (500);
+{$ELSE} // NOT DEFINED (GO32V2)
+    SDL_Delay (500);
+{$ENDIF} // NOT DEFINED (GO32V2)
+  end;
+
+  progress_window_close (@progress_win);
+  progress := NIL;
 
 //  If use_large_cursor then WideCursor
 //  else ThinCursor;

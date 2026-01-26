@@ -32,6 +32,17 @@ const
 {$i typcons1.inc}
 {$i typcons2.inc}
 
+type
+  progress_callback_p = ^progress_callback_t;
+  progress_callback_t = record
+    msg: array [0..63] of Char;
+    num_steps: Byte;
+    step: Byte;
+    value: Longword;
+    old_value: Byte;
+    update: procedure (self: progress_callback_p; value, refresh_diff: Longint); cdecl;
+  end;
+
 var
   IRQ_freq:          Word; cvar; external;
   IRQ_freq_shift:    Integer; cvar; external;
@@ -193,8 +204,8 @@ var
   instdata_source: String; cvar; external;
   songdata_title:  String; cvar; external;
 
-  songdata_crc: Longint; cvar; external;
-  songdata_crc_ord: Longint; cvar; external;
+  songdata_crc: Longword; cvar; external;
+  songdata_crc_ord: Longword; cvar; external;
   temp_instrument: temp_instrument_t; cvar; external;
   pattord_page: Byte; cvar; external;
   pattord_hpos: Byte; cvar; external;

@@ -11,65 +11,43 @@
 int8_t ibk_file_loader (temp_instrument_t *dst, const String *fname, char **error)
 {
   int8_t result = -1; // return value
-  bool w_opened = false;
+  progress_window_t progress_win;
+  progress_callback_t *progress = NULL;
   sbi_bank_t *sbi_bank = NULL;
   String (*queue)[][IBK_HEADER_STR_MAX+1] = NULL; // TODO: use structure and pass it to `Menu()'
   uint16_t index;
   void (*old_external_proc) (void);
   uint8_t old_topic_len;
   bool old_cycle_moves;
-  uint8_t xstart, ystart;
   uint8_t ysize;
 
   DBG_ENTER ("ibk_file_loader");
 
-  ScreenMemCopy (screen_ptr, ptr_screen_backup);
-  centered_frame_vdest = screen_ptr;
-  {
-    char s[63+1];
-
-    snprintf (s, sizeof (s), " ESC %c%c STOP ", charmap.bd_light_horiz, charmap.black_right_triangle); // " ESC ─► STOP "
-    StrToString (dl_environment.context, s, sizeof (dl_environment.context) - 1);
-  }
   {
     String_t s, t;
+    char u[63+1];
 
     s = NameOnly (fname);
     t = iCASE ((String *)&s);
     StrToString ((String *)&s, " ", sizeof (s) - 1);
     AppendString ((String *)&s, (String *)&t, sizeof (s) - 1);
     AppendString ((String *)&s, StrToString ((String *)&t, " ", sizeof (t) - 1), sizeof (s) - 1);
-    centered_frame (&xstart, &ystart, 43, 3, (String *)&s,
-                    dialog_background + dialog_border,
-                    dialog_background + dialog_title,
-                    frame_double);
-  }
-  ShowStr (screen_ptr, xstart + 43 - Length (dl_environment.context), ystart + 3,
-           dl_environment.context,
-           dialog_background + dialog_border);
-  SetLength (dl_environment.context, 0);
 
-  progress_num_steps = 1;
-  progress_step = 1;
-  progress_value = 100 + 100; // +100=100% loaded, +100=100% processed
-  progress_old_value = UINT8_NULL;
-  progress_xstart = xstart + 2;
-  progress_ystart = ystart + 2;
-  {
-    String_t s;
-    String t[63+1];
+    snprintf (u, sizeof (u), " ESC %c%c STOP ", charmap.bd_light_horiz, charmap.black_right_triangle); // " ESC ─► STOP "
+    StrToString ((String *)&t, u, sizeof (t) - 1);
 
-    s = iCASE (StrToString (t, "Loading data from bank file...", sizeof (t) - 1));
-    ShowCStr (screen_ptr, xstart + 2, ystart + 1, (String *)&s,
-              dialog_background + dialog_text,
-              dialog_background + dialog_hi_text);
+    progress_window_init (&progress_win, 44, 4, (String *)&s, (String *)&t);
   }
-  show_progress (0);
-  w_opened = true;
+  progress = &progress_win.callback;
+
+  snprintf (progress->msg, sizeof (progress->msg), "%s", "Loading data from bank file...");
+  progress->value = 100 + 100; // +100=100% loaded, +100=100% processed
+  progress->update (progress, 0, -1);
 
   if ((sbi_bank = load_sbi_bank (fname, error)) == NULL) goto _exit;
 
-  show_progress2 (100, 1);
+  snprintf (progress->msg, sizeof (progress->msg), "%s", "Processing data from bank file...");
+  progress->update (progress, 100, 1);
 
   if ((queue = malloc ((IBK_HEADER_LINES + SBI_BANK_CAPACITY) * sizeof ((*queue)[0]))) == NULL) goto _err_malloc;
 
@@ -96,7 +74,7 @@ int8_t ibk_file_loader (temp_instrument_t *dst, const String *fname, char **erro
         if (fkey == kESC) break;
       }
 
-      show_progress2 (100 + 100 * (index + 1) / SBI_BANK_CAPACITY, 1);
+      progress->update (progress, 100 + 100 * (index + 1) / SBI_BANK_CAPACITY, 1);
     }
 
     // item string
@@ -107,15 +85,14 @@ int8_t ibk_file_loader (temp_instrument_t *dst, const String *fname, char **erro
   }
   // `index' is now a total number of instruments including unavailable (<= SBI_BANK_CAPACITY)
 
-  show_progress2 (100 + 100, 1);
+  progress->update (progress, 100 + 100, 1);
   // delay for awhile to show progress bar
 #if GO32
   Pascal_Delay (500);
 #else // !GO32
   SDL_Delay (200);
 #endif // !GO32
-  ibk_file_loader_restore (xstart, ystart);
-  w_opened = false;
+  progress_window_close (&progress_win);
 
   if (sbi_bank->count == 0) goto _err_empty;
 
@@ -177,7 +154,7 @@ int8_t ibk_file_loader (temp_instrument_t *dst, const String *fname, char **erro
     result = 1;
 
 _exit:
-  if (w_opened) ibk_file_loader_restore (xstart, ystart);
+  if (progress_win.opened) progress_window_close (&progress_win);
   if (sbi_bank != NULL) sbi_bank_free (sbi_bank);
   if (queue != NULL) free (queue);
 

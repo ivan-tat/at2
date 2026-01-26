@@ -20,11 +20,11 @@ void apply_instrument (uint8_t idx, temp_instrument_t *src);
 
 // A2I
 
-int8_t a2i_file_loader_alt (temp_instrument_t *dst, const String *fname, bool swap_ins, char **error);
+int8_t a2i_file_loader_alt (temp_instrument_t *dst, const String *fname, bool swap_ins, progress_callback_t *progress, char **error);
 
 // A2F
 
-int8_t a2f_file_loader_alt (temp_instrument_t *dst, const String *fname, bool swap_ins, char **error);
+int8_t a2f_file_loader_alt (temp_instrument_t *dst, const String *fname, bool swap_ins, progress_callback_t *progress, char **error);
 
 // CIF
 

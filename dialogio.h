@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -10,10 +10,39 @@
 #define DIALOGIO_H
 
 #include "pascal.h"
+#include "adt2unit.h"
 #include "txtscrio.h"
 
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 #pragma pack(push, 1)
+
+/*** Progress ***/
+
+extern uint8_t  progress_xstart, progress_ystart;
+extern uint8_t  progress_num_steps;
+extern uint8_t  progress_step;
+extern uint32_t progress_value;
+extern uint8_t  progress_old_value, progress_new_value;
+
+void show_progress (int32_t value);
+void show_progress2 (int32_t value, int32_t refresh_dif);
+
+typedef struct
+{
+  progress_callback_t callback;
+  bool opened;
+  uint8_t xstart, ystart;
+  uint8_t hsize, vsize;
+  char last_msg[63+1];
+  uint8_t last_num_steps;
+  uint8_t last_step;
+  uint32_t last_value;
+  uint8_t last_old_value;
+} progress_window_t;
+
+void progress_window_init (progress_window_t *self, uint8_t hsize, uint8_t vsize,
+                           const String *title, const String *hint);
+void progress_window_close (progress_window_t *self);
 
 /*** Dialog ***/
 

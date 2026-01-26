@@ -37,6 +37,34 @@ uses
   StringIO,
   ParserIO;
 
+var
+  progress_xstart: Byte; cvar; external;
+  progress_ystart: Byte; cvar; external;
+  progress_num_steps: Byte; cvar; external;
+  progress_step: Byte; cvar; external;
+  progress_value: Dword; cvar; external;
+  progress_old_value: Byte; cvar; external;
+  progress_new_value: Byte; cvar; external;
+
+procedure show_progress (value: Longint); cdecl; external;
+procedure show_progress2 (value, refresh_dif: Longint); cdecl; external;
+
+type
+  progress_window_p = ^progress_window_t;
+  progress_window_t = record
+    callback: progress_callback_t;
+    opened: Boolean;
+    xstart, ystart: Byte;
+    hsize, vsize: Byte;
+    old_msg: String;
+    old_num_steps: Byte;
+    old_step: Byte;
+    old_value: Longword;
+  end;
+
+procedure progress_window_init (self: progress_window_p; hsize, vsize: Byte; title, hint: String); cdecl; external;
+procedure progress_window_close (self: progress_window_p); cdecl; external;
+
 type
   tDIALOG_SETTING = Record
                       frame_type:     String;
