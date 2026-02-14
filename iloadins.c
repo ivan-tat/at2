@@ -8,17 +8,6 @@
 
 ///--- used in many loaders ---///
 
-typedef struct
-{
-  const void *buf;
-  size_t size;
-  const void *curptr, *endptr;
-} mem_stream_t;
-
-#include "iloadins/set_mem_stream.c" // static
-#include "iloadins/read_bytes.c" // static
-#include "iloadins/read_string.c" // static
-
 #include "iloadins/import_standard_instrument_alt.c"
 #include "iloadins/import_hsc_instrument_alt.c"
 #include "iloadins/set_default_ins_name_if_needed.c" // HINT: static

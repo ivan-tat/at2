@@ -13,6 +13,14 @@
 #include <stdint.h>
 #include "adt2unit.h"
 
+#pragma pack(push, 1)
+typedef struct
+{
+  bool ultra;     // ultra compression flag
+  uint32_t size;  // original (unpacked) size
+} LZH_block_info_t;
+#pragma pack(pop)
+
 // Compression algorithm: LZH
 // Algorithm developed by Haruhiko Okomura & Haruyasu Yoshizaki
 uint32_t LZH_compress (const void *source, void *dest, uint32_t size);

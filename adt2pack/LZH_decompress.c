@@ -268,23 +268,24 @@ static void DecodeBuffer (struct LZHDecoderState_t *ds, uint16_t count, uint8_t 
 uint32_t LZH_decompress (const void *source, void *dest, uint32_t size, progress_callback_t *progress)
 {
   uint32_t result = 0;
-  struct LZHDecoderState_t *ds;
+  uint16_t dic_size = 0;
+  struct LZHDecoderState_t *ds = NULL;
   uint8_t *ptr = NULL;
-  bool ultra_compression_flag;
+
+  if (size < sizeof (LZH_block_info_t)) goto _exit;
+
+  dic_size = ((LZH_block_info_t *)source)->ultra != 0 ? DIC_SIZE_MAX : DIC_SIZE_DEF;
 
   if ((ds = malloc (sizeof (struct LZHDecoderState_t))) == NULL) goto _exit;
-  ds->DIC_SIZE = DIC_SIZE_DEF;
+  if ((ptr = malloc (dic_size)) == NULL) goto _exit;
+
+  ds->DIC_SIZE = dic_size;
   ds->input_buffer = source;
-  ds->input_buffer_idx = 0;
-  ultra_compression_flag = ds->input_buffer[ds->input_buffer_idx++] != 0;
-  ds->DIC_SIZE = ultra_compression_flag ? DIC_SIZE_MAX : DIC_SIZE_DEF;
+  ds->input_buffer_idx = sizeof (LZH_block_info_t);
   ds->input_buffer_size = size;
   ds->output_buffer = dest;
   ds->output_buffer_idx = 0;
-  memmove (&ds->size_unpacked, &ds->input_buffer[ds->input_buffer_idx], sizeof (ds->size_unpacked));
-  ds->input_buffer_idx += sizeof (ds->size_unpacked);
-  size = ds->size_unpacked;
-  if ((ptr = malloc (ds->DIC_SIZE)) == NULL) goto _exit;
+  ds->size_unpacked = ((LZH_block_info_t *)source)->size;
   ds->bit_buf = 0;
   ds->sbit_buf = 0;
   ds->bit_count = 0;
@@ -293,9 +294,9 @@ uint32_t LZH_decompress (const void *source, void *dest, uint32_t size, progress
   ds->dec_counter = 0;
   ds->progress = progress;
 
-  if (progress != NULL) progress->value = size;
+  if (progress != NULL) progress->value = ds->size_unpacked;
 
-  while (size > 0)
+  for (size = ds->size_unpacked; size > 0;)
   {
     uint32_t part = size > ds->DIC_SIZE ? ds->DIC_SIZE : size;
     DecodeBuffer (ds, part, ptr);

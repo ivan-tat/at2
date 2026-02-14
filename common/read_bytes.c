@@ -6,7 +6,7 @@
 
 // size: 1..inf
 // Returns `false' on success, `true' on error.
-static bool read_bytes (void *dst, size_t size, mem_stream_t *stream)
+bool read_bytes (void *dst, size_t size, mem_stream_t *stream)
 {
   bool result = true; // `false' on success, `true' on error
 

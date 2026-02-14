@@ -6,7 +6,7 @@
 
 // size: 1..inf
 // Returns `false' on success, `true' on error.
-static bool read_string (String *dst, size_t size, mem_stream_t *stream)
+bool read_string (String *dst, size_t size, mem_stream_t *stream)
 {
   bool result = true; // `false' on success, `true' on error
   uint_least8_t len;

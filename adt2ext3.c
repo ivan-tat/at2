@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 #include <stdlib.h>
+#include "common.h"
 #include "debug.h"
 #include "depackio.h"
 #include "adt2pack.h"

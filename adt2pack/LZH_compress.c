@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // Encoder state
@@ -789,6 +789,11 @@ const uint32_t struct_TLZHEncoderState_size = sizeof (struct LZHEncoderState_t);
   int16_t last_match_len, last_match_pos;
 
   if ((es = malloc (sizeof (struct LZHEncoderState_t))) == NULL) goto _exit;
+
+  // put block info
+  ((LZH_block_info_t *)dest)->ultra = ultra ? 1 : 0; // put compression type flag
+  ((LZH_block_info_t *)dest)->size = size;
+
   if (ultra)
   {
     es->WIN_SIZE = WIN_SIZE_MAX;
@@ -837,12 +842,8 @@ const uint32_t struct_TLZHEncoderState_size = sizeof (struct LZHEncoderState_t);
   es->input_buffer = source;
   es->output_buffer = dest;
   es->input_buffer_idx = 0;
-  es->output_buffer_idx = 0;
+  es->output_buffer_idx = sizeof (LZH_block_info_t);
   es->input_buffer_size = size;
-
-  es->output_buffer[es->output_buffer_idx++] = ultra ? 1 : 0; // put compression type flag
-  memmove (&es->output_buffer[es->output_buffer_idx], &size, sizeof (size));
-  es->output_buffer_idx += sizeof (size);
 
   progress_old_value = UINT8_NULL;
   progress_value = size;

@@ -1,5 +1,5 @@
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2024 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2024-2026 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -46,5 +46,18 @@ void bit_set_range (uint8_t *s, uint32_t start, uint32_t end);
 void bit_clear_range (uint8_t *s, uint32_t start, uint32_t end);
 
 void *memsetw (void *s, int c, size_t n);
+
+// memory stream
+
+typedef struct
+{
+  const void *buf;
+  size_t size;
+  const void *curptr, *endptr;
+} mem_stream_t;
+
+void set_mem_stream (mem_stream_t *dst, const void *buf, size_t size);
+bool read_bytes (void *dst, size_t size, mem_stream_t *stream);
+bool read_string (String *dst, size_t size, mem_stream_t *stream);
 
 #endif // !defined(COMMON_H)

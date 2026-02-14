@@ -1,5 +1,5 @@
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2024 Ivan Tatarinov
+// SPDX-FileCopyrightText: 2024-2026 Ivan Tatarinov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
@@ -25,3 +25,7 @@
 #include "common/bit_clear_range.c"
 
 #include "common/memsetw.c"
+
+#include "common/set_mem_stream.c"
+#include "common/read_bytes.c"
+#include "common/read_string.c"

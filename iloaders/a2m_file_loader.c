@@ -4,36 +4,72 @@
 // SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#define A2M_ID_SIZE 10
+
+static const char GCC_ATTRIBUTE((nonstring)) a2m_id[A2M_ID_SIZE] = { "_A2module_" };
+
 #pragma pack(push, 1)
 typedef struct
 {
-  char ident[10];
-  int32_t crc32;
-  uint8_t ffver;
-  uint8_t patts;
-  uint16_t b0len;
-  uint16_t b1len;
-  uint16_t b2len;
-  uint16_t b3len;
-  uint16_t b4len;
-  uint16_t b5len;
-  uint16_t b6len;
-  uint16_t b7len;
-  uint16_t b8len;
-} tOLD_A2M_HEADER;
-
-typedef struct
-{
-  char ident[10];
-  int32_t crc32;
-  uint8_t ffver;
-  uint8_t patts;
-  int32_t b0len;
-  int32_t b1len[16];
+  char id[A2M_ID_SIZE]; // ID string
+  uint32_t crc32; // 32-bit cyclic redundancy check value
+  uint8_t ffver;  // file format version
+  uint8_t patts;  // number of patterns
 } tA2M_HEADER;
+
+typedef struct  // file format version 9..14
+{
+  uint32_t blen[17];  // length of data blocks: 0=songdata, 1..16=patterns (x8)
+} tA2M_HEADER_9;
 #pragma pack(pop)
 
-#define OLD_A2M_HEADER_SIZE 26
+static bool is_a2m_packed (uint8_t version)
+{
+  return (version >= 1) && (version != 4) && (version != 8) && (version <= 14);
+}
+
+static int unpack_a2m_block (void *dst, const void *src, uint32_t src_size,
+                             uint8_t version, progress_callback_t *progress)
+{
+  int status = 0;
+  uint32_t dst_size, unpacked_size;
+
+  switch (version)
+  {
+    case 1:
+    case 5:
+      SIXPACK_decompress (src, dst, src_size);
+      break;
+    case 2:
+    case 6:
+      LZW_decompress (src, dst);
+      break;
+    case 3:
+    case 7:
+      LZSS_decompress (src, dst, src_size);
+      break;
+    case 4:
+    case 8:
+      memcpy (dst, src, src_size);
+      break;
+    case 9:
+    case 10:
+    case 11:
+      APACK_decompress (src, dst);
+      break;
+    case 12:
+    case 13:
+    case 14:
+      dst_size = ((LZH_block_info_t *)src)->size;
+      unpacked_size = LZH_decompress (src, dst, src_size, progress);
+      if (unpacked_size != dst_size) status = -1;
+      break;
+    default:
+      status = -1;
+      break;
+  }
+  return status;
+}
 
 #if !ADT2PLAY
 
@@ -65,6 +101,16 @@ static void update_patterns_names (tFIXED_SONGDATA *song)
 
 #endif // !ADT2PLAY
 
+static void next_a2m_step (progress_callback_t *progress)
+{
+  if (progress != NULL)
+  {
+    progress->step++;
+    progress->value = 1;
+    progress->update (progress, 1, -1);
+  }
+}
+
 // In:
 //   * `progress', `state' and `error' may be NULL.
 //
@@ -78,7 +124,7 @@ static void update_patterns_names (tFIXED_SONGDATA *song)
 //     -1: open/read error.
 //     -2: unknown file format.
 //     -3: unsupported file format version.
-//     -4: checksum mismatch.
+//     -4: format is supported.
 //   * `state' (if set):
 //     0: song is untouched.
 //     1: song is cleared.
@@ -93,288 +139,211 @@ int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uin
   char *result_error = NULL;
   FILE *f = NULL;
   tA2M_HEADER header;
-  tOLD_A2M_HEADER header2;
-  int32_t crc;
-  uint16_t xlen[7];
+  uint32_t crc = CRC32_INITVAL;
+  int pat_blocks;
   char fname[255+1];
-
-  static const char GCC_ATTRIBUTE((nonstring)) id[10] = { "_A2module_" };
 
   DBG_ENTER ("a2m_file_loader");
 
   StringToStr (fname, _fname, sizeof (fname) - 1);
   if ((f = fopen (fname, "rb")) == NULL) goto _err_fopen;
 
-  snprintf (progress->msg, sizeof (progress->msg), "%s", "Decompressing module data...");
-  progress->update (progress, -1, -1);
-
-  memset (buf1, 0, sizeof (buf1));
+  result = -2;
 
   if (fread (&header, sizeof (header), 1, f) == 0) goto _err_fread;
 
-  if (memcmp (header.ident, id, sizeof (header.ident)) != 0) goto _err_format;
+  if (memcmp (header.id, a2m_id, sizeof (header.id)) != 0) goto _err_format;
 
+  result = -3;
+
+  if ((header.ffver < 1) || (header.ffver > 14)) goto _err_version;
+
+  result = -4;
+
+  if (progress != NULL)
+  {
+    snprintf (progress->msg, sizeof (progress->msg), "%s",
+      is_a2m_packed (header.ffver) ? "Decompressing module data..."
+                                   : "Reading module data...");
+    progress->update (progress, -1, -1);
+  }
+
+  memset (buf1, 0, sizeof (buf1));
   init_old_songdata ();
 
-  if (header.ffver == 0) goto _err_version;
-  else if (header.ffver <= 4)
+  if (header.ffver <= 4)
   {
+#pragma pack(push, 1)
+    struct  // file format version 1..4
+    {
+      uint16_t blen[5]; // length of data blocks: 0=songdata, 1..4=patterns (x16)
+    } header1;
+#pragma pack(pop)
+
     memset (adsr_carrier, false, sizeof (adsr_carrier));
 
-    if (fseek (f, 0, SEEK_SET) != 0) goto _err_fread;
-    if (fread (&header2, sizeof (header2), 1, f) == 0) goto _err_fread;
+    if (fread (&header1, sizeof (header1), 1, f) == 0) goto _err_fread;
 
-    if (memcmp (header2.ident, id, sizeof (header2.ident)) != 0) goto _err_format;
+    pat_blocks = ((header.patts > 64 ? 64 : header.patts) + 15) / 16; // 0..4
+    if (progress != NULL) progress->num_steps = 2 + pat_blocks;
 
-    if (fseek (f, OLD_A2M_HEADER_SIZE, SEEK_SET) != 0) goto _err_fread;
-    if (fread (buf1, header2.b0len, 1, f) == 0) goto _err_fread;
-    crc = Update32 (buf1, header2.b0len, CRC32_INITVAL);
-    if (fread (buf1, header2.b1len, 1, f) == 0) goto _err_fread;
-    crc = Update32 (buf1, header2.b1len, crc);
-    xlen[0] = header2.b2len;
-    xlen[1] = header2.b3len;
-    xlen[2] = header2.b4len;
-    for (int i = 0; i < 3; i++)
-      if (i < (header2.patts - 1) / 16)
+    // checksum
+    for (int i = 0; i < 1 + pat_blocks; i++)
+      if (header1.blen[i] != 0)
       {
-        if (fread (buf1, xlen[i], 1, f) == 0) goto _err_fread;
-        crc = Update32 (buf1, xlen[i], crc);
+        if (fread (buf1, header1.blen[i], 1, f) == 0) goto _err_fread;
+        crc = Update32 (buf1, header1.blen[i], crc);
       }
-    crc = Update32 (&header2.b0len, 2, crc);
-    crc = Update32 (&header2.b1len, 2, crc);
-    for (int i = 0; i < 3; i++) crc = Update32 (&xlen[i], 2, crc);
-    if (crc != header2.crc32) goto _err_checksum;
+    crc = Update32 (header1.blen, sizeof (header1.blen), crc);
+    if (crc != header.crc32) goto _err_checksum;
+    next_a2m_step (progress);
 
     init_songdata ();
     song->patt_len = 64;
     if (adjust_tracks || song->nm_tracks < 9) song->nm_tracks = 9;
     result_state = 1;
 
-    if (fseek (f, OLD_A2M_HEADER_SIZE, SEEK_SET) != 0) goto _err_fread;
-    if (fread (buf1, header2.b0len, 1, f) == 0) goto _err_fread;
+    if (fseek (f, sizeof (header) + sizeof (header1), SEEK_SET) != 0) goto _err_fread;
 
-    switch (header2.ffver)
+    // songdata
+    if (header1.blen[0] != 0)
     {
-      case 1: SIXPACK_decompress (buf1, old_song, header2.b0len); break;
-      case 2: LZW_decompress (buf1, old_song); break;
-      case 3: LZSS_decompress (buf1, old_song, header2.b0len); break;
-      default:
-      case 4: memcpy (old_song, buf1, header2.b0len); break;
+      if (fread (buf1, header1.blen[0], 1, f) == 0) goto _err_fread;
+      if (unpack_a2m_block (old_song, buf1, header1.blen[0], header.ffver, progress) != 0) goto _err_unpack;
+      for (int i = 0; i < 250; i++) old_song->instr_data[i].panning = 0;
     }
+    next_a2m_step (progress);
 
-    for (int i = 0; i < 250; i++) old_song->instr_data[i].panning = 0;
-
-    if (fread (buf1, header2.b1len, 1, f) == 0) goto _err_fread;
-
-    switch (header2.ffver)
+    // patterns (x16)
+    for (int i = 0; i < pat_blocks; i++)
     {
-      case 1: SIXPACK_decompress (buf1, old_hash_buffer, header2.b1len); break;
-      case 2: LZW_decompress (buf1, old_hash_buffer); break;
-      case 3: LZSS_decompress (buf1, old_hash_buffer, header2.b1len); break;
-      default:
-      case 4: memcpy (old_hash_buffer, buf1, header2.b1len); break;
-    }
-
-    import_old_a2m_patterns1 (0, 16);
-    result_state = 2;
-
-    for (int i = 0; i < 3; i++)
-      if (i < (header2.patts - 1) / 16)
+      if (header1.blen[1 + i] != 0)
       {
-        if (fread (buf1, xlen[i], 1, f) == 0) goto _err_fread;
-
-        switch (header2.ffver)
-        {
-          case 1: SIXPACK_decompress (buf1, old_hash_buffer, xlen[i]); break;
-          case 2: LZW_decompress (buf1, old_hash_buffer); break;
-          case 3: LZSS_decompress (buf1, old_hash_buffer, xlen[i]); break;
-          default:
-          case 4: memcpy (old_hash_buffer, buf1, xlen[i]); break;
-        }
-
-        import_old_a2m_patterns1 (i + 1, 16);
+        if (fread (buf1, header1.blen[1 + i], 1, f) == 0) goto _err_fread;
+        memset (old_hash_buffer, 0, sizeof (old_hash_buffer));
+        if (unpack_a2m_block (old_hash_buffer, buf1, header1.blen[1 + i], header.ffver, progress) != 0) goto _err_unpack;
+        import_old_a2m_patterns1 (i, 16);
+        result_state = 2;
       }
+      next_a2m_step (progress);
+    }
 
-    replace_old_adsr (header2.patts);
+    replace_old_adsr (header.patts);
     import_old_songdata (old_song);
   }
   else if (header.ffver <= 8)
   {
-    if (fseek (f, 0, SEEK_SET) != 0) goto _err_fread;
-    if (fread (&header2, sizeof (header2), 1, f) == 0) goto _err_fread;
+#pragma pack(push, 1)
+    struct  // file format version 5..8
+    {
+      uint16_t blen[9]; // length of data blocks: 0=songdata, 1..8=patterns (x8)
+    } header5;
+#pragma pack(pop)
 
-    if (memcmp (header2.ident, id, sizeof (header2.ident)) != 0) goto _err_format;
+    if (fread (&header5, sizeof (header5), 1, f) == 0) goto _err_fread;
 
-    if (fread (buf1, header2.b0len, 1, f) == 0) goto _err_fread;
-    crc = Update32 (buf1, header2.b0len, CRC32_INITVAL);
-    if (fread (buf1, header2.b1len, 1, f) == 0) goto _err_fread;
-    crc = Update32 (buf1, header2.b1len, crc);
-    xlen[0] = header2.b2len;
-    xlen[1] = header2.b3len;
-    xlen[2] = header2.b4len;
-    xlen[3] = header2.b5len;
-    xlen[4] = header2.b6len;
-    xlen[5] = header2.b7len;
-    xlen[6] = header2.b8len;
-    for (int i = 0; i < 7; i++)
-      if (i < (header2.patts - 1) / 8)
+    pat_blocks = ((header.patts > 64 ? 64 : header.patts) + 7) / 8; // 0..8
+    if (progress != NULL) progress->num_steps = 2 + pat_blocks;
+
+    // checksum
+    for (int i = 0; i < 1 + pat_blocks; i++)
+      if (header5.blen[i] != 0)
       {
-        if (fread (buf1, xlen[i], 1, f) == 0) goto _err_fread;
-        crc = Update32 (buf1, xlen[i], crc);
+        if (fread (buf1, header5.blen[i], 1, f) == 0) goto _err_fread;
+        crc = Update32 (buf1, header5.blen[i], crc);
       }
-    crc = Update32 (&header2.b0len, 2, crc);
-    crc = Update32 (&header2.b1len, 2, crc);
-    for (int i = 0; i < 7; i++) crc = Update32 (&xlen[i], 2, crc);
-    if (crc != header2.crc32) goto _err_checksum;
+    crc = Update32 (header5.blen, sizeof (header5.blen), crc);
+    if (crc != header.crc32) goto _err_checksum;
+    next_a2m_step (progress);
 
     init_songdata ();
     song->patt_len = 64;
     if (adjust_tracks || (song->nm_tracks < 18)) song->nm_tracks = 18;
     result_state = 1;
 
-    if (fseek (f, sizeof (header2), SEEK_SET) != 0) goto _err_fread;
-    if (fread (buf1, header2.b0len, 1, f) == 0) goto _err_fread;
+    if (fseek (f, sizeof (header) + sizeof (header5), SEEK_SET) != 0) goto _err_fread;
 
-    switch (header2.ffver)
+    // songdata
+    if (header5.blen[0] != 0)
     {
-      case 5: SIXPACK_decompress (buf1, old_song, header2.b0len); break;
-      case 6: LZW_decompress (buf1, old_song); break;
-      case 7: LZSS_decompress (buf1, old_song, header2.b0len); break;
-      default:
-      case 8: memcpy (old_song, buf1, header2.b0len); break;
+      if (fread (buf1, header5.blen[0], 1, f) == 0) goto _err_fread;
+      if (unpack_a2m_block (old_song, buf1, header5.blen[0], header.ffver, progress) != 0) goto _err_unpack;
     }
+    next_a2m_step (progress);
 
-    if (fread (buf1, header2.b1len, 1, f) == 0) goto _err_fread;
-
-    switch (header2.ffver)
+    // patterns (x8)
+    for (int i = 0; i < pat_blocks; i++)
     {
-      case 5: SIXPACK_decompress (buf1, hash_buffer, header2.b1len); break;
-      case 6: LZW_decompress (buf1, hash_buffer); break;
-      case 7: LZSS_decompress (buf1, hash_buffer, header2.b1len); break;
-      default:
-      case 8: memcpy (hash_buffer, buf1, header2.b1len); break;
-    }
-
-    import_old_a2m_patterns2 (0, 8);
-    result_state = 2;
-
-    for (int i = 0; i < 7; i++)
-      if (i < (header2.patts-1) / 8)
+      if (header5.blen[1 + i] != 0)
       {
-        if (fread (buf1, xlen[i], 1, f) == 0) goto _err_fread;
-
-        switch (header2.ffver)
-        {
-          case 5: SIXPACK_decompress (buf1, hash_buffer, header2.b2len); break;
-          case 6: LZW_decompress (buf1, hash_buffer); break;
-          case 7: LZSS_decompress (buf1, hash_buffer, header2.b2len); break;
-          default:
-          case 8: memcpy (hash_buffer, buf1, header2.b2len); break;
-        }
-
-        import_old_a2m_patterns2 (i + 1, 8);
+        if (fread (buf1, header5.blen[1 + i], 1, f) == 0) goto _err_fread;
+        if (unpack_a2m_block (hash_buffer, buf1, header5.blen[1 + i], header.ffver, progress) != 0) goto _err_unpack;
+        import_old_a2m_patterns2 (i, 8);
+        result_state = 2;
       }
+      next_a2m_step (progress);
+    }
 
     import_old_songdata (old_song);
   }
-  else if (header.ffver <= 11)
+  else // header.ffver <= 14
   {
-    if (fread (buf1, header.b0len, 1, f) == 0) goto _err_fread;
-    crc = Update32 (buf1, header.b0len, CRC32_INITVAL);
-    if (fread (buf1, header.b1len[0], 1, f) == 0) goto _err_fread;
-    crc = Update32 (buf1, header.b1len[0], crc);
-    for (int i = 1; i < 16; i++)
-      if (i - 1 < (header.patts - 1) / 8)
+    tA2M_HEADER_9 header9;
+
+    if (fread (&header9, sizeof (header9), 1, f) == 0) goto _err_fread;
+
+    pat_blocks = ((header.patts > 128 ? 128 : header.patts) + 7) / 8; // 0..16
+    if (progress != NULL) progress->num_steps = 2 + pat_blocks;
+
+    // checksum
+    for (int i = 0; i < 1 + pat_blocks; i++)
+      if (header9.blen[i] != 0)
       {
-        if (fread (buf1, header.b1len[i], 1, f) == 0) goto _err_fread;
-        crc = Update32 (buf1, header.b1len[i], crc);
+        if (fread (buf1, header9.blen[i], 1, f) == 0) goto _err_fread;
+        crc = Update32 (buf1, header9.blen[i], crc);
       }
-    crc = Update32 (&header.b0len, 2, crc);
-    for (int i = 0; i < 16; i++) crc = Update32 (&header.b1len[i], 2, crc);
+    for (unsigned i = 0; i < sizeof (header9.blen) / sizeof (header9.blen[0]); i++)
+      crc = Update32 (&header9.blen[i], /*sizeof (header9.blen[0])*/ 2, crc); // it's not a bug - it's a feature
     if (crc != header.crc32) goto _err_checksum;
+    next_a2m_step (progress);
 
     init_songdata ();
     result_state = 1;
 
-    if (fseek (f, sizeof (header), SEEK_SET) != 0) goto _err_fread;
-    if (fread (buf1, header.b0len, 1, f) == 0) goto _err_fread;
+    if (fseek (f, sizeof (header) + sizeof (header9), SEEK_SET) != 0) goto _err_fread;
 
-    APACK_decompress (buf1, song);
-    result_state = 2;
+    // songdata
+    if (header9.blen[0] != 0)
+    {
+      if (fread (buf1, header9.blen[0], 1, f) == 0) goto _err_fread;
+      if (unpack_a2m_block (song, buf1, header9.blen[0], header.ffver, progress) != 0) goto _err_unpack;
+      result_state = 2;
+    }
+    next_a2m_step (progress);
 
-    if (fread (buf1, header.b1len[0], 1, f) == 0) goto _err_fread;
-
-    if (header.ffver == 9) import_old_flags ();
-
-#if !ADT2PLAY
-    update_instruments_names (song);
-    if (header.ffver == 11) update_patterns_names (song);
-#endif // !ADT2PLAY
-
-    APACK_decompress (buf1, &((*pattdata)[0]));
-
-    for (int i = 1; i < 16; i++)
-      if (i - 1 < (header.patts - 1) / 8)
+    // patterns (x8)
+    for (int i = 0; i < pat_blocks; i++)
+    {
+      if (header9.blen[1 + i] != 0)
       {
-        if (fread (buf1, header.b1len[i], 1, f) == 0) goto _err_fread;
+        if (fread (buf1, header9.blen[1 + i], 1, f) == 0) goto _err_fread;
 
-        if (i * 8 + 8 <= max_patterns)
-          APACK_decompress (buf1, &((*pattdata)[i]));
-        else
-          limit_exceeded = true;
-      }
-  }
-  else if (header.ffver <= 14)
-  {
-    if (fread (buf1, header.b0len, 1, f) == 0) goto _err_fread;
-    crc = Update32 (buf1, header.b0len, CRC32_INITVAL);
-    if (fread (buf1, header.b1len[0], 1, f) == 0) goto _err_fread;
-    crc = Update32 (buf1, header.b1len[0], crc);
-    for (int i = 1; i < 16; i++)
-      if (i - 1 < (header.patts - 1) / 8)
-      {
-        if (fread (buf1, header.b1len[i], 1, f) == 0) goto _err_fread;
-        crc = Update32 (buf1, header.b1len[i], crc);
-      }
-    crc = Update32 (&header.b0len, 2, crc);
-    for (int i = 0; i < 16; i++) crc = Update32 (&header.b1len[i], 2, crc);
-    if (crc != header.crc32) goto _err_checksum;
-
-    init_songdata ();
-    result_state = 1;
-
-    if (fseek (f, sizeof (header), SEEK_SET) != 0) goto _err_fread;
-    if (fread (buf1, header.b0len, 1, f) == 0) goto _err_fread;
-
-    if (progress != NULL) progress->num_steps = (header.patts - 1) / 8 + 2;
-    LZH_decompress (buf1, song, header.b0len, progress);
-    result_state = 2;
-    if (progress != NULL) progress->step++;
-
-    if (fread (buf1, header.b1len[0], 1, f) == 0) goto _err_fread;
-
-#if !ADT2PLAY
-    update_instruments_names (song);
-    update_patterns_names (song);
-#endif // !ADT2PLAY
-
-    LZH_decompress (buf1, (*pattdata)[0], header.b1len[0], progress);
-    if (progress != NULL) progress->step++;
-
-    for (int i = 1; i < 16; i++)
-      if (i - 1 < (header.patts - 1) / 8)
-      {
-        if (fread (buf1, header.b1len[i], 1, f) == 0) goto _err_fread;
-
-        if (i * 8 + 8 <= max_patterns)
+        if ((i + 1) * 8 <= max_patterns)
         {
-          LZH_decompress (buf1, (*pattdata)[i], header.b1len[i], progress);
-          if (progress != NULL) progress->step++;
+          if (unpack_a2m_block ((*pattdata)[i], buf1, header9.blen[1 + i], header.ffver, progress) != 0) goto _err_unpack;
+          result_state = 2;
         }
         else limit_exceeded = true;
       }
+      next_a2m_step (progress);
+    }
+
+    if (header.ffver == 9) import_old_flags ();
+#if !ADT2PLAY
+    update_instruments_names (song);
+    if (header.ffver >= 11) update_patterns_names (song);
+#endif // !ADT2PLAY
   }
-  else goto _err_version;
 
   speed = song->speed;
   tempo = song->tempo;
@@ -407,16 +376,17 @@ _err_fread:
 
 _err_format:
   result_error = "Unknown file format";
-  result = -2;
   goto _exit;
 
 _err_version:
   result_error = "Unsupported file format version";
-  result = -3;
   goto _exit;
 
 _err_checksum:
   result_error = "Checksum mismatch - file corrupted";
-  result = -4;
+  goto _exit;
+
+_err_unpack:
+  result_error = "Failed to unpack input data";
   goto _exit;
 }

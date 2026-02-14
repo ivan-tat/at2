@@ -5471,6 +5471,8 @@ const
   last_file: array[1..4] of String[FILENAME_SIZE] = ('FNAME:EXT','FNAME:EXT',
                                                      'FNAME:EXT','FNAME:EXT');
 
+procedure adjust_macro_speedup_with_notice (song: pFIXED_SONGDATA; loader: String); cdecl; external;
+
 function FILE_open(masks: String; loadBankPossible: Boolean): Byte;
 
 var
@@ -5559,21 +5561,19 @@ _jmp1:
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' A2M Loader '), 1)
     else
     begin
-      new_macro_speedup := calc_max_speedup (songdata.tempo);
-      if (songdata.macro_speedup > new_macro_speedup) then
-      begin
-        Dialog (iCASE ('Due to system limitations, ~macro speedup~ value is ~changed~$' +
-                'Slowdown: ~x' + Num2str (songdata.macro_speedup, 10) + ' -> x' + Num2str (new_macro_speedup, 10) + '~$'),
-                iCASE ('~O~Kay$'), iCASE (' A2M Loader '), 1);
-        songdata.macro_speedup := new_macro_speedup;
-      end;
+      adjust_macro_speedup_with_notice (@songdata, ' A2M Loader ');
       load_flag := 1;
     end;
   end else If (Lower(ExtOnly(fname)) = 'a2t') then
   begin
-    progress^.msg := 'Decompressing tiny module data...';
-    progress^.update (progress, -1, -1);
-    a2t_file_loader (progress);
+    loader_status := a2t_file_loader (songdata_source, progress, state, error);
+    if (loader_status < 0) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' A2T Loader '), 1)
+    else
+    begin
+      adjust_macro_speedup_with_notice (@songdata, ' A2T Loader ');
+      load_flag := 1;
+    end;
   end;
   If (Lower(ExtOnly(fname)) = 'a2p') then a2p_file_loader (progress);
   If (Lower(ExtOnly(fname)) = 'amd') then amd_file_loader;
