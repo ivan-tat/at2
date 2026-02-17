@@ -5576,7 +5576,19 @@ _jmp1:
     end;
   end;
   If (Lower(ExtOnly(fname)) = 'a2p') then a2p_file_loader (progress);
-  If (Lower(ExtOnly(fname)) = 'amd') then amd_file_loader;
+  If (Lower(ExtOnly(fname)) = 'amd') or (Lower(ExtOnly(fname)) = 'xms') then
+  begin
+    If (play_status <> isStopped) then
+    begin
+      fade_out_playback (false);
+      stop_playing;
+    end;
+    loader_status := amd_file_loader (songdata_source, progress, state, error);
+    if (loader_status < 0) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' AMD/XMS Loader '), 1)
+    else
+      load_flag := 1;
+  end;
   If (Lower(ExtOnly(fname)) = 'cff') then cff_file_loader;
   If (Lower(ExtOnly(fname)) = 'dfm') then dfm_file_loader;
   If (Lower(ExtOnly(fname)) = 'fmk') then fmk_file_loader;
@@ -5586,7 +5598,6 @@ _jmp1:
   If (Lower(ExtOnly(fname)) = 's3m') then s3m_file_loader;
   If (Lower(ExtOnly(fname)) = 'sat') then sat_file_loader;
   If (Lower(ExtOnly(fname)) = 'sa2') then sa2_file_loader;
-  If (Lower(ExtOnly(fname)) = 'xms') then amd_file_loader;
   If (Lower(ExtOnly(fname)) = 'a2i') then
   begin
     if (a2i_file_loader_alt (temp_instrument, instdata_source, false, progress, error) <> 0) then

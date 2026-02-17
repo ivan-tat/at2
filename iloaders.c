@@ -18,3 +18,10 @@
 #include "iloaders/adjust_macro_speedup_with_notice.c" // HINT: static
 #include "iloaders/a2m_file_loader.c"
 #include "iloaders/a2t_file_loader.c"
+
+static uint8_t dec2hex (uint8_t dec)
+{
+  return (dec / 10) * 16 + (dec % 10);
+}
+
+#include "iloaders/amd_file_loader.c"
