@@ -9,7 +9,7 @@
 // patt: 0..max_patterns-1
 // line: 0..255
 // chan: 1..20
-/*static*/ void import_old_a2m_event2 (uint8_t patt, uint8_t line, uint8_t chan, const tOLD_CHUNK old_chunk)
+static void import_old_a2m_event2 (uint8_t patt, uint8_t line, uint8_t chan, const tOLD_CHUNK old_chunk)
 {
   tCHUNK chunk;
 

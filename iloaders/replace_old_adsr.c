@@ -4,7 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-/*static*/ void replace_old_adsr (uint8_t patterns)
+static void replace_old_adsr (uint8_t patterns)
 {
   tFIXED_SONGDATA *song = &songdata;
   uint8_t order = 0;

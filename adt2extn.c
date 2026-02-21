@@ -25,7 +25,44 @@
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 #pragma pack(push, 1)
 
+uint8_t remap_mtype         = 1;
+uint8_t remap_ins1          = 1;
+uint8_t remap_ins2          = 1;
+uint8_t remap_selection     = 1;
+uint8_t rearrange_selection = 1;
+uint8_t replace_selection   = 1;
+bool    replace_prompt = false;
+struct pattern_event_replace_data_s replace_data =
+{
+  .event_to_find =
+  {
+    .note = { "\x03" "???" },
+    .inst = { "\x02" "??" },
+    .fx_1 = { "\x03" "???" },
+    .fx_2 = { "\x03" "???" }
+  },
+  .new_event =
+  {
+    .note = { "\x03" "???" },
+    .inst = { "\x02" "??" },
+    .fx_1 = { "\x03" "???" },
+    .fx_2 = { "\x03" "???" }
+  }
+};
+
 ExtKeyCode fkey;
+
+uint8_t tracing_block_pattern;
+uint8_t tracing_block_xend;
+uint8_t tracing_block_yend;
+
+uint8_t copypos1 = 1;
+uint8_t copypos2 = 1;
+uint8_t copypos3 = 1;
+uint8_t copypos4 = 1;
+uint8_t clearpos = 1;
+uint8_t pattern_list__page = 1;
+uint8_t pattern2use = UINT8_NULL;
 
 #include "adt2extn/_patts_marked.c"
 

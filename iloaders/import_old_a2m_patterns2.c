@@ -4,7 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-/*static*/ void import_old_a2m_patterns2 (uint8_t block, uint8_t count)
+static void import_old_a2m_patterns2 (uint8_t block, uint8_t count)
 {
   uint8_t patt_count = count <= 8 ? count : 8;
 

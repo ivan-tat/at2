@@ -20,14 +20,14 @@ unit AdT2extn;
 {$L adt2extn.o}
 interface
 
-const
-  remap_mtype:         Byte = 1;
-  remap_ins1:          Byte = 1;
-  remap_ins2:          Byte = 1;
-  remap_selection:     Byte = 1;
-  rearrange_selection: Byte = 1;
-  replace_selection:   Byte = 1;
-  replace_prompt:      Boolean = FALSE;
+var
+  remap_mtype: Byte; cvar; external;
+  remap_ins1: Byte; cvar; external;
+  remap_ins2: Byte; cvar; external;
+  remap_selection: Byte; cvar; external;
+  rearrange_selection: Byte; cvar; external;
+  replace_selection: Byte; cvar; external;
+  replace_prompt: Boolean; cvar; external;
   replace_data:        Record
                          event_to_find: Record
                                           note: String[3];
@@ -42,27 +42,21 @@ const
                                       fx_1: String[3];
                                       fx_2: String[3];
                                     end;
-                       end = (
+                       end; cvar; external;
 
-    event_to_find: (note: '???'; inst: '??'; fx_1: '???'; fx_2: '???');
-    new_event:     (note: '???'; inst: '??'; fx_1: '???'; fx_2: '???'));
-
-var
   fkey: Word; cvar; external;
 
-var
-  tracing_block_pattern,
-  tracing_block_xend,
-  tracing_block_yend: Byte;
+  tracing_block_pattern: Byte; cvar; external;
+  tracing_block_xend: Byte; cvar; external;
+  tracing_block_yend: Byte; cvar; external;
 
-const
-  copypos1: Byte = 1;
-  copypos2: Byte = 1;
-  copypos3: Byte = 1;
-  copypos4: Byte = 1;
-  clearpos: Byte = 1;
-  pattern_list__page: Byte = 1;
-  pattern2use: Byte = BYTE(NOT 0);
+  copypos1: Byte; cvar; external;
+  copypos2: Byte; cvar; external;
+  copypos3: Byte; cvar; external;
+  copypos4: Byte; cvar; external;
+  clearpos: Byte; cvar; external;
+  pattern_list__page: Byte; cvar; external;
+  pattern2use: Byte; cvar; external;
 
 type
   tTRANSPOSE_TYPE = (ttTransposeUp,ttTransposeDown,
@@ -5574,9 +5568,21 @@ _jmp1:
       adjust_macro_speedup_with_notice (@songdata, ' A2T Loader ');
       load_flag := 1;
     end;
-  end;
-  If (Lower(ExtOnly(fname)) = 'a2p') then a2p_file_loader (progress);
-  If (Lower(ExtOnly(fname)) = 'amd') or (Lower(ExtOnly(fname)) = 'xms') then
+  end else If (Lower(ExtOnly(fname)) = 'a2p') then
+  begin
+    if (play_status <> isStopped) then
+    begin
+      fade_out_playback (false);
+      stop_playing;
+    end;
+    loader_status := a2p_file_loader (songdata_source, progress, state, error);
+    if (loader_status < 0) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' A2P Loader '), 1)
+    else
+    begin
+      load_flag := 1;
+    end;
+  end else If (Lower(ExtOnly(fname)) = 'amd') or (Lower(ExtOnly(fname)) = 'xms') then
   begin
     If (play_status <> isStopped) then
     begin
