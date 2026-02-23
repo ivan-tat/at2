@@ -37,11 +37,13 @@ int8_t fin_file_loader_alt (temp_instrument_t *dst, const String *_fname, char *
   {
     String_t s, t;
 
-    StrToString ((String *)&s, buffer.iname, sizeof (buffer.iname)/* - 1*/);
+    s.len = sizeof (buffer.iname);
+    memcpy (s.str, buffer.iname, sizeof (buffer.iname));
     t = truncate_string ((String *)&s);
     if (t.len > 32)
     {
-      StrToString ((String *)&t, buffer.dname, sizeof (buffer.dname)/* - 1*/);
+      t.len = sizeof (buffer.dname);
+      memcpy (t.str, buffer.dname, sizeof (buffer.dname));
       s = truncate_string ((String *)&t);
       t = Lower ((String *)&s);
     }

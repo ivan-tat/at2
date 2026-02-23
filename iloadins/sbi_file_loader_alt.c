@@ -40,7 +40,8 @@ int8_t sbi_file_loader_alt (temp_instrument_t *dst, const String *_fname, char *
   {
     String_t s, t;
 
-    StrToString ((String *)&s, buffer.iname, sizeof (buffer.iname)/* - 1*/);
+    s.len = sizeof (buffer.iname);
+    memcpy (s.str, buffer.iname, sizeof (buffer.iname));
     t = truncate_string ((String *)&s);
     CopyString ((String *)&dst->ins1.name, (String *)&t, sizeof (dst->ins1.name) - 1);
   }

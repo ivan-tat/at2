@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 #include <stdlib.h>
+#include "go32/PIT/PIT_consts.h"
 #include "common.h"
 #include "debug.h"
 #include "depackio.h"

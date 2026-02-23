@@ -391,12 +391,11 @@ int8_t amd_file_loader (const String *_fname, progress_callback_t *progress, uin
   init_songdata ();
   song->patt_len = 64;
   if (adjust_tracks || (song->nm_tracks < 9)) song->nm_tracks = 9;
-  result_state = 1;
-
   tempo = 50;
   speed = 6;
   song->tempo = tempo;
   song->speed = speed;
+  result_state = 1;
 
   // import patterns order
   for (unsigned i = 0; i < header.length; i++)
@@ -412,7 +411,8 @@ int8_t amd_file_loader (const String *_fname, progress_callback_t *progress, uin
     String_t s, t;
 
     import_amd_instrument (&song->instr_data[i], header.instruments[i].data);
-    StrToString ((String *)&s, header.instruments[i].name, sizeof (header.instruments[0].name));
+    s.len = sizeof (header.instruments[0].name);
+    memcpy (s.str, header.instruments[i].name, sizeof (header.instruments[0].name));
     t = truncate_string ((String *)&s);
     s = Copy (song->instr_names[i], 1, 9);
     AppendString ((String *)&s, (String *)&t, sizeof (s) - 1);

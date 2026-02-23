@@ -6,7 +6,7 @@
 
 // This file is included in `adt2ext3.c'
 
-static bool adsr_carrier[9]; // used in "import_old_a2m_event1" and "replace_old_adsr" // HINT: (FPC) start index 1
+static bool adsr_carrier[9]; // used in "import_old_a2m_event1" and "replace_old_adsr"
 
 #include "iloaders/import_old_a2m_event1.c" // static
 #include "iloaders/replace_old_adsr.c" // static
@@ -28,3 +28,4 @@ static uint8_t dec2hex (uint8_t dec)
 }
 
 #include "iloaders/amd_file_loader.c"
+#include "iloaders/cff_file_loader.c"

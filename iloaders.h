@@ -17,5 +17,6 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
 int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 #endif // !ADT2PLAY
 int8_t amd_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
+int8_t cff_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 
 #endif // !DEFINED(ILOADERS_H)
