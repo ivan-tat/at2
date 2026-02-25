@@ -32,7 +32,7 @@ function a2p_file_loader (_fname: String; progress: progress_callback_p; var sta
 {$ENDIF}
 function amd_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function cff_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-procedure dfm_file_loader;
+function dfm_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 procedure fmk_file_loader;
 procedure hsc_file_loader;
 procedure mtk_file_loader;

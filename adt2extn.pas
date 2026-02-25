@@ -5606,8 +5606,19 @@ _jmp1:
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' CFF Loader '), 1)
     else
       load_flag := 1;
+  end else If (Lower(ExtOnly(fname)) = 'dfm') then
+  begin
+    If (play_status <> isStopped) then
+    begin
+      fade_out_playback (false);
+      stop_playing;
+    end;
+    loader_status := dfm_file_loader (songdata_source, progress, state, error);
+    if (loader_status < 0) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' DFM Loader '), 1)
+    else
+      load_flag := 1;
   end;
-  If (Lower(ExtOnly(fname)) = 'dfm') then dfm_file_loader;
   If (Lower(ExtOnly(fname)) = 'fmk') then fmk_file_loader;
   If (Lower(ExtOnly(fname)) = 'hsc') then hsc_file_loader;
   If (Lower(ExtOnly(fname)) = 'mtk') then mtk_file_loader;

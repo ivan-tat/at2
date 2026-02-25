@@ -126,6 +126,7 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 * [The Doszip Commander](https://sourceforge.net/projects/doszip/) - a LFN-aware TUI file manager (NC clone) with built-in Zip and UnZip for DOS and Windows
 * [UPX](https://upx.github.io/) ([package](https://pkgs.org/search/?q=upx)) - efficient live-compressor for executables
 * [OPL3BankEditor](https://github.com/Wohlstand/OPL3BankEditor) - a small cross-platform editor of the OPL3 FM banks of different formats
+* [Digital-FM Tracker](https://verhaagr.home.xs4all.nl/) by R.Verhaag - AdLib music tracker for DOS (80286 and above, CGA and above)
 
 ### Fonts
 
