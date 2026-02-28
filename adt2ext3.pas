@@ -34,7 +34,7 @@ function amd_file_loader (_fname: String; progress: progress_callback_p; var sta
 function cff_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function dfm_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 procedure fmk_file_loader;
-procedure hsc_file_loader;
+function hsc_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 procedure mtk_file_loader;
 procedure rad_file_loader;
 procedure s3m_file_loader;

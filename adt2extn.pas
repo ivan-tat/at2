@@ -5620,7 +5620,19 @@ _jmp1:
       load_flag := 1;
   end;
   If (Lower(ExtOnly(fname)) = 'fmk') then fmk_file_loader;
-  If (Lower(ExtOnly(fname)) = 'hsc') then hsc_file_loader;
+  If (Lower(ExtOnly(fname)) = 'hsc') then
+  begin
+    If (play_status <> isStopped) then
+    begin
+      fade_out_playback (false);
+      stop_playing;
+    end;
+    loader_status := hsc_file_loader (songdata_source, progress, state, error);
+    if (loader_status < 0) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' HSC Loader '), 1)
+    else
+      load_flag := 1;
+  end;
   If (Lower(ExtOnly(fname)) = 'mtk') then mtk_file_loader;
   If (Lower(ExtOnly(fname)) = 'rad') then rad_file_loader;
   If (Lower(ExtOnly(fname)) = 's3m') then s3m_file_loader;
