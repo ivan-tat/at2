@@ -28,7 +28,8 @@ typedef struct
 // patt: 0..HSC_PATTERNS_MAX-1
 // line: 0..HSC_PATTERN_LEN-1
 // chan: 0..HSC_CHANNELS_MAX-1
-static void import_hsc_event (uint8_t patt, uint8_t line, uint8_t chan, hsc_event_t event)
+static void import_hsc_event (uint8_t patt, uint8_t line, uint8_t chan,
+                              hsc_event_t event, bool fix_note_bug)
 {
   uint8_t command = event.command, param = event.param;
   tCHUNK chunk;
@@ -36,7 +37,7 @@ static void import_hsc_event (uint8_t patt, uint8_t line, uint8_t chan, hsc_even
   memset (&chunk, 0, sizeof (chunk));
 
   if ((command >= 1) && (command <= 12*8+1))  // REGULAR NOTE
-    chunk.note = fix_c_note_bug && (command < 12*8+1) ? command + 1 : command;
+    chunk.note = fix_note_bug && (command < 12*8+1) ? command + 1 : command;
   else if (command == 0x7F) // PAUSE
     chunk.note = UINT8_NULL;
   else if (command == 0x80) // INSTRUMENT
@@ -91,7 +92,7 @@ static void import_hsc_event (uint8_t patt, uint8_t line, uint8_t chan, hsc_even
   put_chunk (patt, line, chan + 1, &chunk);
 }
 
-/*static*/ void import_hsc_patterns (const void *data, uint8_t patterns)
+static void import_hsc_patterns (const void *data, uint8_t patterns, bool fix_note_bug)
 {
   tFIXED_SONGDATA *song = &songdata;
   uint8_t voice[HSC_CHANNELS_MAX];
@@ -110,7 +111,8 @@ static void import_hsc_event (uint8_t patt, uint8_t line, uint8_t chan, hsc_even
       for (uint_least8_t chan = 0; chan < HSC_CHANNELS_MAX; chan++)
       {
         hsc_event_t *event = &(*(hsc_patterns_t *)data)[patt][line][chan];
-        if ((event->command != 0) || (event->param != 0)) import_hsc_event (patt, line, chan, *event);
+        if ((event->command != 0) || (event->param != 0))
+          import_hsc_event (patt, line, chan, *event, fix_note_bug);
       }
 
   order = 0;
@@ -332,7 +334,7 @@ int8_t hsc_file_loader (const String *_fname, progress_callback_t *progress, uin
           event->param = 0;
       }
 
-      import_hsc_patterns (patterns, num_patterns);
+      import_hsc_patterns (patterns, num_patterns, fix_c_note_bug);
     }
   }
   next_hsc_step (progress);

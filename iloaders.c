@@ -31,3 +31,4 @@ static uint8_t dec2hex (uint8_t dec)
 #include "iloaders/cff_file_loader.c"
 #include "iloaders/dfm_file_loader.c"
 #include "iloaders/hsc_file_loader.c"
+#include "iloaders/mtk_file_loader.c"
