@@ -7,6 +7,7 @@
 #if USE_FPC
 #include "pascal.h"
 #endif // USE_FPC
+#include <stdio.h>  // SEEK_SET, SEEK_CUR, SEEK_END
 #include "common.h"
 
 #if !HAVE_INLINE_bit_set
@@ -29,3 +30,4 @@
 #include "common/set_mem_stream.c"
 #include "common/read_bytes.c"
 #include "common/read_string.c"
+#include "common/seek_stream.c"

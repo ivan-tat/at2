@@ -11,6 +11,15 @@
 #ifndef ILOADERS_H
 #define ILOADERS_H
 
+/*
+  Song description (use `free()' to free):
+
+  struct song_desc_s {
+    size_t count; // number of lines (0..inf)
+    fast_str_t lines[.count];
+  };
+*/
+
 int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 #if !ADT2PLAY
@@ -21,5 +30,6 @@ int8_t cff_file_loader (const String *_fname, progress_callback_t *progress, uin
 int8_t dfm_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t hsc_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t mtk_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
+int8_t rad_file_loader (String *_fname, void **desc, progress_callback_t *progress, uint8_t *state, char **error);
 
 #endif // !DEFINED(ILOADERS_H)

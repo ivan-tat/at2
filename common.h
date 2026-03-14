@@ -69,5 +69,6 @@ typedef struct
 void set_mem_stream (mem_stream_t *dst, const void *buf, size_t size);
 bool read_bytes (void *dst, size_t size, mem_stream_t *stream);
 bool read_string (String *dst, size_t size, mem_stream_t *stream);
+bool seek_stream (mem_stream_t *stream, ssize_t offset, int whence);
 
 #endif // !defined(COMMON_H)

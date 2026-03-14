@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -13,6 +13,15 @@
 #include "common.h"
 
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
+
+#pragma pack(push, 1)
+
+typedef struct { size_t len; uint8_t *data; } fast_str_t;
+
+#define fast_str(s) { sizeof (s) - 1, (uint8_t *)s }
+#define null_fast_str { 0, NULL }
+#define set_fast_str(p,s) { (p)->len = sizeof (s) - 1; (p)->data = (uint8_t *)s; }
+#define set_null_fast_str(p) { (p)->len = 0; (p)->data = NULL; }
 
 String_t asciiz_string (const String *str);
 
@@ -164,5 +173,7 @@ String_t BaseNameOnly (const String *path);
 String_t ExtOnly (const String *path);
 
 void init_StringIO (void);
+
+#pragma pack(pop)
 
 #endif // !defined(STRINGIO_H)

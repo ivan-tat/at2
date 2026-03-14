@@ -5466,10 +5466,12 @@ const
                                                      'FNAME:EXT','FNAME:EXT');
 
 procedure adjust_macro_speedup_with_notice (song: pFIXED_SONGDATA; loader: String); cdecl; external;
+procedure show_song_description (desc: Pointer; width, height: Byte); cdecl; external;
 
 function FILE_open(masks: String; loadBankPossible: Boolean): Byte;
 
 var
+  desc: Pointer; // song description
   fname,temps: String;
   mpos,index: Byte;
   old_ext_proc: procedure; cdecl;
@@ -5491,6 +5493,7 @@ label _jmp1;
 begin
   _dbg_enter ({$I %FILE%}, 'FILE_open');
 
+  desc := NIL;
   flag := BYTE_NULL;
   old_play_status := play_status;
   old_tracing := tracing;
@@ -5645,8 +5648,27 @@ _jmp1:
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' MTK Loader '), 1)
     else
       load_flag := 1;
+  end else If (Lower(ExtOnly(fname)) = 'rad') then
+  begin
+    If (play_status <> isStopped) then
+    begin
+      fade_out_playback (false);
+      stop_playing;
+    end;
+    loader_status := rad_file_loader (songdata_source, desc, progress, state, error);
+    if (loader_status < 0) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' RAD Loader '), 1)
+    else
+    begin
+      if (desc <> NIL) then
+      begin
+        if mod_description and not quick_cmd and not shift_pressed then show_song_description (desc, 80, 22);
+        FreeMem (desc);
+        desc := NIL;
+      end;
+      load_flag := 1;
+    end;
   end;
-  If (Lower(ExtOnly(fname)) = 'rad') then rad_file_loader;
   If (Lower(ExtOnly(fname)) = 's3m') then s3m_file_loader;
   If (Lower(ExtOnly(fname)) = 'sat') then sat_file_loader;
   If (Lower(ExtOnly(fname)) = 'sa2') then sa2_file_loader;

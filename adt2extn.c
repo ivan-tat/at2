@@ -74,4 +74,6 @@ uint8_t pattern2use = UINT8_NULL;
 
 #include "adt2extn/fselect_external_proc.c" // HINT: static
 
+#include "adt2extn/show_song_description.c" // HINT: static
+
 #pragma pack(pop)
