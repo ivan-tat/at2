@@ -23,7 +23,9 @@ __inline__ uint32_t byteswap_uint32(uint32_t x) { return (x>>24)+((x&0xFF0000)>>
 #endif // i386||_X86_||__x86_64
 
 #define MK_UINT8(a,b,c,d,e,f,g,h) (a+b*2+c*4+d*8+e*16+f*32+g*64+h*128)
-#define MK_UINT32(a,b,c,d) (a+((b)<<8)+((c)<<16)+((d)<<24))
+#if i386||_X86_||__x86_64
+#define MK_UINT32(a,b,c,d) ((a)+((b)<<8)+((c)<<16)+((d)<<24))
+#endif // i386||_X86_||__x86_64
 
 typedef uint8_t CharSet_t[32];
 

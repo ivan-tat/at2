@@ -5668,8 +5668,19 @@ _jmp1:
       end;
       load_flag := 1;
     end;
+  end else If (Lower(ExtOnly(fname)) = 's3m') then
+  begin
+    If (play_status <> isStopped) then
+    begin
+      fade_out_playback (false);
+      stop_playing;
+    end;
+    loader_status := s3m_file_loader (songdata_source, progress, state, error);
+    if (loader_status < 0) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' S3M Loader '), 1)
+    else
+      load_flag := 1;
   end;
-  If (Lower(ExtOnly(fname)) = 's3m') then s3m_file_loader;
   If (Lower(ExtOnly(fname)) = 'sat') then sat_file_loader;
   If (Lower(ExtOnly(fname)) = 'sa2') then sa2_file_loader;
   If (Lower(ExtOnly(fname)) = 'a2i') then

@@ -25,6 +25,19 @@
 #define MIN_IRQ_FREQ 50
 #define MAX_IRQ_FREQ 1000
 
+#define AT_MELODIC_CHANNELS_MAX 18
+#define AT_CHANNELS_MAX 20
+#define AT_PATTERNS_MAX 128
+#define AT_ORDER_LEN 128
+
+// pattern
+#define AT_NOTE_EMPTY 0
+#define AT_NOTE_OFF   0xFF
+#define AT_INS_EMPTY  0
+
+// patterns order
+#define AT_ORDER_JUMP 0x80
+
 #include "typcons1.h"
 #include "typcons2.h"
 

@@ -33,3 +33,9 @@ static uint8_t dec2hex (uint8_t dec)
 #include "iloaders/hsc_file_loader.c"
 #include "iloaders/mtk_file_loader.c"
 #include "iloaders/rad_file_loader.c"
+
+#define temp_ef_Arpeggio 0xF0
+#define temp_ef_rep      0xF1
+#define temp_ef_XFVSlide 0xF2
+
+#include "iloaders/s3m_file_loader.c"
