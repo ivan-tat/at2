@@ -5621,8 +5621,27 @@ _jmp1:
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' DFM Loader '), 1)
     else
       load_flag := 1;
+  end else If (Lower(ExtOnly(fname)) = 'fmk') then
+  begin
+    If (play_status <> isStopped) then
+    begin
+      fade_out_playback (false);
+      stop_playing;
+    end;
+    loader_status := fmk_file_loader (songdata_source, desc, progress, state, error);
+    if (loader_status < 0) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' FMK Loader '), 1)
+    else
+    begin
+      if (desc <> NIL) then
+      begin
+        if mod_description and not quick_cmd and not shift_pressed then show_song_description (desc, 20, 24);
+        FreeMem (desc);
+        desc := NIL;
+      end;
+      load_flag := 1;
+    end;
   end;
-  If (Lower(ExtOnly(fname)) = 'fmk') then fmk_file_loader;
   If (Lower(ExtOnly(fname)) = 'hsc') then
   begin
     If (play_status <> isStopped) then

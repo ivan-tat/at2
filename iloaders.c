@@ -39,3 +39,4 @@ static uint8_t dec2hex (uint8_t dec)
 #define temp_ef_XFVSlide 0xF2
 
 #include "iloaders/s3m_file_loader.c"
+#include "iloaders/fmk_file_loader.c"

@@ -294,7 +294,7 @@ static void next_rad_step (progress_callback_t *progress)
 //     1: song is cleared.
 //     2: song is partly loaded.
 //   * `error' (if set) is set to error description.
-int8_t rad_file_loader (String *_fname, void **desc, progress_callback_t *progress, uint8_t *state, char **error)
+int8_t rad_file_loader (const String *_fname, void **desc, progress_callback_t *progress, uint8_t *state, char **error)
 {
   tFIXED_SONGDATA *song = &songdata;
   int8_t result = -1;

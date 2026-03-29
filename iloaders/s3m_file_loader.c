@@ -17,7 +17,7 @@
 #define S3M_ADLIB_INS_ID  (MK_UINT32 ('S','C','R','I'))
 #define S3M_SAMPLE_INS_ID (MK_UINT32 ('S','C','R','S'))
 
-// channel set
+// channels set
 #define S3M_CHAN_MUTED  0x80
 #define S3M_CHAN_UNUSED 0xFF
 
@@ -67,7 +67,7 @@ typedef struct  // all values are little-endian
   uint8_t chan_set[S3M_CHANNELS_MAX];
 } s3m_header_t;
 
-typedef struct
+typedef struct  // all values are little-endian
 {
   uint8_t type;       // AdLib: 2=melody, 3=bass drum, 4=snare drum, 5=tom-tom, 6=top cymbal, 7=hi-hat
   char dosname[12];   // 8.3, may not be NULL-terminated
@@ -98,7 +98,7 @@ typedef struct
 #define S3M_ORDER_SKIP  0xFE
 #define S3M_ORDER_STOP  0xFF
 
-typedef struct
+typedef struct  // all values are little-endian
 {
   uint8_t order[S3M_ORDER_LEN];               // patterns order
   uint16_t paraptr_ins[S3M_INSTRUMENTS_MAX];  // para pointers (x16) to instruments
@@ -466,7 +466,6 @@ static void fix_s3m_commands (const int8_t *c4factor, uint8_t patterns)
   uint8_t order = 0;
   uint8_t patt = UINT8_NULL;
 
-  // fix_s3m_commands
   memset (cache.ins, 0, sizeof (cache.ins));
   memset (cache.note, 0, sizeof (cache.note));
   memset (cache.volsld, 0, sizeof (cache.volsld));
@@ -908,6 +907,12 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
       || (header.insnum > S3M_INSTRUMENTS_MAX)
       || (header.patnum > S3M_PATTERNS_MAX)) goto _err_format;
 
+  // find playable channels
+  for (num_channels = AT_MELODIC_CHANNELS_MAX; num_channels != 0; num_channels--)
+    if (header.chan_set[num_channels - 1] != S3M_CHAN_UNUSED) break;
+  if (num_channels == 0) goto _err_chan;
+
+  // read variable header data
   if ((data = malloc (sizeof (*data))) == NULL) goto _err_malloc;
   if (fread (&data->order, header.ordnum * sizeof (data->order[0]), 1, f) == 0) goto _err_fread;
   if (fread (&data->paraptr_ins, header.insnum * sizeof (data->paraptr_ins[0]), 1, f) == 0) goto _err_fread;
@@ -919,12 +924,6 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
   next_s3m_step (progress);
 
   init_songdata ();
-
-  // find playable channels
-  for (num_channels = AT_MELODIC_CHANNELS_MAX; num_channels != 0; num_channels--)
-    if (header.chan_set[num_channels - 1] != S3M_CHAN_UNUSED) break;
-
-  if (num_channels == 0) goto _err_chan;
 
 #if !ADT2PLAY
   for (uint8_t i = 0; i < num_channels; i++)
@@ -1044,7 +1043,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
         {
           s3m_event_t ev;
 
-          ev.chan = x & 0x1F; // 0..31
+          ev.chan = x & 0x1F; // 0..S3M_CHANNELS_MAX-1
 
           if (x & 0x20)
           {
@@ -1055,7 +1054,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
           {
             ev.note = S3M_NOTE_EMPTY;
             ev.ins  = S3M_INS_EMPTY;
-          };
+          }
 
           if (x & 0x40)
           {

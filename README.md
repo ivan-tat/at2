@@ -127,6 +127,7 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 * [UPX](https://upx.github.io/) ([package](https://pkgs.org/search/?q=upx)) - efficient live-compressor for executables
 * [OPL3BankEditor](https://github.com/Wohlstand/OPL3BankEditor) - a small cross-platform editor of the OPL3 FM banks of different formats
 * [Digital-FM Tracker](https://verhaagr.home.xs4all.nl/) by R.Verhaag - AdLib music tracker for DOS (80286 and above, CGA and above)
+* [FM-Kingtracker v1.06](https://adplug.github.io/library/entry/FMKingtracker106f.html) by Sami Wilenius - a freeware "Scream Tracker 3"-like OPL2/OPL3 tracker for DOS (386 and above, VGA)
 
 ### Fonts
 
