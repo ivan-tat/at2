@@ -343,16 +343,6 @@ static void import_sat_event_v8 (uint8_t patt, uint8_t line, uint8_t chan,
   put_chunk (patt, line, chan + 1, &chunk);
 }
 
-static void next_sat_step (progress_callback_t *progress)
-{
-  if (progress != NULL)
-  {
-    progress->step++;
-    progress->value = 1;
-    progress->update (progress, 1, -1);
-  }
-}
-
 // In:
 //   * `progress', `state' and `error' may be NULL.
 //
@@ -527,7 +517,7 @@ int8_t sat_file_loader (const String *_fname, progress_callback_t *progress, uin
     CopyString (songdata_title, (String *)&s, sizeof (songdata_title) - 1);
   }
   result_state = 1;
-  next_sat_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import instruments
   for (uint8_t i = 0; i < SAT_INSTRUMENTS_MAX; i++)
@@ -575,7 +565,7 @@ int8_t sat_file_loader (const String *_fname, progress_callback_t *progress, uin
     AppendString (song->instr_names[i], (String *)&s, sizeof (song->instr_names[0]) - 1);
   }
   result_state = 2;
-  next_sat_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import patterns order
   switch (header.version)
@@ -600,7 +590,7 @@ int8_t sat_file_loader (const String *_fname, progress_callback_t *progress, uin
 
     default: break;
   }
-  next_sat_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import patterns
   if (num_patterns != 0)
@@ -674,7 +664,7 @@ int8_t sat_file_loader (const String *_fname, progress_callback_t *progress, uin
 
       default: break;
     }
-  next_sat_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   result = 0;
 

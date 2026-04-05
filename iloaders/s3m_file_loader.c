@@ -818,16 +818,6 @@ static int8_t find_s3m_scale_factor (int32_t freq, int8_t *fine_tune)
   return -127;
 }
 
-static void next_s3m_step (progress_callback_t *progress)
-{
-  if (progress != NULL)
-  {
-    progress->step++;
-    progress->value = 1;
-    progress->update (progress, 1, -1);
-  }
-}
-
 // In:
 //   * `progress', `state' and `error' may be NULL.
 //
@@ -921,7 +911,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
   for (uint16_t i = 0; i < header.insnum; i++) data->paraptr_ins[i] = uint16_LE (data->paraptr_ins[i]);
   for (uint16_t i = 0; i < header.patnum; i++) data->paraptr_pat[i] = uint16_LE (data->paraptr_pat[i]);
 
-  next_s3m_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   init_songdata ();
 
@@ -951,7 +941,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
     CopyString (songdata_title, (String *)&s, sizeof (songdata_title) - 1);
   }
   result_state = 1;
-  next_s3m_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import patterns order
   for (uint_least8_t i = 0; i < min (header.ordnum, AT_ORDER_LEN); i++)
@@ -964,7 +954,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
     else
       goto _err_format;
   result_state = 2;
-  next_s3m_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import instruments
   memset (data->c4factor, 0, sizeof (data->c4factor));
@@ -999,7 +989,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
         s = truncate_string (StrToString ((String *)&s, insdata.dosname, sizeof (insdata.dosname)/*-1*/));
       AppendString (song->instr_names[i], (String *)&s, sizeof (song->instr_names[0]) - 1);
     }
-  next_s3m_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import patterns
   packed_size = 0;
@@ -1083,7 +1073,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
       } while (line != S3M_PATTERN_LEN);
     }
   fix_s3m_commands (data->c4factor, header.patnum);
-  next_s3m_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   result = 0;
 

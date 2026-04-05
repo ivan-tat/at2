@@ -39,16 +39,6 @@ typedef struct
 } mtk_song_header_t;
 #pragma pack(pop)
 
-static void next_mtk_step (progress_callback_t *progress)
-{
-  if (progress != NULL)
-  {
-    progress->step++;
-    progress->value = 1;
-    progress->update (progress, 1, -1);
-  }
-}
-
 // In:
 //   * `progress', `state' and `error' may be NULL.
 //
@@ -116,18 +106,18 @@ int8_t mtk_file_loader (const String *_fname, progress_callback_t *progress, uin
   if (header.blen < sizeof (mtk_song_header_t)) goto _err_format;
 
   result = -4;
-  next_mtk_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // read packed data
   packed_size = fsize - sizeof (header);
   if ((packed_buffer = malloc (packed_size)) == NULL) goto _err_malloc;
   if (fread (packed_buffer, packed_size, 1, f) == 0) goto _err_fread;
-  next_mtk_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // checksum
   crc = Update16 (packed_buffer, packed_size, /*CRC16_INITVAL*/0);
   if (crc != header.crc16) goto _err_checksum;
-  next_mtk_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // unpack
   raw_size = sizeof (mtk_song_header_t) + sizeof (mtk_patterns_t);
@@ -138,7 +128,7 @@ int8_t mtk_file_loader (const String *_fname, progress_callback_t *progress, uin
   packed_buffer = NULL;
   if (unpacked_size < raw_size)
     memset (raw_buffer + unpacked_size, raw_size - unpacked_size, 0);
-  next_mtk_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // initialize song
   song_header = (mtk_song_header_t *)raw_buffer;
@@ -198,7 +188,7 @@ int8_t mtk_file_loader (const String *_fname, progress_callback_t *progress, uin
   for (uint_least8_t i = 0; i < MTK_ORDER_LEN; i++)
     song->pattern_order[i] = song_header->order[i] != 0xFF ? song_header->order[i] : 0x80;
 
-  next_mtk_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import patterns
   if (header.blen > sizeof (mtk_song_header_t))
@@ -208,7 +198,7 @@ int8_t mtk_file_loader (const String *_fname, progress_callback_t *progress, uin
     if (num_patterns > MTK_PATTERNS_MAX) num_patterns = MTK_PATTERNS_MAX;
     import_hsc_patterns (raw_buffer + sizeof (mtk_song_header_t), num_patterns, false);
   }
-  next_mtk_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   result = 0;
 

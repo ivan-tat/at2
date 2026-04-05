@@ -266,16 +266,6 @@ static void import_rad_event (uint8_t pattern, uint8_t line, uint8_t channel,
   put_chunk (pattern, line, channel + 1, &chunk);
 }
 
-static void next_rad_step (progress_callback_t *progress)
-{
-  if (progress != NULL)
-  {
-    progress->step++;
-    progress->value = 1;
-    progress->update (progress, 1, -1);
-  }
-}
-
 // In:
 //   * `desc', `progress', `state' and `error' may be NULL.
 //
@@ -350,7 +340,7 @@ int8_t rad_file_loader (const String *_fname, void **desc, progress_callback_t *
     CopyString (songdata_title, (String *)&s, sizeof (songdata_title) - 1);
   }
   result_state = 1;
-  next_rad_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // read data
   if (fsize > (long)sizeof (*header))
@@ -379,7 +369,7 @@ int8_t rad_file_loader (const String *_fname, void **desc, progress_callback_t *
     if (import_rad_description (&result_desc, stream.curptr, desc_size, &result_error)) goto _exit;
     seek_stream (&stream, +desc_size, SEEK_CUR);
   }
-  next_rad_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // read instruments
   if (stream.curptr < stream.endptr)
@@ -400,7 +390,7 @@ int8_t rad_file_loader (const String *_fname, void **desc, progress_callback_t *
       else break;
     } while ((idx != 0) && (stream.curptr < stream.endptr));
   }
-  next_rad_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // read patterns order
   if (stream.curptr < stream.endptr)
@@ -416,7 +406,7 @@ int8_t rad_file_loader (const String *_fname, void **desc, progress_callback_t *
         if (seek_stream (&stream, order_len - len, SEEK_CUR)) goto _err_eod;
     }
   }
-  next_rad_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // read patterns
   if (stream.curptr < stream.endptr)
@@ -461,7 +451,7 @@ int8_t rad_file_loader (const String *_fname, void **desc, progress_callback_t *
       }
     }
   }
-  next_rad_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   result = 0;
 

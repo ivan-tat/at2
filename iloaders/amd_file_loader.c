@@ -176,16 +176,6 @@ static void import_amd_event (tCHUNK *chunk, uint8_t a, uint8_t b, uint8_t param
   if (chunk->note == 0) chunk->instr_def = 0;
 }
 
-static void next_amd_step (progress_callback_t *progress)
-{
-  if (progress != NULL)
-  {
-    progress->step++;
-    progress->value = 1;
-    progress->update (progress, 1, -1);
-  }
-}
-
 // In: `progress' may be NULL.
 // Returns `false' on success and `true' on error.
 static bool import_amd_raw_patterns (int patterns, FILE *f,
@@ -211,7 +201,7 @@ static bool import_amd_raw_patterns (int patterns, FILE *f,
         put_chunk (pat, line, chan + 1, &chunk);
         event++;
       }
-    next_amd_step (progress);
+    if (progress != NULL) next_progress_step (progress);
   }
 
   result = false;
@@ -311,7 +301,7 @@ static bool import_amd_packed_patterns (int patterns, FILE *f,
         for (line = 0; line < 64; line++) put_chunk (dst_pat, line, dst_chan + 1, &(*track)[line]);
       }
     }
-    next_amd_step (progress);
+    if (progress != NULL) next_progress_step (progress);
   }
 
   result = false;

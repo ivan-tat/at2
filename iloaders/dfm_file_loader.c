@@ -120,16 +120,6 @@ static void process_dfm_patterns (tFIXED_SONGDATA *song, uint8_t song_len)
   }
 }
 
-static void next_dfm_step (progress_callback_t *progress)
-{
-  if (progress != NULL)
-  {
-    progress->step++;
-    progress->value = 1;
-    progress->update (progress, 1, -1);
-  }
-}
-
 // In:
 //   * `progress', `state' and `error' may be NULL.
 //
@@ -210,7 +200,7 @@ int8_t dfm_file_loader (const String *_fname, progress_callback_t *progress, uin
     CopyString (songdata_title, (String *)&s, sizeof (songdata_title) - 1);
   }
   result_state = 1;
-  next_dfm_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import instruments
   for (uint_least8_t i = 0; i < DFM_INSTRUMENTS_MAX; i++)
@@ -232,7 +222,7 @@ int8_t dfm_file_loader (const String *_fname, progress_callback_t *progress, uin
     import_standard_instrument_alt (&song->instr_data[i], &header.instruments_data[i]);
   }
   result_state = 2;
-  next_dfm_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import patterns order
   song_len = -1;
@@ -250,7 +240,7 @@ int8_t dfm_file_loader (const String *_fname, progress_callback_t *progress, uin
     else
       song->pattern_order[order] = 0x80 + order;
   }
-  next_dfm_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import patterns
   if (fsize > (long)sizeof (header))
@@ -295,7 +285,7 @@ int8_t dfm_file_loader (const String *_fname, progress_callback_t *progress, uin
 
     if (song_len > 0) process_dfm_patterns (song, song_len);
   }
-  next_dfm_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   result = 0;
 

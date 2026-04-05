@@ -626,16 +626,6 @@ static void cff_new_song (tFIXED_SONGDATA *song, cff_header2_t *header2, const S
   }
 }
 
-static void next_cff_step (progress_callback_t *progress)
-{
-  if (progress != NULL)
-  {
-    progress->step++;
-    progress->value = 1;
-    progress->update (progress, 1, -1);
-  }
-}
-
 // In:
 //   * `progress', `state' and `error' may be NULL.
 //
@@ -707,7 +697,7 @@ int8_t cff_file_loader (const String *_fname, progress_callback_t *progress, uin
     if (fseek (f, CFF_RAW_DATA_START, SEEK_SET) != 0) goto _err_fread;
     if (fread (header2, sizeof (*header2), 1, f) == 0) goto _err_fread;
     if (memcmp (header2->id, cff_id2, sizeof (header2->id)) != 0) goto _err_format;
-    next_cff_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     result = -4;
 
@@ -720,18 +710,18 @@ int8_t cff_file_loader (const String *_fname, progress_callback_t *progress, uin
     }
     fclose (f);
     f = NULL;
-    next_cff_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // initialize song
     cff_new_song (song, header2, _fname);
     result_state = 2;
-    next_cff_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // import patterns
     if (patterns_size != 0)
       import_cff_patterns ((const cff_patterns_t *)raw_buffer, patterns_size,
                            header2->num_patterns);
-    next_cff_step (progress);
+    if (progress != NULL) next_progress_step (progress);
   }
   else  // packed
   {
@@ -747,7 +737,7 @@ int8_t cff_file_loader (const String *_fname, progress_callback_t *progress, uin
     if (fread (packed_buffer, packed_size, 1, f) == 0) goto _err_fread;
     fclose (f);
     f = NULL;
-    next_cff_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     result = -2;
 
@@ -758,7 +748,7 @@ int8_t cff_file_loader (const String *_fname, progress_callback_t *progress, uin
                           &result_error)) goto _exit;
     free (packed_buffer);
     packed_buffer = NULL;
-    next_cff_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // check format
     if (raw_size < sizeof (*header2)) goto _err_eod;
@@ -770,13 +760,13 @@ int8_t cff_file_loader (const String *_fname, progress_callback_t *progress, uin
     // initialize song
     cff_new_song (song, header2, _fname);
     result_state = 2;
-    next_cff_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // import patterns
     if (raw_size > sizeof (*header2))
       import_cff_patterns ((const cff_patterns_t *)&raw_buffer[sizeof (*header2)],
                            raw_size - sizeof (*header2), header2->num_patterns);
-    next_cff_step (progress);
+    if (progress != NULL) next_progress_step (progress);
   }
 
   result = 0;

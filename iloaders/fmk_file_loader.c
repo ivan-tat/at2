@@ -813,16 +813,6 @@ _err_malloc:
   goto _exit;
 }
 
-static void next_fmk_step (progress_callback_t *progress)
-{
-  if (progress != NULL)
-  {
-    progress->step++;
-    progress->value = 1;
-    progress->update (progress, 1, -1);
-  }
-}
-
 // In:
 //   * `desc', `progress', `state' and `error' may be NULL.
 //
@@ -960,7 +950,7 @@ int8_t fmk_file_loader (const String *_fname, void **desc, progress_callback_t *
   }
 
   result_state = 1;
-  next_fmk_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import patterns order
   for (uint8_t i = 0; i < max (header.ordlen, AT_ORDER_LEN); i++)
@@ -971,7 +961,7 @@ int8_t fmk_file_loader (const String *_fname, void **desc, progress_callback_t *
     else
       goto _err_format;
   result_state = 2;
-  next_fmk_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import description
   if ((desc != NULL) && (data->offs_desc != 0))
@@ -993,7 +983,7 @@ int8_t fmk_file_loader (const String *_fname, void **desc, progress_callback_t *
       desc_buf = NULL;
     }
   }
-  next_fmk_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import instruments
   for (uint8_t i = 0; i < header.insnum; i++)
@@ -1013,7 +1003,7 @@ int8_t fmk_file_loader (const String *_fname, void **desc, progress_callback_t *
 
       import_fin_instrument_alt (&song->instr_data[i], &insdata.idata);
     }
-  next_fmk_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import patterns
   packed_size = 0;
@@ -1094,7 +1084,7 @@ int8_t fmk_file_loader (const String *_fname, void **desc, progress_callback_t *
       } while (line != FMK_PATTERN_LEN);
     }
   fix_fmk_commands (header.patnum);
-  next_fmk_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   result = 0;
 

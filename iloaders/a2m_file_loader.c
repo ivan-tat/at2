@@ -101,16 +101,6 @@ static void update_patterns_names (tFIXED_SONGDATA *song)
 
 #endif // !ADT2PLAY
 
-static void next_a2m_step (progress_callback_t *progress)
-{
-  if (progress != NULL)
-  {
-    progress->step++;
-    progress->value = 1;
-    progress->update (progress, 1, -1);
-  }
-}
-
 // In:
 //   * `progress', `state' and `error' may be NULL.
 //
@@ -197,7 +187,7 @@ int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uin
       }
     crc = Update32 (header1.blen, sizeof (header1.blen), crc);
     if (crc != header.crc32) goto _err_checksum;
-    next_a2m_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     init_songdata ();
     song->patt_len = 64;
@@ -213,7 +203,7 @@ int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2m_block (old_song, buf1, uint16_LE (header1.blen[0]), header.ffver, progress) != 0) goto _err_unpack;
       for (int i = 0; i < 250; i++) old_song->instr_data[i].panning = 0;
     }
-    next_a2m_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // patterns (x16)
     for (int i = 0; i < pat_blocks; i++)
@@ -226,7 +216,7 @@ int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uin
         import_old_a2m_patterns1 (i, 16);
         result_state = 2;
       }
-      next_a2m_step (progress);
+      if (progress != NULL) next_progress_step (progress);
     }
 
     replace_old_adsr (header.patts);
@@ -255,7 +245,7 @@ int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uin
       }
     crc = Update32 (header5.blen, sizeof (header5.blen), crc);
     if (crc != header.crc32) goto _err_checksum;
-    next_a2m_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     init_songdata ();
     song->patt_len = 64;
@@ -270,7 +260,7 @@ int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (fread (buf1, uint16_LE (header5.blen[0]), 1, f) == 0) goto _err_fread;
       if (unpack_a2m_block (old_song, buf1, uint16_LE (header5.blen[0]), header.ffver, progress) != 0) goto _err_unpack;
     }
-    next_a2m_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // patterns (x8)
     for (int i = 0; i < pat_blocks; i++)
@@ -282,7 +272,7 @@ int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uin
         import_old_a2m_patterns2 (i, 8);
         result_state = 2;
       }
-      next_a2m_step (progress);
+      if (progress != NULL) next_progress_step (progress);
     }
 
     import_old_songdata (old_song);
@@ -306,7 +296,7 @@ int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uin
     for (unsigned i = 0; i < sizeof (header9.blen) / sizeof (header9.blen[0]); i++)
       crc = Update32 (&header9.blen[i], /*sizeof (header9.blen[0])*/ 2, crc); // it's not a bug - it's a feature
     if (crc != header.crc32) goto _err_checksum;
-    next_a2m_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     init_songdata ();
     result_state = 1;
@@ -320,7 +310,7 @@ int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2m_block (song, buf1, uint32_LE (header9.blen[0]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2m_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // patterns (x8)
     for (int i = 0; i < pat_blocks; i++)
@@ -336,7 +326,7 @@ int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uin
         }
         else limit_exceeded = true;
       }
-      next_a2m_step (progress);
+      if (progress != NULL) next_progress_step (progress);
     }
 
     if (header.ffver == 9) import_old_flags ();

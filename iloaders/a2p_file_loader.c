@@ -79,16 +79,6 @@ static void set_pattern_name (String *dst, const String *name, const String *def
   CopyString (dst, (String *)&s, 42);
 }
 
-static void next_a2p_step (progress_callback_t *progress)
-{
-  if (progress != NULL)
-  {
-    progress->step++;
-    progress->value = 1;
-    progress->update (progress, 1, -1);
-  }
-}
-
 // In:
 //   * `progress', `state' and `error' may be NULL.
 //
@@ -157,7 +147,7 @@ int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uin
     crc = Update32 (buf1, uint16_LE (header1.blen), crc);
     crc = Update32 (&header1.blen, sizeof (header1.blen), crc);
     if (crc != header.crc32) goto _err_checksum;
-    next_a2p_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // pattern(s) (9x64)
     if (unpack_a2p_block (old_hash_buffer, NULL, buf1, uint16_LE (header1.blen), header.ffver, progress) != 0) goto _err_unpack;
@@ -183,7 +173,7 @@ int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uin
 
       set_pattern_name (song->pattern_names[_pattern], NULL, (String *)&onlyname);
     }
-    next_a2p_step (progress);
+    if (progress != NULL) next_progress_step (progress);
   }
   else if (header.ffver <= 8)
   {
@@ -198,7 +188,7 @@ int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uin
     crc = Update32 (buf1, uint16_LE (header1.blen), crc);
     crc = Update32 (&header1.blen, sizeof (header1.blen), crc);
     if (crc != header.crc32) goto _err_checksum;
-    next_a2p_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // pattern(s) (18x64)
     if (unpack_a2p_block (hash_buffer[0], NULL, buf1, uint16_LE (header1.blen), header.ffver, progress) != 0) goto _err_unpack;
@@ -223,7 +213,7 @@ int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uin
 
       set_pattern_name (song->pattern_names[_pattern], NULL, (String *)&onlyname);
     }
-    next_a2p_step (progress);
+    if (progress != NULL) next_progress_step (progress);
   }
   else if (header.ffver == 9)
   {
@@ -238,7 +228,7 @@ int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uin
     crc = Update32 (buf1, uint32_LE (header9.blen), crc);
     crc = Update32 (&header9.blen, /*sizeof (header9.blen)*/ 2, crc);  // it's not a bug - it's a feature
     if (crc != header.crc32) goto _err_checksum;
-    next_a2p_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // pattern(s) (20x256)
     if ((pattern2use != UINT8_NULL) && (_patts_marked () != 0))
@@ -260,7 +250,7 @@ int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uin
 
       set_pattern_name (song->pattern_names[_pattern], NULL, (String *)&onlyname);
     }
-    next_a2p_step (progress);
+    if (progress != NULL) next_progress_step (progress);
   }
   else if (header.ffver == 10)
   {
@@ -275,7 +265,7 @@ int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uin
     crc = Update32 (buf1, uint32_LE (header9.blen), crc);
     crc = Update32 (&header9.blen, /*sizeof (header9.blen)*/ 2, crc);  // it's not a bug - it's a feature
     if (crc != header.crc32) goto _err_checksum;
-    next_a2p_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // pattern(s) (20x256)
     if ((pattern2use != UINT8_NULL) && (_patts_marked () != 0))
@@ -308,7 +298,7 @@ int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (read_string ((String *)&pat_name, sizeof (pat_name) - 1, &stream)) goto _err_eod;
       set_pattern_name (song->pattern_names[_pattern], (String *)&pat_name, (String *)&onlyname);
     }
-    next_a2p_step (progress);
+    if (progress != NULL) next_progress_step (progress);
   }
   else // header.ffver == 11
   {
@@ -323,7 +313,7 @@ int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uin
     crc = Update32 (buf1, uint32_LE (header9.blen), crc);
     crc = Update32 (&header9.blen, /*sizeof (header9.blen)*/ 2, crc);  // it's not a bug - it's a feature
     if (crc != header.crc32) goto _err_checksum;
-    next_a2p_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // pattern(s) (20x256)
     if ((pattern2use != UINT8_NULL) && (_patts_marked () != 0))
@@ -356,7 +346,7 @@ int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (read_string ((String *)&pat_name, sizeof (pat_name) - 1, &stream)) goto _err_eod;
       set_pattern_name (song->pattern_names[_pattern], (String *)&pat_name, (String *)&onlyname);
     }
-    next_a2p_step (progress);
+    if (progress != NULL) next_progress_step (progress);
   }
 
   result = 0;

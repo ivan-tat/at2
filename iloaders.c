@@ -8,6 +8,8 @@
 
 static bool adsr_carrier[9]; // used in "import_old_a2m_event1" and "replace_old_adsr"
 
+#include "iloaders/next_progress_step.c" // static
+
 #include "iloaders/import_old_a2m_event1.c" // static
 #include "iloaders/replace_old_adsr.c" // static
 #include "iloaders/import_old_a2m_patterns1.c" // static

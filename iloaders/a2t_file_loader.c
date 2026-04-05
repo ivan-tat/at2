@@ -85,16 +85,6 @@ static int unpack_a2t_block (void *dst, const void *src, uint32_t src_size,
   return status;
 }
 
-static void next_a2t_step (progress_callback_t *progress)
-{
-  if (progress != NULL)
-  {
-    progress->step++;
-    progress->value = 1;
-    progress->update (progress, 1, -1);
-  }
-}
-
 // In:
 //   * `progress', `state' and `error' may be NULL.
 //
@@ -182,7 +172,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       }
     crc = Update32 (header1.blen, sizeof (header1.blen), crc);
     if (crc != header.crc32) goto _err_checksum;
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     init_songdata ();
     song->patt_len = 64;
@@ -198,7 +188,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (old_song->instr_data, buf1, uint16_LE (header1.blen[0]), header.ffver, progress) != 0) goto _err_unpack;
       for (int i = 0; i < 250; i++) old_song->instr_data[i].panning = 0;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // patterns order
     if (header1.blen[1] != 0)
@@ -206,7 +196,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (fread (buf1, uint16_LE (header1.blen[1]), 1, f) == 0) goto _err_fread;
       if (unpack_a2t_block (old_song->pattern_order, buf1, uint16_LE (header1.blen[1]), header.ffver, progress) != 0) goto _err_unpack;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // patterns (x16)
     for (int i = 0; i < pat_blocks; i++)
@@ -219,7 +209,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
         import_old_a2m_patterns1 (i, 16);
         result_state = 2;
       }
-      next_a2t_step (progress);
+      if (progress != NULL) next_progress_step (progress);
     }
 
     old_song->tempo = header.tempo;
@@ -252,7 +242,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       }
     crc = Update32 (header5.blen, sizeof (header5.blen), crc);
     if (crc != header.crc32) goto _err_checksum;
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     init_songdata ();
     song->patt_len = 64;
@@ -267,7 +257,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (fread (buf1, uint16_LE (header5.blen[0]), 1, f) == 0) goto _err_fread;
       if (unpack_a2t_block (old_song->instr_data, buf1, uint16_LE (header5.blen[0]), header.ffver, progress) != 0) goto _err_unpack;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // patterns order
     if (header5.blen[1] != 0)
@@ -275,7 +265,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (fread (buf1, uint16_LE (header5.blen[1]), 1, f) == 0) goto _err_fread;
       if (unpack_a2t_block (old_song->pattern_order, buf1, uint16_LE (header5.blen[1]), header.ffver, progress) != 0) goto _err_unpack;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // patterns (x8)
     for (int i = 0; i < pat_blocks; i++)
@@ -288,7 +278,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
         import_old_a2m_patterns2 (i, 8);
         result_state = 2;
       }
-      next_a2t_step (progress);
+      if (progress != NULL) next_progress_step (progress);
     }
 
     old_song->tempo = header.tempo;
@@ -329,7 +319,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
     for (unsigned i = 0; i < sizeof (header9.blen) / sizeof (header9.blen[0]); i++)
       crc = Update32 (&header9.blen[i], /*sizeof (header9.blen[0])*/ 2, crc); // it's not a bug - it's a feature
     if (crc != header.crc32) goto _err_checksum;
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     init_songdata ();
     result_state = 1;
@@ -343,7 +333,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->instr_data, buf1, uint32_LE (header9.blen[0]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // instrument macro-defs
     if (header9.blen[1] != 0)
@@ -352,7 +342,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->instr_macros, buf1, uint32_LE (header9.blen[1]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // arpeggio/vibrato macro-defs
     if (header9.blen[2] != 0)
@@ -361,7 +351,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->macro_table, buf1, uint32_LE (header9.blen[2]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // pattern order
     if (header9.blen[3] != 0)
@@ -370,7 +360,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->pattern_order, buf1, uint32_LE (header9.blen[3]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // patterns (x8)
     for (int i = 0; i < pat_blocks; i++)
@@ -386,7 +376,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
         }
         else limit_exceeded = true;
       }
-      next_a2t_step (progress);
+      if (progress != NULL) next_progress_step (progress);
     }
 
     song->tempo = header.tempo;
@@ -432,7 +422,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
     for (unsigned i = 0; i < sizeof (header10.blen) / sizeof (header10.blen[0]); i++)
       crc = Update32 (&header10.blen[i], /*sizeof (header10.blen[0])*/ 2, crc); // it's not a bug - it's a feature
     if (crc != header.crc32) goto _err_checksum;
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     init_songdata ();
     result_state = 1;
@@ -446,7 +436,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->instr_data, buf1, uint32_LE (header10.blen[0]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // instrument macro-defs
     if (header10.blen[1] != 0)
@@ -455,7 +445,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->instr_macros, buf1, uint32_LE (header10.blen[1]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // arpeggio/vibrato macro-defs
     if (header10.blen[2] != 0)
@@ -464,7 +454,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->macro_table, buf1, uint32_LE (header10.blen[2]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // pattern order
     if (header10.blen[3] != 0)
@@ -473,7 +463,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->pattern_order, buf1, uint32_LE (header10.blen[3]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // patterns (x8)
     for (int i = 0; i < pat_blocks; i++)
@@ -489,7 +479,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
         }
         else limit_exceeded = true;
       }
-      next_a2t_step (progress);
+      if (progress != NULL) next_progress_step (progress);
     }
 
     song->tempo = header.tempo;
@@ -520,7 +510,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
     for (unsigned i = 0; i < sizeof (header11.blen) / sizeof (header11.blen[0]); i++)
       crc = Update32 (&header11.blen[i], /*sizeof (header11.blen[0])*/ 2, crc); // it's not a bug - it's a feature
     if (crc != header.crc32) goto _err_checksum;
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     init_songdata ();
     result_state = 1;
@@ -534,7 +524,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->instr_data, buf1, uint32_LE (header11.blen[0]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // instrument macro-defs
     if (header11.blen[1] != 0)
@@ -543,7 +533,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->instr_macros, buf1, uint32_LE (header11.blen[1]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // arpeggio/vibrato macro-defs
     if (header11.blen[2] != 0)
@@ -552,7 +542,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->macro_table, buf1, uint32_LE (header11.blen[2]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // disabled fm-register columns
     if (header11.blen[3] != 0)
@@ -561,7 +551,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->dis_fmreg_col, buf1, uint32_LE (header11.blen[3]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // pattern order
     if (header11.blen[4])
@@ -570,7 +560,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->pattern_order, buf1, uint32_LE (header11.blen[4]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // patterns (x8)
     for (int i = 0; i < pat_blocks; i++)
@@ -586,7 +576,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
         }
         else limit_exceeded = true;
       }
-      next_a2t_step (progress);
+      if (progress != NULL) next_progress_step (progress);
     }
 
     song->tempo = header.tempo;
@@ -617,7 +607,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
     for (unsigned i = 0; i < sizeof (header11.blen) / sizeof (header11.blen[0]); i++)
       crc = Update32 (&header11.blen[i], /*sizeof (header11.blen[0])*/ 2, crc); // it's not a bug - it's a feature
     if (crc != header.crc32) goto _err_checksum;
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     init_songdata ();
     result_state = 1;
@@ -654,7 +644,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
         if (read_bytes (song->instr_data, unpacked_size, &stream)) goto _err_eod;
       }
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     // instrument macro-defs
     if (header11.blen[1] != 0)
@@ -663,7 +653,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->instr_macros, buf1, uint32_LE (header11.blen[1]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     if (header11.blen[2] != 0)
     {
@@ -671,7 +661,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->macro_table, buf1, uint32_LE (header11.blen[2]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     if (header11.blen[3] != 0)
     {
@@ -679,7 +669,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->dis_fmreg_col, buf1, uint32_LE (header11.blen[3]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     if (header11.blen[4] != 0)
     {
@@ -687,7 +677,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
       if (unpack_a2t_block (song->pattern_order, buf1, uint32_LE (header11.blen[4]), header.ffver, progress) != 0) goto _err_unpack;
       result_state = 2;
     }
-    next_a2t_step (progress);
+    if (progress != NULL) next_progress_step (progress);
 
     for (int i = 0; i < pat_blocks; i++)
     {
@@ -702,7 +692,7 @@ int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uin
         }
         else limit_exceeded = true;
       }
-      next_a2t_step (progress);
+      if (progress != NULL) next_progress_step (progress);
     }
 
     song->tempo = header.tempo;

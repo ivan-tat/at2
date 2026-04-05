@@ -203,16 +203,6 @@ static void import_hsc_patterns (const void *data, uint8_t patterns, bool fix_no
   } while ((patt < patterns) && (order < sizeof (song->pattern_order) / sizeof (song->pattern_order[0])));
 }
 
-static void next_hsc_step (progress_callback_t *progress)
-{
-  if (progress != NULL)
-  {
-    progress->step++;
-    progress->value = 1;
-    progress->update (progress, 1, -1);
-  }
-}
-
 static const uint8_t HSC_KSL[4] = { 0, 3, 2, 1 };
 
 // In:
@@ -287,7 +277,7 @@ int8_t hsc_file_loader (const String *_fname, progress_callback_t *progress, uin
   }
   import_old_flags ();
   result_state = 1;
-  next_hsc_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import instruments
   for (uint_least8_t i = 0; i < HSC_INSTRUMENTS_MAX; i++)
@@ -306,7 +296,7 @@ int8_t hsc_file_loader (const String *_fname, progress_callback_t *progress, uin
   for (uint_least8_t i = 0; i < HSC_ORDER_LEN; i++)
     song->pattern_order[i] = header->order[i] <= 0xB0 ? header->order[i] : 0x80;
 
-  next_hsc_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   // import patterns
   if (fsize > (long)sizeof (*header))
@@ -337,7 +327,7 @@ int8_t hsc_file_loader (const String *_fname, progress_callback_t *progress, uin
       import_hsc_patterns (patterns, num_patterns, fix_c_note_bug);
     }
   }
-  next_hsc_step (progress);
+  if (progress != NULL) next_progress_step (progress);
 
   result = 0;
 
