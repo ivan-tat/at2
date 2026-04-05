@@ -24,27 +24,11 @@ uses
   AdT2unit;
 
 {$i iloadins.inc}
-
-function a2m_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-function a2t_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-{$IFNDEF ADT2PLAY}
-function a2p_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-{$ENDIF}
-function amd_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-function cff_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-function dfm_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-function fmk_file_loader (_fname: String; var desc: Pointer; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-function hsc_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-function mtk_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-function rad_file_loader (_fname: String; var desc: Pointer; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-function s3m_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-function sat_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
+{$i iloaders.inc}
 
 procedure test_instrument_alt (chan: Byte; fkey: Word; loadMacros: Boolean; bankSelector: Boolean; loadArpVib: Boolean; test_ins1, test_ins2: Byte); cdecl; external;
 procedure test_instrument_alt2 (var src: temp_instrument_t; chan: Byte; fkey: Word); cdecl; external;
 
 implementation
-
-{$i iloaders.inc}
 
 end.
