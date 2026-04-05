@@ -49,11 +49,11 @@
 #pragma pack(push, 1)
 
 #if GO32
-#define __PAREA ADT2UNIT
-__PAREA_START (CONST)
-__PAREA_START (DATA)
-__PAREA_START (BSS)
-__PAREA_START (CODE)
+#define PAREA ADT2UNIT
+PAREA_START (CONST)
+PAREA_START (DATA)
+PAREA_START (BSS)
+PAREA_START (CODE)
 #endif // !GO32
 
 #include "typcons1.c"
@@ -375,7 +375,7 @@ void play_line (void);
 
 #if GO32
 
-__PAREA_END (CODE)
+PAREA_END (CODE)
 
 #include "adt2unit/go32/TimerSetup.c"
 #include "adt2unit/go32/TimerDone.c" // HINT: static
@@ -445,9 +445,9 @@ struct bank_position_list_t bank_position_list[MAX_NUM_BANK_POSITIONS]; // HINT:
 #include "adt2unit/add_bank_position.c"
 
 #if GO32
-__PAREA_END (CONST)
-__PAREA_END (DATA)
-__PAREA_END (BSS)
+PAREA_END (CONST)
+PAREA_END (DATA)
+PAREA_END (BSS)
 #endif // GO32
 
 #if GO32

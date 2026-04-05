@@ -1,11 +1,11 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-static uint32_t TimerCallback (__UNUSED uint32_t interval,
-                               __UNUSED void *param) {
+static uint32_t TimerCallback (UNUSED uint32_t interval,
+                               UNUSED void *param) {
   if (timer_handler)
     timer_handler ();
 

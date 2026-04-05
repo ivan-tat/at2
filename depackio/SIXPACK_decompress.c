@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #define MAXFREQ       2000
@@ -225,7 +225,7 @@ static void Sixpack_Decode (SixpackDecoderState_t *ds)
   ds->output_size = ds->obufCount;
 }
 
-uint16_t SIXPACK_decompress (const void *source, void *dest, __UNUSED uint16_t size)
+uint16_t SIXPACK_decompress (const void *source, void *dest, UNUSED uint16_t size)
 {
   uint_least16_t result = 0;
   SixpackDecoderState_t *ds = NULL;

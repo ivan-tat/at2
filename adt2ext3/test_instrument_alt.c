@@ -6,7 +6,7 @@
 
 // test_ins1: 1..255
 // test_ins2: 1..255 (0 if none)
-void test_instrument_alt (__UNUSED uint8_t chan, ExtKeyCode fkey,
+void test_instrument_alt (UNUSED uint8_t chan, ExtKeyCode fkey,
                           bool loadMacros,
                           bool bankSelector,
                           bool loadArpVib,

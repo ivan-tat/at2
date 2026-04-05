@@ -3,7 +3,7 @@
 // Ported from `adt2play/txtscrio.pas'.
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 int VGA_SaveVideoState (VGAVideoState_t *vs, bool save_screen) {
@@ -68,7 +68,7 @@ int VGA_SaveVideoState (VGAVideoState_t *vs, bool save_screen) {
 
     if (_vs.data) {
       bool ok;
-      uint8_t BDA_backup[168] __UNUSED;
+      uint8_t BDA_backup[168] UNUSED;
 
       if (false) {
         // Save BIOS Data Area

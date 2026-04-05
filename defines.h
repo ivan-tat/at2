@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -94,38 +94,38 @@
 // Common function, variable and field attributes
 
 #if GCC_VERSION >= 3000
-# define __ALIGNED     __attribute__((aligned))
-# define __ALIGNED_(x) __attribute__((aligned(x))) // x is a power of 2
+# define ALIGNED     __attribute__((aligned))
+# define ALIGNED_(x) __attribute__((aligned(x))) // x is a power of 2
 #else // GCC_VERSION < 3000
-# define __ALIGNED
-# define __ALIGNED_(x)
+# define ALIGNED
+# define ALIGNED_(x)
 #endif // GCC_VERSION < 3000
 
-#define __UNUSED GCC_ATTRIBUTE((unused))
+#define UNUSED GCC_ATTRIBUTE((unused))
 
 // Common function attributes
 
 #if GCC_VERSION >= 5000
-# define __NO_REORDER __attribute__((no_reorder))
+# define NO_REORDER __attribute__((no_reorder))
 #else // GCC_VERSION < 5000
-# define __NO_REORDER
+# define NO_REORDER
 #endif // GCC_VERSION < 5000
 
-#define __NORETURN GCC_ATTRIBUTE((noreturn))
+#define NORETURN GCC_ATTRIBUTE((noreturn))
 
 // Target-specific function attributes
 
 // This is critical so do not check GCC version for it and do not guard it:
-#define __NAKED __attribute__((naked))
+#define NAKED __attribute__((naked))
 
 #if GCC_VERSION >= 7000 && defined(__has_attribute)
 # if __has_attribute(naked)
-#  define __NAKED_RELAXED __attribute__((naked))
+#  define NAKED_RELAXED __attribute__((naked))
 # else // !__has_attribute(naked)
-#  define __NAKED_RELAXED
+#  define NAKED_RELAXED
 # endif // !__has_attribute(naked)
 #else // GCC_VERSION < 7000 || !defined(__has_attribute)
-# define __NAKED_RELAXED
+# define NAKED_RELAXED
 #endif // GCC_VERSION < 7000 || !defined(__has_attribute)
 
 // Statement attributes
@@ -133,24 +133,24 @@
 // From `gcc/system.h' of GCC:
 #if GCC_VERSION >= 7000 && defined(__has_attribute)
 # if __has_attribute(fallthrough)
-#  define __FALLTHROUGH __attribute__((fallthrough));
+#  define FALLTHROUGH __attribute__((fallthrough));
 # else // !__has_attribute(fallthrough)
-#  define __FALLTHROUGH
+#  define FALLTHROUGH
 # endif // !__has_attribute(fallthrough)
 #else // GCC_VERSION < 7000 || !defined(__has_attribute)
-# define __FALLTHROUGH
+# define FALLTHROUGH
 #endif // GCC_VERSION < 7000 || !defined(__has_attribute)
 
 #else // !defined(__GNUC__)
 
-#define __ALIGNED
-#define __ALIGNED_(x)
-#define __UNUSED
-#define __NO_REORDER
-#define __NORETURN
-#define __NAKED
-#define __NAKED_RELAXED
-#define __FALLTHROUGH
+#define ALIGNED
+#define ALIGNED_(x)
+#define UNUSED
+#define NO_REORDER
+#define NORETURN
+#define NAKED
+#define NAKED_RELAXED
+#define FALLTHROUGH
 
 #endif // !defined(__GNUC__)
 

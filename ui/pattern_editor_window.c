@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*** PATTERN EDITOR window ***/
@@ -28,7 +28,7 @@ static const String *_perc_str[5] =
 
 // return string must hold 3+1 bytes (3 printable characters)
 static String *pattern_editor_window__no_pan_str (
-  __UNUSED struct pattern_editor_window_t *self, String *s)
+  UNUSED struct pattern_editor_window_t *self, String *s)
 {
   SetLength (s, 3);
   GetStr (s)[0] = charmap.middle_dot; // '·'
@@ -42,7 +42,7 @@ static String *pattern_editor_window__no_pan_str (
 // return string must hold 5+1 bytes (3 printable characters)
 // return string format: "~cc~ " or "cc "
 static String *pattern_editor_window__op_type_str (
-  __UNUSED struct pattern_editor_window_t *self, String *s, uint8_t chan)
+  UNUSED struct pattern_editor_window_t *self, String *s, uint8_t chan)
 {
   bool slide = false;
 
@@ -107,7 +107,7 @@ static String *pattern_editor_window__op_type_str (
 // return string must hold 5+1 bytes (3 printable characters)
 // return string format: "~cc~ "
 static String *pattern_editor_window__perc_type_str (
-  __UNUSED struct pattern_editor_window_t *self, String *s, uint8_t chan)
+  UNUSED struct pattern_editor_window_t *self, String *s, uint8_t chan)
 {
   String t[1+2+1+1+1]; // 2+1 printable characters
 
@@ -121,7 +121,7 @@ static String *pattern_editor_window__perc_type_str (
 
 // value: 0..?
 static String_t pattern_editor_window__vol_bar_str (
-  __UNUSED struct pattern_editor_window_t *self, uint8_t value)
+  UNUSED struct pattern_editor_window_t *self, uint8_t value)
 {
   String_t r;
 

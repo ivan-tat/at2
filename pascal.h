@@ -95,7 +95,7 @@ extern ssize_t Pascal_TextRec_size;
 
 extern void Pascal_SetLength (String *s, size_t count);
 
-extern void Pascal_Halt (int32_t errnum) __NORETURN;
+extern void Pascal_Halt (int32_t errnum) NORETURN;
 
 extern void Pascal_FillChar (void *x, ssize_t count, uint8_t value);
 extern void Pascal_FillWord (void *x, ssize_t count, uint16_t value);

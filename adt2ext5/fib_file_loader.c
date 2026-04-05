@@ -15,7 +15,7 @@ int8_t fib_file_loader (temp_instrument_t *dst, const String *fname, char **erro
   progress_callback_t *progress = NULL;
   fin_bank_t *fin_bank = NULL;
   String (*queue)[][FIB_HEADER_STR_MAX+1] = NULL; // TODO: use structure and pass it to `Menu()'
-  uint16_t index, first, __UNUSED last; // `first' and `last' are for future use
+  uint16_t index, first, UNUSED last; // `first' and `last' are for future use
   void (*old_external_proc) (void);
   uint8_t old_topic_len;
   bool old_cycle_moves;

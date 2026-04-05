@@ -3,7 +3,7 @@
 // Ported from `adt2play/txtscrio.pas'.
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void VGA_RestoreVideoState (VGAVideoState_t *vs, bool restore_screen) {
@@ -52,7 +52,7 @@ void VGA_RestoreVideoState (VGAVideoState_t *vs, bool restore_screen) {
   VGA_SetCursorShape (vs->curshape);
 
   if (data_seg >= 0) {
-    uint8_t BDA_backup[168] __UNUSED;
+    uint8_t BDA_backup[168] UNUSED;
     __dpmi_regs regs;
 
     if (false) {

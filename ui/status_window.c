@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*** STATUS window ***/
@@ -419,7 +419,7 @@ static void status_window__draw_module_archived_flag (
 }
 
 static void status_window__status_refresh (struct status_window_t *self,
-  __UNUSED bool show_optional)
+  UNUSED bool show_optional)
 {
   if (no_status_refresh)
   {
@@ -453,7 +453,7 @@ static void status_window__status_refresh (struct status_window_t *self,
 }
 
 static void status_window__status_refresh2 (
-  __UNUSED struct status_window_t *self)
+  UNUSED struct status_window_t *self)
 {
   // nothing
 }

@@ -5,7 +5,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // chan: 1..20
-void test_instrument_alt2 (temp_instrument_t *dst, __UNUSED uint8_t chan, ExtKeyCode fkey)
+void test_instrument_alt2 (temp_instrument_t *dst, UNUSED uint8_t chan, ExtKeyCode fkey)
 {
   uint8_t octave; // 0..7
   int_least8_t board_pos; // 0..28, < 0 if not found

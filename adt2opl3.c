@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
@@ -33,11 +33,11 @@ static void opl3out_proc (uint16_t reg, uint16_t data);
 
 // IRQ/library data/code start {
 
-#define __PAREA ADT2OPL3
-__PAREA_START (CONST)
-__PAREA_START (DATA)
-__PAREA_START (BSS)
-__PAREA_START (CODE)
+#define PAREA ADT2OPL3
+PAREA_START (CONST)
+PAREA_START (DATA)
+PAREA_START (BSS)
+PAREA_START (CODE)
 
 uint16_t opl3port = 0;
 uint8_t  opl_latency = 0;
@@ -88,10 +88,10 @@ tOPL3OUT_proc *opl3out = opl3out_proc;
 
 #if GO32
 
-__PAREA_END (CONST)
-__PAREA_END (DATA)
-__PAREA_END (BSS)
-__PAREA_END (CODE)
+PAREA_END (CONST)
+PAREA_END (DATA)
+PAREA_END (BSS)
+PAREA_END (CODE)
 
 // } IRQ/library data/code end
 

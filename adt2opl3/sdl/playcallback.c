@@ -1,10 +1,10 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-void playcallback (__UNUSED void *userdata, uint8_t *stream, int32_t len) {
+void playcallback (UNUSED void *userdata, uint8_t *stream, int32_t len) {
   int32_t IRQ_freq_val = (!_rewind) ? IRQ_freq : (IRQ_freq * 20);
   uint32_t *buffer_ptr_table[18]; // HINT: (FPC) start index 1
   int32_t counter_idx = 0;

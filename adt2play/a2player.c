@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <stdlib.h>
@@ -28,11 +28,11 @@
 #pragma pack(push, 1)
 
 #if GO32
-#define __PAREA A2PLAYER
-__PAREA_START (CONST)
-__PAREA_START (DATA)
-__PAREA_START (BSS)
-__PAREA_START (CODE)
+#define PAREA A2PLAYER
+PAREA_START (CONST)
+PAREA_START (DATA)
+PAREA_START (BSS)
+PAREA_START (CODE)
 #endif // !GO32
 
 void (*timer_poll_proc_ptr) (void) = NULL;
@@ -292,10 +292,10 @@ void play_line (void);
 #include "adt2unit/timer_poll_proc.c" // static
 
 #if GO32
-__PAREA_END (CONST)
-__PAREA_END (DATA)
-__PAREA_END (BSS)
-__PAREA_END (CODE)
+PAREA_END (CONST)
+PAREA_END (DATA)
+PAREA_END (BSS)
+PAREA_END (CODE)
 #endif // GO32
 
 #if GO32
