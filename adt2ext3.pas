@@ -38,33 +38,13 @@ function hsc_file_loader (_fname: String; progress: progress_callback_p; var sta
 function mtk_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function rad_file_loader (_fname: String; var desc: Pointer; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function s3m_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-procedure sat_file_loader;
-procedure sa2_file_loader;
+function sat_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 
 procedure test_instrument_alt (chan: Byte; fkey: Word; loadMacros: Boolean; bankSelector: Boolean; loadArpVib: Boolean; test_ins1, test_ins2: Byte); cdecl; external;
 procedure test_instrument_alt2 (var src: temp_instrument_t; chan: Byte; fkey: Word); cdecl; external;
 
 implementation
 
-uses
-  debug,
-  DOS,
-  AdT2opl3,
-  AdT2sys,
-  AdT2keyb,
-  AdT2extn,
-  AdT2ext2,
-  AdT2ext4,
-  AdT2ext5,
-  AdT2text,
-  AdT2pack,
-  StringIO,
-  DialogIO,
-  ParserIO,
-  TxtScrIO,
-  DepackIO;
-
-{$I go32/PIT/pas/PIT_consts.inc}
 {$i iloaders.inc}
 
 end.

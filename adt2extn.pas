@@ -5699,9 +5699,19 @@ _jmp1:
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' S3M Loader '), 1)
     else
       load_flag := 1;
+  end else If ((Lower(ExtOnly(fname)) = 'sat') or (Lower(ExtOnly(fname)) = 'sa2')) then
+  begin
+    If (play_status <> isStopped) then
+    begin
+      fade_out_playback (false);
+      stop_playing;
+    end;
+    loader_status := sat_file_loader (songdata_source, progress, state, error);
+    if (loader_status < 0) then
+      Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' SAT/SA2 Loader '), 1)
+    else
+      load_flag := 1;
   end;
-  If (Lower(ExtOnly(fname)) = 'sat') then sat_file_loader;
-  If (Lower(ExtOnly(fname)) = 'sa2') then sa2_file_loader;
   If (Lower(ExtOnly(fname)) = 'a2i') then
   begin
     if (a2i_file_loader_alt (temp_instrument, instdata_source, false, progress, error) <> 0) then

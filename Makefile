@@ -392,10 +392,8 @@ adt2ext2_ppu_deps=\
 
 adt2ext3_ppu_deps=\
  $(srcdir)/adt2ext3.pas\
- $(srcdir)/go32/PIT/pas/PIT_consts.inc\
  $(srcdir)/iloaders.inc\
  $(srcdir)/iloadins.inc\
- units/debug.ppu\
  adt2ext3.o
 
 adt2ext4_ppu_deps=\

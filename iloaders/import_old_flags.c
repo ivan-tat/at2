@@ -4,7 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-/*static*/ void import_old_flags (void)
+static void import_old_flags (void)
 {
   tFIXED_SONGDATA *song = &songdata;
 

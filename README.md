@@ -128,6 +128,7 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 * [OPL3BankEditor](https://github.com/Wohlstand/OPL3BankEditor) - a small cross-platform editor of the OPL3 FM banks of different formats
 * [Digital-FM Tracker](https://verhaagr.home.xs4all.nl/) by R.Verhaag - AdLib music tracker for DOS (80286 and above, CGA and above)
 * [FM-Kingtracker v1.06](https://adplug.github.io/library/entry/FMKingtracker106f.html) by Sami Wilenius - a freeware "Scream Tracker 3"-like OPL2/OPL3 tracker for DOS (386 and above, VGA)
+* [Surprise! Adlib Tracker 2.0](https://adplug.github.io/library/entry/SurpriseAdlibTracker2.html) by Erik Pojar - text-mode AdLib tracker for DOS (80286 and above, VGA)
 
 ### Fonts
 
