@@ -10,7 +10,6 @@
 #include "go32/PIT/PIT_consts.h"
 #include "common.h"
 #include "debug.h"
-#include "depackio.h"
 #include "adt2pack.h"
 #include "adt2keyb.h"
 #include "adt2opl3.h"

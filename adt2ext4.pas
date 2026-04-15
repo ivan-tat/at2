@@ -57,12 +57,10 @@ uses
   AdT2ext3,
   AdT2ext5,
   AdT2text,
-  AdT2pack,
   StringIO,
   DialogIO,
   ParserIO,
-  TxtScrIO,
-  DepackIO;
+  TxtScrIO;
 
 const
   _pip_xloc: Byte = 1;

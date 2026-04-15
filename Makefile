@@ -1,6 +1,6 @@
 #!/bin/make -f
 # SPDX-FileType: SOURCE
-# SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+# SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 makefile:=$(realpath $(lastword $(MAKEFILE_LIST)))
@@ -62,12 +62,16 @@ SRCS=\
  adt2extn.c\
  adt2keyb.c\
  adt2opl3.c\
- adt2pack.c\
+ adt2pack/APACK.c\
+ adt2pack/LZH.c\
+ adt2pack/LZSS.c\
+ adt2pack/LZW.c\
+ adt2pack/RDC.c\
+ adt2pack/SIXPACK.c\
  adt2sys.c\
  adt2unit.c\
  common.c\
  debug.c\
- depackio.c\
  dialogio.c\
  font.c\
  go32/adt2vesa.c\
@@ -420,7 +424,12 @@ adt2opl3_ppu_deps=\
 
 adt2pack_ppu_deps=\
  $(srcdir)/adt2pack.pas\
- adt2pack.o
+ adt2pack/APACK.o\
+ adt2pack/LZH.o\
+ adt2pack/LZSS.o\
+ adt2pack/LZW.o\
+ adt2pack/SIXPACK.o\
+ adt2pack/RDC.o
 
 adt2sys_ppu_deps=\
  $(srcdir)/adt2sys.pas\
@@ -452,10 +461,6 @@ ifeq ($(FPC_OS_TARGET),go32v2)
   units/iss_tim.ppu\
   units/PIT.ppu
 endif
-
-depackio_ppu_deps=\
- $(srcdir)/depackio.pas\
- depackio.o
 
 dialogio_ppu_deps=\
  $(srcdir)/dialogio.pas\
@@ -500,7 +505,6 @@ adtrack2_bin_deps+=\
  $(adt2sys_ppu_deps)\
  $(adt2text_ppu_deps)\
  $(adt2unit_ppu_deps)\
- $(depackio_ppu_deps)\
  $(dialogio_ppu_deps)\
  $(txtscrio_ppu_deps)\
  units/adt2data.ppu\

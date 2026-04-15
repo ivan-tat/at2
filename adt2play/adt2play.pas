@@ -29,7 +29,6 @@ uses
   adt2opl3,
   adt2ext3,
   adt2pack,
-  depackio,
   A2scrIO,
   StringIO,
   TxtScrIO;

@@ -4,13 +4,11 @@
 // SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "defines.h"
-#include <stdint.h>
+#include "adt2pack.h"
 #include <stdlib.h>
 #if !ADT2PLAY
 #include "dialogio.h" // TODO: remove after adding proper `progress_callback_t' usage
 #endif // !ADT2PLAY
-#include "adt2pack.h"
 
 // HINT: (FPC) S-: Stack checking (off)
 // HINT: (FPC) Q-: Overflow checking (off)

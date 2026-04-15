@@ -68,8 +68,7 @@ uses
   StringIO,
   DialogIO,
   ParserIO,
-  TxtScrIO,
-  DepackIO;
+  TxtScrIO;
 
 procedure a2b_lister_external_proc; cdecl; forward;
 procedure a2b_lister_external_proc_callback; cdecl; external;

@@ -17,11 +17,18 @@ unit AdT2pack;
 {$S-,Q-,R-,V-,B-,X+}
 {$PACKRECORDS 1}
 {$MODESWITCH CVAR}
-{$L adt2pack.o}
+{$L adt2pack/APACK.o}
+{$L adt2pack/LZH.o}
+{$L adt2pack/LZSS.o}
+{$L adt2pack/LZW.o}
+{$L adt2pack/RDC.o}
+{$L adt2pack/SIXPACK.o}
 interface
 
 uses
   adt2unit;
+
+function APACK_decompress(var source,dest): Dword; cdecl; external;
 
 type
   LZH_block_info_p = ^LZH_block_info_t;
@@ -30,22 +37,25 @@ type
     size: Longword;
   end;
 
-// Compression algorithm: LZH
-// Algorithm developed by Haruhiko Okomura & Haruyasu Yoshizaki
-
 {$IFNDEF ADT2PLAY}
 function LZH_compress(var source,dest; size: Dword): Dword; cdecl;
 function LZH_compress_ultra(var source,dest; size: Dword): Dword; cdecl;
 {$ENDIF} // NOTE DEFINED(ADT2PLAY)
 function LZH_decompress (var source, dest; size: Dword; progress: progress_callback_p): Dword; cdecl; external;
 
+function LZSS_decompress(var source,dest; size: Word): Word; cdecl; external;
+
+function LZW_decompress(var source,dest): Word; cdecl; external;
+
+function RDC_decompress(var source,dest; size: Word): Word; cdecl; external;
+
+function SIXPACK_decompress(var source,dest; size: Word): Word; cdecl; external;
+
 implementation
 
 {$IFNDEF ADT2PLAY}
 uses
-  pascal,
-  AdT2sys,
-  AdT2extn;
+  pascal;
 
 {$I adt2pack/pas/LZH_defs.new.inc}
 {$I adt2pack/pas/LZH_compress.new.pas}

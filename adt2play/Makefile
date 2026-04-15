@@ -45,11 +45,15 @@ SRCS=\
  adt2ext3.c\
  adt2keyb.c\
  adt2opl3.c\
- adt2pack.c\
+ adt2pack/APACK.c\
+ adt2pack/LZH.c\
+ adt2pack/LZSS.c\
+ adt2pack/LZW.c\
+ adt2pack/RDC.c\
+ adt2pack/SIXPACK.c\
  adt2unit.c\
  common.c\
  debug.c\
- depackio.c\
  go32/dpmi.c\
  go32/iss_tim.c\
  go32/VGA.c\
@@ -347,10 +351,6 @@ ifeq ($(FPC_OS_TARGET),go32v2)
   units/PIT.ppu
 endif
 
-depackio_ppu_deps=\
- $(srcdir)/depackio.pas\
- depackio.o
-
 a2scrio_ppu_deps=\
  $(srcdir1)/a2scrio.pas\
  units/debug.ppu
@@ -363,7 +363,12 @@ adt2ext3_ppu_deps=\
 
 adt2pack_ppu_deps=\
  $(srcdir)/adt2pack.pas\
- adt2pack.o
+ adt2pack/APACK.o\
+ adt2pack/LZH.o\
+ adt2pack/LZSS.o\
+ adt2pack/LZW.o\
+ adt2pack/SIXPACK.o\
+ adt2pack/RDC.o
 
 # Setup target dependencies
 
@@ -377,7 +382,6 @@ adt2play_bin_deps+=\
  $(adt2opl3_ppu_deps)\
  $(adt2pack_ppu_deps)\
  $(adt2unit_ppu_deps)\
- $(depackio_ppu_deps)\
  $(a2scrio_ppu_deps)\
  units/a2data.ppu\
  units/adt2keyb.ppu\
