@@ -26,8 +26,10 @@ uses
 {$i iloadins.inc}
 {$i iloaders.inc}
 
+{$IFNDEF ADT2PLAY}
 procedure test_instrument_alt (chan: Byte; fkey: Word; loadMacros: Boolean; bankSelector: Boolean; loadArpVib: Boolean; test_ins1, test_ins2: Byte); cdecl; external;
 procedure test_instrument_alt2 (var src: temp_instrument_t; chan: Byte; fkey: Word); cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 implementation
 

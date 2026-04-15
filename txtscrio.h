@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -16,13 +16,11 @@
 #if USE_FPC
 #include "pascal.h"
 #endif // USE_FPC
-#if !ADT2PLAY
 #if GO32
 #include "go32/VGA.h"
 #endif // GO32
 #include "adt2keyb.h"
 #include "stringio.h"
-#endif // !ADT2PLAY
 
 // HINT: (FPC) $PACKRECORDS 1: Alignment of record elements (1)
 

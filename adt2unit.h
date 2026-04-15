@@ -38,8 +38,15 @@
 // patterns order
 #define AT_ORDER_JUMP 0x80
 
+#if ADT2PLAY
+// TODO: rename `decay_bar' into `spectrum_bar'
+#define DECAY_BARS 25 // to map playing note into the range 1..DECAY_BARS
+#endif // ADT2PLAY
+
 #include "typcons1.h"
+#if !ADT2PLAY
 #include "typcons2.h"
+#endif // !ADT2PLAY
 
 typedef struct progress_callback_s {
   char msg[63+1];
@@ -56,16 +63,28 @@ extern uint8_t  tempo;
 extern uint8_t  speed;
 extern uint16_t macro_speedup;
 extern bool     timer_initialized;
+#if !ADT2PLAY
 extern bool     repeat_pattern;
+#endif // !ADT2PLAY
 extern bool     fast_forward;
+#if !ADT2PLAY
 extern bool     _rewind;
+#endif // !ADT2PLAY
 extern bool     pattern_break;
+#if ADT2PLAY
+extern bool     pattern_break_loop;
+extern bool     pattern_break_docmd;
+extern uint8_t  pattern_break_oldord;
+#endif // ADT2PLAY
 extern bool     pattern_delay;
 extern uint8_t  next_line;
+#if !ADT2PLAY
 extern uint8_t  start_order;
 extern uint8_t  start_pattern;
 extern uint8_t  start_line;
+#endif // !ADT2PLAY
 extern bool     replay_forbidden;
+#if !ADT2PLAY
 extern bool     single_play;
 extern bool     calibrating;
 extern bool     no_status_refresh;
@@ -78,10 +97,15 @@ extern bool     no_step_debugging;
 extern bool     play_single_patt;
 extern bool     no_trace_pattord;
 extern bool     skip_macro_flag;
+#endif // !ADT2PLAY
 extern uint8_t  max_patterns;
+#if !ADT2PLAY
 extern bool     jump_mark_mode;
+#endif // !ADT2PLAY
 extern bool     force_macro_keyon;
+#if !ADT2PLAY
 extern bool     ins_trailing_flag;
+#endif // !ADT2PLAY
 
 extern const uint8_t def_vibtrem_speed_factor;
 extern const uint8_t def_vibtrem_table_size;
@@ -104,11 +128,13 @@ extern tVIBRATO_TREMOLO_TABLE vibr_table2;
 extern tVIBRATO_TREMOLO_TABLE trem_table;
 extern tVIBRATO_TREMOLO_TABLE trem_table2;
 
+#if !ADT2PLAY
 extern void (*macro_preview_indic_proc) (uint8_t state);
 
 extern int32_t seconds_counter;
 extern int32_t hundereds_counter;
 extern bool    really_no_status_refresh;
+#endif // !ADT2PLAY
 
 #define keyoff_flag        0x80
 #define fixed_note_flag    0x90
@@ -125,11 +151,13 @@ extern bool       peak_lock    [20]; // HINT: (FPC) start index 1
 extern bool       pan_lock     [20]; // HINT: (FPC) start index 1
 extern uint8_t    modulator_vol[20]; // HINT: (FPC) start index 1
 extern uint8_t    carrier_vol  [20]; // HINT: (FPC) start index 1
-#if !ADT2PLAY
+#if ADT2PLAY
+extern tDECAY_BAR decay_bar    [DECAY_BARS]; // HINT: (FPC) start index 1
+#else // !ADT2PLAY
 extern tDECAY_BAR decay_bar    [20]; // HINT: (FPC) start index 1
 extern tVOLUM_BAR volum_bar    [20]; // HINT: (FPC) start index 1
-#endif // !ADT2PLAY
 extern bool       channel_flag [20]; // HINT: (FPC) start index 1
+#endif // !ADT2PLAY
 extern tCHUNK     event_table  [20]; // HINT: (FPC) start index 1
 extern uint8_t    voice_table  [20]; // HINT: (FPC) start index 1
 extern uint16_t   freq_table   [20]; // HINT: (FPC) start index 1
@@ -157,7 +185,9 @@ extern uint16_t   last_effect  [20]; // HINT: (FPC) start index 1
 extern uint16_t   last_effect2 [20]; // HINT: (FPC) start index 1
 extern uint8_t    volslide_type[20]; // HINT: (FPC) start index 1
 extern bool       event_new    [20]; // HINT: (FPC) start index 1
+#if !ADT2PLAY
 extern uint16_t   freqtable2   [20]; // HINT: (FPC) start index 1
+#endif // !ADT2PLAY
 extern uint8_t    notedel_table[20]; // HINT: (FPC) start index 1
 extern uint8_t    notecut_table[20]; // HINT: (FPC) start index 1
 extern int8_t     ftune_table  [20]; // HINT: (FPC) start index 1
@@ -175,13 +205,16 @@ extern uint8_t    loopbck_table[20]; // HINT: (FPC) start index 1
 extern uint8_t    loop_table   [20][256]; // HINT: (FPC) start index 1,0
 
 extern uint8_t misc_register;
+#if !ADT2PLAY
 extern uint8_t ai_table[255]; // HINT: (FPC) start index 1
+#endif // !ADT2PLAY
 
 extern uint8_t  overall_volume;
 extern uint8_t  global_volume;
 extern uint8_t  fade_out_volume;
 extern int32_t  playback_speed_shift;
 extern tPLAY_STATUS play_status;
+#if !ADT2PLAY
 extern uint8_t  chan_pos;
 extern uint8_t  chpos;
 extern uint8_t  transpos;
@@ -189,6 +222,7 @@ extern uint8_t  track_chan_start;
 extern uint8_t  nm_track_chan;
 extern uint16_t play_pos_buf[9]; // HINT: (FPC) start index 1
 extern uint8_t  rec_correction;
+#endif // !ADT2PLAY
 
 #define MACRO_NOTE_RETRIG_FLAG 0x80
 #define MACRO_ENVELOPE_RESTART_FLAG 0x40
@@ -199,15 +233,20 @@ extern uint8_t current_pattern;
 extern uint8_t current_line;
 extern uint8_t current_tremolo_depth;
 extern uint8_t current_vibrato_depth;
+#if !ADT2PLAY
 extern uint8_t current_inst;
 extern uint8_t current_octave;
 
 extern String adt2_title[37][18+1]; // HINT: (FPC) start index 0
+#endif // !ADT2PLAY
 
 extern String songdata_source[255+1]; // HINT: (FPC) length not set (default)
+#if !ADT2PLAY
 extern String instdata_source[255+1]; // HINT: (FPC) length not set (default)
+#endif // !ADT2PLAY
 extern String songdata_title [255+1]; // HINT: (FPC) length not set (default)
 
+#if !ADT2PLAY
 extern uint32_t songdata_crc, songdata_crc_ord;
 extern temp_instrument_t temp_instrument;
 extern uint8_t pattord_page;
@@ -217,13 +256,18 @@ extern uint8_t instrum_page;
 extern uint8_t pattern_patt;
 extern uint8_t pattern_page;
 extern uint8_t pattern_hpos;
+#endif // !ADT2PLAY
 extern bool    limit_exceeded;
+#if !ADT2PLAY
 extern uint8_t load_flag;
+#endif // !ADT2PLAY
 extern bool    reset_chan      [20]; // HINT: (FPC) start index 1
+#if !ADT2PLAY
 extern bool    reset_adsrw     [20]; // HINT: (FPC) start index 1
 extern bool    ignore_note_once[20]; // HINT: (FPC) start index 1
 extern bool    track_notes_ins;
 extern bool    seek_pattern_break;
+#endif // !ADT2PLAY
 
 extern bool    speed_update, lockvol, panlock, lockVP;
 extern uint8_t tremolo_depth, vibrato_depth;
@@ -240,12 +284,13 @@ extern tPATTERN_DATA *pattdata;
 extern tOLD_VARIABLE_DATA1 old_hash_buffer;
 extern tOLD_VARIABLE_DATA2 hash_buffer;
 extern tOLD_FIXED_SONGDATA old_songdata;
-extern uint16_t dos_memavail;
 
 extern tFIXED_SONGDATA songdata;
+#if !ADT2PLAY
 extern tFIXED_SONGDATA songdata_bak;
 extern tFIXED_SONGDATA temp_songdata;
 extern tCLIPBOARD      clipboard;
+#endif // !ADT2PLAY
 /*
 extern void *ptr_songdata;
 extern void *ptr_songdata_bak;
@@ -255,8 +300,12 @@ extern void *ptr_clipboard;
 extern int32_t song_timer, timer_temp;
 extern int32_t song_timer_tenths;
 extern int32_t ticks, tick0, tickD, tickXF;
-extern double  time_playing, time_playing0;
+extern double  time_playing;
+#if !ADT2PLAY
+extern double  time_playing0;
+#endif // !ADT2PLAY
 
+#if !ADT2PLAY
 #if GO32
 extern int32_t  timer_determinator;
 extern int32_t  timer_det2;
@@ -290,6 +339,7 @@ extern struct status_backup_t {
 } status_backup;
 
 int8_t board_get_pos (uint8_t octave, ExtKeyCode fkey);
+#endif // !ADT2PLAY
 
 uint16_t nFreq (uint8_t note);
 void     change_freq (uint8_t chan, uint16_t freq);
@@ -300,8 +350,10 @@ bool     is_chan_adsr_data_empty (uint8_t chan);
 bool     is_ins_adsr_data_empty (uint8_t ins);
 uint8_t  scale_volume (uint8_t volume, uint8_t scale_factor);
 uint16_t _macro_speedup (void);
+#if !ADT2PLAY
 void calibrate_player (uint8_t order, uint8_t line,
                        bool status_filter, bool line_dependent);
+#endif // !ADT2PLAY
 void update_timer (uint16_t Hz);
 void key_on (uint8_t chan);
 void key_off (uint8_t chan);
@@ -311,17 +363,24 @@ void set_ins_volume (uint8_t modulator, uint8_t carrier, uint8_t chan);
 void update_modulator_adsrw (uint8_t chan);
 void update_carrier_adsrw (uint8_t chan);
 void update_fmpar (uint8_t chan);
+#if !ADT2PLAY
 void reset_chan_data (uint8_t chan);
+#endif // !ADT2PLAY
 void poll_proc (void);
 void macro_poll_proc (void);
 void init_buffers (void);
 void init_player (void);
+#if !ADT2PLAY
 void reset_player (void);
+#endif // !ADT2PLAY
 void start_playing (void);
 void stop_playing (void);
 void update_song_position (void);
 void change_frequency (uint8_t chan, uint16_t freq);
 void set_global_volume (void);
+#if ADT2PLAY
+void set_overall_volume (uint8_t level);
+#endif // ADT2PLAY
 void set_ins_data (uint8_t ins, uint8_t chan);
 void init_timer_proc (void);
 void done_timer_proc (void);
@@ -333,26 +392,36 @@ void trace_update_proc (void);
 void get_chunk (uint8_t pattern, uint8_t line, uint8_t channel, tCHUNK *chunk);
 void put_chunk (uint8_t pattern, uint8_t line, uint8_t channel, const tCHUNK *chunk);
 
+#if !ADT2PLAY
 uint8_t get_chanpos (const void *data, uint8_t channels, uint8_t scancode);
 uint8_t get_chanpos2 (const void *data, uint8_t channels, uint8_t scancode);
 uint8_t count_channel (uint8_t hpos);
 uint8_t count_pos (uint8_t hpos);
+#endif // !ADT2PLAY
 uint16_t calc_max_speedup (uint8_t tempo);
+#if !ADT2PLAY
 double  calc_bpm_speed (uint8_t tempo, uint8_t speed, uint8_t rows_per_beat);
 double  calc_realtime_bpm_speed (uint8_t tempo, uint8_t speed, uint8_t rows_per_beat);
+#endif // !ADT2PLAY
 int16_t calc_order_jump (void);
 int16_t calc_following_order (uint8_t order);
 bool    is_4op_chan (uint8_t chan);
 
+#if !ADT2PLAY
 #include "realtime.h"
+#endif // !ADT2PLAY
 
 void count_order (uint8_t *entries);
+#if !ADT2PLAY
 void count_patterns (uint8_t *patterns);
 void count_instruments (uint8_t *instruments);
+#endif // !ADT2PLAY
 void init_old_songdata (void);
 void init_songdata (void);
+#if !ADT2PLAY
 void update_instr_data (uint8_t ins);
 void load_instrument (const void *data, uint8_t chan);
+#endif // !ADT2PLAY
 void output_note (uint8_t note, uint8_t ins, uint8_t chan,
                   bool restart_macro, bool restart_adsr);
 
@@ -360,6 +429,7 @@ int32_t min (int32_t value, int32_t minimum);
 int32_t max (int32_t value, int32_t maximum);
 void    TimerSetup (uint32_t Hz);
 
+#if !ADT2PLAY
 extern uint8_t block_xstart;
 extern uint8_t block_ystart;
 
@@ -370,10 +440,21 @@ extern uint8_t block_y1;
 
 bool is_in_block (uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
 void fade_out_playback (bool fade_screen);
+#endif // !ADT2PLAY
 
 extern int32_t ticklooper;
 extern int32_t macro_ticklooper;
+#if ADT2PLAY
+extern int32_t timer_ticklooper;
+extern int32_t timer_200hz_counter;
+extern int32_t timer_50hz_counter;
+extern int32_t timer_20hz_counter;
+extern bool    timer_200hz_flag;
+extern bool    timer_50hz_flag;
+extern bool    timer_20hz_flag;
+#endif // ADT2PLAY
 
+#if !ADT2PLAY
 #if GO32
 // Length of `bank_position_list.bank_name' string (introduced while porting to C)
 #define BANK_NAME_LEN 50
@@ -398,6 +479,7 @@ int32_t get_bank_position (const String *bank_name, int32_t bank_size);
 void add_bank_position (const String *bank_name, int32_t bank_size, int32_t bank_position);
 
 void realtime_gfx_poll_proc (void);
+#endif // !ADT2PLAY
 
 #if GO32
 void init_adt2unit (void);

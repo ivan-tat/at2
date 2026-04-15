@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // This file is included in `adt2unit.c'
@@ -401,7 +401,9 @@ bool     scroll_bars         = true;
 uint8_t  fforward_factor     = 1;
 uint8_t  rewind_factor       = 1;
 int32_t  ssaver_time         = 300;
+#endif // !ADT2PLAY
 bool     timer_fix           = true;
+#if !ADT2PLAY
 float    decay_bar_rise      = 3.00f;
 float    decay_bar_fall      = 0.30f;
 uint8_t  force_ins           = 0;
@@ -410,12 +412,16 @@ bool     trace_by_default    = true;
 bool     nosync_by_default   = false;
 bool     keep_position       = true;
 bool     alt_ins_name        = true;
+#endif // !ADT2PLAY
 bool     adjust_tracks       = true;
+#if !ADT2PLAY
 bool     mark_lines          = false;
 bool     use_large_cursor    = false;
-bool     accurate_conv       = false;
+#endif // !ADT2PLAY
+bool     accurate_conv       = ADT2PLAY ? true : false;
 bool     fix_c_note_bug      = true;
 
+#if !ADT2PLAY
 uint8_t  analyzer_bckg       = 0x10;
 uint8_t  analyzer            = 0x03;
 uint8_t  analyzer_ovrllvol   = 0x03;

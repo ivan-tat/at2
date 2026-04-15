@@ -21,10 +21,12 @@
 #include "iloadins.h"
 #include "iloaders.h"
 
+#if !ADT2PLAY
 void test_instrument_alt (uint8_t chan, ExtKeyCode fkey,
                           bool loadMacros, bool bankSelector, bool loadArpVib,
                           uint8_t test_ins1, uint8_t test_ins2);
 void test_instrument_alt2 (temp_instrument_t *src, uint8_t chan, ExtKeyCode fkey);
+#endif // !ADT2PLAY
 
 #pragma pack(pop)
 

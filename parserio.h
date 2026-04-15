@@ -13,12 +13,16 @@
 #include <stdint.h>
 #include <stdio.h> // ssize_t
 
+#if !ADT2PLAY
 int32_t Scan (const void *buf, ssize_t skip, ssize_t size, const String *str);
+#endif // !ADT2PLAY
 int32_t SensitiveScan (const void *buf, ssize_t skip, ssize_t size,
                        const String *str);
+#if !ADT2PLAY
 bool Compare (const char *buf1, const char *buf2, size_t size);
 bool Empty (const void *buf, size_t size);
 size_t CountLines (const char *buf, size_t size);
+#endif // !ADT2PLAY
 
 #define CRC16_INITVAL UINT16_C(0xFFFF)
 #define CRC32_INITVAL UINT32_C(0xFFFFFFFF)

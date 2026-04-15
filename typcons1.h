@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // This file is included in `adt2unit.h'
@@ -24,13 +24,9 @@
 #define FFVER_A2B 10
 #define FFVER_A2W 3
 
-#if !ADT2PLAY
-
 #define GENERIC_IO_BUFFER_SIZE 1500*1024 // 1.5MB I/O Buffer
 
 typedef uint8_t tGENERIC_IO_BUFFER[GENERIC_IO_BUFFER_SIZE]; // HINT: (FPC) start index 0
-
-#endif // !ADT2PLAY
 
 typedef struct {
   uint8_t AM_VIB_EG_modulator;
@@ -557,7 +553,9 @@ extern bool     scroll_bars;
 extern uint8_t  fforward_factor;
 extern uint8_t  rewind_factor;
 extern int32_t  ssaver_time;
+#endif // !ADT2PLAY
 extern bool     timer_fix;
+#if !ADT2PLAY
 extern float    decay_bar_rise;
 extern float    decay_bar_fall;
 extern uint8_t  force_ins;  // force type of `.ins' file:
@@ -570,12 +568,16 @@ extern bool     trace_by_default;
 extern bool     nosync_by_default;
 extern bool     keep_position;
 extern bool     alt_ins_name;
+#endif // !ADT2PLAY
 extern bool     adjust_tracks;
+#if !ADT2PLAY
 extern bool     mark_lines;
 extern bool     use_large_cursor;
+#endif // !ADT2PLAY
 extern bool     accurate_conv;
 extern bool     fix_c_note_bug;
 
+#if !ADT2PLAY
 extern uint8_t  analyzer_bckg;
 extern uint8_t  analyzer;
 extern uint8_t  analyzer_ovrllvol;

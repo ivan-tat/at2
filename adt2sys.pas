@@ -89,12 +89,12 @@ procedure vid_SetVideoMode(do_delay: Boolean); cdecl; external;
 procedure vid_SetRGBPalette(var palette); cdecl; external;
 procedure vid_FadeOut; cdecl; external;
 
-{$ELSE}
+{$ELSE} // DEFINED(GO32V2)
 
 var
   _FrameBuffer_mirror: array[0..PRED(1024*768)] of Byte; cvar; external;
 
-{$ENDIF}
+{$ENDIF} // DEFINED(GO32V2)
 
 procedure ResetF_RW(var f: File); cdecl; external;
 procedure ResetF(var f: File); cdecl; external;
@@ -106,79 +106,5 @@ procedure EraseF(var f: File); cdecl; external;
 procedure CloseF(var f: File); cdecl; external;
 
 implementation
-
-uses
-  debug,
-  pascal,
-  DOS,
-{$IFDEF GO32V2}
-  GO32,
-  VGA,
-  AdT2vesa,
-{$ELSE}
-  SDL,
-  SDL_Video,
-  SDL_Timer,
-  SDL__rwops,
-  AdT2opl3,
-{$ENDIF}
-  AdT2unit,
-  AdT2text,
-  AdT2keyb,
-  AdT2data,
-  TxtScrIO,
-  StringIO,
-  ParserIO;
-
-{$IFNDEF GO32V2}
-//screen
-//rgb_color_alt
-{$ENDIF} // DEFINED(GO32V2)
-
-//sys_init
-//sys_done
-
-{$IFDEF GO32V2}
-
-//draw_VESA_screen_800x600_1
-//draw_VESA_screen_800x600_2
-//draw_VESA_screen_1024x768
-//dump_VESA_buffer
-//shift_text_screen
-//draw_screen
-
-{$ELSE}
-
-{$IFNDEF CPU64}
-
-//draw_SDL_screen_720x480
-//draw_SDL_screen_960x800
-//draw_SDL_screen_1440x960
-
-{$ELSE}
-
-//draw_SDL_screen
-
-{$ENDIF}
-
-//draw_screen_proc
-
-//vid_Init
-//vid_Deinit
-//vid_SetRGBPalette
-//draw_screen
-//vid_SetVideoMode
-//vid_FadeOut
-
-{$ENDIF}
-
-//ResetF_RW
-//ResetF
-//RewriteF
-//BlockReadF
-//BlockWriteF
-//SeekF
-//EraseF
-//CloseF
 
 end.

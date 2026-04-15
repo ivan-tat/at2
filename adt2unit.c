@@ -19,7 +19,9 @@
 #include <dos.h>
 #include "go32/adt2dpmi.h"
 #include "go32/iss_tim.h"
+#if !ADT2PLAY
 #include "go32/mouse.h"
+#endif // !ADT2PLAY
 #else // !GO32
 #include <SDL/SDL_timer.h>
 #if USE_FPC
@@ -27,10 +29,11 @@
 #endif // USE_FPC
 #endif // !GO32
 #include "go32/PIT/PIT_consts.h"
+#include "stringio.h"
 #include "adt2keyb.h"
 #include "adt2opl3.h"
-#include "adt2sys.h"
 #if !ADT2PLAY
+#include "adt2sys.h"
 #include "adt2ext2.h"
 #include "adt2extn.h"
 #include "parserio.h"
@@ -57,7 +60,9 @@ PAREA_START (CODE)
 #endif // !GO32
 
 #include "typcons1.c"
+#if !ADT2PLAY
 #include "typcons2.c"
+#endif // !ADT2PLAY
 
 uint16_t IRQ_freq          = MIN_IRQ_FREQ;
 int16_t  IRQ_freq_shift    = 0;
@@ -72,16 +77,28 @@ static void (*timer_poll_proc_ptr) (void) = NULL;
 /*static*/ SDL_TimerID TimerID = NULL;
 /*static*/ int32_t _interval = 1000 / 50; // 1000 ms / Hz
 #endif // !GO32
+#if !ADT2PLAY
 bool     repeat_pattern    = false;
+#endif // !ADT2PLAY
 bool     fast_forward      = false;
+#if !ADT2PLAY
 bool     _rewind           = false;
+#endif // !ADT2PLAY
 bool     pattern_break     = false;
+#if ADT2PLAY
+bool     pattern_break_loop = false;
+bool     pattern_break_docmd = false;
+uint8_t  pattern_break_oldord = BYTE_NULL;
+#endif // ADT2PLAY
 bool     pattern_delay     = false;
 uint8_t  next_line         = 0;
+#if !ADT2PLAY
 uint8_t  start_order       = BYTE_NULL;
 uint8_t  start_pattern     = BYTE_NULL;
 uint8_t  start_line        = BYTE_NULL;
+#endif // !ADT2PLAY
 bool     replay_forbidden  = true;
+#if !ADT2PLAY
 bool     single_play       = false;
 bool     calibrating       = false;
 bool     no_status_refresh = false;
@@ -94,10 +111,15 @@ bool     no_step_debugging = false;
 bool     play_single_patt  = false;
 bool     no_trace_pattord  = false;
 bool     skip_macro_flag   = false;
+#endif // !ADT2PLAY
 uint8_t  max_patterns      = 128;
+#if !ADT2PLAY
 bool     jump_mark_mode    = false;
+#endif // !ADT2PLAY
 bool     force_macro_keyon = false;
+#if !ADT2PLAY
 bool     ins_trailing_flag = false;
+#endif // !ADT2PLAY
 
 const uint8_t def_vibtrem_speed_factor = 1;
 const uint8_t def_vibtrem_table_size = 32;
@@ -129,11 +151,13 @@ tVIBRATO_TREMOLO_TABLE vibr_table2;
 tVIBRATO_TREMOLO_TABLE trem_table;
 tVIBRATO_TREMOLO_TABLE trem_table2;
 
+#if !ADT2PLAY
 void (*macro_preview_indic_proc) (uint8_t state) = NULL;
 
 int32_t seconds_counter = 0;
 int32_t hundereds_counter = 0;
 bool    really_no_status_refresh = false;
+#endif // !ADT2PLAY
 
 tFM_PARAMETER_TABLE
            fmpar_table  [20];
@@ -145,11 +169,13 @@ bool       peak_lock    [20];
 bool       pan_lock     [20];
 uint8_t    modulator_vol[20];
 uint8_t    carrier_vol  [20];
-#if !ADT2PLAY
+#if ADT2PLAY
+tDECAY_BAR decay_bar    [DECAY_BARS];
+#else // !ADT2PLAY
 tDECAY_BAR decay_bar    [20];
 tVOLUM_BAR volum_bar    [20];
-#endif // !ADT2PLAY
 bool       channel_flag [20];
+#endif // !ADT2PLAY
 tCHUNK     event_table  [20];
 uint8_t    voice_table  [20];
 uint16_t   freq_table   [20];
@@ -177,7 +203,9 @@ uint16_t   last_effect  [20];
 uint16_t   last_effect2 [20];
 uint8_t    volslide_type[20];
 bool       event_new    [20];
+#if !ADT2PLAY
 uint16_t   freqtable2   [20];
+#endif // !ADT2PLAY
 uint8_t    notedel_table[20];
 uint8_t    notecut_table[20];
 int8_t     ftune_table  [20];
@@ -188,13 +216,16 @@ uint8_t    loopbck_table[20];
 uint8_t    loop_table   [20][256];
 
 uint8_t misc_register;
+#if !ADT2PLAY
 uint8_t ai_table[255];
+#endif // !ADT2PLAY
 
 uint8_t  overall_volume = 63;
 uint8_t  global_volume = 63;
 uint8_t  fade_out_volume = 63;
 int32_t  playback_speed_shift = 0;
 tPLAY_STATUS play_status = isStopped;
+#if !ADT2PLAY
 uint8_t  chan_pos = 1;
 uint8_t  chpos = 1;
 uint8_t  transpos = 1;
@@ -202,21 +233,27 @@ uint8_t  track_chan_start = 1;
 uint8_t  nm_track_chan = 1;
 uint16_t play_pos_buf[9] = { 0, };
 uint8_t  rec_correction = 0;
+#endif // !ADT2PLAY
 
 uint8_t current_order = 0;
 uint8_t current_pattern = 0;
 uint8_t current_line = 0;
 uint8_t current_tremolo_depth = 0;
 uint8_t current_vibrato_depth = 0;
+#if !ADT2PLAY
 uint8_t current_inst = 1;
 uint8_t current_octave = 4;
 
 String adt2_title[37][18+1];
+#endif // !ADT2PLAY
 
 String songdata_source[255+1];
+#if !ADT2PLAY
 String instdata_source[255+1];
+#endif // !ADT2PLAY
 String songdata_title [255+1];
 
+#if !ADT2PLAY
 uint32_t songdata_crc, songdata_crc_ord;
 temp_instrument_t temp_instrument;
 uint8_t pattord_page;
@@ -226,13 +263,18 @@ uint8_t instrum_page;
 uint8_t pattern_patt;
 uint8_t pattern_page;
 uint8_t pattern_hpos;
+#endif // !ADT2PLAY
 bool    limit_exceeded;
+#if !ADT2PLAY
 uint8_t load_flag;
+#endif // !ADT2PLAY
 bool    reset_chan      [20];
+#if !ADT2PLAY
 bool    reset_adsrw     [20];
 bool    ignore_note_once[20];
 bool    track_notes_ins;
 bool    seek_pattern_break;
+#endif // !ADT2PLAY
 
 bool    speed_update, lockvol, panlock, lockVP;
 uint8_t tremolo_depth, vibrato_depth;
@@ -249,23 +291,34 @@ tPATTERN_DATA *pattdata = NULL;
 tOLD_VARIABLE_DATA1 old_hash_buffer;
 tOLD_VARIABLE_DATA2 hash_buffer;
 tOLD_FIXED_SONGDATA old_songdata;
-uint16_t dos_memavail;
 
 tFIXED_SONGDATA songdata;
+#if !ADT2PLAY
 tFIXED_SONGDATA songdata_bak;
 tFIXED_SONGDATA temp_songdata;
 tCLIPBOARD      clipboard;
+#endif // !ADT2PLAY
 /*
 void *ptr_songdata      = &songdata;
 void *ptr_songdata_bak  = &songdata_bak;
 void *ptr_temp_songdata = &temp_songdata;
 void *ptr_clipboard     = &clipboard;
 */
-int32_t song_timer, timer_temp;
+#if ADT2PLAY
+int32_t song_timer = 0;
+int32_t song_timer_tenths = 0;
+#else // !ADT2PLAY
+int32_t song_timer;
 int32_t song_timer_tenths;
+#endif // !ADT2PLAY
+int32_t timer_temp;
 int32_t ticks, tick0, tickD, tickXF;
-double  time_playing, time_playing0;
+double  time_playing;
+#if !ADT2PLAY
+double  time_playing0;
+#endif // !ADT2PLAY
 
+#if !ADT2PLAY
 #if GO32
 int32_t  timer_determinator = 1;
 int32_t  timer_det2 = 1;
@@ -296,6 +349,7 @@ uint8_t  flag_4op_backup;
 struct status_backup_t status_backup;
 
 #include "adt2unit/board_get_pos.c"
+#endif // !ADT2PLAY
 
 #define FreqStart 0x156
 #define FreqEnd   0x2AE
@@ -331,7 +385,9 @@ struct status_backup_t status_backup;
 #include "adt2unit/update_modulator_adsrw.c"
 #include "adt2unit/update_carrier_adsrw.c"
 #include "adt2unit/update_fmpar.c"
+#if !ADT2PLAY
 #include "adt2unit/reset_chan_data.c"
+#endif // !ADT2PLAY
 #include "adt2unit/init_macro_table.c"
 #include "adt2unit/output_note.c"
 #include "adt2unit/generate_custom_vibrato.c" // HINT: static
@@ -366,10 +422,15 @@ void play_line (void);
 #include "adt2unit/poll_proc.c"
 #include "adt2unit/macro_poll_proc.c"
 #include "adt2unit/set_global_volume.c"
+#if ADT2PLAY
+#include "adt2unit/set_overall_volume.c"
+#endif // ADT2PLAY
+#if !ADT2PLAY
 #if GO32
 #include "adt2unit/go32/update_mouse_position.c" // static
 #endif // GO32
 #include "adt2unit/synchronize_screen.c" // HINT: static
+#endif // !ADT2PLAY
 #include "adt2unit/_macro_speedup.c"
 #include "adt2unit/timer_poll_proc.c" // static
 
@@ -379,49 +440,64 @@ PAREA_END (CODE)
 
 #include "adt2unit/go32/TimerSetup.c"
 #include "adt2unit/go32/TimerDone.c" // HINT: static
+#if !ADT2PLAY
 #include "adt2unit/go32/TimerInstallHandler.c" // HINT: static
 #include "adt2unit/go32/TimerRemoveHandler.c" // HINT: static
+#endif // !ADT2PLAY
 
 #else // !GO32
 
 #include "adt2unit/sdl/TimerSetup.c"
 #include "adt2unit/sdl/TimerDone.c" // HINT: static
+#if !ADT2PLAY
 #include "adt2unit/sdl/TimerInstallHandler.c" // HINT: static
 #include "adt2unit/sdl/TimerRemoveHandler.c" // HINT: static
+#endif // !ADT2PLAY
 
 #endif // !GO32
 
 #include "adt2unit/init_timer_proc.c"
 #include "adt2unit/done_timer_proc.c"
 
+#if !ADT2PLAY
 #include "realtime.c"
+#endif // !ADT2PLAY
 
 #include "adt2unit/calc_pattern_pos.c"
+#if !ADT2PLAY
 #include "adt2unit/update_status.c" // static, used in `calibrate_player'
 #include "adt2unit/calibrate_player.c"
+#endif // !ADT2PLAY
 #include "adt2unit/init_buffers.c"
 #include "adt2unit/init_player.c"
+#if !ADT2PLAY
 #include "adt2unit/reset_player.c"
+#endif // !ADT2PLAY
 #include "adt2unit/start_playing.c"
 #include "adt2unit/stop_playing.c"
 #include "adt2unit/get_chunk.c"
 #include "adt2unit/put_chunk.c"
+#include "adt2unit/calc_max_speedup.c"
+#if !ADT2PLAY
+#include "adt2unit/calc_bpm_speed.c"
+#include "adt2unit/calc_realtime_bpm_speed.c"
 #include "adt2unit/get_chanpos.c"
 #include "adt2unit/get_chanpos2.c"
 #include "adt2unit/count_channel.c"
 #include "adt2unit/count_pos.c"
-#include "adt2unit/count_order.c"
-#include "adt2unit/count_patterns.c"
 #include "adt2unit/count_instruments.c"
-#include "adt2unit/calc_max_speedup.c"
-#include "adt2unit/calc_bpm_speed.c"
-#include "adt2unit/calc_realtime_bpm_speed.c"
+#include "adt2unit/count_patterns.c"
+#endif // !ADT2PLAY
+#include "adt2unit/count_order.c"
 #include "adt2unit/init_old_songdata.c"
 #include "adt2unit/init_songdata.c"
+#if !ADT2PLAY
 #include "adt2unit/update_instr_data.c"
 #include "adt2unit/load_instrument.c"
+#endif // !ADT2PLAY
 #include "adt2unit/is_4op_chan.c"
 
+#if !ADT2PLAY
 uint8_t block_xstart = 1;
 uint8_t block_ystart = 0;
 
@@ -432,10 +508,21 @@ uint8_t block_y1 = 1;
 
 #include "adt2unit/is_in_block.c"
 #include "adt2unit/fade_out_playback.c"
+#endif // !ADT2PLAY
 
 int32_t ticklooper = 0;
 int32_t macro_ticklooper = 0;
+#if ADT2PLAY
+int32_t timer_ticklooper = 0;
+int32_t timer_200hz_counter = 0;
+int32_t timer_50hz_counter = 0;
+int32_t timer_20hz_counter = 0;
+bool    timer_200hz_flag = false;
+bool    timer_50hz_flag = false;
+bool    timer_20hz_flag = false;
+#endif // ADT2PLAY
 
+#if !ADT2PLAY
 #include "adt2unit/realtime_gfx_poll_proc.c"
 
 int32_t bank_position_list_size = 0;
@@ -443,6 +530,7 @@ struct bank_position_list_t bank_position_list[MAX_NUM_BANK_POSITIONS]; // HINT:
 
 #include "adt2unit/get_bank_position.c"
 #include "adt2unit/add_bank_position.c"
+#endif // !ADT2PLAY
 
 #if GO32
 PAREA_END (CONST)

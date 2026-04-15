@@ -28,14 +28,12 @@ const
   FFVER_A2B = 10;
   FFVER_A2W = 3;
 
-{$IFNDEF ADT2PLAY}
 const
   GENERIC_IO_BUFFER_SIZE = 1500*1024; // 1.5MB I/O Buffer
 
 type
   pGENERIC_IO_BUFFER = ^tGENERIC_IO_BUFFER;
   tGENERIC_IO_BUFFER = array[0..PRED(GENERIC_IO_BUFFER_SIZE)] of Byte;
-{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 type
   tFM_INST_DATA = Record
@@ -566,7 +564,9 @@ var
   fforward_factor:    Byte; cvar; external;
   rewind_factor:      Byte; cvar; external;
   ssaver_time:        Longint; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   timer_fix:          Boolean; cvar; external;
+{$IFNDEF ADT2PLAY}
   decay_bar_rise:     Single; cvar; external;
   decay_bar_fall:     Single; cvar; external;
   force_ins:          Byte; cvar; external;
@@ -575,12 +575,16 @@ var
   nosync_by_default:  Boolean; cvar; external;
   keep_position:      Boolean; cvar; external;
   alt_ins_name:       Boolean; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   adjust_tracks:      Boolean; cvar; external;
+{$IFNDEF ADT2PLAY}
   mark_lines:         Boolean; cvar; external;
   use_large_cursor:   Boolean; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   accurate_conv:      Boolean; cvar; external;
   fix_c_note_bug:     Boolean; cvar; external;
 
+{$IFNDEF ADT2PLAY}
   analyzer_bckg:      Byte; cvar; external;
   analyzer:           Byte; cvar; external;
   analyzer_ovrllvol:  Byte; cvar; external;

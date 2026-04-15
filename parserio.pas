@@ -19,11 +19,15 @@ unit ParserIO;
 {$L parserio.o}
 interface
 
+{$IFNDEF ADT2PLAY}
 function Scan(var buf; skip,size: Longint; str: String): Longint; cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 function SensitiveScan(var buf; skip,size: Longint; str: String): Longint; cdecl; external;
+{$IFNDEF ADT2PLAY}
 function Compare(var buf1,buf2; size: Longint): Boolean; cdecl; external;
 function Empty(var buf; size: Longint): Boolean; cdecl; external;
 function CountLines(var buf; size: Longint): Longint; cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 function Update16(var buf; size: Longint; crc: Word): Word; cdecl; external;
 function Update32(var buf; size: Longint; crc: Longint): Longint; cdecl; external;
 procedure make_table_16bit; cdecl; external;

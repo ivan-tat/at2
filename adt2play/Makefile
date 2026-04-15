@@ -1,6 +1,6 @@
 #!/bin/make -f
 # SPDX-FileType: SOURCE
-# SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+# SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # $(srcdir) is root directory, $(srcdir1) is current directory
@@ -31,38 +31,47 @@ GCCFLAGS+=-std=gnu99 -Wall -Wextra -pedantic
 
 GCCFLAGS+=-DADT2PLAY=1
 
-GCCFLAGS_DIRS+=-isystem $(srcdir)/pascal -I $(srcdir1) -I $(srcdir) -I .
+GCCFLAGS_DIRS+=-I $(srcdir)/pascal -I $(srcdir1) -I $(srcdir) -I .
 
 # Setup FPC
 
 FPCFLAGS+=-dADT2PLAY
 
-FPCFLAGS_DIRS+=-Fi$(srcdir1) -Fi$(srcdir) -Fi.
+FPCFLAGS_DIRS+=-Fi$(srcdir1) -Fi$(srcdir) -Fi. -Fu$(srcdir)
 
 # Setup files
 
 SRCS=\
+ adt2ext3.c\
+ adt2keyb.c\
+ adt2opl3.c\
+ adt2pack.c\
+ adt2unit.c\
  common.c\
  debug.c\
+ depackio.c\
  go32/dpmi.c\
  go32/iss_tim.c\
  go32/VGA.c\
+ iloadins.c\
+ parserio.c\
  pascal.c\
  pascal/dos.c\
  pascal/dpmi.c\
+ pascal/errno.c\
  pascal/go32.c\
  pascal/pc.c\
  pascal/stdio.c\
  pascal/stdlib.c\
  pascal/string.c\
  pascal/time.c\
+ platform.c\
  stringio.c\
  txtscrio.c
 
 SRCS1=\
  a2data.c\
- a2depack.c\
- a2player.c
+ adt2play.c
 
 DEPS=$(patsubst %.c,_deps_/%.d,$(SRCS) $(SRCS1))
 
@@ -142,10 +151,10 @@ clean-at2play-version:
 	rm -f adt2play.inc
 
 adt2play.inc:
-	echo "const VERSION_STR = '$(AT2PLAY_VERSION)';" >$@
+	echo "#define VERSION \"$(AT2PLAY_VERSION)\"" >$@
 
 font/play8.inc: $(srcdir)/font/play8.pbm $(makefile) | font
-	fontconv -pbmtoinc -s c -o $@ $<
+	fontconv -pbmtoinc -f 8 -s c -o $@ $<
 
 font/play16.inc: $(srcdir)/font/play16.pbm $(makefile) | font
 	fontconv -pbmtoinc -s c -o $@ $<
@@ -180,6 +189,17 @@ $(foreach f,$(SRCS1),$(eval $(call make_c_obj,$f,$(srcdir1))))
 
 units/a2data.ppu: $(srcdir1)/a2data.pas a2data.o $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir1)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
+adt2keyb_ppu_deps=\
+ $(srcdir)/adt2keyb.pas\
+ units/debug.ppu\
+ units/pascal.ppu\
+ adt2keyb.o
+
+units/adt2keyb.ppu: $(adt2keyb_ppu_deps) $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
@@ -220,12 +240,23 @@ units/iss_tim.ppu: $(iss_tim_ppu_deps) $(makefile) | units
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
 
+parserio_ppu_deps=\
+ $(srcdir)/parserio.pas\
+ parserio.o
+
+units/parserio.ppu: $(parserio_ppu_deps) $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
 pascal_ppu_deps=\
  $(srcdir)/pascal.pas\
  $(srcdir)/pascal/stdio.pas\
  $(srcdir)/pascal/stdlib.pas\
  $(srcdir)/pascal/string.pas\
+ $(srcdir)/pascal/time.pas\
  pascal.o\
+ pascal/errno.o\
  pascal/stdio.o\
  pascal/stdlib.o\
  pascal/string.o\
@@ -244,6 +275,11 @@ ifeq ($(FPC_OS_TARGET),go32v2)
 endif
 
 units/pascal.ppu: $(pascal_ppu_deps) $(makefile) | units
+	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
+	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
+	 $< -o$@ -vnh >>$(buildlog)
+
+units/platform.ppu: $(srcdir)/platform.pas platform.o $(makefile) | units
 	@echo "  PC     $(patsubst $(srcdir)/%,%,$<)"; \
 	$(FPC) $(FPCFLAGS_CPU) $(FPCFLAGS) $(FPCFLAGS_DIRS) -FUunits\
 	 $< -o$@ -vnh >>$(buildlog)
@@ -293,31 +329,41 @@ units/VGA.ppu: $(VGA_ppu_deps) $(srcdir)/Makefile | units
 
 # Pascal units with complex dependencies and target executable
 
-a2depack_ppu_deps=\
- $(srcdir1)/a2depack.pas\
- a2depack.o
-
-a2fileio_ppu_deps=\
- $(srcdir1)/a2fileio.pas\
- $(srcdir)/go32/PIT/pas/PIT_consts.inc\
- $(srcdir)/iloaders.inc\
+adt2opl3_ppu_deps=\
+ $(srcdir)/adt2opl3.pas\
  units/debug.ppu\
- units/stringio.ppu
+ adt2opl3.o
 
-a2player_ppu_deps=\
- $(srcdir1)/a2player.pas\
- $(srcdir)/go32/PIT/pas/PIT_consts.inc\
+adt2unit_ppu_deps=\
+ $(srcdir)/adt2unit.pas\
  $(srcdir)/typcons1.inc\
  units/debug.ppu\
- units/pascal.ppu\
- a2player.o
+ units/platform.ppu\
+ adt2unit.o
+
+ifeq ($(FPC_OS_TARGET),go32v2)
+ adt2unit_ppu_deps+=\
+  units/iss_tim.ppu\
+  units/PIT.ppu
+endif
+
+depackio_ppu_deps=\
+ $(srcdir)/depackio.pas\
+ depackio.o
 
 a2scrio_ppu_deps=\
  $(srcdir1)/a2scrio.pas\
  units/debug.ppu
 
-parserio_ppu_deps=\
- $(srcdir1)/parserio.pas
+adt2ext3_ppu_deps=\
+ $(srcdir)/adt2ext3.pas\
+ $(srcdir)/iloaders.inc\
+ $(srcdir)/iloadins.inc\
+ adt2ext3.o
+
+adt2pack_ppu_deps=\
+ $(srcdir)/adt2pack.pas\
+ adt2pack.o
 
 # Setup target dependencies
 
@@ -325,15 +371,19 @@ adt2play_bin_deps=build-sdk build-deps
 
 adt2play_bin_deps+=\
  $(srcdir1)/$(AT2PLAY_PAS_SRC)\
- adt2play.inc\
- $(a2depack_ppu_deps)\
- $(a2fileio_ppu_deps)\
- $(a2player_ppu_deps)\
+ adt2play.o\
+ $(platform_ppu_deps)\
+ $(adt2ext3_ppu_deps)\
+ $(adt2opl3_ppu_deps)\
+ $(adt2pack_ppu_deps)\
+ $(adt2unit_ppu_deps)\
+ $(depackio_ppu_deps)\
  $(a2scrio_ppu_deps)\
- $(parserio_ppu_deps)\
  units/a2data.ppu\
+ units/adt2keyb.ppu\
  units/common.ppu\
  units/debug.ppu\
+ units/parserio.ppu\
  units/pascal.ppu\
  units/stringio.ppu\
  units/txtscrio.ppu

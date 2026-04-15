@@ -7,8 +7,9 @@
 #include "defines.h"
 #include <stdint.h>
 #include <stdlib.h>
-#include "adt2extn.h"
-#include "dialogio.h"
+#if !ADT2PLAY
+#include "dialogio.h" // TODO: remove after adding proper `progress_callback_t' usage
+#endif // !ADT2PLAY
 #include "adt2pack.h"
 
 // HINT: (FPC) S-: Stack checking (off)
@@ -42,12 +43,14 @@
 #define NC (255 + MAX_MATCH + 2 - THRESHOLD)
 #define NP (DIC_BIT + 1)
 #define NT (CODE_BIT + 3)
+#if !ADT2PLAY
 #define MAX_HASH_VAL (3 * (1 << DIC_BIT) + (((1 << DIC_BIT) >> 9) + 1) * 255)
 #define PERC_FLAG 32768
 
 #define _put_memb_off(struc, memb) .memb = __builtin_offsetof (struc, memb)
 
 #include "adt2pack/LZH_compress.c"
+#endif // !ADT2PLAY
 #include "adt2pack/LZH_decompress.c"
 
 #pragma pack(pop)

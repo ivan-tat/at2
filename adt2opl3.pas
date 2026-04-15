@@ -68,18 +68,21 @@ implementation
 
 uses
   debug,
-  pascal,
+  pascal
 {$IFDEF GO32V2}
-  AdT2sys;
+{$IFNDEF ADT2PLAY}
+  ,AdT2sys
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 {$ELSE} { NOT DEFINED(GO32V2) }
-  SysUtils,
-  AdT2unit,
-  AdT2sys,
-  StringIO,
-  SDL_Types,
-  SDL_Audio,
-  OPL3EMU;
+  ,SysUtils
+  ,AdT2unit
+  ,AdT2sys
+  ,StringIO
+  ,SDL_Types
+  ,SDL_Audio
+  ,OPL3EMU
 {$ENDIF} { NOT DEFINED(GO32V2) }
+  ;
 
 {$IFNDEF GO32V2}
 

@@ -154,6 +154,7 @@ const
   kSlash  = $352f; kCtrlF8 = $6500;
   kSlashR = $2b5c; kCtrlF9 = $6600;
 
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
 
 var
@@ -173,7 +174,9 @@ procedure keyboard_toggle_sleep; cdecl; external;
 {$ENDIF} // DEFINED(GO32V2)
 procedure wait_until_F11_F12_released; cdecl; external;
 procedure keyboard_poll_input; cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 function  keypressed: Boolean; cdecl; external;
+{$IFNDEF ADT2PLAY}
 function  GetKey: Word; cdecl; external;
 function  scankey(scancode: Byte): Boolean; cdecl; external;
 function  CapsLock: Boolean; cdecl; external;
@@ -192,16 +195,19 @@ function  ctrl_pressed: Boolean; cdecl; external;
 function  ctrl_tab_pressed: Boolean; cdecl; external;
 function  LookUpKey(key: Word; var table; size: Byte): Boolean; cdecl; external;
 procedure screen_saver; cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 implementation
 
 uses
   debug,
   pascal
+{$IFNDEF ADT2PLAY}
 {$IFNDEF GO32V2}
   ,SDL_Events
   ,SDL_Keyboard
 {$ENDIF} // NOT DEFINED(GO32V2)
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   ;
 
 end.

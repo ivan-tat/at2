@@ -4,7 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// Surprise! AdLib Tracker song loader (*.sat, *.sa2)
+// Surprise! AdLib Tracker (*.sat) and 2.0 (*.sa2) song loader
 // All values are little-endian.
 
 #define SAT_INSTRUMENTS_MAX 31
@@ -347,7 +347,9 @@ static void import_sat_event_v8 (uint8_t patt, uint8_t line, uint8_t chan,
 //   * `progress', `state' and `error' may be NULL.
 //
 // On success:
-//   * Return value is 0.
+//   * Return value:
+//     0: `version' in 0..7.
+//     1: `version' >= 8 (Surprise! AdLib Tracker 2.0).
 //   * `state' and `error' are untouched.
 // On error:
 //   * Return value:
@@ -666,7 +668,7 @@ int8_t sat_file_loader (const String *_fname, progress_callback_t *progress, uin
     }
   if (progress != NULL) next_progress_step (progress);
 
-  result = 0;
+  result = header.version <= 7 ? 0 : 1;
 
 _exit:
   if (f != NULL) fclose (f);

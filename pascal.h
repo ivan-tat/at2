@@ -69,6 +69,9 @@ extern bool Pascal_unlock_code (const void *functionaddr, int32_t size);
 
 // `system' unit
 
+extern const void **Pascal_ErrorAddr_ptr;
+extern uint16_t *Pascal_ErrorCode_ptr;
+
 typedef double TDateTime;
 
 #if GO32

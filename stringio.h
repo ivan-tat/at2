@@ -114,8 +114,8 @@ String_t byte2dec (uint8_t value);
 String_t Capitalize (const String *str);
 String_t Upper (const String *str);
 String_t Lower (const String *str);
-#if !ADT2PLAY
 String_t iCASE (const String *str);
+#if !ADT2PLAY
 String_t RotStrL (const String *str1, const String *str2, uint8_t shift);
 String_t RotStrR (const String *str1, const String *str2, uint8_t shift);
 #endif // !ADT2PLAY

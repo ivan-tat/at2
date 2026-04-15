@@ -1,21 +1,12 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 void start_playing (void)
 {
   DBG_ENTER ("start_playing");
-
-#if ADT2PLAY
-  stop_playing ();
-  if (error_code != 0)
-  {
-    DBG_LEAVE (); //start_playing
-    return;
-  }
-#endif // ADT2PLAY
 
   init_player ();
 

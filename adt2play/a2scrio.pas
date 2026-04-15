@@ -57,7 +57,7 @@ procedure wtext(xstart,ystart: Word; txt: String; color: Byte);
 procedure wtext2(xstart,ystart: Word; txt: String; color: Byte);
 procedure C3Write(str: String; atr1,atr2,atr3: Byte);
 procedure C3WriteLn(str: String; atr1,atr2,atr3: Byte);
-procedure CWriteLn(str: String; atr1,atr2: Byte);
+procedure CWriteLn(str: String; atr1,atr2: Byte); cdecl;
 
 function  _progress_str: String;
 function  _timer_str: String;
@@ -70,11 +70,11 @@ procedure fade_out;
 implementation
 
 uses
+  pascal,
   debug,
   GO32,
+  adt2unit,
   A2data,
-  A2player,
-  A2fileIO,
   StringIO,
   TxtScrIO;
 
@@ -365,7 +365,8 @@ begin
   _dbg_leave; //EXIT //C3WriteLn
 end;
 
-procedure CWriteLn(str: String; atr1,atr2: Byte);
+procedure CWriteLn(str: String; atr1,atr2: Byte); cdecl;
+public name PUBLIC_PREFIX + 'CWriteLn';
 
 var
   temp: Word;

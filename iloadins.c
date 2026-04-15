@@ -9,7 +9,10 @@
 ///--- used in many loaders ---///
 
 #include "iloadins/import_standard_instrument_alt.c"
+#include "iloadins/import_fin_instrument_alt.c"
 #include "iloadins/import_hsc_instrument_alt.c"
+#include "iloadins/import_sat_instrument_alt.c"
+#if !ADT2PLAY
 #include "iloadins/set_default_ins_name_if_needed.c" // HINT: static
 #include "iloadins/apply_instrument.c"
 
@@ -47,7 +50,6 @@ typedef struct
 } tFIN_DATA;
 #pragma pack(pop)
 
-#include "iloadins/import_fin_instrument_alt.c"
 #include "iloadins/fin_file_loader_alt.c"
 
 // INS
@@ -61,7 +63,6 @@ typedef struct
 } tINS_DATA;
 #pragma pack(pop)
 
-#include "iloadins/import_sat_instrument_alt.c"
 #include "iloadins/ins_file_loader_alt.c"
 
 // SBI (Sound Blaster Instrument)
@@ -232,3 +233,4 @@ typedef struct
 #include "iloadins/load_sbi_bank.c"
 
 #include "iloadins/ibk_file_loader_alt.c"
+#endif // !ADT2PLAY

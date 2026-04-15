@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -690,6 +690,7 @@ typedef enum AT2ExtKeyCode {
 #define kAltTAB  MK_EKEYEA (0xA5) // Alt + Tab
 #define kAlNPent MK_EKEYEA (0xA6) // Alt + Keypad Enter
 
+#if !ADT2PLAY
 #if GO32
 extern bool keyboard_sleep;
 extern bool CTRL_ALT_DEL_pressed;
@@ -706,7 +707,9 @@ void keyboard_toggle_sleep (void);
 #endif // GO32
 void wait_until_F11_F12_released (void);
 void keyboard_poll_input (void);
+#endif // !ADT2PLAY
 bool keypressed (void);
+#if !ADT2PLAY
 ExtKeyCode GetKey (void);
 bool scankey (uint8_t scancode);
 bool CapsLock (void);
@@ -725,5 +728,6 @@ bool ctrl_pressed (void);
 bool ctrl_tab_pressed (void);
 bool LookUpKey (ExtKeyCode key, const ExtKeyCode *table, size_t size);
 void screen_saver (void);
+#endif // !ADT2PLAY
 
 #endif // !defined(ADT2KEYB_H)

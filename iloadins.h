@@ -14,7 +14,10 @@
 ///--- used in many loaders ---///
 
 void import_standard_instrument_alt (tADTRACK2_INS *ins, const void *data);
+void import_fin_instrument_alt (tADTRACK2_INS *ins, const void *data);
 void import_hsc_instrument_alt (tADTRACK2_INS *ins, const void *data);
+void import_sat_instrument_alt (tADTRACK2_INS *ins, const void *data);
+#if !ADT2PLAY
 void set_default_ins_name_if_needed (temp_instrument_t *dst, const String *fname);
 void apply_instrument (uint8_t idx, temp_instrument_t *src);
 
@@ -32,17 +35,14 @@ int8_t cif_file_loader_alt (temp_instrument_t *dst, const String *fname, char **
 
 // FIN
 
-void import_fin_instrument_alt (tADTRACK2_INS *ins, const void *data);
 int8_t fin_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
 
 // INS
 
-void import_sat_instrument_alt (tADTRACK2_INS *ins, const void *data);
 int8_t ins_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
 
 // SBI (Sound Blaster Instrument)
 
-//void import_sbi_instrument_alt (tADTRACK2_INS *ins, const void *data);
 int8_t sbi_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
 
 // SGI
@@ -115,5 +115,6 @@ void sbi_bank_free (sbi_bank_t *sbi_bank);
 sbi_bank_t *load_sbi_bank (const String *fname, char **error);
 
 int8_t ibk_file_loader_alt (temp_instrument_t *dst, const String *fname, uint16_t idx, char **error);
+#endif // !ADT2PLAY
 
 #endif // !DEFINED(ILOADINS_H)

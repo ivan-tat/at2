@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 #include <stdlib.h>
+#include "platform.h"
 #include "go32/PIT/PIT_consts.h"
 #include "common.h"
 #include "debug.h"
@@ -13,14 +14,19 @@
 #include "adt2pack.h"
 #include "adt2keyb.h"
 #include "adt2opl3.h"
+#if !ADT2PLAY
 #include "adt2sys.h"
+#endif // !ADT2PLAY
 #include "adt2unit.h"
 #include "parserio.h"
+#include "stringio.h"
+#if !ADT2PLAY
 #include "dialogio.h"
 #include "adt2extn.h"
 #include "adt2ext2.h"
 #include "adt2ext4.h"
 #include "adt2ext5.h"
+#endif // !ADT2PLAY
 #include "adt2ext3.h"
 #include <errno.h> // last to fix macro redefinition
 
@@ -37,6 +43,7 @@
 
 // test_instrument_alt, test_instrument_alt2
 
+#if !ADT2PLAY
 static tREGISTER_TABLE ins__fmreg_table_backup;
 static tREGISTER_TABLE ins__fmreg_table_backup2;
 static tDIS_FMREG_COL ins__dis_fmreg_col_backup;
@@ -47,6 +54,7 @@ static uint8_t chan_handle[20];
 #include "adt2ext3/test_instrument_alt_output_note.c" // static
 #include "adt2ext3/test_instrument_alt.c"
 #include "adt2ext3/test_instrument_alt2.c"
+#endif // !ADT2PLAY
 
 #include "iloaders.c"
 

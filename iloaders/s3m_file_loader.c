@@ -944,7 +944,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
   if (progress != NULL) next_progress_step (progress);
 
   // import patterns order
-  for (uint_least8_t i = 0; i < min (header.ordnum, AT_ORDER_LEN); i++)
+  for (uint_least8_t i = 0; i < max (header.ordnum, AT_ORDER_LEN); i++)
     if (data->order[i] < S3M_PATTERNS_MAX)
       song->pattern_order[i] = data->order[i];
     else if (data->order[i] == S3M_ORDER_SKIP)

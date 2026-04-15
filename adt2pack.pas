@@ -23,12 +23,25 @@ interface
 uses
   adt2unit;
 
+type
+  LZH_block_info_p = ^LZH_block_info_t;
+  LZH_block_info_t = packed record
+    ultra: Boolean;
+    size: Longword;
+  end;
+
+// Compression algorithm: LZH
+// Algorithm developed by Haruhiko Okomura & Haruyasu Yoshizaki
+
+{$IFNDEF ADT2PLAY}
 function LZH_compress(var source,dest; size: Dword): Dword; cdecl;
 function LZH_compress_ultra(var source,dest; size: Dword): Dword; cdecl;
+{$ENDIF} // NOTE DEFINED(ADT2PLAY)
 function LZH_decompress (var source, dest; size: Dword; progress: progress_callback_p): Dword; cdecl; external;
 
 implementation
 
+{$IFNDEF ADT2PLAY}
 uses
   pascal,
   AdT2sys,
@@ -117,4 +130,5 @@ end;
 
 begin
   _check_struct_TLZHEncoderState;
+{$ENDIF} // NOTE DEFINED(ADT2PLAY)
 end.

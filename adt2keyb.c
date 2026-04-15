@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "defines.h"
@@ -20,12 +20,17 @@
 #endif // USE_FPC
 #endif // !GO32
 #include "debug.h"
+#if !ADT2PLAY
 #include "adt2ext2.h"
+#endif // !ADT2PLAY
 #include "adt2keyb.h"
 #include "adt2unit.h"
+#if !ADT2PLAY
 #include "adt2sys.h"
+#endif // !ADT2PLAY
 
 #if GO32
+#if !ADT2PLAY
 
 bool keyboard_sleep = false;
 bool CTRL_ALT_DEL_pressed = false;
@@ -50,7 +55,9 @@ static void (*SysKeyboardCallback) (void);
 #include "adt2keyb/go32/keyboard_toggle_sleep.c"
 #include "adt2keyb/go32/wait_until_F11_F12_released.c"
 #include "adt2keyb/go32/keyboard_poll_input.c"
+#endif // !ADT2PLAY
 #include "adt2keyb/go32/keypressed.c"
+#if !ADT2PLAY
 #include "adt2keyb/go32/GetKey.c"
 #include "adt2keyb/go32/scankey.c"
 #include "adt2keyb/go32/CapsLock.c"
@@ -62,9 +69,11 @@ static void (*SysKeyboardCallback) (void);
 #include "adt2keyb/go32/both_shifts_pressed.c"
 #include "adt2keyb/go32/alt_pressed.c"
 #include "adt2keyb/go32/ctrl_pressed.c"
+#endif // !ADT2PLAY
 
 #else // !GO32
 
+#if !ADT2PLAY
 static bool keydown[256];
 
 static bool _numlock = false;
@@ -89,7 +98,9 @@ static int numkeys; // Set by `SDL_GetKeyState()'
 #include "adt2keyb/sdl/right_shift_pressed.c"
 #include "adt2keyb/sdl/alt_pressed.c"
 #include "adt2keyb/sdl/ctrl_pressed.c"
+#endif // !ADT2PLAY
 #endif // !GO32
+#if !ADT2PLAY
 #include "adt2keyb/ctrl_tab_pressed.c"
 #include "adt2keyb/LookUpKey.c"
 #if GO32
@@ -97,3 +108,4 @@ static int numkeys; // Set by `SDL_GetKeyState()'
 #else // !GO32
 #include "adt2keyb/sdl/screen_saver.c"
 #endif // !GO32
+#endif // !ADT2PLAY

@@ -17,7 +17,9 @@ static bool adsr_carrier[9]; // used in "import_old_a2m_event1" and "replace_old
 #include "iloaders/import_old_a2m_patterns2.c" // static
 #include "iloaders/import_old_flags.c" // static
 #include "iloaders/import_old_songdata.c" // static
+#if !ADT2PLAY
 #include "iloaders/adjust_macro_speedup_with_notice.c" // HINT: static
+#endif // !ADT2PLAY
 #include "iloaders/a2m_file_loader.c"
 #include "iloaders/a2t_file_loader.c"
 #if !ADT2PLAY

@@ -37,6 +37,8 @@ procedure _check_struct_size (const name: PChar; size_C, size: SizeUInt);
 { `system' unit }
 
 const
+  Pascal_ErrorAddr_ptr: ^Pointer = @system.ErrorAddr; cvar;
+  Pascal_ErrorCode_ptr: ^Word = @system.ErrorCode; cvar;
   Pascal_RandSeedPtr: Pointer = @system.RandSeed; cvar;
 
 var

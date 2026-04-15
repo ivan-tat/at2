@@ -38,7 +38,10 @@ uses
   AdT2text,
   AdT2keyb,
 {$ELSE}
+  SDL,
   SDL_Timer,
+  SDL_Video,
+  SDL__rwops,
   AdT2sys,
   AdT2keyb,
   AdT2opl3,
@@ -62,6 +65,7 @@ const
 var
   fade_buf,fade_buf2: tFADE_BUF;
   temp,index: Word;
+  dos_memavail: Word;
   mem_info: tMemInfo;
   free_mem: Longint;
   opl3detected: Boolean;

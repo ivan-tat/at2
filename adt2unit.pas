@@ -29,8 +29,14 @@ const
   MIN_IRQ_FREQ = 50;
   MAX_IRQ_FREQ = 1000;
 
+{$IFDEF ADT2PLAY}
+  DECAY_BARS = 25;
+{$ENDIF} // DEFINED(ADT2PLAY)
+
 {$i typcons1.inc}
+{$IFNDEF ADT2PLAY}
 {$i typcons2.inc}
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 type
   progress_callback_p = ^progress_callback_t;
@@ -50,16 +56,28 @@ var
   speed:             Byte; cvar; external;
   macro_speedup:     Word; cvar; external;
   timer_initialized: Boolean; cvar; external;
+{$IFNDEF ADT2PLAY}
   repeat_pattern:    Boolean; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   fast_forward:      Boolean; cvar; external;
+{$IFNDEF ADT2PLAY}
   _rewind:           Boolean; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   pattern_break:     Boolean; cvar; external;
+{$IFDEF ADT2PLAY}
+  pattern_break_loop: Boolean; cvar; external;
+  pattern_break_docmd: Boolean; cvar; external;
+  pattern_break_oldord: Byte; cvar; external;
+{$ENDIF} // DEFINED(ADT2PLAY)
   pattern_delay:     Boolean; cvar; external;
   next_line:         Byte; cvar; external;
+{$IFNDEF ADT2PLAY}
   start_order:       Byte; cvar; external;
   start_pattern:     Byte; cvar; external;
   start_line:        Byte; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   replay_forbidden:  Boolean; cvar; external;
+{$IFNDEF ADT2PLAY}
   single_play:       Boolean; cvar; external;
   calibrating:       Boolean; cvar; external;
   no_status_refresh: Boolean; cvar; external;
@@ -72,10 +90,15 @@ var
   play_single_patt:  Boolean; cvar; external;
   no_trace_pattord:  Boolean; cvar; external;
   skip_macro_flag:   Boolean; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   max_patterns:      Byte; cvar; external;
+{$IFNDEF ADT2PLAY}
   jump_mark_mode:    Boolean; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   force_macro_keyon: Boolean; cvar; external;
+{$IFNDEF ADT2PLAY}
   ins_trailing_flag: Boolean; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
   def_vibtrem_speed_factor: Byte; cvar; external;
   def_vibtrem_table_size: Byte; cvar; external;
@@ -100,11 +123,13 @@ var
   trem_table:  tVIBRATO_TREMOLO_TABLE; cvar; external;
   trem_table2: tVIBRATO_TREMOLO_TABLE; cvar; external;
 
+{$IFNDEF ADT2PLAY}
   macro_preview_indic_proc: procedure(state: Byte); cdecl; cvar; external;
 
   seconds_counter: Longint; cvar; external;
   hundereds_counter: Longint; cvar; external;
   really_no_status_refresh: Boolean; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 const
   keyoff_flag        = $080;
@@ -122,11 +147,13 @@ var
   pan_lock:      array[1..20] of Boolean; cvar; external;
   modulator_vol: array[1..20] of Byte; cvar; external;
   carrier_vol:   array[1..20] of Byte; cvar; external;
-{$IFNDEF ADT2PLAY}
+{$IFDEF ADT2PLAY}
+  decay_bar:     array[1..DECAY_BARS] of tDECAY_BAR; cvar; external;
+{$ELSE} // NOT DEFINED(ADT2PLAY)
   decay_bar:     array[1..20] of tDECAY_BAR; cvar; external;
   volum_bar:     array[1..20] of tVOLUM_BAR; cvar; external;
-{$ENDIF} // NOT DEFINED(ADT2PLAY)
   channel_flag:  array[1..20] of Boolean; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   event_table:   array[1..20] of tCHUNK; cvar; external;
   voice_table:   array[1..20] of Byte; cvar; external;
   freq_table:    array[1..20] of Word; cvar; external;
@@ -151,7 +178,9 @@ var
   last_effect2:  array[1..20] of Word; cvar; external;
   volslide_type: array[1..20] of Byte; cvar; external;
   event_new:     array[1..20] of Boolean; cvar; external;
+{$IFNDEF ADT2PLAY}
   freqtable2:    array[1..20] of Word; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   notedel_table: array[1..20] of Byte; cvar; external;
   notecut_table: array[1..20] of Byte; cvar; external;
   ftune_table:   array[1..20] of Shortint; cvar; external;
@@ -169,13 +198,16 @@ var
   loopbck_table: array[1..20] of Byte; cvar; external;
   loop_table:    array[1..20,0..255] of Byte; cvar; external;
   misc_register: Byte; cvar; external;
+{$IFNDEF ADT2PLAY}
   ai_table:      array[1..255] of Byte; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
   overall_volume: Byte; cvar; external;
   global_volume: Byte; cvar; external;
   fade_out_volume: Byte; cvar; external;
   playback_speed_shift: Longint; cvar; external;
   play_status: tPLAY_STATUS; cvar; external;
+{$IFNDEF ADT2PLAY}
   chan_pos: Byte; cvar; external;
   chpos: Byte; cvar; external;
   transpos: Byte; cvar; external;
@@ -183,6 +215,7 @@ var
   nm_track_chan: Byte; cvar; external;
   play_pos_buf: array[1..9] of Word; cvar; external;
   rec_correction: Byte; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 const
   MACRO_NOTE_RETRIG_FLAG = $80;
@@ -195,15 +228,20 @@ var
   current_line: Byte; cvar; external;
   current_tremolo_depth: Byte; cvar; external;
   current_vibrato_depth: Byte; cvar; external;
+{$IFNDEF ADT2PLAY}
   current_inst: Byte; cvar; external;
   current_octave: Byte; cvar; external;
 
   adt2_title: array[0..36] of String[18]; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
   songdata_source: String; cvar; external;
+{$IFNDEF ADT2PLAY}
   instdata_source: String; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   songdata_title:  String; cvar; external;
 
+{$IFNDEF ADT2PLAY}
   songdata_crc: Longword; cvar; external;
   songdata_crc_ord: Longword; cvar; external;
   temp_instrument: temp_instrument_t; cvar; external;
@@ -214,13 +252,18 @@ var
   pattern_patt: Byte; cvar; external;
   pattern_page: Byte; cvar; external;
   pattern_hpos: Byte; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   limit_exceeded: Boolean; cvar; external;
+{$IFNDEF ADT2PLAY}
   load_flag: Byte; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
   reset_chan: array[1..20] of Boolean; cvar; external;
+{$IFNDEF ADT2PLAY}
   reset_adsrw: array[1..20] of Boolean; cvar; external;
   ignore_note_once: array[1..20] of Boolean; cvar; external;
   track_notes_ins: Boolean; cvar; external;
   seek_pattern_break: Boolean; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
   speed_update: Boolean; cvar; external;
   lockvol: Boolean; cvar; external;
@@ -242,12 +285,13 @@ var
   old_hash_buffer: tOLD_VARIABLE_DATA1; cvar; external;
   hash_buffer: tOLD_VARIABLE_DATA2; cvar; external;
   old_songdata: tOLD_FIXED_SONGDATA; cvar; external;
-  dos_memavail: Word; cvar; external;
 
   songdata:      tFIXED_SONGDATA; cvar; external;
+{$IFNDEF ADT2PLAY}
   songdata_bak:  tFIXED_SONGDATA; cvar; external;
   temp_songdata: tFIXED_SONGDATA; cvar; external;
   clipboard:     tCLIPBOARD; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 {
   ptr_songdata:      Pointer; cvar; external;
   ptr_songdata_bak:  Pointer; cvar; external;
@@ -262,8 +306,11 @@ var
   tickD: Longint; cvar; external;
   tickXF: Longint; cvar; external;
   time_playing: Double; cvar; external;
+{$IFNDEF ADT2PLAY}
   time_playing0: Double; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
+{$IFNDEF ADT2PLAY}
 {$IFDEF GO32V2}
   timer_determinator: Longint; cvar; external;
   timer_det2: Longint; cvar; external;
@@ -294,6 +341,7 @@ var
                    replay_forbidden: Boolean;
                    play_status: tPLAY_STATUS;
                  end; cvar; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 function  nFreq(note: Byte): Word; cdecl; external;
 procedure change_freq(chan: Byte; freq: Word); cdecl; external;
@@ -304,8 +352,10 @@ function  is_chan_adsr_data_empty(chan: Byte): Boolean; cdecl; external;
 function  is_ins_adsr_data_empty(ins: Byte): Boolean; cdecl; external;
 function  scale_volume(volume,scale_factor: Byte): Byte; cdecl; external;
 function  _macro_speedup: Word; cdecl; external;
+{$IFNDEF ADT2PLAY}
 procedure calibrate_player(order,line: Byte; status_filter: Boolean;
                            line_dependent: Boolean); cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 procedure update_timer(Hz: Word); cdecl; external;
 procedure key_on(chan: Byte); cdecl; external;
 procedure key_off(chan: Byte); cdecl; external;
@@ -315,17 +365,24 @@ procedure set_ins_volume(modulator,carrier,chan: Byte); cdecl; external;
 procedure update_modulator_adsrw(chan: Byte); cdecl; external;
 procedure update_carrier_adsrw(chan: Byte); cdecl; external;
 procedure update_fmpar(chan: Byte); cdecl; external;
+{$IFNDEF ADT2PLAY}
 procedure reset_chan_data(chan: Byte); cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 procedure poll_proc; cdecl; external;
 procedure macro_poll_proc; cdecl; external;
 procedure init_buffers; cdecl; external;
 procedure init_player; cdecl; external;
+{$IFNDEF ADT2PLAY}
 procedure reset_player; cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 procedure start_playing; cdecl; external;
 procedure stop_playing; cdecl; external;
 procedure update_song_position; cdecl; external;
 procedure change_frequency(chan: Byte; freq: Word); cdecl; external;
 procedure set_global_volume; cdecl; external;
+{$IFDEF ADT2PLAY}
+procedure set_overall_volume(level: Byte); cdecl; external;
+{$ENDIF} // DEFINED(ADT2PLAY)
 procedure set_ins_data(ins,chan: Byte); cdecl; external;
 procedure init_timer_proc; cdecl; external;
 procedure done_timer_proc; cdecl; external;
@@ -337,6 +394,7 @@ procedure trace_update_proc; cdecl; external;
 procedure get_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
 procedure put_chunk(pattern,line,channel: Byte; var chunk: tCHUNK); cdecl; external;
 
+{$IFNDEF ADT2PLAY}
 function  get_chanpos(var data; channels,scancode: Byte): Byte; cdecl; external;
 function  get_chanpos2(var data; channels,scancode: Byte): Byte; cdecl; external;
 function  count_channel(hpos: Byte): Byte; cdecl; external;
@@ -344,17 +402,22 @@ function  count_pos(hpos: Byte): Byte; cdecl; external;
 function  calc_max_speedup(tempo: Byte): Word; cdecl; external;
 function  calc_bpm_speed(tempo,speed,rows_per_beat: Byte): Double; cdecl; external;
 function  calc_realtime_bpm_speed(tempo,speed,rows_per_beat: Byte): Double; cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 function  calc_order_jump: Integer; cdecl; external;
 function  calc_following_order(order: Byte): Integer; cdecl; external;
 function  is_4op_chan(chan: Byte): Boolean; cdecl; external;
 
 procedure count_order(var entries: Byte); cdecl; external;
+{$IFNDEF ADT2PLAY}
 procedure count_patterns(var patterns: Byte); cdecl; external;
 procedure count_instruments(var instruments: Byte); cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 procedure init_old_songdata; cdecl; external;
 procedure init_songdata; cdecl; external;
+{$IFNDEF ADT2PLAY}
 procedure update_instr_data(ins: Byte); cdecl; external;
 procedure load_instrument(var data; chan: Byte); cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 procedure output_note(note,ins,chan: Byte;
                       restart_macro,restart_adsr: Boolean); cdecl; external;
 
@@ -362,6 +425,7 @@ function  min(value: Longint; minimum: Longint): Longint; cdecl; external;
 function  max(value: Longint; maximum: Longint): Longint; cdecl; external;
 procedure TimerSetup(Hz: Longint); cdecl; external;
 
+{$IFNDEF ADT2PLAY}
 var
   block_xstart: Byte; cvar; external;
   block_ystart: Byte; cvar; external;
@@ -373,11 +437,22 @@ var
 
 function  is_in_block(x0,y0,x1,y1: Byte): Boolean; cdecl; external;
 procedure fade_out_playback(fade_screen: Boolean); cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 var
   ticklooper: Longint; cvar; external;
   macro_ticklooper: Longint; cvar; external;
+{$IFDEF ADT2PLAY}
+  timer_ticklooper: Longint; cvar; external;
+  timer_200hz_counter: Longint; cvar; external;
+  timer_50hz_counter: Longint; cvar; external;
+  timer_20hz_counter: Longint; cvar; external;
+  timer_200hz_flag: Boolean; cvar; external;
+  timer_50hz_flag: Boolean; cvar; external;
+  timer_20hz_flag: Boolean; cvar; external;
+{$ENDIF} // DEFINED(ADT2PLAY)
 
+{$IFNDEF ADT2PLAY}
 const
 {$IFDEF GO32V2}
   MAX_NUM_BANK_POSITIONS = 1000;
@@ -400,6 +475,7 @@ var
 
 function  get_bank_position(bank_name: String; bank_size: Longint): Longint; cdecl; external;
 procedure add_bank_position(bank_name: String; bank_size: Longint; bank_position: Longint); cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 {$IFDEF GO32V2}
 const
@@ -411,29 +487,34 @@ procedure init_adt2unit; cdecl; external;
 implementation
 
 uses
-  debug,
-  pascal,
+  debug
+  ,pascal
 {$IFDEF GO32V2}
-  CRT,
-  DOS,
-  GO32,
-  PIT,
-  ISS_Tim,
+  ,CRT
+  ,DOS
+  ,GO32
+  ,PIT
+  ,ISS_Tim
 {$ELSE} // NOT DEFINED(GO32V2)
-  DOS,
-  SDL_Types,
-  SDL_Timer,
+  ,DOS
+  ,SDL_Types
+  ,SDL_Timer
 {$ENDIF} // NOT DEFINED(GO32V2)
-  AdT2opl3,
-  AdT2sys,
-  AdT2extn,
-  AdT2ext2,
-  AdT2keyb,
-  font,
-  TxtScrIO,
-  StringIO,
-  DialogIO,
-  ParserIO;
+  ,AdT2opl3
+{$IFNDEF ADT2PLAY}
+  ,AdT2sys
+  ,AdT2extn
+  ,AdT2ext2
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
+  ,AdT2keyb
+{$IFNDEF ADT2PLAY}
+  ,font
+  ,TxtScrIO
+  ,StringIO
+  ,DialogIO
+  ,ParserIO
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
+  ;
 
 {$IFDEF GO32V2}
 
@@ -525,8 +606,10 @@ procedure ___IRQ_CODE_END___; begin end;
 
 //TimerSetup
 procedure TimerDone; cdecl; external;
+{$IFNDEF ADT2PLAY}
 procedure TimerInstallHandler(handler: Pointer); cdecl; external;
 procedure TimerRemoveHandler; cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 {$ELSE} // NOT DEFIED(GO32V2)
 
@@ -538,15 +621,19 @@ var
 //TimerCallback
 //TimerSetup
 procedure TimerDone; cdecl; external;
+{$IFNDEF ADT2PLAY}
 procedure TimerInstallHandler(handler: Pointer); cdecl; external;
 procedure TimerRemoveHandler; cdecl; external;
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 {$ENDIF} // NOT DEFIED(GO32V2)
 
 //init_timer_proc
 //done_timer_proc
 
+{$IFNDEF ADT2PLAY}
 {$i realtime.inc}
+{$ENDIF} // NOT DEFINED(ADT2PLAY)
 
 //calc_pattern_pos
 //update_status
