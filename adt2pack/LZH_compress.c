@@ -31,6 +31,7 @@ struct LZHEncoderState_t
   uint8_t  *output_buffer;
   uint32_t input_buffer_idx, output_buffer_idx;
   uint32_t input_buffer_size;
+  progress_callback_t *progress;
 };
 
 // LZHEncoderState_t / TLZHEncoderState
@@ -61,7 +62,8 @@ const struct
      input_buffer,
      output_buffer,
      input_buffer_idx, output_buffer_idx,
-     input_buffer_size;
+     input_buffer_size,
+     progress;
 } struct_TLZHEncoderState =
 {
   _put_memb_off (struct LZHEncoderState_t, WIN_SIZE),
@@ -105,7 +107,8 @@ const struct
   _put_memb_off (struct LZHEncoderState_t, output_buffer),
   _put_memb_off (struct LZHEncoderState_t, input_buffer_idx),
   _put_memb_off (struct LZHEncoderState_t, output_buffer_idx),
-  _put_memb_off (struct LZHEncoderState_t, input_buffer_size)
+  _put_memb_off (struct LZHEncoderState_t, input_buffer_size),
+  _put_memb_off (struct LZHEncoderState_t, progress)
 };
 
 const uint32_t struct_TLZHEncoderState_size = sizeof (struct LZHEncoderState_t);
@@ -121,8 +124,8 @@ const uint32_t struct_TLZHEncoderState_size = sizeof (struct LZHEncoderState_t);
   es->input_buffer_idx += result;
 #if !ADT2PLAY
   if (!really_no_status_refresh)
-    show_progress2 (es->input_buffer_idx, 3);
 #endif // !ADT2PLAY
+    if (es->progress != NULL) es->progress->update (es->progress, es->input_buffer_idx, 3);
   return result;
 }
 #else
@@ -781,7 +784,8 @@ const uint32_t struct_TLZHEncoderState_size = sizeof (struct LZHEncoderState_t);
 
 // ultra: compression type flag (false=default, true=ultra)
 //static
- uint32_t LZH_do_compress (const void *source, void *dest, uint32_t size, bool ultra)
+ uint32_t LZH_do_compress (const void *source, void *dest, uint32_t size, bool ultra,
+                           progress_callback_t *progress)
 #if 1
 {
   uint32_t result = 0;
@@ -844,9 +848,13 @@ const uint32_t struct_TLZHEncoderState_size = sizeof (struct LZHEncoderState_t);
   es->input_buffer_idx = 0;
   es->output_buffer_idx = sizeof (LZH_block_info_t);
   es->input_buffer_size = size;
+  es->progress = progress;
 
-  progress_old_value = UINT8_NULL;
-  progress_value = size;
+  if (progress != NULL)
+  {
+    progress->old_value = UINT8_NULL;
+    progress->value = size;
+  }
 
   if ((es->stream = malloc ((2 * es->DIC_SIZE + MAX_MATCH) * sizeof (es->stream[0]))) == NULL) goto _exit;
   if ((es->level = malloc ((es->DIC_SIZE + 256) * sizeof (es->level[0]))) == NULL) goto _exit;
@@ -915,19 +923,21 @@ _exit:
 ;
 #endif
 
-uint32_t LZH_compress (const void *source, void *dest, uint32_t size)
+uint32_t LZH_compress (const void *source, void *dest, uint32_t size,
+                       progress_callback_t *progress)
 #if 1
 {
-  return LZH_do_compress (source, dest, size, 0);
+  return LZH_do_compress (source, dest, size, 0, progress);
 }
 #else
 ;
 #endif
 
-uint32_t LZH_compress_ultra (const void *source, void *dest, uint32_t size)
+uint32_t LZH_compress_ultra (const void *source, void *dest, uint32_t size,
+                             progress_callback_t *progress)
 #if 1
 {
-  return LZH_do_compress (source, dest, size, 1);
+  return LZH_do_compress (source, dest, size, 1, progress);
 }
 #else
 ;

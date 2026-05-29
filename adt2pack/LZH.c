@@ -6,9 +6,6 @@
 
 #include "adt2pack.h"
 #include <stdlib.h>
-#if !ADT2PLAY
-#include "dialogio.h" // TODO: remove after adding proper `progress_callback_t' usage
-#endif // !ADT2PLAY
 
 // HINT: (FPC) S-: Stack checking (off)
 // HINT: (FPC) Q-: Overflow checking (off)

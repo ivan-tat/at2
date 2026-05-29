@@ -328,7 +328,7 @@ int8_t rad_file_loader (const String *_fname, void **desc, progress_callback_t *
 
   result = -4;
 
-  init_songdata ();
+  init_songdata (song);
   song->patt_len = RAD_PATTERN_LEN;
   if (adjust_tracks || (song->nm_tracks < RAD_CHANNELS_MAX)) song->nm_tracks = RAD_CHANNELS_MAX;
   tempo = (header->flags & 0x40) != 0 ? 18 : 50;

@@ -276,6 +276,8 @@ var
 
 function Fselect(mask: String): String; cdecl; external;
 
+function ask_file_overwrite_rename (fname: String; title: String): Shortint; cdecl; external;
+
 procedure DialogIO_Init; cdecl; external;
 
 implementation

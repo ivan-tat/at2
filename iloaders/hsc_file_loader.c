@@ -263,7 +263,7 @@ int8_t hsc_file_loader (const String *_fname, progress_callback_t *progress, uin
   if (progress != NULL) progress->num_steps = 3;
 
   // initialize song
-  init_songdata ();
+  init_songdata (song);
   song->patt_len = HSC_PATTERN_LEN;
   if (adjust_tracks || (song->nm_tracks < HSC_CHANNELS_MAX)) song->nm_tracks = HSC_CHANNELS_MAX;
   tempo = 18;
@@ -275,7 +275,7 @@ int8_t hsc_file_loader (const String *_fname, progress_callback_t *progress, uin
     String_t s = NameOnly (_fname);
     CopyString (songdata_title, (String *)&s, sizeof (songdata_title) - 1);
   }
-  import_old_flags ();
+  apply_song_flags (song);
   result_state = 1;
   if (progress != NULL) next_progress_step (progress);
 

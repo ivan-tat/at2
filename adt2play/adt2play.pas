@@ -87,7 +87,7 @@ begin
 
   FillChar(decay_bar,SizeOf(decay_bar),0);
   play_status := isStopped;
-  init_songdata;
+  init_songdata (songdata);
   init_timer_proc;
 
   if gfx_mode then

@@ -18,10 +18,26 @@
 
 // A2I
 
+#include "formats/a2i.h"
+#include "formats/a2i/check_crc16_a2i.c" // static
+#include "formats/a2i/unpack_a2i.c" // static
+#include "formats/a2i/get_ins_a2i_v1.c" // static
+#include "formats/a2i/get_ins_a2i_v5.c" // static
+#include "formats/a2i/get_ins_a2i_v9.c" // static
+#include "formats/a2i/load_block_0_a2i_v1.c" // static
+#include "formats/a2i/load_block_0_a2i_v5.c" // static
+#include "formats/a2i/load_block_0_a2i_v9.c" // static
+#include "formats/a2i/load_block_0_a2i_v10.c" // static
 #include "iloadins/a2i_file_loader_alt.c"
 
 // A2F
 
+#include "formats/a2f.h"
+#include "formats/a2f/unpack_a2f.c" // static
+#include "formats/a2f/get_ins_macro_a2f_v1.c" // static
+#include "formats/a2f/get_ins_a2f_v1.c" // static
+#include "formats/a2f/load_block_0_a2f_v1.c" // static
+#include "formats/a2f/load_block_0_a2f_v2.c" // static
 #include "iloadins/a2f_file_loader_alt.c"
 
 // CIF

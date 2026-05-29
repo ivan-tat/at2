@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
@@ -35,13 +35,17 @@ void _dbg_enter (const char *file, const char *func);
 void _dbg_label (const char *label);
 void _dbg_printf (const char *format, ...);
 void _dbg_leave (void);
+void _dbg_dump_mem (const void *mem, uint32_t size, const char *padstr);
 void _dbg_dump_callstack (void);
+
+#define DBG_MARK             printf ("DBG:%s:%d\n", __FILE__, __LINE__);
 
 #define DBG_ENTER(func)      _dbg_enter (__FILE__, func)
 #define DBG_LABEL(label)     _dbg_label (label)
 #define DBG_PRINTF(fmt, ...) _dbg_printf (fmt, __VA_ARGS__)
 #define DBG_LOG(s)           _dbg_printf ("%s", s)
 #define DBG_LEAVE()          _dbg_leave ()
+#define DBG_DUMP_MEM(b, s, p) _dbg_dump_mem (b, s, p)
 
 #pragma pack(pop)
 

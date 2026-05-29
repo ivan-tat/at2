@@ -401,6 +401,10 @@ static void (*old_fselect_external_proc) (void);
 #include "dialogio/path_filter.c" // static, used in `Fselect'
 #include "dialogio/Fselect.c"
 
+/*** miscellaneous ***/
+
+#include "dialogio/ask_file_overwrite_rename.c"
+
 #include "dialogio/DialogIO_Init.c"
 
 #pragma pack(pop)

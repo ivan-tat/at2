@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 function ReadDataBlock (es: PLZHEncoderState; ptr: Pointer; size: Word): Word; cdecl;
@@ -19,8 +19,9 @@ begin
   ReadDataBlock := result;
 {$IFNDEF ADT2PLAY}
   If NOT really_no_status_refresh then
-    show_progress2(es^.input_buffer_idx,3);
 {$ENDIF} // NOT DEFINED(ADT2PLAY)
+    if (es^.progress <> NIL) then
+      es^.progress^.update (es^.progress, es^.input_buffer_idx, 3);
 end;{$ENDIF}
 
 procedure PutBits (es: PLZHEncoderState; bits: Integer; xbits: Word); cdecl;
@@ -722,8 +723,9 @@ begin
 end;{$ENDIF}
 
 // ultra: compression flag (FALSE=default, TRUE=ultra)
-function LZH_do_compress (var source,dest; size: Dword; ultra: boolean): Dword; cdecl;
-{$IF 1}external;{$ELSE}public name PUBLIC_PREFIX + 'LZH_do_compress';
+function LZH_do_compress (var source,dest; size: Dword; ultra: boolean; progress: progress_callback_p): Dword; cdecl;
+{$IF 1}external; //LZH_do_compress
+{$ELSE}public name PUBLIC_PREFIX + 'LZH_do_compress';
 var
   result: Dword;
   es: PLZHEncoderState;
@@ -747,8 +749,12 @@ begin
   Inc(es^.output_buffer_idx);
   Move(size,es^.output_buffer^[es^.output_buffer_idx],SizeOf(size));
   Inc(es^.output_buffer_idx,SizeOf(size));
-  progress_old_value := BYTE_NULL;
-  progress_value := size;
+  es^.progress := progress;
+  if (progress <> NIL) then
+  begin
+    progress^.old_value := BYTE_NULL;
+    progress^.value := size;
+  end;
   if (ultra = 0) then
   begin
     es^.WIN_SIZE := WIN_SIZE_DEF;
@@ -824,14 +830,16 @@ _exit:
   LZH_do_compress := result;
 end;{$ENDIF}
 
-function LZH_compress (var source, dest; size: Dword): Dword; cdecl;
-{$IF 1}external;{$ELSE}public name PUBLIC_PREFIX + 'LZH_compress';
+function LZH_compress (var source, dest; size: Dword; progress: progress_callback_p): Dword; cdecl;
+{$IF 1}external; //LZH_compress
+{$ELSE}public name PUBLIC_PREFIX + 'LZH_compress';
 begin
-  LZH_compress := LZH_do_compress (source, dest, size, false);
+  LZH_compress := LZH_do_compress (source, dest, size, false, progress);
 end;{$ENDIF}
 
-function LZH_compress_ultra (var source, dest; size: Dword): Dword; cdecl;
-{$IF 1}external;{$ELSE}public name PUBLIC_PREFIX + 'LZH_compress_ultra';
+function LZH_compress_ultra (var source, dest; size: Dword; progress: progress_callback_p): Dword; cdecl;
+{$IF 1}external; //LZH_compress_ultra
+{$ELSE}public name PUBLIC_PREFIX + 'LZH_compress_ultra';
 begin
-  LZH_compress_ultra := LZH_do_compress (source, dest, size, true);
+  LZH_compress_ultra := LZH_do_compress (source, dest, size, true, progress);
 end;{$ENDIF}

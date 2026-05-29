@@ -281,6 +281,10 @@ extern tFSELECT_ENVIRONMENT fs_environment;
 
 String_t Fselect (const String *mask);
 
+/*** miscellaneous ***/
+
+int8_t ask_file_overwrite_rename (const String *_fname, const String *title);
+
 void DialogIO_Init (void);
 
 #pragma pack(pop)

@@ -1,10 +1,11 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "debug.h"
+#include "common.h"
 #include "platform.h"
 #include <stddef.h>
 #include <string.h>
@@ -31,4 +32,5 @@ int _dbg_callstackptr = -1;
 #include "debug/_dbg_label.c"
 #include "debug/_dbg_printf.c"
 #include "debug/_dbg_leave.c"
+#include "debug/_dbg_dump_mem.c"
 #include "debug/_dbg_dump_callstack.c"

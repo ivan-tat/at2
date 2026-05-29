@@ -34,7 +34,7 @@ const
 
 var
   pattern_undo_patt: Byte;
-  pattern_undo_data: array[0..PRED(SizeOf(tPATTERN_DATA) DIV 16)] of Byte;
+  pattern_undo_data: array[0..PRED(SizeOf(tPATTERNS_DATA) DIV 16)] of Byte;
 
 procedure cancel_note_recorder;
 begin

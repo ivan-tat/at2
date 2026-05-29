@@ -4,6 +4,7 @@
 
 unit Pascal;
 
+{$MODE OBJFPC} // for `CatchUnhandledException'
 {$L pascal.o}
 {$L pascal/errno.o}
 {$IFDEF GO32V2}
@@ -202,6 +203,9 @@ function Pascal_GetLogicalDriveStrings (nBufferLength: LongWord; lpBuffer: PChar
 implementation
 
 uses
+{$IFDEF GO32V2}
+  ctypes, // for `CatchUnhandledException'
+{$ENDIF} // DEFINED(GO32V2)
   crt,
   dateutils,
 {$IFNDEF GO32V2}
@@ -944,6 +948,37 @@ end;
 
 { Initialization and finalization }
 
+{$IFDEF GO32V2}
+procedure CatchUnhandledException (Obj: TObject; Addr: Pointer; FrameCount: Longint; Frames: PPointer);
+var
+  Message: String;
+  i: Longint;
+  hstdout: ^Text;
+begin
+  hstdout := @stdout;
+
+  WriteLn (hstdout^, 'An unhandled exception occurred at ', SysBackTraceStr (addr), ' :');
+
+  if Obj is exception then
+  begin
+    Message := Exception (Obj).ClassName + ' : ' + Exception (Obj).Message;
+    WriteLn (hstdout^, Message);
+  end
+  else
+    WriteLn (hstdout^, 'Exception object ', Obj.ClassName, ' is not of class Exception.');
+
+  WriteLn (hstdout^, BackTraceStrFunc (Addr));
+
+  if (FrameCount > 0) then
+  begin
+    for i := 0 to FrameCount - 1 do
+      WriteLn (hstdout^, BackTraceStrFunc (Frames[i]));
+  end;
+
+  WriteLn (hstdout^, '');
+end;
+{$ENDIF} // DEFINED(GO32V2)
+
 var
   OldExitProc: Pointer;
 
@@ -959,6 +994,9 @@ begin
   _check_struct_TWinFindData;
 {$ENDIF} {DEFINED(WINDOWS)}
   _check_struct_SearchRec;
+{$IFDEF GO32V2}
+  system.ExceptProc := @CatchUnhandledException;
+{$ENDIF} // DEFINED(GO32V2)
   Pascal_FileRec_size := SizeOf (FileRec);
   Pascal_TextRec_size := SizeOf (TextRec);
 {$IFDEF GO32V2}

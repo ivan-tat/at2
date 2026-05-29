@@ -582,7 +582,7 @@ _err_decoder:
 static void cff_new_song (tFIXED_SONGDATA *song, cff_header2_t *header2, const String *fname)
 {
   // clear song
-  init_songdata ();
+  init_songdata (song);
   song->patt_len = 64;
   if (adjust_tracks || (song->nm_tracks < 9)) song->nm_tracks = 9;
   tempo = 51;
@@ -602,7 +602,7 @@ static void cff_new_song (tFIXED_SONGDATA *song, cff_header2_t *header2, const S
     s = NameOnly (fname);
     CopyString (songdata_title, (String *)&s, sizeof (songdata_title) - 1);
   }
-  import_old_flags ();
+  apply_song_flags (song);
 
   // import pattern order
   for (int i = 0; i < CFF_ORDER_LEN; i++)

@@ -30,8 +30,8 @@ typedef struct
 #pragma pack(pop)
 
 #if !ADT2PLAY
-uint32_t LZH_compress (const void *source, void *dest, uint32_t size);
-uint32_t LZH_compress_ultra (const void *source, void *dest, uint32_t size);
+uint32_t LZH_compress (const void *source, void *dest, uint32_t size, progress_callback_t *progress);
+uint32_t LZH_compress_ultra (const void *source, void *dest, uint32_t size, progress_callback_t *progress);
 #endif // !ADT2PLAY
 uint32_t LZH_decompress (const void *source, void *dest, uint32_t size, progress_callback_t *progress);
 

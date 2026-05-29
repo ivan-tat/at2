@@ -25,18 +25,20 @@
 #define MIN_IRQ_FREQ 50
 #define MAX_IRQ_FREQ 1000
 
-#define AT_MELODIC_CHANNELS_MAX 18
-#define AT_CHANNELS_MAX 20
-#define AT_PATTERNS_MAX 128
-#define AT_ORDER_LEN 128
+#define INSTRUMENTS_MAX 255
+#define MELODIC_CHANNELS_MAX 18
+#define CHANNELS_MAX 20
+#define PATTERN_LEN 256
+#define PATTERNS_MAX 128
+#define PATTERN_ORDER_LEN 128
 
 // pattern
-#define AT_NOTE_EMPTY 0
-#define AT_NOTE_OFF   0xFF
-#define AT_INS_EMPTY  0
+#define NOTE_EMPTY 0
+#define NOTE_OFF   0xFF
+#define INS_EMPTY  0
 
-// patterns order
-#define AT_ORDER_JUMP 0x80
+// pattern order
+#define PATTERN_ORDER_JUMP 0x80
 
 #if ADT2PLAY
 // TODO: rename `decay_bar' into `spectrum_bar'
@@ -270,16 +272,14 @@ extern bool    seek_pattern_break;
 #endif // !ADT2PLAY
 
 extern bool    speed_update, lockvol, panlock, lockVP;
-extern uint8_t tremolo_depth, vibrato_depth;
+extern uint8_t tremolo_depth, vibrato_depth; // 0..1
 extern bool    volume_scaling, percussion_mode;
 extern uint8_t last_order;
 
 extern tGENERIC_IO_BUFFER buf1;
 extern tGENERIC_IO_BUFFER buf2;
-extern uint8_t buf3[0x10000]; // HINT: (FPC) start index 0
-extern uint8_t buf4[0x10000]; // HINT: (FPC) start index 0
 
-extern tPATTERN_DATA *pattdata;
+extern tPATTERNS_DATA *pattdata;
 
 extern tOLD_VARIABLE_DATA1 old_hash_buffer;
 extern tOLD_VARIABLE_DATA2 hash_buffer;
@@ -338,8 +338,14 @@ extern struct status_backup_t {
   tPLAY_STATUS play_status;
 } status_backup;
 
+void set_pattern_data (tFIXED_SONGDATA *song, uint8_t idx, tRAW_PATTERN_DATA *data);
+void set_pattern_name (tFIXED_SONGDATA *song, uint8_t idx, String *name, String *def_name);
+bool is_pattern_marked (tFIXED_SONGDATA *song, uint8_t idx);
+
 int8_t board_get_pos (uint8_t octave, ExtKeyCode fkey);
 #endif // !ADT2PLAY
+
+tRAW_PATTERN_DATA *get_pattern_data (tFIXED_SONGDATA *song, uint8_t idx);
 
 uint16_t nFreq (uint8_t note);
 void     change_freq (uint8_t chan, uint16_t freq);
@@ -417,7 +423,7 @@ void count_patterns (uint8_t *patterns);
 void count_instruments (uint8_t *instruments);
 #endif // !ADT2PLAY
 void init_old_songdata (void);
-void init_songdata (void);
+void init_songdata (tFIXED_SONGDATA *song);
 #if !ADT2PLAY
 void update_instr_data (uint8_t ins);
 void load_instrument (const void *data, uint8_t chan);

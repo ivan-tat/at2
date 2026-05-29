@@ -3,7 +3,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <limits.h>
+#include <sys/types.h>
 #include "pascal/stdlib.h"
+
+#ifndef SSIZE_MAX
+#define SSIZE_MAX (SIZE_MAX/2)
+#endif // !defined(SSIZE_MAX)
 
 static uint8_t _ExitCount = 0;
 static void (*_ExitList[ATEXIT_MAX]) (void);
@@ -27,6 +32,28 @@ void *custom_malloc (size_t size) {
 
   if (p == NULL)
     errno = ENOMEM;
+
+  return p;
+}
+
+void *custom_calloc (size_t n, size_t size) {
+  void *p;
+  size_t x = n * size;
+
+  if ((n != 0) && (x / n == size) && (x <= SSIZE_MAX))
+  {
+    p = Pascal_AllocMem (x);
+
+    if (p != NULL)
+      Pascal_FillChar (p, x, 0);
+    else
+      errno = ENOMEM;
+  }
+  else
+  {
+    p = NULL;
+    errno = ERANGE;
+  }
 
   return p;
 }

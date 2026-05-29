@@ -6,19 +6,24 @@
 
 void init_old_songdata (void)
 {
+  tOLD_FIXED_SONGDATA *song = &old_songdata;
+
   DBG_ENTER ("init_old_songdata");
 
-  memset (&old_songdata, 0, sizeof (old_songdata));
-  memset (old_songdata.pattern_order, 0x80, sizeof (old_songdata.pattern_order));
-  //memset (old_songdata.instr_data, 0, sizeof (old_songdata.instr_data)); // already cleared
-
+  SetLength (song->songname, 0);
+  SetLength (song->composer, 0);
 #if !ADT2PLAY
-  for (uint8_t i = 0; i < 250; i++)
+  for (uint8_t i = 0; i < /*INSTRUMENTS_MAX_A2M_V1*/250; i++)
   {
-    SetLength (old_songdata.instr_names[i], 9);
-    snprintf (GetStr ((char *)old_songdata.instr_names[i]), 9+1, " iNS_%02"PRIX8"%c ", i + 1, /*charmap.*/'\xF7');
+    SetLength (song->instr_names[i], 9);
+    snprintf (GetStr ((char *)song->instr_names[i]), 1 + 9, " iNS_%02"PRIX8"%c ", i + 1, /*charmap.*/'\xF7');
+    memset (&song->instr_data[i], 0, sizeof (song->instr_data[0]));
   }
 #endif // !ADT2PLAY
+  memset (song->pattern_order, PATTERN_ORDER_JUMP + 0, sizeof (song->pattern_order));
+  song->tempo = 0;
+  song->speed = 0;
+  song->common_flag = 0;
 
   DBG_LEAVE (); //EXIT //init_old_songdata
 }

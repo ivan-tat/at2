@@ -277,10 +277,8 @@ var
 
   buf1: tGENERIC_IO_BUFFER; cvar; external;
   buf2: tGENERIC_IO_BUFFER; cvar; external;
-  buf3: array[WORD] of Byte; cvar; external;
-  buf4: array[WORD] of Byte; cvar; external;
 
-  pattdata: ^tPATTERN_DATA; cvar; external;
+  pattdata: ^tPATTERNS_DATA; cvar; external;
 
   old_hash_buffer: tOLD_VARIABLE_DATA1; cvar; external;
   hash_buffer: tOLD_VARIABLE_DATA2; cvar; external;
@@ -413,7 +411,7 @@ procedure count_patterns(var patterns: Byte); cdecl; external;
 procedure count_instruments(var instruments: Byte); cdecl; external;
 {$ENDIF} // NOT DEFINED(ADT2PLAY)
 procedure init_old_songdata; cdecl; external;
-procedure init_songdata; cdecl; external;
+procedure init_songdata (var song: tFIXED_SONGDATA); cdecl; external;
 {$IFNDEF ADT2PLAY}
 procedure update_instr_data(ins: Byte); cdecl; external;
 procedure load_instrument(var data; chan: Byte); cdecl; external;

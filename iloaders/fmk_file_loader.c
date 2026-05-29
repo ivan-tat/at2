@@ -55,7 +55,7 @@ typedef struct  // all values are little-endian
   uint32_t offs_pat[FMK_PATTERNS_MAX];
 } fmk_loader_data_t;
 
-// patterns order
+// pattern order
 #define FMK_ORDER_STOP  0xFF
 
 // description
@@ -97,12 +97,12 @@ static void import_fmk_event (uint8_t patt, uint8_t line, fmk_event_t *ev, bool 
   tCHUNK a;
 
   memset (&a, 0, sizeof (a));
-  a.instr_def = (ev->ins >= 1) && (ev->ins <= FMK_INSTRUMENTS_MAX) ? ev->ins : AT_INS_EMPTY;
+  a.instr_def = (ev->ins >= 1) && (ev->ins <= FMK_INSTRUMENTS_MAX) ? ev->ins : INS_EMPTY;
 
   if (((ev->note & 0x0F) >= 1) && ((ev->note & 0x0F) <= 12) && (ev->note >> 4 < FMK_OCTAVES))
     a.note = 12 * (ev->note >> 4) + (ev->note & 0x0F);
   else
-    a.note = ev->note == FMK_NOTE_OFF ? AT_NOTE_OFF : AT_NOTE_EMPTY;
+    a.note = ev->note == FMK_NOTE_OFF ? NOTE_OFF : NOTE_EMPTY;
 
   if (ev->vol != FMK_VOL_EMPTY)
   {
@@ -392,7 +392,7 @@ typedef struct
     xfvolsld[FMK_CHANNELS_MAX],
     slide   [FMK_CHANNELS_MAX];
   bool first_ins_load[FMK_CHANNELS_MAX];
-  bool speed_table_fixed[AT_PATTERNS_MAX];
+  bool speed_table_fixed[PATTERNS_MAX];
   struct
   {
     uint8_t
@@ -696,7 +696,7 @@ static void fix_fmk_commands (uint8_t patterns)
 {
   uint8_t order, patt;
   fmk_commands_cache_t cache;
-  bool patts[AT_PATTERNS_MAX];
+  bool patts[PATTERNS_MAX];
 
   memset (cache.ins, 0, sizeof (cache.ins));
   memset (cache.first_ins_load, true, sizeof (cache.first_ins_load));
@@ -710,19 +710,19 @@ static void fix_fmk_commands (uint8_t patterns)
   memset (patts, false, sizeof (patts));
 
   order = 0;
-  patt = AT_PATTERNS_MAX;
+  patt = PATTERNS_MAX;
   do
   {
     uint8_t x = songdata.pattern_order[order++];
 
-    if (x < AT_PATTERNS_MAX)
+    if (x < PATTERNS_MAX)
     {
       fix_fmk_pattern (x, &cache);
       patts[x] = true;
       patt = x;
     }
     order++;
-  } while ((patt < patterns) && (order < AT_ORDER_LEN));
+  } while ((patt < patterns) && (order < PATTERN_ORDER_LEN));
 
   for (patt = 0; patt < patterns; patt++)
     if (!patts[patt]) fix_fmk_pattern (patt, &cache);
@@ -904,7 +904,7 @@ int8_t fmk_file_loader (const String *_fname, void **desc, progress_callback_t *
   for (uint8_t i = 0; i < header.insnum; i++) data->offs_ins[i] = uint16_LE (data->offs_ins[i]);
   for (uint8_t i = 0; i < header.patnum; i++) data->offs_pat[i] = uint32_LE (data->offs_pat[i]);
 
-  init_songdata ();
+  init_songdata (song);
   stereo = (header.flags & FMK_FL_STEREO) != 0;
 
   for (uint8_t chan = 0; chan < num_channels; chan++)
@@ -934,8 +934,8 @@ int8_t fmk_file_loader (const String *_fname, void **desc, progress_callback_t *
   if (stereo) song->common_flag |= 0x20;
   if (header.flags & FMK_FL_TREMOLO) song->common_flag |= 0x08;
   if (header.flags & FMK_FL_VIBRATO) song->common_flag |= 0x10;
-  import_old_flags ();
-  if (stereo) // must be after a call to `import_old_flags()'
+  apply_song_flags (song);
+  if (stereo) // must be after a call to `apply_song_flags()'
     for (uint8_t chan = 0; chan < FMK_MELODIC_CHANNELS_MAX; chan++)
       song->lock_flags[chan] |= fmk_pan_lut[(header.panning[chan >> 2] >> ((chan & 3) << 1)) & 3];
   {
@@ -953,11 +953,11 @@ int8_t fmk_file_loader (const String *_fname, void **desc, progress_callback_t *
   if (progress != NULL) next_progress_step (progress);
 
   // import patterns order
-  for (uint8_t i = 0; i < max (header.ordlen, AT_ORDER_LEN); i++)
+  for (uint8_t i = 0; i < max (header.ordlen, PATTERN_ORDER_LEN); i++)
     if (data->order[i] < FMK_PATTERNS_MAX)
       song->pattern_order[i] = data->order[i];
     else if (data->order[i] == FMK_ORDER_STOP)
-      song->pattern_order[i] = AT_ORDER_JUMP + 0; // acts as `stop'
+      song->pattern_order[i] = PATTERN_ORDER_JUMP + 0; // acts as `stop'
     else
       goto _err_format;
   result_state = 2;

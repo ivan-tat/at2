@@ -38,8 +38,8 @@ type
   end;
 
 {$IFNDEF ADT2PLAY}
-function LZH_compress(var source,dest; size: Dword): Dword; cdecl;
-function LZH_compress_ultra(var source,dest; size: Dword): Dword; cdecl;
+function LZH_compress(var source,dest; size: Dword; progress: progress_callback_p): Dword; cdecl;
+function LZH_compress_ultra(var source,dest; size: Dword; progress: progress_callback_p): Dword; cdecl;
 {$ENDIF} // NOTE DEFINED(ADT2PLAY)
 function LZH_decompress (var source, dest; size: Dword; progress: progress_callback_p): Dword; cdecl; external;
 
@@ -86,7 +86,8 @@ var
     out_mask,avail,
     input_buffer,output_buffer,
     input_buffer_idx,output_buffer_idx,
-    input_buffer_size: LongWord;
+    input_buffer_size,
+    progress: LongWord;
   end; cvar; external;
 var
   struct_TLZHEncoderState_size: LongWord; cvar; external;
@@ -135,6 +136,7 @@ begin
   _check_struct_memb (s, 'input_buffer_idx', struct_TLZHEncoderState.input_buffer_idx, SizeUInt (@(TLZHEncoderState (NIL^).input_buffer_idx)));
   _check_struct_memb (s, 'output_buffer_idx', struct_TLZHEncoderState.output_buffer_idx, SizeUInt (@(TLZHEncoderState (NIL^).output_buffer_idx)));
   _check_struct_memb (s, 'input_buffer_size', struct_TLZHEncoderState.input_buffer_size, SizeUInt (@(TLZHEncoderState (NIL^).input_buffer_size)));
+  _check_struct_memb (s, 'progress', struct_TLZHEncoderState.progress, SizeUInt (@(TLZHEncoderState (NIL^).progress)));
   _check_struct_size (s, struct_TLZHEncoderState_size, SizeOf (TLZHEncoderState));
 end;
 

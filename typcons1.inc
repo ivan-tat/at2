@@ -214,7 +214,7 @@ type
   tVARIABLE_DATA = array[0..7]    of array[1..20] of
                    array[0..$0ff] of tCHUNK;
 type
-  tPATTERN_DATA = array[0..15] of tVARIABLE_DATA;
+  tPATTERNS_DATA = array[0..15] of tVARIABLE_DATA;
 
 {$IFNDEF ADT2PLAY}
 

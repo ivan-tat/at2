@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2025 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 const
@@ -59,4 +59,5 @@ type
     input_buffer, output_buffer: pGENERIC_IO_BUFFER;
     input_buffer_idx, output_buffer_idx: Dword;
     input_buffer_size: Dword;
+    progress: progress_callback_p;
   end;

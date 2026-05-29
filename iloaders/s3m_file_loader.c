@@ -94,13 +94,13 @@ typedef struct  // all values are little-endian
 } s3m_adlib_ins_t;
 #pragma pack(pop)
 
-// patterns order
+// pattern order
 #define S3M_ORDER_SKIP  0xFE
 #define S3M_ORDER_STOP  0xFF
 
 typedef struct  // all values are little-endian
 {
-  uint8_t order[S3M_ORDER_LEN];               // patterns order
+  uint8_t order[S3M_ORDER_LEN];               // pattern order
   uint16_t paraptr_ins[S3M_INSTRUMENTS_MAX];  // para pointers (x16) to instruments
   uint16_t paraptr_pat[S3M_PATTERNS_MAX];     // para pointers (x16) to patterns
   uint8_t def_vol[S3M_INSTRUMENTS_MAX];       // default instruments volume
@@ -134,15 +134,15 @@ typedef struct
       effect,
       effect_def2,
       effect2;
-  } prev[AT_MELODIC_CHANNELS_MAX];
+  } prev[MELODIC_CHANNELS_MAX];
   uint8_t
-    ins    [AT_MELODIC_CHANNELS_MAX],
-    note   [AT_MELODIC_CHANNELS_MAX],
-    volsld [AT_MELODIC_CHANNELS_MAX],
-    slide  [AT_MELODIC_CHANNELS_MAX],
-    misc   [AT_MELODIC_CHANNELS_MAX],
-    arpg   [AT_MELODIC_CHANNELS_MAX],
-    patloop[AT_MELODIC_CHANNELS_MAX];
+    ins    [MELODIC_CHANNELS_MAX],
+    note   [MELODIC_CHANNELS_MAX],
+    volsld [MELODIC_CHANNELS_MAX],
+    slide  [MELODIC_CHANNELS_MAX],
+    misc   [MELODIC_CHANNELS_MAX],
+    arpg   [MELODIC_CHANNELS_MAX],
+    patloop[MELODIC_CHANNELS_MAX];
 } s3m_commands_cache_t;
 
 #define S3M_VIBRATO_COEF(octave) 0.55f + 0.20f * octave
@@ -166,7 +166,7 @@ static void fix_s3m_pattern (const int8_t *c4factor, s3m_commands_cache_t *cache
   memset (cache->patloop, UINT8_NULL, sizeof (cache->patloop));
 
   for (uint8_t line = 0; line < S3M_PATTERN_LEN; line++)
-    for (uint8_t chan = 0; chan < AT_MELODIC_CHANNELS_MAX; chan++)
+    for (uint8_t chan = 0; chan < MELODIC_CHANNELS_MAX; chan++)
     {
       tCHUNK a;
 
@@ -462,7 +462,7 @@ static void fix_s3m_commands (const int8_t *c4factor, uint8_t patterns)
 {
   tFIXED_SONGDATA *song = &songdata;
   s3m_commands_cache_t cache;
-  bool patts[AT_PATTERNS_MAX];
+  bool patts[PATTERNS_MAX];
   uint8_t order = 0;
   uint8_t patt = UINT8_NULL;
 
@@ -478,7 +478,7 @@ static void fix_s3m_commands (const int8_t *c4factor, uint8_t patterns)
   {
     uint8_t x = song->pattern_order[order++];
 
-    if (x < AT_PATTERNS_MAX)
+    if (x < PATTERNS_MAX)
     {
       patt = x;
       if (!patts[patt])
@@ -487,7 +487,7 @@ static void fix_s3m_commands (const int8_t *c4factor, uint8_t patterns)
         patts[patt] = true;
       }
     }
-  } while ((patt < patterns) && (order < AT_ORDER_LEN));
+  } while ((patt < patterns) && (order < PATTERN_ORDER_LEN));
 
   for (patt = 0; patt < patterns; patt++)
     if (!patts[patt]) fix_s3m_pattern (c4factor, &cache, patt);
@@ -506,15 +506,15 @@ void import_s3m_event (uint8_t patt, uint8_t line, s3m_event_t *ev, uint8_t *def
   tCHUNK a;
 
   memset (&a, 0, sizeof (a));
-  a.instr_def = ev->ins == S3M_INS_EMPTY ? AT_INS_EMPTY : ev->ins;
+  a.instr_def = ev->ins == S3M_INS_EMPTY ? INS_EMPTY : ev->ins;
 
   switch (ev->note)
   {
     case S3M_NOTE_OFF:
-      a.note = AT_NOTE_OFF;
+      a.note = NOTE_OFF;
       break;
     case S3M_NOTE_EMPTY:
-      a.note = AT_NOTE_EMPTY;
+      a.note = NOTE_EMPTY;
       break;
     default:
       if ((ev->note & 0x0F) <= 11)
@@ -898,7 +898,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
       || (header.patnum > S3M_PATTERNS_MAX)) goto _err_format;
 
   // find playable channels
-  for (num_channels = AT_MELODIC_CHANNELS_MAX; num_channels != 0; num_channels--)
+  for (num_channels = MELODIC_CHANNELS_MAX; num_channels != 0; num_channels--)
     if (header.chan_set[num_channels - 1] != S3M_CHAN_UNUSED) break;
   if (num_channels == 0) goto _err_chan;
 
@@ -913,7 +913,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
 
   if (progress != NULL) next_progress_step (progress);
 
-  init_songdata ();
+  init_songdata (song);
 
 #if !ADT2PLAY
   for (uint8_t i = 0; i < num_channels; i++)
@@ -922,7 +922,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
 #endif // !ADT2PLAY
 
   if (adjust_tracks)
-    song->nm_tracks = max (num_channels, AT_MELODIC_CHANNELS_MAX);
+    song->nm_tracks = max (num_channels, MELODIC_CHANNELS_MAX);
 
   song->patt_len = S3M_PATTERN_LEN;
   speed = header.i_s != 0 ? header.i_s : 1;
@@ -930,7 +930,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
   song->tempo = tempo;
   song->speed = speed;
   song->common_flag |= 0x80;
-  import_old_flags ();
+  apply_song_flags (song);
   {
     String_t s, t;
 
@@ -944,13 +944,13 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
   if (progress != NULL) next_progress_step (progress);
 
   // import patterns order
-  for (uint_least8_t i = 0; i < max (header.ordnum, AT_ORDER_LEN); i++)
+  for (uint_least8_t i = 0; i < max (header.ordnum, PATTERN_ORDER_LEN); i++)
     if (data->order[i] < S3M_PATTERNS_MAX)
       song->pattern_order[i] = data->order[i];
     else if (data->order[i] == S3M_ORDER_SKIP)
-      song->pattern_order[i] = AT_ORDER_JUMP + i + 1;
+      song->pattern_order[i] = PATTERN_ORDER_JUMP + i + 1;
     else if (data->order[i] == S3M_ORDER_STOP)
-      song->pattern_order[i] = AT_ORDER_JUMP + 0; // acts as `stop'
+      song->pattern_order[i] = PATTERN_ORDER_JUMP + 0; // acts as `stop'
     else
       goto _err_format;
   result_state = 2;
@@ -1064,7 +1064,7 @@ int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uin
             ev.info = 0;
           }
 
-          if (adjust_tracks && (ev.chan >= song->nm_tracks) && (ev.chan < AT_MELODIC_CHANNELS_MAX))
+          if (adjust_tracks && (ev.chan >= song->nm_tracks) && (ev.chan < MELODIC_CHANNELS_MAX))
             song->nm_tracks = ev.chan + 1;
           if (ev.chan < song->nm_tracks)
             import_s3m_event (patt, line, &ev, data->def_vol);

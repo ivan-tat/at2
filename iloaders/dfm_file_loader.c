@@ -181,7 +181,7 @@ int8_t dfm_file_loader (const String *_fname, progress_callback_t *progress, uin
   if (progress != NULL) progress->num_steps = 4;
 
   // initialize song
-  init_songdata ();
+  init_songdata (song);
   song->patt_len = DFM_PATTERN_LEN;
   if (adjust_tracks || (song->nm_tracks < DFM_CHANNELS_MAX)) song->nm_tracks = DFM_CHANNELS_MAX;
   tempo = 135;
@@ -189,7 +189,7 @@ int8_t dfm_file_loader (const String *_fname, progress_callback_t *progress, uin
   song->tempo = tempo;
   song->speed = speed;
   song->common_flag |= 1 | 2 | 8 | 0x10;
-  import_old_flags ();
+  apply_song_flags (song);
   {
     String_t s;
     if (Length (header.composer) >= sizeof (header.composer))

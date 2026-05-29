@@ -347,7 +347,7 @@ begin { MAIN }
   If _debug_ then WriteLn('--- initializing songdata');
   tempo := init_tempo;
   speed := init_speed;
-  init_songdata;
+  init_songdata (songdata);
 
   songdata_source := '';
   instdata_source := '';

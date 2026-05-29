@@ -283,10 +283,8 @@ uint8_t last_order;
 
 tGENERIC_IO_BUFFER buf1;
 tGENERIC_IO_BUFFER buf2;
-uint8_t buf3[0x10000];
-uint8_t buf4[0x10000];
 
-tPATTERN_DATA *pattdata = NULL;
+tPATTERNS_DATA *pattdata = NULL;
 
 tOLD_VARIABLE_DATA1 old_hash_buffer;
 tOLD_VARIABLE_DATA2 hash_buffer;
@@ -348,8 +346,14 @@ uint8_t  voice_table_backup  [20];
 uint8_t  flag_4op_backup;
 struct status_backup_t status_backup;
 
+#include "adt2unit/set_pattern_data.c"
+#include "adt2unit/set_pattern_name.c"
+#include "adt2unit/is_pattern_marked.c"
+
 #include "adt2unit/board_get_pos.c"
 #endif // !ADT2PLAY
+
+#include "adt2unit/get_pattern_data.c"
 
 #define FreqStart 0x156
 #define FreqEnd   0x2AE

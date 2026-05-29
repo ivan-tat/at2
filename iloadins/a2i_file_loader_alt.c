@@ -4,32 +4,31 @@
 // SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// In: `progress' and `error' may be NULL.
-// On success: returns 0.
-// On error: returns -1 and error description in `error' (if set).
-int8_t a2i_file_loader_alt (temp_instrument_t *dst, const String *_fname, bool swap_ins,
+/*****************************************************************************
+
+  AdLib Tracker II instrument file loader
+  Supported versions: 1..10
+  Filename extension: .a2i
+
+*****************************************************************************/
+
+// In:
+//   * `progress' and `error' may be NULL.
+//
+// On success:
+//   * Return value: 0.
+//   * `error' is untouched.
+// On error:
+//   * Return value: -1.
+//   * `error' (if set) is set to error description.
+int8_t a2i_file_loader_alt (temp_instrument_t *dst,
+                            const String *_fname, bool swap_ins,
                             progress_callback_t *progress, char **error)
 {
-  #pragma pack(push, 1)
-  typedef struct
-  {
-    char ident[7];
-    uint16_t crc16;
-    uint8_t ffver;
-    uint8_t b0len; // or LSB of `len'
-  } tOLD_HEADER;
-  #pragma pack(pop)
-
-  static const char GCC_ATTRIBUTE((nonstring)) id[7] = { "_A2ins_" };
-
-  int8_t result = -1; // return value
+  int8_t result = -1;
   char *result_error = NULL;
   FILE *f = NULL;
-  tOLD_HEADER header;
-  uint_least16_t len;
-  uint16_t crc;
-  size_t unpacked_size;
-  mem_stream_t stream;
+  header_a2i_t main_header;
   char fname[255+1];
 
   DBG_ENTER ("a2i_file_loader_alt");
@@ -37,104 +36,63 @@ int8_t a2i_file_loader_alt (temp_instrument_t *dst, const String *_fname, bool s
   StringToStr (fname, _fname, sizeof (fname) - 1);
   if ((f = fopen (fname, "rb")) == NULL) goto _err_fopen;
 
-  if (fread (&header, sizeof (header), 1, f) == 0) goto _err_fread;
-  if (memcmp (header.ident, id, sizeof (header.ident)) != 0) goto _err_format;
+  if (fread (&main_header, sizeof (main_header), 1, f) == 0) goto _err_fread;
 
-  if ((header.ffver >= 1) && (header.ffver <= 10))
+  if (memcmp (main_header.id, id_a2i, sizeof (main_header.id)) != 0) goto _err_format;
+  if ((main_header.version < 1) || (main_header.version > 10)) goto _err_version;
+
+  if (main_header.version <= 8)
   {
-    if (header.ffver <= 8)
-      len = header.b0len;
-    else
+    header_a2i_v1_t header;
+
+    if (fread (&header, sizeof (header), 1, f) == 0) goto _err_fread;
+
+    if (check_crc16_a2i (main_header.crc16, false,
+                         8, 8, &header.block_size, 1, 1,
+                         f,
+                         &result_error) != 0) goto _exit;
+
+    if (fseek (f, sizeof (main_header) + sizeof (header), SEEK_SET) != 0) goto _err_fread;
+
+    if (main_header.version <= 4)
     {
-      uint8_t b;
-
-      if (fread (&b, sizeof (b), 1, f) == 0) goto _err_fread;
-      len = header.b0len + (b << 8);
+      if (load_block_0_a2i_v1 (main_header.version, dst,
+                               header.block_size,
+                               f,
+                               progress, &result_error) != 0) goto _exit;
     }
-
-    if (fread (buf2, len, 1, f) == 0) goto _err_fread;
-
-    crc = Update16 (&header.b0len, sizeof (header.b0len), CRC16_INITVAL); // LSB only
-    crc = Update16 (buf2, len, crc);
-    if (crc != header.crc16) goto _err_checksum;
-
-    switch (header.ffver)
-    {
-      case 1:
-      case 5:
-        unpacked_size = SIXPACK_decompress (buf2, buf3, len);
-        break;
-
-      case 2:
-      case 6:
-        unpacked_size = LZW_decompress (buf2, buf3);
-        break;
-
-      case 3:
-      case 7:
-        unpacked_size = LZSS_decompress (buf2, buf3, len);
-        break;
-
-      default:
-      case 4:
-      case 8:
-        memcpy (buf3, buf2, len);
-        unpacked_size = len;
-        break;
-
-      case 9:
-        unpacked_size = APACK_decompress (buf2, buf3);
-        break;
-
-      case 10:
-        if (progress != NULL) progress->num_steps = 0;
-        unpacked_size = LZH_decompress (buf2, buf3, len, progress);
-        break;
-    }
-
-    set_mem_stream (&stream, buf3, unpacked_size);
-
-    dst->four_op = false;
-    dst->use_macro = false;
-    if (header.ffver <= 8)
-    {
-      // old instrument data
-      if (read_bytes (&dst->ins1.fm.fm_data, sizeof (dst->ins1.fm.fm_data), &stream)) goto _err_eod;
-      if (read_bytes (&dst->ins1.fm.panning, sizeof (dst->ins1.fm.panning), &stream)) goto _err_eod;
-
-      if (header.ffver <= 4)
-        dst->ins1.fm.panning = 0;
-
-      if (read_bytes (&dst->ins1.fm.fine_tune, sizeof (dst->ins1.fm.fine_tune), &stream)) goto _err_eod;
-      dst->ins1.fm.perc_voice = 0; // N/A
-      if (read_string (dst->ins1.name, sizeof (dst->ins1.name), &stream)) goto _err_eod; // old instrument name
-    }
-    else
-    {
-      if (read_bytes (&dst->ins1.fm, sizeof (dst->ins1.fm), &stream)) goto _err_eod; // instrument data
-      if (read_string (dst->ins1.name, sizeof (dst->ins1.name), &stream)) goto _err_eod; // instrument name
-
-      if (header.ffver == 10)
-        if (stream.curptr < stream.endptr) // more data present => 4op instrument
-        {
-          dst->four_op = true;
-          if (swap_ins)
-          {
-            memcpy (&dst->ins2.fm, &dst->ins1.fm, sizeof (dst->ins2.fm)); // copy to 4OP 2/2
-            memcpy (dst->ins2.name, dst->ins1.name, sizeof (dst->ins2.name)); // copy to 4OP 2/2
-            if (read_bytes (&dst->ins1.fm, sizeof (dst->ins1.fm), &stream)) goto _err_eod; // instrument data (4OP 1/2)
-            if (read_string (dst->ins1.name, sizeof (dst->ins1.name), &stream)) goto _err_eod; // instrument name (4OP 1/2)
-          }
-          else
-          {
-            if (read_bytes (&dst->ins2.fm, sizeof (dst->ins2.fm), &stream)) goto _err_eod; // instrument data (4OP 2/2)
-            if (read_string (dst->ins2.name, sizeof (dst->ins2.name), &stream)) goto _err_eod; // instrument name (4OP 2/2)
-          }
-        }
-    }
+    else  // main_header.version == 5..8
+      if (load_block_0_a2i_v5 (main_header.version, dst,
+                               header.block_size,
+                               f,
+                               progress, &result_error) != 0) goto _exit;
   }
-  else
-    goto _err_version;
+  else // main_header.version == 9..10
+  {
+    header_a2i_v9_t header;
+
+    if (fread (&header, sizeof (header), 1, f) == 0) goto _err_fread;
+
+    if (check_crc16_a2i (main_header.crc16, false,
+                         16, 8, &header.block_size, 1, 1,
+                         f,
+                         &result_error) != 0) goto _exit;
+
+    if (fseek (f, sizeof (main_header) + sizeof (header), SEEK_SET) != 0) goto _err_fread;
+
+    if (main_header.version == 9)
+    {
+      if (load_block_0_a2i_v9 (main_header.version, dst,
+                               uint16_LE (header.block_size),
+                               f,
+                               progress, &result_error) != 0) goto _exit;
+    }
+    else  // main_header.version == 10
+      if (load_block_0_a2i_v10 (main_header.version, dst,
+                                uint16_LE (header.block_size),
+                                f, swap_ins,
+                                progress, &result_error) != 0) goto _exit;
+  }
 
   set_default_ins_name_if_needed (dst, _fname);
 
@@ -163,11 +121,4 @@ _err_version:
   result_error = "Unknown file format version";
   goto _exit;
 
-_err_checksum:
-  result_error = "Checksum mismatch - file corrupted";
-  goto _exit;
-
-_err_eod:
-  result_error = "Unexpected end of unpacked data";
-  goto _exit;
 }

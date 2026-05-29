@@ -20,6 +20,7 @@ int custom_atexit (void (*function) (void));
 #define EXIT_FAILURE 1
 
 void *custom_malloc (size_t size);
+void *custom_calloc (size_t n, size_t size);
 void custom_free (void *ptr);
 void *custom_realloc (void *ptr, size_t size);
 
@@ -33,6 +34,7 @@ void custom_srand (unsigned seed);
 #define atexit custom_atexit
 #define exit Pascal_Halt
 #define malloc custom_malloc
+#define calloc custom_calloc
 #define free custom_free
 #define realloc custom_realloc
 #define rand custom_rand

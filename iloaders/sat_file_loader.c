@@ -135,14 +135,14 @@ static void import_sat_order (tFIXED_SONGDATA *song, const uint8_t *order, uint8
 {
   uint8_t i;
 
-  if (len > AT_ORDER_LEN) len = AT_ORDER_LEN;
+  if (len > PATTERN_ORDER_LEN) len = PATTERN_ORDER_LEN;
 
   for (i = 0; i < len; i++)
     if (order[i] < SAT_PATTERNS_MAX)
       song->pattern_order[i] = order[i];
 
   if (i + 1 < len)
-    song->pattern_order[i + 1] = AT_ORDER_JUMP + (restart < len ? restart : 0);
+    song->pattern_order[i + 1] = PATTERN_ORDER_JUMP + (restart < len ? restart : 0);
 }
 
 static uint8_t _sar (int16_t op1, int16_t op2) { return op1 >> op2; }
@@ -305,9 +305,9 @@ static void import_sat_event_v1 (uint8_t patt, uint8_t line, uint8_t chan,
 
   if (   (chunk.effect_def == ef_Extended)
       && (chunk.effect     == (ef_ex_ExtendedCmd2 << 4) + ef_ex_cmd2_RSS)
-      && (chunk.note       == AT_NOTE_EMPTY))
+      && (chunk.note       == NOTE_EMPTY))
   {
-    chunk.note       = AT_NOTE_OFF;
+    chunk.note       = NOTE_OFF;
     chunk.effect_def = 0;
     chunk.effect     = 0;
   }
@@ -333,9 +333,9 @@ static void import_sat_event_v8 (uint8_t patt, uint8_t line, uint8_t chan,
 
   if (   (chunk.effect_def == ef_Extended)
       && (chunk.effect     == (ef_ex_ExtendedCmd2 << 4) + ef_ex_cmd2_RSS)
-      && (chunk.note       == AT_NOTE_EMPTY))
+      && (chunk.note       == NOTE_EMPTY))
   {
-    chunk.note       = AT_NOTE_OFF;
+    chunk.note       = NOTE_OFF;
     chunk.effect_def = 0;
     chunk.effect     = 0;
   }
@@ -483,7 +483,7 @@ int8_t sat_file_loader (const String *_fname, progress_callback_t *progress, uin
     }
   }
 
-  init_songdata ();
+  init_songdata (song);
   if (adjust_tracks || (song->nm_tracks < SAT_CHANNELS_MAX)) song->nm_tracks = SAT_CHANNELS_MAX;
   song->patt_len = SAT_PATTERN_LEN;
   switch (header.version)
@@ -511,9 +511,9 @@ int8_t sat_file_loader (const String *_fname, progress_callback_t *progress, uin
   song->tempo = tempo;
   song->speed = speed;
   song->common_flag |= 0x08 | 0x10;
-  import_old_flags ();
-  for (uint8_t chan = 0; chan < AT_CHANNELS_MAX; chan++)
-    song->lock_flags[chan] |= 0x04 | 0x08; // must be after a call to `import_old_flags()'
+  apply_song_flags (song);
+  for (uint8_t chan = 0; chan < CHANNELS_MAX; chan++)
+    song->lock_flags[chan] |= 0x04 | 0x08; // must be after a call to `apply_song_flags()'
   {
     String_t s = NameOnly (_fname);
     CopyString (songdata_title, (String *)&s, sizeof (songdata_title) - 1);

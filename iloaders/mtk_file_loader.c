@@ -132,7 +132,7 @@ int8_t mtk_file_loader (const String *_fname, progress_callback_t *progress, uin
 
   // initialize song
   song_header = (mtk_song_header_t *)raw_buffer;
-  init_songdata ();
+  init_songdata (song);
   song->patt_len = MTK_PATTERN_LEN;
   if (adjust_tracks || (song->nm_tracks < MTK_CHANNELS_MAX)) song->nm_tracks = MTK_CHANNELS_MAX;
   tempo = 18;
@@ -140,7 +140,7 @@ int8_t mtk_file_loader (const String *_fname, progress_callback_t *progress, uin
   song->common_flag |= 2;
   song->tempo = tempo;
   song->speed = speed;
-  import_old_flags ();
+  apply_song_flags (song);
   {
     String_t s;
     if (Length (song_header->title) >= sizeof (song_header->title))

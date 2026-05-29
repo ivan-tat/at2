@@ -38,6 +38,57 @@
 // HINT: (FPC) PACKRECORDS 1: Alignment of record elements (1)
 #pragma pack(push, 1)
 
+/*** used in many loaders ***/
+
+#include "iloaders/next_progress_step.c" // static
+
+#include "formats/_block_sizes_crc16.c" // static
+#include "formats/_block_sizes_crc32.c" // static
+
+#include "formats/a2m.h"
+#include "formats/a2m/check_crc32_a2m.c" // static
+#include "formats/a2m/is_packed_a2m.c" // static
+#include "formats/a2m/unpack_a2m.c" // static
+#include "formats/a2m/get_song_name_a2m_v1.c" // static
+#include "formats/a2m/get_composer_a2m_v1.c" // static
+#include "formats/a2m/get_ins_names_a2m_v1.c" // static
+#include "formats/a2m/get_ins_names_a2m_v9.c" // static
+#include "formats/a2m/get_ins_fm_data_a2m_v1.c" // static
+#include "formats/a2m/get_ins_data_a2m_v1.c" // static
+#include "formats/a2m/get_ins_data_a2m_v5.c" // static
+#include "formats/a2m/get_ins_data_a2m_v9.c" // static
+#include "formats/a2m/get_ins_macro_a2m_v9.c" // static
+#include "formats/a2m/get_arp_macro_a2m_v9.c" // static
+#include "formats/a2m/get_vib_macro_a2m_v9.c" // static
+#include "formats/a2m/get_macro_a2m_v9.c" // static
+#include "formats/a2m/get_flags_a2m_v5.c" // static
+#include "formats/a2m/get_flags_a2m_v9.c" // static
+#include "formats/a2m/get_chan_4op_flags_a2m_v10.c" // static
+#include "formats/a2m/get_chan_flags_a2m_v10.c" // static
+#include "formats/a2m/get_chan_flags_a2m_v13.c" // static
+#include "formats/a2m/get_dis_fmreg_col_a2m_v11.c" // static
+#include "formats/a2m/get_ins_4op_data_a2m_v12.c" // static
+#include "formats/a2m/get_pat_names_a2m_v11.c" // static
+#include "formats/a2m/get_pat_order_a2m_v1.c" // static
+#include "formats/a2m/get_pat_event_a2m_v1.c" // static
+#include "formats/a2m/get_pat_event_a2m_v5.c" // static
+#include "formats/a2m/get_pat_event_a2m_v9.c" // static
+#include "formats/a2m/get_pat_data_a2m_v1.c" // static
+#include "formats/a2m/get_pat_data_a2m_v5.c" // static
+#include "formats/a2m/get_pat_data_a2m_v9.c" // static
+#include "formats/a2m/load_block_0_a2m_v1.c" // static
+#include "formats/a2m/load_block_0_a2m_v5.c" // static
+#include "formats/a2m/load_block_0_a2m_v9.c" // static
+#include "formats/a2m/load_block_0_a2m_v10.c" // static
+#include "formats/a2m/load_block_0_a2m_v11.c" // static
+#include "formats/a2m/load_block_0_a2m_v12.c" // static
+#include "formats/a2m/load_block_0_a2m_v14.c" // static
+#include "formats/a2m/replace_old_adsr_a2m_v1.c" // static, used in `load_patterns_a2m_v1()'
+#include "formats/a2m/load_patterns_a2m_v1.c" // static
+#include "formats/a2m/load_patterns_a2m_v5.c" // static
+#include "formats/a2m/load_patterns_a2m_v9.c" // static
+#include "formats/apply_song_flags.c" // static
+
 #include "iloadins.c"
 
 // test_instrument_alt, test_instrument_alt2

@@ -6,23 +6,35 @@
 
 // This file is included in `adt2ext3.c'
 
-static bool adsr_carrier[9]; // used in "import_old_a2m_event1" and "replace_old_adsr"
-
-#include "iloaders/next_progress_step.c" // static
-
-#include "iloaders/import_old_a2m_event1.c" // static
-#include "iloaders/replace_old_adsr.c" // static
-#include "iloaders/import_old_a2m_patterns1.c" // static
-#include "iloaders/import_old_a2m_event2.c" // static
-#include "iloaders/import_old_a2m_patterns2.c" // static
-#include "iloaders/import_old_flags.c" // static
-#include "iloaders/import_old_songdata.c" // static
 #if !ADT2PLAY
 #include "iloaders/adjust_macro_speedup_with_notice.c" // HINT: static
+#include "formats/_save_instrument_marks.c" // static
+#include "formats/_restore_instrument_marks.c" // static
+#include "formats/_save_pattern_marks.c" // static
+#include "formats/_restore_pattern_marks.c" // static
 #endif // !ADT2PLAY
+
 #include "iloaders/a2m_file_loader.c"
+
+#include "formats/a2t.h"
+#include "formats/a2t/load_ins_data_a2t_v1.c" // static
+#include "formats/a2t/load_ins_data_a2t_v5.c" // static
+#include "formats/a2t/load_ins_data_a2t_v9.c" // static
+#include "formats/a2t/load_ins_macros_a2t_v9.c" // static
+#include "formats/a2t/load_macros_a2t_v9.c" // static
+#include "formats/a2t/load_dis_fmreg_col_a2t_v11.c" // static
+#include "formats/a2t/load_block_0_a2t_v12.c" // static
+#include "formats/a2t/load_block_0_a2t_v14.c" // static
+#include "formats/a2t/load_pat_order_a2t_v1.c" // static
 #include "iloaders/a2t_file_loader.c"
+
 #if !ADT2PLAY
+#include "formats/a2p.h"
+#include "formats/a2p/unpack_a2p.c" // static
+#include "formats/a2p/load_pattern_a2p_v1.c" // static
+#include "formats/a2p/load_pattern_a2p_v5.c" // static
+#include "formats/a2p/load_pattern_a2p_v9.c" // static
+#include "formats/a2p/load_pattern_a2p_v10.c" // static
 #include "iloaders/a2p_file_loader.c"
 #endif // !ADT2PLAY
 

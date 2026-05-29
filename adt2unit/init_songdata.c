@@ -4,7 +4,7 @@
 // SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-void init_songdata (void)
+void init_songdata (tFIXED_SONGDATA *song)
 {
   DBG_ENTER ("init_songdata");
 
@@ -18,31 +18,31 @@ void init_songdata (void)
   else
     init_buffers ();
 
-  memset (&songdata, 0, sizeof (songdata));
-  memset (&songdata.pattern_order, 0x80, sizeof (songdata.pattern_order));
+  memset (song, 0, sizeof (*song));
+  memset (&song->pattern_order, PATTERN_ORDER_JUMP + 0, sizeof (song->pattern_order));
   memset (pattdata, 0, PATTERN_SIZE * max_patterns);
 
 #if ADT2PLAY
-  songdata.patt_len = 64;
-  songdata.nm_tracks = 9;
+  song->patt_len = 64;
+  song->nm_tracks = 9;
 #else // !ADT2PLAY
-  songdata.patt_len = patt_len;
-  songdata.nm_tracks = nm_tracks;
+  song->patt_len = patt_len;
+  song->nm_tracks = nm_tracks;
 #endif // !ADT2PLAY
-  songdata.tempo = tempo;
-  songdata.speed = speed;
+  song->tempo = tempo;
+  song->speed = speed;
 #if ADT2PLAY
-  songdata.macro_speedup = 1;
+  song->macro_speedup = 1;
 #else // !ADT2PLAY
-  songdata.macro_speedup = init_macro_speedup;
+  song->macro_speedup = init_macro_speedup;
 #endif // !ADT2PLAY
   speed_update = false;
 #if !ADT2PLAY
   IRQ_freq_shift = 0;
   playback_speed_shift = 0;
-  songdata.bpm_data.rows_per_beat = mark_line;
+  song->bpm_data.rows_per_beat = mark_line;
 #endif // !ADT2PLAY
-  songdata.bpm_data.tempo_finetune = IRQ_freq_shift;
+  song->bpm_data.tempo_finetune = IRQ_freq_shift;
   lockvol = false;
   panlock = false;
   lockVP  = false;
@@ -60,7 +60,7 @@ void init_songdata (void)
   marking = false;
 #endif // !ADT2PLAY
 
-  if (songdata.nm_tracks <= 18)
+  if (song->nm_tracks <= MELODIC_CHANNELS_MAX)
   {
     percussion_mode = false;
     memcpy (_chan_n, _chmm_n, sizeof (_chan_n));
@@ -76,20 +76,22 @@ void init_songdata (void)
   }
 
 #if !ADT2PLAY
-  for (uint8_t i = 0; i < 255; i++)
+  for (unsigned i = 0; i < INSTRUMENTS_MAX; i++)
   {
-    SetLength (songdata.instr_names[i], 9);
-    snprintf (GetStr ((char *)songdata.instr_names[i]), 9+1, " iNS_%02"PRIX8"%c ", i + 1, /*charmap.*/'\xF7');
+    SetLength (song->instr_names[i], 9);
+    snprintf (GetStr ((char *)song->instr_names[i]), 9+1,
+              " iNS_%02"PRIX8"%c ", i + 1, /*charmap.*/'\xF7');
   }
 
-  for (uint8_t i = 0; i < 0x80; i++)
+  for (unsigned i = 0; i < PATTERNS_MAX; i++)
   {
-    SetLength (songdata.pattern_names[i], 11);
-    snprintf (GetStr ((char *)songdata.pattern_names[i]), 11+1, " PAT_%02"PRIX8"  %c ", i + 1, /*charmap.*/'\xF7');
+    SetLength (song->pattern_names[i], 11);
+    snprintf (GetStr ((char *)song->pattern_names[i]), 11+1,
+              " PAT_%02"PRIX8"  %c ", i + 1, /*charmap.*/'\xF7');
   }
 
-  songdata_crc_ord = Update32 (songdata.pattern_order,
-                               sizeof (songdata.pattern_order), 0);
+  songdata_crc_ord = Update32 (song->pattern_order,
+                               sizeof (song->pattern_order), /*CRC32_INITVAL*/ 0);
   module_archived = true;
 #endif // !ADT2PLAY
 

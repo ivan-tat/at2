@@ -378,7 +378,7 @@ int8_t amd_file_loader (const String *_fname, progress_callback_t *progress, uin
 
   if (progress != NULL) progress->num_steps = header.patterns + 1;
 
-  init_songdata ();
+  init_songdata (song);
   song->patt_len = 64;
   if (adjust_tracks || (song->nm_tracks < 9)) song->nm_tracks = 9;
   tempo = 50;
@@ -434,7 +434,7 @@ int8_t amd_file_loader (const String *_fname, progress_callback_t *progress, uin
     s = CutStr ((String *)&t);
     CopyString (song->composer, (String *)&s, sizeof (song->composer) - 1);
   }
-  import_old_flags ();
+  apply_song_flags (song);
   {
     String_t s = NameOnly (_fname);
     CopyString (songdata_title, (String *)&s, sizeof (songdata_title) - 1);

@@ -150,6 +150,8 @@ typedef struct {
   } ins1, ins2;
 } temp_instrument_t; // 7834 bytes
 
+typedef uint8_t tPATTERN_ORDER[PATTERN_ORDER_LEN];  // HINT: (FPC) start index 0
+
 typedef struct {
   String songname[42+1];
   String composer[42+1];
@@ -157,7 +159,7 @@ typedef struct {
   tADTRACK2_INS instr_data[255]; // HINT: (FPC) start index 1
   tREGISTER_TABLE instr_macros[255]; // HINT: (FPC) start index 1
   tARP_VIB_MACRO_TABLE macro_table;
-  uint8_t pattern_order[0x80]; // HINT: (FPC) start index 0
+  tPATTERN_ORDER pattern_order;
   uint8_t tempo;
   uint8_t speed;
   uint8_t common_flag;
@@ -196,9 +198,11 @@ typedef tOLD_CHUNK tOLD_VARIABLE_DATA1[0x10][0x40][9]; // HINT: (FPC) start inde
 
 typedef tOLD_CHUNK tOLD_VARIABLE_DATA2[8][18][0x40]; // HINT: (FPC) start index 0,1,0
 
-typedef tCHUNK tVARIABLE_DATA[8][20][0x100]; // HINT: (FPC) start index 0,1,0
+typedef tCHUNK tRAW_PATTERN_DATA[CHANNELS_MAX][PATTERN_LEN]; // HINT: (FPC) start index 1,0
 
-typedef tVARIABLE_DATA tPATTERN_DATA[16]; // HINT: (FPC) start index 0
+typedef tRAW_PATTERN_DATA tVARIABLE_DATA[8]; // HINT: (FPC) start index 0
+
+typedef tVARIABLE_DATA tPATTERNS_DATA[16]; // HINT: (FPC) start index 0
 
 #if !ADT2PLAY
 
