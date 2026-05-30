@@ -7,7 +7,7 @@
 /*****************************************************************************
 
   AdLib Tracker II pattern file loader
-  Supported versions: 1..11
+  Supported file format versions: 1..11
   Filename extension: .a2p
 
 *****************************************************************************/
@@ -29,7 +29,7 @@
 //     1: pattern(s) is(are) cleared.
 //     2: pattern(s) is(are) partly loaded.
 //   * `error' (if set) is set to error description.
-int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error)
+int8_t load_pattern_a2p (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error)
 {
   tFIXED_SONGDATA *song = &songdata;
   uint8_t _pattern = pattern2use != UINT8_NULL ? pattern2use : pattern_patt;
@@ -41,7 +41,7 @@ int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uin
   char fname[255+1];
   String_t onlyname;
 
-  DBG_ENTER ("a2p_file_loader");
+  DBG_ENTER ("load_pattern_a2p");
 
   StringToStr (fname, _fname, sizeof (fname) - 1);
   {
@@ -136,7 +136,7 @@ _exit:
     if (error != NULL) *error = result_error;
   }
 
-  DBG_LEAVE (); //EXIT //a2p_file_loader
+  DBG_LEAVE (); //EXIT //load_pattern_a2p
   return result;
 
 _err_fopen:

@@ -35,7 +35,7 @@
 #include "formats/a2p/load_pattern_a2p_v5.c" // static
 #include "formats/a2p/load_pattern_a2p_v9.c" // static
 #include "formats/a2p/load_pattern_a2p_v10.c" // static
-#include "iloaders/a2p_file_loader.c"
+#include "formats/a2p/load_pattern_a2p.c"
 #endif // !ADT2PLAY
 
 static uint8_t dec2hex (uint8_t dec)

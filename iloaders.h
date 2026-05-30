@@ -23,7 +23,7 @@
 int8_t load_song_a2m (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t load_song_a2t (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 #if !ADT2PLAY
-int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
+int8_t load_pattern_a2p (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 #endif // !ADT2PLAY
 int8_t amd_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t cff_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
