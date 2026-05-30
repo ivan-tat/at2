@@ -38,7 +38,7 @@
 #include "formats/a2f/get_ins_a2f_v1.c" // static
 #include "formats/a2f/load_block_0_a2f_v1.c" // static
 #include "formats/a2f/load_block_0_a2f_v2.c" // static
-#include "iloadins/a2f_file_loader_alt.c"
+#include "formats/a2f/load_instrument_a2f.c"
 
 // CIF
 

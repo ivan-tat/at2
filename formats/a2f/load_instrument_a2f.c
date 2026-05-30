@@ -7,7 +7,7 @@
 /*****************************************************************************
 
   AdLib Tracker II instrument with FM-register macro file loader
-  Supported versions: 1..2
+  Supported file format versions: 1..2
   Filename extension: .a2f
 
 *****************************************************************************/
@@ -21,7 +21,7 @@
 // On error:
 //   * Return value: -1.
 //   * `error' (if set) is set to error description.
-int8_t a2f_file_loader_alt (temp_instrument_t *dst,
+int8_t load_instrument_a2f (temp_instrument_t *dst,
                             const String *_fname, bool swap_ins,
                             progress_callback_t *progress, char **error)
 {
@@ -32,7 +32,7 @@ int8_t a2f_file_loader_alt (temp_instrument_t *dst,
   header_a2f_v1_t header;
   char fname[255+1];
 
-  DBG_ENTER ("a2f_file_loader_alt");
+  DBG_ENTER ("load_instrument_a2f");
 
   StringToStr (fname, _fname, sizeof (fname) - 1);
   if ((f = fopen (fname, "rb")) == NULL) goto _err_fopen;
@@ -74,7 +74,7 @@ _exit:
   if (f != NULL) fclose (f);
   if ((result < 0) && (error != NULL)) *error = result_error;
 
-  DBG_LEAVE (); //EXIT //a2f_file_loader_alt
+  DBG_LEAVE (); //EXIT //load_instrument_a2f
   return result;
 
 _err_fopen:
@@ -92,5 +92,4 @@ _err_format:
 _err_version:
   result_error = "Unknown file format version";
   goto _exit;
-
 }

@@ -27,7 +27,7 @@ int8_t load_instrument_a2i (temp_instrument_t *dst, const String *fname, bool sw
 
 // A2F
 
-int8_t a2f_file_loader_alt (temp_instrument_t *dst, const String *fname, bool swap_ins, progress_callback_t *progress, char **error);
+int8_t load_instrument_a2f (temp_instrument_t *dst, const String *fname, bool swap_ins, progress_callback_t *progress, char **error);
 
 // CIF
 
