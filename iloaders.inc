@@ -15,7 +15,7 @@
 
 // This file is included in "adt2ext3.pas" in interface section
 
-function a2m_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
+function load_song_a2m (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function a2t_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 {$IFNDEF ADT2PLAY}
 function a2p_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;

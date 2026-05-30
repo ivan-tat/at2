@@ -7,7 +7,7 @@
 /*****************************************************************************
 
   AdLib Tracker II module file loader
-  Supported versions: 1..14
+  Supported file format versions: 1..14
   Filename extension: .a2m
 
 *****************************************************************************/
@@ -31,7 +31,7 @@
 //     1: song is cleared.
 //     2: song is partly loaded.
 //   * `error' (if set) is set to error description.
-int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error)
+int8_t load_song_a2m (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error)
 {
   tFIXED_SONGDATA *song = &songdata;
   int8_t result = -1;
@@ -46,7 +46,7 @@ int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uin
 #endif // !ADT2PLAY
   char fname[255+1];
 
-  DBG_ENTER ("a2m_file_loader");
+  DBG_ENTER ("load_song_a2m");
 
   StringToStr (fname, _fname, sizeof (fname) - 1);
   if ((f = fopen (fname, "rb")) == NULL) goto _err_fopen;
@@ -399,7 +399,7 @@ _exit:
     if (error != NULL) *error = result_error;
   }
 
-  DBG_LEAVE (); //EXIT //a2m_file_loader
+  DBG_LEAVE (); //EXIT //load_song_a2m
   return result;
 
 _err_fopen:

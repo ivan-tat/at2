@@ -8,7 +8,7 @@
 {
   int8_t result;
 
-  result = a2m_file_loader (fname, NULL, NULL, error);
+  result = load_song_a2m (fname, NULL, NULL, error);
   if      (result ==  0) return MODNAME_A2M_0;
   else if (result ==  1) return MODNAME_A2M_1;
   else if (result <= -3) return result;

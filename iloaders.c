@@ -14,7 +14,7 @@
 #include "formats/_restore_pattern_marks.c" // static
 #endif // !ADT2PLAY
 
-#include "iloaders/a2m_file_loader.c"
+#include "formats/a2m/load_song_a2m.c"
 
 #include "formats/a2t.h"
 #include "formats/a2t/load_ins_data_a2t_v1.c" // static

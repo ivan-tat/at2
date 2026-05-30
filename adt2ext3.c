@@ -42,7 +42,9 @@
 
 #include "iloaders/next_progress_step.c" // static
 
+#if !ADT2PLAY
 #include "formats/_block_sizes_crc16.c" // static
+#endif // !ADT2PLAY
 #include "formats/_block_sizes_crc32.c" // static
 
 #include "formats/a2m.h"

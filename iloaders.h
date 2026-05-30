@@ -20,7 +20,7 @@
   };
 */
 
-int8_t a2m_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
+int8_t load_song_a2m (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t a2t_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 #if !ADT2PLAY
 int8_t a2p_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
