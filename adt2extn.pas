@@ -5713,7 +5713,7 @@ _jmp1:
   end;
   If (Lower(ExtOnly(fname)) = 'a2i') then
   begin
-    if (a2i_file_loader_alt (temp_instrument, instdata_source, false, progress, error) <> 0) then
+    if (load_instrument_a2i (temp_instrument, instdata_source, false, progress, error) <> 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' A2I Loader '), 1)
     else
     begin

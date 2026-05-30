@@ -74,7 +74,7 @@ void test_instrument_alt (UNUSED uint8_t chan, ExtKeyCode fkey,
     keyboard_toggle_sleep ();
 #endif // GO32
 
-    if      (strcmp (ext, "a2i") == 0) loader_status = a2i_file_loader_alt (temp_ins, (String *)&fname, true, NULL, &error);
+    if      (strcmp (ext, "a2i") == 0) loader_status = load_instrument_a2i (temp_ins, (String *)&fname, true, NULL, &error);
     else if (strcmp (ext, "a2f") == 0) loader_status = a2f_file_loader_alt (temp_ins, (String *)&fname, true, NULL, &error);
     else if (strcmp (ext, "cif") == 0) loader_status = cif_file_loader_alt (temp_ins, (String *)&fname, &error);
     else if (strcmp (ext, "fin") == 0) loader_status = fin_file_loader_alt (temp_ins, (String *)&fname, &error);

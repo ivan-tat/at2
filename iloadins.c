@@ -28,7 +28,7 @@
 #include "formats/a2i/load_block_0_a2i_v5.c" // static
 #include "formats/a2i/load_block_0_a2i_v9.c" // static
 #include "formats/a2i/load_block_0_a2i_v10.c" // static
-#include "iloadins/a2i_file_loader_alt.c"
+#include "formats/a2i/load_instrument_a2i.c"
 
 // A2F
 

@@ -7,7 +7,7 @@
 /*****************************************************************************
 
   AdLib Tracker II instrument file loader
-  Supported versions: 1..10
+  Supported file format versions: 1..10
   Filename extension: .a2i
 
 *****************************************************************************/
@@ -21,7 +21,7 @@
 // On error:
 //   * Return value: -1.
 //   * `error' (if set) is set to error description.
-int8_t a2i_file_loader_alt (temp_instrument_t *dst,
+int8_t load_instrument_a2i (temp_instrument_t *dst,
                             const String *_fname, bool swap_ins,
                             progress_callback_t *progress, char **error)
 {
@@ -31,7 +31,7 @@ int8_t a2i_file_loader_alt (temp_instrument_t *dst,
   header_a2i_t main_header;
   char fname[255+1];
 
-  DBG_ENTER ("a2i_file_loader_alt");
+  DBG_ENTER ("load_instrument_a2i");
 
   StringToStr (fname, _fname, sizeof (fname) - 1);
   if ((f = fopen (fname, "rb")) == NULL) goto _err_fopen;
@@ -102,7 +102,7 @@ _exit:
   if (f != NULL) fclose (f);
   if ((result < 0) && (error != NULL)) *error = result_error;
 
-  DBG_LEAVE (); //EXIT //a2i_file_loader_alt
+  DBG_LEAVE (); //EXIT //load_instrument_a2i
   return result;
 
 _err_fopen:
