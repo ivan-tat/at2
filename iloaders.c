@@ -26,7 +26,7 @@
 #include "formats/a2t/load_block_0_a2t_v12.c" // static
 #include "formats/a2t/load_block_0_a2t_v14.c" // static
 #include "formats/a2t/load_pat_order_a2t_v1.c" // static
-#include "iloaders/a2t_file_loader.c"
+#include "formats/a2t/load_song_a2t.c"
 
 #if !ADT2PLAY
 #include "formats/a2p.h"

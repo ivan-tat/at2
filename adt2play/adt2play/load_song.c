@@ -13,7 +13,7 @@
   else if (result ==  1) return MODNAME_A2M_1;
   else if (result <= -3) return result;
 
-  result = a2t_file_loader (fname, NULL, NULL, error);
+  result = load_song_a2t (fname, NULL, NULL, error);
   if      (result ==  0) return MODNAME_A2T_0;
   else if (result ==  1) return MODNAME_A2T_1;
   else if (result <= -3) return result;

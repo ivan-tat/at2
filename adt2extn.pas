@@ -5562,7 +5562,7 @@ _jmp1:
     end;
   end else If (Lower(ExtOnly(fname)) = 'a2t') then
   begin
-    loader_status := a2t_file_loader (songdata_source, progress, state, error);
+    loader_status := load_song_a2t (songdata_source, progress, state, error);
     if (loader_status < 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' A2T Loader '), 1)
     else
