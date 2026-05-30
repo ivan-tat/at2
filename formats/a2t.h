@@ -312,6 +312,9 @@ typedef struct {  // data block 0
 
 //load_block_0_a2t_v14()
 
+//load_song_a2t()
+//save_song_a2t()
+
 #pragma pack(pop)
 
 #endif  // !defined(FORMATS_A2T_H)

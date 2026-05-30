@@ -93,6 +93,7 @@ typedef dis_fmreg_col_a2m_v11_t // disabled FM-register columns
 #define put_dis_fmreg_col_a2f_v1  put_dis_fmreg_col_a2m_v11
 //save_block_0_a2f_v2()
 
+//load_instrument_a2f()
 //save_instrument_a2f()
 
 #pragma pack(pop)

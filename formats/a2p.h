@@ -128,6 +128,7 @@ typedef struct {  // pattern data block
 //load_pattern_a2p_v10()
 //save_pattern_a2p_v10()
 
+//load_pattern_a2p()
 //save_pattern_a2p()
 
 #pragma pack(pop)

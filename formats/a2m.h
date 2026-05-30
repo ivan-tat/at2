@@ -520,6 +520,7 @@ typedef struct {  // song data block
 //load_block_0_a2m_v14()
 //save_block_0_a2m_v14()
 
+//load_song_a2m()
 //save_song_a2m()
 
 #pragma pack(pop)

@@ -102,6 +102,7 @@ typedef ins_data_a2m_v9_t   // instrument data
 //load_block_0_a2i_v10()
 //save_block_0_a2i_v10()
 
+//load_instrument_a2i()
 //save_instrument_a2i()
 
 #pragma pack(pop)
