@@ -25,6 +25,7 @@
 #define MIN_IRQ_FREQ 50
 #define MAX_IRQ_FREQ 1000
 
+#define NOTE_MAX (12 * 8) // C-9
 #define INSTRUMENTS_MAX 255
 #define MELODIC_CHANNELS_MAX 18
 #define CHANNELS_MAX 20
@@ -33,9 +34,15 @@
 #define PATTERN_ORDER_LEN 128
 
 // pattern
-#define NOTE_EMPTY 0
-#define NOTE_OFF   0xFF
-#define INS_EMPTY  0
+
+#define NOTE_EMPTY     0
+#define NOTE_OFF       0xFF
+#define NOTE_PACK(x)   ((x)+1)
+#define NOTE_UNPACK(x) ((x)+1)
+
+#define INS_EMPTY     0
+#define INS_PACK(x)   ((x)+1)
+#define INS_UNPACK(x) ((x)-1)
 
 // pattern order
 #define PATTERN_ORDER_JUMP 0x80

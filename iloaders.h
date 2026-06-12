@@ -26,7 +26,7 @@ int8_t load_song_a2t (const String *_fname, progress_callback_t *progress, uint8
 int8_t load_pattern_a2p (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 #endif // !ADT2PLAY
 int8_t amd_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
-int8_t cff_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
+int8_t load_song_cff (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t dfm_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t fmk_file_loader (const String *_fname, void **desc, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t hsc_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);

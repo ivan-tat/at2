@@ -296,6 +296,9 @@ typedef uint8_t tByteSet[32]; // HINT: (FPC) set of byte
 #define CHUNK_SIZE (sizeof (tCHUNK))
 #define PATTERN_SIZE (20 * 256 * CHUNK_SIZE)
 
+// `.effect_def' = command
+// `.effect'     = parameter
+// Commands are:
 #define ef_Arpeggio           0
 #define ef_FSlideUp           1
 #define ef_FSlideDown         2
@@ -344,6 +347,10 @@ typedef uint8_t tByteSet[32]; // HINT: (FPC) set of byte
 #define ef_SetCustomSpeedTab  45
 #define ef_GlobalFSlideUp     46
 #define ef_GlobalFSlideDown   47
+
+// `.effect_def' = `ef_Extended'
+// `.effect'     = (command << 4) + (parameter & 0x0F)
+// Commands are:
 #define ef_ex_SetTremDepth    0
 #define ef_ex_SetVibDepth     1
 #define ef_ex_SetAttckRateM   2
@@ -358,7 +365,12 @@ typedef uint8_t tByteSet[32]; // HINT: (FPC) set of byte
 #define ef_ex_SetPanningPos   11
 #define ef_ex_PatternLoop     12
 #define ef_ex_PatternLoopRec  13
-#define ef_ex_ExtendedCmd     14
+#define ef_ex_ExtendedCmd     14  // use sub-commands
+#define ef_ex_ExtendedCmd2    15  // use sub-commands
+
+// `.effect_def' = `ef_Extended'
+// `.effect'     = (ef_ex_ExtendedCmd << 4) + (command & 0x0F)
+// Commands are:
 #define ef_ex_cmd_MKOffLoopDi 0
 #define ef_ex_cmd_MKOffLoopEn 1
 #define ef_ex_cmd_TPortaFKdis 2
@@ -367,7 +379,10 @@ typedef uint8_t tByteSet[32]; // HINT: (FPC) set of byte
 #define ef_ex_cmd_4opVlockOff 5
 #define ef_ex_cmd_4opVlockOn  6
 #define ef_ex_cmd_ForceBpmSld 7
-#define ef_ex_ExtendedCmd2    15
+
+// `.effect_def' = `ef_Extended'
+// `.effect'     = (ef_ex_ExtendedCmd2 << 4) + (command & 0x0F)
+// Commands are:
 #define ef_ex_cmd2_RSS        0
 #define ef_ex_cmd2_ResetVol   1
 #define ef_ex_cmd2_LockVol    2
@@ -384,6 +399,10 @@ typedef uint8_t tByteSet[32]; // HINT: (FPC) set of byte
 #define ef_ex_cmd2_FVib_FGFS  13
 #define ef_ex_cmd2_FTrm_XFGFS 14
 #define ef_ex_cmd2_NoRestart  15
+
+// `.effect_def' = `ef_Extended2'
+// `.effect'     = (command << 4) + (parameter & 0x0F)
+// Commands are:
 #define ef_ex2_PatDelayFrame  0
 #define ef_ex2_PatDelayRow    1
 #define ef_ex2_NoteDelay      2
@@ -400,6 +419,10 @@ typedef uint8_t tByteSet[32]; // HINT: (FPC) set of byte
 #define ef_ex2_VolSlideDnXF   13
 #define ef_ex2_FreqSlideUpXF  14
 #define ef_ex2_FreqSlideDnXF  15
+
+// `.effect_def' = `ef_Extended3'
+// `.effect'     = (command << 4) + (parameter & 0x0F)
+// Commands are:
 #define ef_ex3_SetConnection  0
 #define ef_ex3_SetMultipM     1
 #define ef_ex3_SetKslM        2

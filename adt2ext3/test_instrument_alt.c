@@ -76,7 +76,7 @@ void test_instrument_alt (UNUSED uint8_t chan, ExtKeyCode fkey,
 
     if      (strcmp (ext, "a2i") == 0) loader_status = load_instrument_a2i (temp_ins, (String *)&fname, true, NULL, &error);
     else if (strcmp (ext, "a2f") == 0) loader_status = load_instrument_a2f (temp_ins, (String *)&fname, true, NULL, &error);
-    else if (strcmp (ext, "cif") == 0) loader_status = cif_file_loader_alt (temp_ins, (String *)&fname, &error);
+    else if (strcmp (ext, "cif") == 0) loader_status = load_instrument_cif (temp_ins, (String *)&fname, NULL, &error);
     else if (strcmp (ext, "fin") == 0) loader_status = fin_file_loader_alt (temp_ins, (String *)&fname, &error);
     else if (strcmp (ext, "ins") == 0) loader_status = ins_file_loader_alt (temp_ins, (String *)&fname, &error);
     else if (strcmp (ext, "sbi") == 0) loader_status = sbi_file_loader_alt (temp_ins, (String *)&fname, &error);

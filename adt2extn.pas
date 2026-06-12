@@ -5603,7 +5603,7 @@ _jmp1:
       fade_out_playback (false);
       stop_playing;
     end;
-    loader_status := cff_file_loader (songdata_source, progress, state, error);
+    loader_status := load_song_cff (songdata_source, progress, state, error);
     if (loader_status < 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' CFF Loader '), 1)
     else
@@ -5790,7 +5790,7 @@ _jmp1:
   end
   else If (Lower(ExtOnly(fname)) = 'cif') then
   begin
-    if (cif_file_loader_alt (temp_instrument, instdata_source, error) <> 0) then
+    if (load_instrument_cif (temp_instrument, instdata_source, progress, error) <> 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' CIF Loader '), 1)
     else
     begin

@@ -24,7 +24,7 @@ procedure apply_instrument (idx: Byte; var src: temp_instrument_t); cdecl; exter
 
 function load_instrument_a2i (var dst: temp_instrument_t; fname: String; swap_ins: Boolean; progress: progress_callback_p; var error: PChar): Shortint; cdecl; external;
 function load_instrument_a2f (var dst: temp_instrument_t; fname: String; swap_ins: Boolean; progress: progress_callback_p; var error: PChar): Shortint; cdecl; external;
-function cif_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Shortint; cdecl; external;
+function load_instrument_cif (var dst: temp_instrument_t; fname: String; progress: progress_callback_p; var error: PChar): Shortint; cdecl; external;
 function fin_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Shortint; cdecl; external;
 function ins_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Shortint; cdecl; external;
 function sbi_file_loader_alt (var dst: temp_instrument_t; fname: String; var error: PChar): Shortint; cdecl; external;

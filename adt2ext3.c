@@ -91,6 +91,11 @@
 #include "formats/a2m/load_patterns_a2m_v9.c" // static
 #include "formats/apply_song_flags.c" // static
 
+#include "formats/cff.h"
+#include "formats/cff/get_ins_fm_data_cff.c" // static
+#include "formats/cff/get_ins_data_cff.c" // static
+#include "formats/cff/get_ins_name_cff.c" // static
+
 #include "iloadins.c"
 
 // test_instrument_alt, test_instrument_alt2

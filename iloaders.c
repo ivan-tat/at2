@@ -44,7 +44,18 @@ static uint8_t dec2hex (uint8_t dec)
 }
 
 #include "iloaders/amd_file_loader.c"
-#include "iloaders/cff_file_loader.c"
+
+#include "formats/cff/unpack_cff.c" // static
+#include "formats/cff/get_title_cff.c" // static
+#include "formats/cff/get_composer_cff.c" // static
+#include "formats/cff/get_ins_cff.c" // static
+#include "formats/cff/get_pat_order_cff.c" // static
+#include "formats/cff/is_empty_event_cff.c" // static
+#include "formats/cff/get_pat_event_cff.c" // static
+#include "formats/cff/update_pat_event_cff.c" // static
+#include "formats/cff/get_patterns_cff.c" // static
+#include "formats/cff/load_song_cff.c"
+
 #include "iloaders/dfm_file_loader.c"
 #include "iloaders/hsc_file_loader.c"
 #include "iloaders/mtk_file_loader.c"

@@ -42,17 +42,9 @@
 
 // CIF
 
-#pragma pack(push, 1)
-typedef struct
-{
-  char ident[20];
-  tFM_INST_DATA idata;
-  uint8_t resrv;
-  char iname[20];
-} tCIF_DATA;
-#pragma pack(pop)
-
-#include "iloadins/cif_file_loader_alt.c"
+#include "formats/cif.h"
+#include "formats/cif/get_ins_cif.c" // static
+#include "formats/cif/load_instrument_cif.c"
 
 // FIN
 

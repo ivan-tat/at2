@@ -31,7 +31,7 @@ int8_t load_instrument_a2f (temp_instrument_t *dst, const String *fname, bool sw
 
 // CIF
 
-int8_t cif_file_loader_alt (temp_instrument_t *dst, const String *fname, char **error);
+int8_t load_instrument_cif (temp_instrument_t *dst, const String *fname, progress_callback_t *progress, char **error);
 
 // FIN
 
