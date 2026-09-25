@@ -18,7 +18,7 @@
   else if (result ==  1) return MODNAME_A2T_1;
   else if (result <= -3) return result;
 
-  result = amd_file_loader (fname, NULL, NULL, error);
+  result = load_song_amd (fname, NULL, NULL, error);
   if      (result ==  0) return MODNAME_AMD_0;
   else if (result ==  1) return MODNAME_AMD_1;
   else if (result <= -3) return result;

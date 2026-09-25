@@ -43,7 +43,13 @@ static uint8_t dec2hex (uint8_t dec)
   return (dec / 10) * 16 + (dec % 10);
 }
 
-#include "iloaders/amd_file_loader.c"
+#include "formats/amd.h"
+#include "formats/amd/get_ins_fm_data_amd.c" // static
+#include "formats/amd/get_ins_data_amd.c" // static
+#include "formats/amd/get_pat_event_amd.c" // static
+#include "formats/amd/load_patterns_amd_v16.c" // static
+#include "formats/amd/load_patterns_amd_v17.c" // static
+#include "formats/amd/load_song_amd.c"
 
 #include "formats/cff/unpack_cff.c" // static
 #include "formats/cff/get_title_cff.c" // static
