@@ -27,7 +27,7 @@
   if      (result ==  0) return MODNAME_CFF;
   else if (result <= -3) return result;
 
-  result = dfm_file_loader (fname, NULL, NULL, error);
+  result = load_song_dfm (fname, NULL, NULL, error);
   if      (result ==  0) return MODNAME_DFM;
   else if (result <= -3) return result;
 

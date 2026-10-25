@@ -22,10 +22,15 @@
 #ifndef FORMATS_AMD_H
 #define FORMATS_AMD_H 1
 
+#define TITLE_MAX_AMD 24
+#define COMPOSER_MAX_AMD 24
+#define INSTRUMENT_NAME_MAX_AMD 23
+
 #define NOTE_MAX_AMD (12 * 7 + 11) // B-8
 #define INSTRUMENTS_MAX_AMD 26
 #define CHANNELS_MAX_AMD 9
 #define PATTERN_LEN_AMD 64
+#define PATTERNS_MAX_AMD 128
 #define PATTERN_ORDER_LEN_AMD 128
 
 #define NOTE_UNPACK_AMD(x) ((x)-1)
@@ -39,6 +44,14 @@
 
 static const char GCC_ATTRIBUTE((nonstring)) id_amd[ID_SIZE_AMD] = { "<o\xEFQU\xEERoR" };
 static const char GCC_ATTRIBUTE((nonstring)) id_xms[ID_SIZE_AMD] = { "MaDoKaN96" };
+
+typedef char title_amd_t[TITLE_MAX_AMD];  //ASCIIZ
+
+//get_title_amd()
+
+typedef char composer_amd_t[COMPOSER_MAX_AMD];  //ASCIIZ
+
+//get_composer_amd()
 
 typedef struct {  // instrument FM data
   uint8_t AM_Vibrato_EG_modulator;
@@ -56,20 +69,28 @@ typedef struct {  // instrument FM data
 
 //get_ins_fm_data_amd()
 
+typedef char ins_name_amd_t[INSTRUMENT_NAME_MAX_AMD]; // ASCIIZ
+
+//get_ins_name_amd()
+
 typedef struct {  // instrument
-  char name[23];    // ASCIIZ
+  ins_name_amd_t name;
   ins_fm_data_amd_t fm_data;
 } ins_data_amd_t;
 
 //get_ins_data_amd()
 
+typedef uint8_t pat_order_amd_t[PATTERN_ORDER_LEN_AMD];
+
+//get_pat_order_amd()
+
 typedef struct {  // header
-  char title[24];       // ASCIIZ
-  char composer[24];    // ASCIIZ
+  title_amd_t title;
+  composer_amd_t composer;
   ins_data_amd_t instruments[INSTRUMENTS_MAX_AMD];
-  uint8_t length;       // song length (see `order')
-  uint8_t patterns;     // number of patterns -1
-  uint8_t order[PATTERN_ORDER_LEN_AMD];
+  uint8_t pat_order_len;
+  uint8_t num_patterns; // number of patterns -1
+  pat_order_amd_t pat_order;
   char id[ID_SIZE_AMD];
   uint8_t version;
 } header_amd_t;

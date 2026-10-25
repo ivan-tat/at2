@@ -5615,7 +5615,7 @@ _jmp1:
       fade_out_playback (false);
       stop_playing;
     end;
-    loader_status := dfm_file_loader (songdata_source, progress, state, error);
+    loader_status := load_song_dfm (songdata_source, progress, state, error);
     if (loader_status < 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' DFM Loader '), 1)
     else

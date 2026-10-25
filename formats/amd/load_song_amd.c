@@ -6,10 +6,9 @@
 
 /*****************************************************************************
 
-  Amusic module file format
+  Amusic module file loader
   Supported file format versions: 16, 17
   Filename extensions: .amd, .xms
-  All values are little-endian.
 
 *****************************************************************************/
 
@@ -41,6 +40,7 @@ int8_t load_song_amd (const String *_fname,
   char *result_error = NULL;
   FILE *f = NULL;
   header_amd_t header;
+  unsigned num_patterns;
   bool is_amd;
   char fname[255+1];
 
@@ -69,7 +69,8 @@ int8_t load_song_amd (const String *_fname,
 
   result = -4;
 
-  if (progress != NULL) progress->num_steps = header.patterns + 1;
+  num_patterns = header.num_patterns + 1;
+  if (progress != NULL) progress->num_steps = num_patterns;
 
   init_songdata (song);
   song->patt_len = PATTERN_LEN_AMD;
@@ -81,40 +82,27 @@ int8_t load_song_amd (const String *_fname,
   song->speed = speed;
   result_state = 1;
 
-  // import patterns order
-  if (header.length > PATTERN_ORDER_LEN_AMD) header.length = PATTERN_ORDER_LEN_AMD;
-  for (unsigned i = 0; i < header.length; i++)
-    if (header.order[i] <= header.patterns)
-    {
-      song->pattern_order[i] = header.order[i];
-      result_state = 2;
-    }
+  get_pat_order_amd (song,
+                     &header.pat_order, header.pat_order_len,
+                     num_patterns,
+                     &result_state);
 
-  // import instrument names
   for (int i = 0; i < INSTRUMENTS_MAX_AMD; i++)
   {
-    String_t s, t;
-
-    get_ins_data_amd (&song->instr_data[i], &header.instruments[i]);
-    s.len = sizeof (header.instruments[0].name);
-    memcpy (s.str, header.instruments[i].name, sizeof (header.instruments[0].name));
-    t = truncate_string ((String *)&s);
-    s = Copy (song->instr_names[i], 1, 9);
-    AppendString ((String *)&s, (String *)&t, sizeof (s) - 1);
-    CopyString (song->instr_names[i], (String *)&s, sizeof (song->instr_names[0]));
+    get_ins_name_amd (&song->instr_names[i], &header.instruments[i].name);
+    get_ins_data_amd (&song->instr_data[i], &header.instruments[i].fm_data);
   }
   result_state = 2;
 
-  // import patterns
   switch (header.version)
   {
     case 16:
-      if (load_patterns_amd_v16 (header.patterns + 1, f,
+      if (load_patterns_amd_v16 (num_patterns, f,
                                  progress, &result_error)) goto _exit;
       break;
 
     case 17:
-      if (load_patterns_amd_v17 (header.patterns + 1, f,
+      if (load_patterns_amd_v17 (num_patterns, f,
                                  progress, &result_error)) goto _exit;
       break;
 
@@ -122,19 +110,8 @@ int8_t load_song_amd (const String *_fname,
   }
 
   song->common_flag |= 0x80;
-  {
-    String_t s, t;
-
-    StrToString ((String *)&s, header.title, sizeof (header.title));
-    t = asciiz_string ((String *)&s);
-    s = CutStr ((String *)&t);
-    CopyString (song->songname, (String *)&s, sizeof (song->songname) - 1);
-
-    StrToString ((String *)&s, header.composer, sizeof (header.composer));
-    t = asciiz_string ((String *)&s);
-    s = CutStr ((String *)&t);
-    CopyString (song->composer, (String *)&s, sizeof (song->composer) - 1);
-  }
+  get_title_amd (song, &header.title);
+  get_composer_amd (song, &header.composer);
   apply_song_flags (song);
   {
     String_t s = NameOnly (_fname);

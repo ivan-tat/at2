@@ -44,8 +44,12 @@ static uint8_t dec2hex (uint8_t dec)
 }
 
 #include "formats/amd.h"
+#include "formats/amd/get_title_amd.c" // static
+#include "formats/amd/get_composer_amd.c" // static
+#include "formats/amd/get_ins_name_amd.c" // static
 #include "formats/amd/get_ins_fm_data_amd.c" // static
 #include "formats/amd/get_ins_data_amd.c" // static
+#include "formats/amd/get_pat_order_amd.c" // static
 #include "formats/amd/get_pat_event_amd.c" // static
 #include "formats/amd/load_patterns_amd_v16.c" // static
 #include "formats/amd/load_patterns_amd_v17.c" // static
@@ -62,7 +66,16 @@ static uint8_t dec2hex (uint8_t dec)
 #include "formats/cff/get_patterns_cff.c" // static
 #include "formats/cff/load_song_cff.c"
 
-#include "iloaders/dfm_file_loader.c"
+#include "formats/dfm.h"
+#include "formats/dfm/get_title_dfm.c" // static
+#include "formats/dfm/get_ins_name_dfm.c" // static
+#include "formats/dfm/get_ins_fm_data_dfm.c" // static
+#include "formats/dfm/get_ins_data_dfm.c" // static
+#include "formats/dfm/get_pat_order_dfm.c" // static
+#include "formats/dfm/get_pat_event_dfm.c" // static
+#include "formats/dfm/load_patterns_dfm.c" // static
+#include "formats/dfm/load_song_dfm.c"
+
 #include "iloaders/hsc_file_loader.c"
 #include "iloaders/mtk_file_loader.c"
 #include "iloaders/rad_file_loader.c"
