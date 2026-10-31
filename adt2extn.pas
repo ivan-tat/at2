@@ -5627,7 +5627,7 @@ _jmp1:
       fade_out_playback (false);
       stop_playing;
     end;
-    loader_status := fmk_file_loader (songdata_source, desc, progress, state, error);
+    loader_status := load_song_fmk (songdata_source, desc, progress, state, error);
     if (loader_status < 0) then
       Dialog (iCASE (StrPas (error) + '$Loading stopped$'), iCASE ('~O~Kay$'), iCASE (' FMK Loader '), 1)
     else

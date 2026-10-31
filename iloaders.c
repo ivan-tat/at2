@@ -76,14 +76,30 @@ static uint8_t dec2hex (uint8_t dec)
 #include "formats/dfm/load_patterns_dfm.c" // static
 #include "formats/dfm/load_song_dfm.c"
 
-#include "iloaders/hsc_file_loader.c"
-#include "iloaders/mtk_file_loader.c"
-#include "iloaders/rad_file_loader.c"
-
 #define temp_ef_Arpeggio 0xF0
 #define temp_ef_rep      0xF1
 #define temp_ef_XFVSlide 0xF2
 
+#include "formats/fmk.h"
+#include "formats/fmk/get_title_fmk.c" // static
+#include "formats/fmk/get_composer_fmk.c" // static
+#include "formats/fmk/get_pat_order_fmk.c" // static
+#include "formats/fmk/truncate_string_fmk.c" // static
+#include "formats/fmk/get_description_fmk.c" // static
+#include "formats/fmk/load_description_fmk.c" // static
+#include "formats/fmk/get_ins_name_fmk.c" // static
+#include "formats/fmk/get_ins_fm_data_fmk.c" // static
+#include "formats/fmk/get_ins_data_fmk.c" // static
+#include "formats/fmk/load_instruments_fmk.c" // static
+#include "formats/fmk/get_pat_event_fmk.c" // static
+#include "formats/fmk/fix_patterns_fmk.c" // static
+#include "formats/fmk/load_patterns_fmk.c" // static
+#include "formats/fmk/load_song_fmk.c"
+
+#include "iloaders/hsc_file_loader.c"
+#include "iloaders/mtk_file_loader.c"
+#include "iloaders/rad_file_loader.c"
+
 #include "iloaders/s3m_file_loader.c"
-#include "iloaders/fmk_file_loader.c"
+
 #include "iloaders/sat_file_loader.c"

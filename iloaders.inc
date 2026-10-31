@@ -23,7 +23,7 @@ function load_pattern_a2p (_fname: String; progress: progress_callback_p; var st
 function load_song_amd (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function load_song_cff (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function load_song_dfm (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-function fmk_file_loader (_fname: String; var desc: Pointer; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
+function load_song_fmk (_fname: String; var desc: Pointer; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function hsc_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function mtk_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function rad_file_loader (_fname: String; var desc: Pointer; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;

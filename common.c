@@ -20,6 +20,10 @@ const char GCC_ATTRIBUTE((nonstring)) HEXDIGITS[16] = { "0123456789ABCDEF" };
 #include "common/bit_clear.c"
 #endif // !HAVE_INLINE_bit_clear
 
+#if !HAVE_INLINE_bit_set || !HAVE_INLINE_bit_clear
+#include "common/bit_assign.c"
+#endif
+
 #if !HAVE_INLINE_bit_test
 #include "common/bit_test.c"
 #endif // !HAVE_INLINE_bit_test

@@ -1,7 +1,7 @@
 // This file is part of Adlib Tracker II (AT2).
 //
 // SPDX-FileType: SOURCE
-// SPDX-FileCopyrightText: 2014-2024 The Adlib Tracker 2 Authors
+// SPDX-FileCopyrightText: 2014-2026 The Adlib Tracker 2 Authors
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #define LOOP_TAIL                                                            \
@@ -64,7 +64,7 @@ void show_str (uint8_t xpos, uint8_t ypos, const String *str, uint8_t attr) {
       uint_least8_t x22 = area_x2+2; // shadow: bottom line's end X
 
       while (1) {
-        if ((x < x12) && (x > x22))
+        if ((x < x12) || (x > x22))
           *p = *s | a; // normal
         else
           *((unsigned char *) p) = *s; // shadow

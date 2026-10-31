@@ -38,7 +38,7 @@
 #define NOTE_EMPTY     0
 #define NOTE_OFF       0xFF
 #define NOTE_PACK(x)   ((x)+1)
-#define NOTE_UNPACK(x) ((x)+1)
+#define NOTE_UNPACK(x) ((x)-1)
 
 #define INS_EMPTY     0
 #define INS_PACK(x)   ((x)+1)
@@ -348,11 +348,16 @@ extern struct status_backup_t {
 void set_pattern_data (tFIXED_SONGDATA *song, uint8_t idx, tRAW_PATTERN_DATA *data);
 void set_pattern_name (tFIXED_SONGDATA *song, uint8_t idx, String *name, String *def_name);
 bool is_pattern_marked (tFIXED_SONGDATA *song, uint8_t idx);
+#endif // !ADT2PLAY
+bool pattern_avail (tFIXED_SONGDATA *song, uint8_t idx);
+tRAW_PATTERN_DATA *get_pattern_data (tFIXED_SONGDATA *song, uint8_t idx);
+bool touch_pattern (tFIXED_SONGDATA *song, uint8_t idx);
+void get_chunk (uint8_t pattern, uint8_t line, uint8_t channel, tCHUNK *chunk);
+void put_chunk (uint8_t pattern, uint8_t line, uint8_t channel, const tCHUNK *chunk);
 
+#if !ADT2PLAY
 int8_t board_get_pos (uint8_t octave, ExtKeyCode fkey);
 #endif // !ADT2PLAY
-
-tRAW_PATTERN_DATA *get_pattern_data (tFIXED_SONGDATA *song, uint8_t idx);
 
 uint16_t nFreq (uint8_t note);
 void     change_freq (uint8_t chan, uint16_t freq);
@@ -401,9 +406,6 @@ void realtime_gfx_poll_proc (void);
 void decay_bars_refresh (void);
 void status_refresh (void);
 void trace_update_proc (void);
-
-void get_chunk (uint8_t pattern, uint8_t line, uint8_t channel, tCHUNK *chunk);
-void put_chunk (uint8_t pattern, uint8_t line, uint8_t channel, const tCHUNK *chunk);
 
 #if !ADT2PLAY
 uint8_t get_chanpos (const void *data, uint8_t channels, uint8_t scancode);

@@ -349,11 +349,16 @@ struct status_backup_t status_backup;
 #include "adt2unit/set_pattern_data.c"
 #include "adt2unit/set_pattern_name.c"
 #include "adt2unit/is_pattern_marked.c"
+#endif // !ADT2PLAY
+#include "adt2unit/pattern_avail.c"
+#include "adt2unit/get_pattern_data.c"
+#include "adt2unit/touch_pattern.c"
+#include "adt2unit/get_chunk.c"
+#include "adt2unit/put_chunk.c"
 
+#if !ADT2PLAY
 #include "adt2unit/board_get_pos.c"
 #endif // !ADT2PLAY
-
-#include "adt2unit/get_pattern_data.c"
 
 #define FreqStart 0x156
 #define FreqEnd   0x2AE
@@ -479,8 +484,6 @@ PAREA_END (CODE)
 #endif // !ADT2PLAY
 #include "adt2unit/start_playing.c"
 #include "adt2unit/stop_playing.c"
-#include "adt2unit/get_chunk.c"
-#include "adt2unit/put_chunk.c"
 #include "adt2unit/calc_max_speedup.c"
 #if !ADT2PLAY
 #include "adt2unit/calc_bpm_speed.c"

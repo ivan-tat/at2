@@ -43,7 +43,7 @@
   if      (result ==  0) return MODNAME_S3M;
   else if (result <= -3) return result;
 
-  result = fmk_file_loader (fname, NULL, NULL, NULL, error);
+  result = load_song_fmk (fname, NULL, NULL, NULL, error);
   if      (result ==  0) return MODNAME_FMK;
   else if (result <= -3) return result;
 
