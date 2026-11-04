@@ -7,15 +7,15 @@
 // MPU-401 Trakker song loader (*.mtk)
 // Patterns structure is similar to that from HSC loader.
 
-#define MTK_INSTRUMENTS_MAX HSC_INSTRUMENTS_MAX
-#define MTK_CHANNELS_MAX    HSC_CHANNELS_MAX
-#define MTK_PATTERN_LEN     HSC_PATTERN_LEN
-#define MTK_PATTERNS_MAX    HSC_PATTERNS_MAX
+#define MTK_INSTRUMENTS_MAX INSTRUMENTS_MAX_HSC
+#define MTK_CHANNELS_MAX    CHANNELS_MAX_HSC
+#define MTK_PATTERN_LEN     PATTERN_LEN_HSC
+#define MTK_PATTERNS_MAX    PATTERNS_MAX_HSC
 #define MTK_ORDER_LEN 128
 
-typedef hsc_event_t mtk_event_t;
-typedef hsc_pattern_t mtk_pattern_t;
-typedef hsc_patterns_t mtk_patterns_t;
+typedef pat_event_hsc_t mtk_event_t;
+typedef pat_data_hsc_t mtk_pattern_t;
+typedef patterns_hsc_t mtk_patterns_t;
 
 #define MTK_ID_SIZE 18
 static const char GCC_ATTRIBUTE((nonstring)) mtk_id[MTK_ID_SIZE] = { "mpu401tr\x92kk\xEEr@data" };
@@ -196,7 +196,7 @@ int8_t mtk_file_loader (const String *_fname, progress_callback_t *progress, uin
     size_t patterns_size = header.blen - sizeof (mtk_song_header_t);
     uint_least8_t num_patterns = (patterns_size + sizeof (mtk_pattern_t) - 1) / sizeof (mtk_pattern_t);
     if (num_patterns > MTK_PATTERNS_MAX) num_patterns = MTK_PATTERNS_MAX;
-    import_hsc_patterns (raw_buffer + sizeof (mtk_song_header_t), num_patterns, false);
+    get_patterns_hsc (song, raw_buffer + sizeof (mtk_song_header_t), num_patterns, false);
   }
   if (progress != NULL) next_progress_step (progress);
 

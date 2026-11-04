@@ -131,6 +131,7 @@ See [docs/pascal-to-c.md](docs/pascal-to-c.md) for information about porting Pas
 * [Surprise! Adlib Tracker v2.0](https://adplug.github.io/library/entry/SurpriseAdlibTracker2.html) by Erik Pojar - text-mode AdLib tracker for DOS (80286 and above, VGA)
 * [BoomTracker v4.0](https://adplug.github.io/library/entry/BoomTracker40.html) by Daniel Eschbach - text-mode AdLib tracker for DOS (80386 and above, VGA)
 * [Amusic tracker v1.12](https://adplug.github.io/library/entry/Amusic.html) by Elyssis group - AdLib tracker for DOS (80386 and above, VGA)
+* [HSC-Tracker v1.5](https://adplug.github.io/library/entry/HSC.html) by Zwerg Zwack and Chicken - text-mode AdLib tracker for DOS
 
 ### Fonts
 

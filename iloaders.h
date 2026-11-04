@@ -29,7 +29,7 @@ int8_t load_song_amd (const String *_fname, progress_callback_t *progress, uint8
 int8_t load_song_cff (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t load_song_dfm (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t load_song_fmk (const String *_fname, void **desc, progress_callback_t *progress, uint8_t *state, char **error);
-int8_t hsc_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
+int8_t load_song_hsc (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t mtk_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t rad_file_loader (const String *_fname, void **desc, progress_callback_t *progress, uint8_t *state, char **error);
 int8_t s3m_file_loader (const String *_fname, progress_callback_t *progress, uint8_t *state, char **error);

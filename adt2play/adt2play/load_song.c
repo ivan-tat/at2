@@ -52,7 +52,7 @@
   else if (result ==  1) return MODNAME_SAT_1;
   else if (result <= -3) return result;
 
-  result = hsc_file_loader (fname, NULL, NULL, error);
+  result = load_song_hsc (fname, NULL, NULL, error);
   if      (result ==  0) return MODNAME_HSC;
 
   return result;

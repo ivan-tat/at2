@@ -96,7 +96,17 @@ static uint8_t dec2hex (uint8_t dec)
 #include "formats/fmk/load_patterns_fmk.c" // static
 #include "formats/fmk/load_song_fmk.c"
 
-#include "iloaders/hsc_file_loader.c"
+#include "formats/hsc.h"
+#include "formats/hsc/get_ins_fm_data_hsc.c" // static
+#include "formats/hsc/get_ins_data_hsc.c" // static
+#include "formats/hsc/get_instruments_hsc.c" // static
+#include "formats/hsc/get_pat_order_hsc.c" // static
+#include "formats/hsc/get_pat_event_hsc.c" // static
+#include "formats/hsc/fix_patterns_hsc.c" // static
+#include "formats/hsc/get_patterns_hsc.c" // static
+#include "formats/hsc/load_patterns_hsc.c" // static
+#include "formats/hsc/load_song_hsc.c"
+
 #include "iloaders/mtk_file_loader.c"
 #include "iloaders/rad_file_loader.c"
 
