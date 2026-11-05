@@ -31,7 +31,7 @@
   if      (result ==  0) return MODNAME_DFM;
   else if (result <= -3) return result;
 
-  result = mtk_file_loader (fname, NULL, NULL, error);
+  result = load_song_mtk (fname, NULL, NULL, error);
   if      (result ==  0) return MODNAME_MTK;
   else if (result <= -3) return result;
 

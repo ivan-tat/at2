@@ -107,7 +107,16 @@ static uint8_t dec2hex (uint8_t dec)
 #include "formats/hsc/load_patterns_hsc.c" // static
 #include "formats/hsc/load_song_hsc.c"
 
-#include "iloaders/mtk_file_loader.c"
+#include "formats/mtk.h"
+#include "formats/mtk/get_title_mtk.c" // static
+#include "formats/mtk/get_composer_mtk.c" // static
+#include "formats/mtk/get_ins_name_mtk.c" // static
+#include "formats/mtk/get_ins_fm_data_mtk.c" // static
+#include "formats/mtk/get_ins_data_mtk.c" // static
+#include "formats/mtk/get_instruments_mtk.c" // static
+#include "formats/mtk/get_pat_order_mtk.c" // static
+#include "formats/mtk/load_song_mtk.c"
+
 #include "iloaders/rad_file_loader.c"
 
 #include "iloaders/s3m_file_loader.c"
