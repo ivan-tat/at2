@@ -26,6 +26,6 @@ function load_song_dfm (_fname: String; progress: progress_callback_p; var state
 function load_song_fmk (_fname: String; var desc: Pointer; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function load_song_hsc (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function load_song_mtk (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
-function rad_file_loader (_fname: String; var desc: Pointer; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
+function load_song_rad (_fname: String; var desc: Pointer; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function s3m_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;
 function sat_file_loader (_fname: String; progress: progress_callback_p; var state: Byte; var error: PChar): Shortint; cdecl; external;

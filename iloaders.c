@@ -117,7 +117,16 @@ static uint8_t dec2hex (uint8_t dec)
 #include "formats/mtk/get_pat_order_mtk.c" // static
 #include "formats/mtk/load_song_mtk.c"
 
-#include "iloaders/rad_file_loader.c"
+#include "formats/rad.h"
+#include "formats/rad/truncate_string_rad.c" // static
+#include "formats/rad/get_description_rad.c" // static
+#include "formats/rad/get_ins_fm_data_rad.c" // static
+#include "formats/rad/get_ins_data_rad.c" // static
+#include "formats/rad/get_instruments_rad.c" // static
+#include "formats/rad/get_pat_order_rad.c" // static
+#include "formats/rad/get_pat_event_rad.c" // static
+#include "formats/rad/get_patterns_rad.c" // static
+#include "formats/rad/load_song_rad.c"
 
 #include "iloaders/s3m_file_loader.c"
 

@@ -35,7 +35,7 @@
   if      (result ==  0) return MODNAME_MTK;
   else if (result <= -3) return result;
 
-  result = rad_file_loader (fname, NULL, NULL, NULL, error);
+  result = load_song_rad (fname, NULL, NULL, NULL, error);
   if      (result ==  0) return MODNAME_RAD;
   else if (result <= -3) return result;
 
